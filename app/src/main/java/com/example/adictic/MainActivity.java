@@ -2,16 +2,15 @@ package com.example.adictic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import android.app.Activity;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import java.text.DateFormat;
@@ -31,13 +30,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class MainActivity extends AppCompatActivity implements OnItemSelectedListener{
-
+public class MainActivity extends AppCompatActivity implements OnItemSelectedListener {
     private static final String TAG = "UsageStatsActivity";
     private static final boolean localLOGV = false;
     private UsageStatsManager mUsageStatsManager;
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         TextView pkgName;
         TextView lastTimeUsed;
         TextView usageTime;
+        ImageView icon;
     }
 
     class UsageStatsAdapter extends BaseAdapter {
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         private AppNameComparator mAppLabelComparator;
         private final ArrayMap<String, String> mAppLabelMap = new ArrayMap<>();
         private final ArrayList<UsageStats> mPackageStats = new ArrayList<>();
+        private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
         UsageStatsAdapter() {
             Calendar cal = Calendar.getInstance();
@@ -114,17 +115,19 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 // load application labels for each application
                 try {
                     ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                    String label = appInfo.loadLabel(mPm).toString();
-                    mAppLabelMap.put(pkgStats.getPackageName(), label);
+                    if(pkgStats.getTotalTimeInForeground()>5000) {
+                        Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.getPackageName());
+                        String label = appInfo.loadLabel(mPm).toString();
+                        mAppLabelMap.put(pkgStats.getPackageName(), label);
 
-                    pkgStats.
-
-                    UsageStats existingStats =
-                            map.get(pkgStats.getPackageName());
-                    if (existingStats == null) {
-                        map.put(pkgStats.getPackageName(), pkgStats);
-                    } else {
-                        existingStats.add(pkgStats);
+                        UsageStats existingStats =
+                                map.get(pkgStats.getPackageName());
+                        if (existingStats == null) {
+                            map.put(pkgStats.getPackageName(), pkgStats);
+                            mIcons.put(pkgStats.getPackageName(), appIcon);
+                        } else {
+                            existingStats.add(pkgStats);
+                        }
                     }
 
                 } catch (NameNotFoundException e) {
@@ -155,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // A ViewHolder keeps references to children views to avoid unnecessary calls
+            // A ViewHolder keeps references to children views to avoid unneccessary calls
             // to findViewById() on each row.
             AppViewHolder holder;
 
@@ -171,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 holder.pkgName = (TextView) convertView.findViewById(R.id.package_name);
                 holder.lastTimeUsed = (TextView) convertView.findViewById(R.id.last_time_used);
                 holder.usageTime = (TextView) convertView.findViewById(R.id.usage_time);
+                holder.icon = (ImageView) convertView.findViewById(R.id.usage_icon);
                 convertView.setTag(holder);
             } else {
                 // Get the ViewHolder back to get fast access to the TextView
@@ -187,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
                 holder.usageTime.setText(
                         DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
+                holder.icon.setImageDrawable(mIcons.get(pkgStats.getPackageName()));
             } else {
                 Log.w(TAG, "No usage stats info for package:" + position);
             }
@@ -235,15 +240,6 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         listView.setAdapter(mAdapter);
     }
 
-    private void requestPermissions() {
-        List<UsageStats> stats = mUsageStatsManager
-                .queryUsageStats(UsageStatsManager.INTERVAL_DAILY, 0, System.currentTimeMillis());
-        boolean isEmpty = stats.isEmpty();
-        if (isEmpty) {
-            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-        }
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         mAdapter.sortList(position);
@@ -253,4 +249,14 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     public void onNothingSelected(AdapterView<?> parent) {
         // do nothing
     }
+
+    private void requestPermissions() {
+        List<UsageStats> stats = mUsageStatsManager
+                .queryUsageStats(UsageStatsManager.INTERVAL_DAILY, 0, System.currentTimeMillis());
+        boolean isEmpty = stats.isEmpty();
+        if (isEmpty) {
+            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+        }
+    }
+
 }
