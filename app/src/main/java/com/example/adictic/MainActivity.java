@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 // load application labels for each application
                 try {
                     ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                    if(pkgStats.getTotalTimeInForeground()>5000) {
+                    if(pkgStats.getTotalTimeInForeground()>5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                         Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.getPackageName());
                         String label = appInfo.loadLabel(mPm).toString();
                         mAppLabelMap.put(pkgStats.getPackageName(), label);
