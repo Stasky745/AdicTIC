@@ -9,4 +9,7 @@
     <string name="last_time_used_label">Last time used</string>
     <!-- label for usage time -->
     <string name="usage_time_label">Usage time</string>
+
+    <string name="block_warning">Aquesta aplicació està bloquejada</string>
+    <string name="sortir">Sortir</string>
 </resources>
