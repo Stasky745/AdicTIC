@@ -2,7 +2,6 @@ package com.example.adictic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -35,6 +34,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.example.adictic.service.RunService;
 
 public class MainActivity extends AppCompatActivity implements OnItemSelectedListener {
     private static final String TAG = "UsageStatsActivity";
@@ -225,6 +226,9 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        startService(new Intent(this, RunService.class));
+
         setContentView(R.layout.usage_stats);
 
         mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
