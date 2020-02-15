@@ -11,11 +11,11 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import com.example.adictic.BlockActivity;
 import com.example.adictic.MainActivity;
@@ -23,15 +23,11 @@ import com.example.adictic.R;
 
 import java.util.List;
 import java.util.SortedMap;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 
 import static android.content.ContentValues.TAG;
 
 public class RunService extends Service {
-    private static final int NOTIF_ID = 1;
-    private static final String NOTIF_CHANNEL_ID = "Channel_Id";
 
     @Nullable
     @Override
@@ -40,22 +36,46 @@ public class RunService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
+    public void onCreate(){
+        final Handler mHandler = new Handler();
 
-        Timer timer = new Timer();
-        //Set the schedule function
-        timer.scheduleAtFixedRate(new TimerTask() {
-                                      @Override
-                                      public void run() {
-                                          getForegroundTask();
-                                      }
-                                  },
-                0, 1000); // 1000 Millisecond  = 1 second
-
+        new Thread(new Runnable() {
+            @Override
+            public void run () {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run () {
+                        getForegroundTask();
+                        mHandler.postDelayed(this,1000);
+                    }
+                });
+            }
+        }).start();
 
         startForeground();
+    }
 
-        return super.onStartCommand(intent, flags, startId);
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+
+        /*final Handler mHandler = new Handler();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run () {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run () {
+                        getForegroundTask();
+                        mHandler.postDelayed(this,1000);
+                    }
+                });
+            }
+        }).start();
+
+        startForeground();*/
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void getForegroundTask() {
@@ -69,7 +89,7 @@ public class RunService extends Service {
                 for (UsageStats usageStats : appList) {
                     mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
                 }
-                if (mySortedMap != null && !mySortedMap.isEmpty()) {
+                if (!mySortedMap.isEmpty()) {
                     currentApp = mySortedMap.get(mySortedMap.lastKey()).getPackageName();
                 }
             }
@@ -82,27 +102,8 @@ public class RunService extends Service {
         Log.e(TAG, "Current App in foreground is: " + currentApp);
 
         if(currentApp.equals("com.android.chrome")){
-            System.out.println("DINS");
-            ActivityManager manager =  (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-            manager.killBackgroundProcesses("com.android.chrome");
-
-            List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
-            for (ActivityManager.RunningAppProcessInfo process : listOfProcesses)
-            {
-                if (process.processName.contains("com.android.chrome"))
-                {
-                    Log.e("Proccess" , process.processName + " : " + process.pid);
-                    android.os.Process.killProcess(process.pid);
-                    android.os.Process.sendSignal(process.pid, android.os.Process.SIGNAL_KILL);
-                    manager.killBackgroundProcesses(process.processName);
-                    break;
-                }
-            }
-
-
-
             Intent dialogIntent = new Intent(this, BlockActivity.class);
-            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(dialogIntent);
         }
     }
@@ -135,7 +136,7 @@ public class RunService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Back";
             String description = "";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             channel = new NotificationChannel("AdicTIC", name, importance);
             channel.setSound(null, null);
             channel.setDescription(description);
