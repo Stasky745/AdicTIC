@@ -17,6 +17,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.adictic.BlockActivity;
 import com.example.adictic.MainActivity;
 import com.example.adictic.R;
 
@@ -46,7 +47,7 @@ public class RunService extends Service {
         timer.scheduleAtFixedRate(new TimerTask() {
                                       @Override
                                       public void run() {
-                                          printForegroundTask();
+                                          getForegroundTask();
                                       }
                                   },
                 0, 1000); // 1000 Millisecond  = 1 second
@@ -57,7 +58,7 @@ public class RunService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private String printForegroundTask() {
+    private void getForegroundTask() {
         String currentApp = "NULL";
         if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             UsageStatsManager usm = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
@@ -79,7 +80,31 @@ public class RunService extends Service {
         }
 
         Log.e(TAG, "Current App in foreground is: " + currentApp);
-        return currentApp;
+
+        if(currentApp.equals("com.android.chrome")){
+            System.out.println("DINS");
+            ActivityManager manager =  (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+            manager.killBackgroundProcesses("com.android.chrome");
+
+            List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo process : listOfProcesses)
+            {
+                if (process.processName.contains("com.android.chrome"))
+                {
+                    Log.e("Proccess" , process.processName + " : " + process.pid);
+                    android.os.Process.killProcess(process.pid);
+                    android.os.Process.sendSignal(process.pid, android.os.Process.SIGNAL_KILL);
+                    manager.killBackgroundProcesses(process.processName);
+                    break;
+                }
+            }
+
+
+
+            Intent dialogIntent = new Intent(this, BlockActivity.class);
+            dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(dialogIntent);
+        }
     }
 
     private void startForeground(){
