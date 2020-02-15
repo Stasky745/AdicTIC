@@ -11,16 +11,25 @@ import android.widget.Button;
 import java.util.List;
 
 public class BlockActivity extends Activity {
-    private static Context mContext;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_layout);
 
         ActivityManager manager =  (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
-        manager.killBackgroundProcesses("com.android.chrome");
 
-        List<ActivityManager.RunningAppProcessInfo> activityes = manager.getRunningAppProcesses();
+        List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
+        manager.killBackgroundProcesses("com.android.chrome");
+        for (ActivityManager.RunningAppProcessInfo process : listOfProcesses)
+        {
+            if (process.processName.contains("com.android.chrome"))
+            {
+                android.os.Process.killProcess(process.pid);
+                android.os.Process.sendSignal(process.pid, android.os.Process.SIGNAL_KILL);
+                manager.killBackgroundProcesses(process.processName);
+                break;
+            }
+        }
 
 
         Button btn1 = (Button) findViewById(R.id.btn_sortir);
@@ -28,11 +37,9 @@ public class BlockActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Intent dialogIntent = new Intent(mContext, MainActivity.class);
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent dialogIntent = new Intent(BlockActivity.this, MainActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(dialogIntent);
-                //finish();
             }
         });
     }
