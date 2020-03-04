@@ -1,9 +1,9 @@
 package com.example.adictic;
 
 import android.app.Application;
-import android.provider.Settings;
 
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Global;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -42,7 +42,7 @@ public class TodoApp extends Application {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(httpClient)
-                .baseUrl(Settings.Global.BASE_URL_PORTFORWARDING)
+                .baseUrl(Global.BASE_URL_PORTFORWARDING)
                 //.baseUrl(Global.BASE_URL_GENYMOTION)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
