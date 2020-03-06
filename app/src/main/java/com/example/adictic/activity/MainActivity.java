@@ -1,4 +1,4 @@
-package com.example.adictic;
+package com.example.adictic.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,6 +35,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.example.adictic.R;
 import com.example.adictic.service.RunService;
 
 public class MainActivity extends AppCompatActivity implements OnItemSelectedListener {
