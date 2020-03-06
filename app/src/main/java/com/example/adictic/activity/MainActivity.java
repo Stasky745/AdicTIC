@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
+import com.example.adictic.service.RunService;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        //startService(new Intent(this, RunService.class));
+        startService(new Intent(this, RunService.class));
 
         setContentView(R.layout.main_activity_stats);
 

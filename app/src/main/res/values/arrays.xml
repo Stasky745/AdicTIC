@@ -11,8 +11,8 @@
     </string-array>
 
     <string-array name="usage_stats_display_order_types">
-        <item>Usage time</item>
-        <item>Last time used</item>
-        <item>App name</item>
+        <item>Temps d\'ús</item>
+        <item>Oberta últim cop</item>
+        <item>Alfabèticament</item>
     </string-array>
 </resources>
