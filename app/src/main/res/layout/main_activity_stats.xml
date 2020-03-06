@@ -10,7 +10,10 @@
         android:id="@+id/TV_lastXDays"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/lastXDays"
+        app:layout_constraintBottom_toBottomOf="@+id/SP_XDays"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -18,6 +21,7 @@
         android:id="@+id/SP_XDays"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:entries="@array/spinner_xDays"
         app:layout_constraintStart_toEndOf="@+id/TV_lastXDays"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,7 +30,10 @@
         android:id="@+id/TV_sortStats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/display_order_text"
+        app:layout_constraintBottom_toBottomOf="@+id/typeSpinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_lastXDays" />
 
@@ -34,6 +41,7 @@
         android:id="@+id/typeSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:entries="@array/usage_stats_display_order_types"
         app:layout_constraintStart_toEndOf="@+id/TV_sortStats"
         app:layout_constraintTop_toBottomOf="@+id/TV_lastXDays" />
