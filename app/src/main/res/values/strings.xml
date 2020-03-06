@@ -3,6 +3,7 @@
     <string name="open_app_usage_setting">Open Apps with usage access settings</string>
     <string name="last_time_used">"Last time used: "</string>
     <string name="time_span">"Time span: "</string>
+    <string name="lastXDays">"Veure activitat dels últims: "</string>
 
     <string name="display_order_text">Sort by:</string>
     <string name="app_name_label">App</string>

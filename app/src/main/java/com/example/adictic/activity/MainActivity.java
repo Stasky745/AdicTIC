@@ -1,7 +1,5 @@
 package com.example.adictic.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -9,8 +7,29 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.text.format.DateUtils;
+import android.util.ArrayMap;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.adictic.R;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -20,24 +39,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import android.provider.Settings;
-import android.text.format.DateUtils;
-import android.util.ArrayMap;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
-
-import com.example.adictic.R;
-import com.example.adictic.service.RunService;
-
 public class MainActivity extends AppCompatActivity implements OnItemSelectedListener {
     private static final String TAG = "UsageStatsActivity";
     private static final boolean localLOGV = false;
@@ -45,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     private LayoutInflater mInflater;
     private UsageStatsAdapter mAdapter;
     private PackageManager mPm;
+    private int xDays = 1;
+
+    private float CORRECT_USAGE = 2;
+    private float DANGEROUS_USAGE = 4;
 
     public static class AppNameComparator implements Comparator<UsageStats> {
         private Map<String, String> mAppLabelList;
@@ -100,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
         UsageStatsAdapter() {
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_YEAR, -5);
+            cal.add(Calendar.DAY_OF_YEAR, -xDays);
 
             final List<UsageStats> stats =
                     mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
@@ -176,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 holder.pkgName = (TextView) convertView.findViewById(R.id.package_name);
                 holder.lastTimeUsed = (TextView) convertView.findViewById(R.id.last_time_used);
                 holder.usageTime = (TextView) convertView.findViewById(R.id.usage_time);
+
                 holder.icon = (ImageView) convertView.findViewById(R.id.usage_icon);
                 convertView.setTag(holder);
             } else {
@@ -193,6 +199,13 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
                 holder.usageTime.setText(
                         DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
+                Double usageTimeInt = pkgStats.getTotalTimeInForeground()/(double)3600000;
+                System.out.println("usageTimeINt: " + usageTimeInt);
+                System.out.println("xDays*CORRECT: " + xDays*CORRECT_USAGE);
+
+                if(usageTimeInt <= xDays*CORRECT_USAGE) holder.usageTime.setTextColor(Color.GREEN);
+                else if(usageTimeInt > xDays*DANGEROUS_USAGE) holder.usageTime.setTextColor(Color.RED);
+                else holder.usageTime.setTextColor(Color.rgb(255,128,64));
                 holder.icon.setImageDrawable(mIcons.get(pkgStats.getPackageName()));
             } else {
                 Log.w(TAG, "No usage stats info for package:" + position);
@@ -228,9 +241,16 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        startService(new Intent(this, RunService.class));
+        //startService(new Intent(this, RunService.class));
 
-        setContentView(R.layout.usage_stats);
+        setContentView(R.layout.main_activity_stats);
+
+        Spinner spinner = (Spinner)findViewById(R.id.SP_XDays);
+        Resources res = getResources();
+        String[] items = res.getStringArray(R.array.spinner_xDays);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         requestPermissions();
@@ -247,7 +267,30 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mAdapter.sortList(position);
+        if(parent.getId() == R.id.typeSpinner) mAdapter.sortList(position);
+        else if(parent.getId() == R.id.SP_XDays){
+            switch(position){
+                case 0:
+                    xDays = 1;
+                    break;
+                case 1:
+                    xDays = 3;
+                    break;
+                case 2:
+                    xDays = 5;
+                    break;
+                case 3:
+                    xDays = 7;
+                    break;
+                case 4:
+                    xDays = 10;
+                    break;
+            }
+
+            ListView listView = (ListView) findViewById(R.id.pkg_list);
+            mAdapter = new UsageStatsAdapter();
+            listView.setAdapter(mAdapter);
+        }
     }
 
     @Override
