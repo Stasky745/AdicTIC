@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- Spinner items -->
+    <string-array
+        name="spinner_xDays">
+        <item>1 dia</item>
+        <item>3 dies</item>
+        <item>5 dies</item>
+        <item>7 dies</item>
+        <item>10 dies</item>
+    </string-array>
 
     <string-array name="usage_stats_display_order_types">
         <item>Usage time</item>
