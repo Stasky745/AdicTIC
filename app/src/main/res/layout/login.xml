@@ -72,7 +72,6 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="onClick"
         android:text="@string/register"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -110,7 +109,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="78dp" />
+        app:layout_constraintGuide_percent="0.10670315" />
 
     <TextView
         android:id="@+id/TV_nomDisp"
@@ -133,7 +132,7 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_nomDisp" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_noDeviceName" />
 
     <Button
         android:id="@+id/login_button"
@@ -157,5 +156,25 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="290dp" />
+
+    <TextView
+        android:id="@+id/TV_noDeviceName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/error_noDeviceName"
+        android:textColor="#F44336"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/PT_nomDisp"
+        app:layout_constraintTop_toBottomOf="@+id/TV_nomDisp" />
+
+    <TextView
+        android:id="@+id/TV_noTypeDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/error_noTipus"
+        android:textColor="#F44336"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/RG_Tipus"
+        app:layout_constraintStart_toStartOf="@+id/login_password" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
