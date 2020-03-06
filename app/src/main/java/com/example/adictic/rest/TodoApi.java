@@ -2,6 +2,7 @@ package com.example.adictic.rest;
 
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
+import com.example.adictic.entity.UserRegister;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -14,4 +15,7 @@ public interface TodoApi {
 
     @GET("/users/check")
     Call<String> check();
+
+    @POST("/users/register")
+    Call<User> register(@Body UserRegister register);
 }

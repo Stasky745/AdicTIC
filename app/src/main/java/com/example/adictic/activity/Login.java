@@ -38,6 +38,7 @@ public class Login extends AppCompatActivity {
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
         Button b_log = (Button)findViewById(R.id.login_button);
+        TextView b_reg = (TextView)findViewById(R.id.TV_register);
         // This is the listener that will be used when the user presses the "Login" button
         b_log.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -47,29 +48,30 @@ public class Login extends AppCompatActivity {
                 RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
                 EditText deviceName = (EditText)findViewById(R.id.PT_nomDisp);
 
+                TextView noDeviceName = (TextView)findViewById(R.id.TV_noDeviceName);
+                TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
+
+                noDeviceName.setVisibility(View.GONE);
+                noTypeDevice.setVisibility(View.GONE);
+
                 if(tutor.isChecked()) Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1,"");
                 else if(tutelat.isChecked()){
                     if(!deviceName.getText().toString().equals("")) Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0,deviceName.getText().toString());
                     else{
-                        Toast toast = Toast.makeText(Login.this, getString(R.string.error_noDeviceName), Toast.LENGTH_SHORT);
-                        toast.show();
+                        noDeviceName.setVisibility(View.VISIBLE);
                     }
                 }
                 else{
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noTipus), Toast.LENGTH_SHORT);
-                    toast.show();
+                    noTypeDevice.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        TextView b_reg = (TextView)findViewById(R.id.TV_register);
         // This is the listener that will be used when the user presses the "Register" button
         b_reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent i = new Intent(Login.this, Register.class);
-                //startActivity(i);
-                System.out.println("Cap a register anem!");
+                Login.this.startActivity(new Intent(Login.this, Register.class));
             }
         });
 
@@ -97,6 +99,8 @@ public class Login extends AppCompatActivity {
         UserLogin ul = new UserLogin();
         ul.username = username;
         ul.password = password;
+        ul.tutor = tutor;
+        ul.deviceName = nomDevice;
 
         Call<User> call = mTodoService.login(ul);
         call.enqueue(new Callback<User>() {
@@ -136,14 +140,14 @@ public class Login extends AppCompatActivity {
                     Login.this.startActivity(new Intent(Login.this, MainActivity.class));
                     Login.this.finish();
                 } else {
-                    Toast toast = Toast.makeText(Login.this, "Error logging in", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                     toast.show();
                 }
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Toast toast = Toast.makeText(Login.this, "Error logging in", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
