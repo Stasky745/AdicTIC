@@ -12,4 +12,36 @@
 
     <string name="block_warning">Aquesta aplicació està bloquejada</string>
     <string name="sortir">Sortir</string>
+
+    <string name="username">Nom d\'usuari:</string>
+    <string name="password">Contrasenya:</string>
+    <string name="password2">Repeteix la contrasenya:</string>
+    <string name="email">Correu electrònic:</string>
+    <string name="hint_username">Nom d\'usuari</string>
+    <string name="hint_password">Contrasenya</string>
+    <string name="hint_email">Correu electrònic</string>
+    <string name="no_user">No tens usuari? </string>
+    <string name="have_account">Ja tens compte? </string>
+    <string name="register">Registra\'t</string>
+    <string name="go_login">Inicia sessió</string>
+    <string name="tipus">Aquest dispositiu és de:</string>
+
+    <string name="tutor">Pare / Mare / Tutor</string>
+    <string name="tutelat">Adolescent</string>
+
+    <string name="login">Entra</string>
+
+    <string name="nomDisp">Nom del dispositiu:</string>
+    <string name="hint_nomDisp">Nom del dispositiu</string>
+
+    <string name="title_activity_splash_screen">AdicTIC</string>
+    <string name="good_register">Registre correcte!</string>
+
+    <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
+    <string name="error_noTipus">Camp de tipus de dispositiu buit.</string>
+    <string name="error_noValidEmail">Format de correu no vàlid.</string>
+    <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
+    <string name="error_noRegister">ERROR: No s\'ha pogut registrar.</string>
+    <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
+
 </resources>

@@ -17,8 +17,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.example.adictic.BlockActivity;
-import com.example.adictic.MainActivity;
+import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.activity.MainActivity;
 import com.example.adictic.R;
 
 import java.util.List;
