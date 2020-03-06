@@ -30,17 +30,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
         android:ellipsize="none"
         android:marqueeRepeatLimit="marquee_forever"
         android:overScrollMode="never"
         android:paddingStart="12dip"
         android:paddingEnd="6dip"
         android:singleLine="true"
+        android:textAlignment="viewStart"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,41 +47,29 @@
         android:id="@+id/last_time_used"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="40dp"
         android:maxLines="1"
         android:paddingStart="12dip"
         android:paddingEnd="6dip"
-        android:textAlignment="center"
+        android:textAlignment="viewEnd"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/package_name" />
 
     <TextView
         android:id="@+id/usage_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:maxLines="1"
         android:paddingStart="12dip"
         android:paddingEnd="6dip"
-        android:textAlignment="center"
+        android:textAlignment="viewEnd"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/last_time_used"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.65" />
+        app:layout_constraintEnd_toEndOf="@+id/last_time_used"
+        app:layout_constraintTop_toBottomOf="@+id/TV_LastTimeUsed"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/usage_icon"
@@ -102,5 +89,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.13868614" />
+        app:layout_constraintGuide_percent="0.25" />
+
+    <TextView
+        android:id="@+id/TV_LastTimeUsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/last_time_used"
+        app:layout_constraintBottom_toBottomOf="@+id/last_time_used"
+        app:layout_constraintStart_toStartOf="@+id/package_name"
+        app:layout_constraintTop_toTopOf="@+id/last_time_used" />
+
+    <TextView
+        android:id="@+id/TV_timeSpan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/time_span"
+        app:layout_constraintBottom_toBottomOf="@+id/usage_time"
+        app:layout_constraintStart_toStartOf="@+id/package_name"
+        app:layout_constraintTop_toTopOf="@+id/usage_time" />
 </androidx.constraintlayout.widget.ConstraintLayout>
