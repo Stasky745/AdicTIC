@@ -1,15 +1,15 @@
 <resources>
     <string name="app_name">AdicTIC</string>
     <string name="open_app_usage_setting">Open Apps with usage access settings</string>
-    <string name="last_time_used">"Last time used: "</string>
-    <string name="time_span">"Time span: "</string>
+    <string name="last_time_used">"Oberta últim cop: "</string>
+    <string name="time_span">"Temps d'ús: "</string>
     <string name="lastXDays">"Veure activitat dels últims: "</string>
 
-    <string name="display_order_text">Sort by:</string>
+    <string name="display_order_text">Ordenat per:</string>
     <string name="app_name_label">App</string>
-    <string name="last_time_used_label">Last time used</string>
+    <string name="last_time_used_label">Oberta últim cop</string>
     <!-- label for usage time -->
-    <string name="usage_time_label">Usage time</string>
+    <string name="usage_time_label">Temps \'ús</string>
 
     <string name="block_warning">Aquesta aplicació està bloquejada</string>
     <string name="sortir">Sortir</string>
