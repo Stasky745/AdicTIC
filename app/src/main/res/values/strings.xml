@@ -10,7 +10,17 @@
     <string name="last_time_used_label">Oberta últim cop</string>
     <!-- label for usage time -->
     <string name="usage_time_label">Temps \'ús</string>
+    <string name="total_use">Temps total: </string>
 
+    <string name="days">" dies "</string>
+    <string name="hours">" hores "</string>
+    <string name="minutes">" minuts"</string>
+
+    <string name="days_tag">"d "</string>
+    <string name="hours_tag">"h "</string>
+    <string name="minutes_tag">"m"</string>
+
+    <string name="block_app">Bloquejada</string>
     <string name="block_warning">Aquesta aplicació està bloquejada</string>
     <string name="sortir">Sortir</string>
 
@@ -44,5 +54,6 @@
     <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
     <string name="error_noRegister">ERROR: No s\'ha pogut registrar.</string>
     <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
+    <string name="the_image_of_the_other_app">The image of the other app.</string>
 
 </resources>
