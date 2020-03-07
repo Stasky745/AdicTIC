@@ -50,10 +50,30 @@
         android:id="@+id/pkg_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_totalUse" />
+
+    <TextView
+        android:id="@+id/TV_totalUse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/total_use"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_sortStats" />
+
+    <TextView
+        android:id="@+id/TV_totalUseVar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/TV_totalUse"
+        app:layout_constraintStart_toEndOf="@+id/TV_totalUse"
+        app:layout_constraintTop_toTopOf="@+id/TV_totalUse" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
-import com.example.adictic.service.RunService;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -49,8 +48,11 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     private PackageManager mPm;
     private int xDays = 1;
 
-    private float CORRECT_USAGE = 2;
-    private float DANGEROUS_USAGE = 4;
+    private float CORRECT_USAGE_APP = 2;
+    private float DANGEROUS_USAGE_APP = 4;
+
+    private float CORRECT_USAGE_DAY = 3;
+    private float DANGEROUS_USAGE_DAY = 6;
 
     public static class AppNameComparator implements Comparator<UsageStats> {
         private Map<String, String> mAppLabelList;
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         private final ArrayList<UsageStats> mPackageStats = new ArrayList<>();
         private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
+        private long totalTime = 0;
+
         UsageStatsAdapter() {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DAY_OF_YEAR, -xDays);
@@ -128,6 +132,8 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                         String label = appInfo.loadLabel(mPm).toString();
                         mAppLabelMap.put(pkgStats.getPackageName(), label);
 
+                        totalTime = totalTime + pkgStats.getTotalTimeInForeground();
+
                         UsageStats existingStats =
                                 map.get(pkgStats.getPackageName());
                         if (existingStats == null) {
@@ -143,6 +149,40 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
             }
             mPackageStats.addAll(map.values());
+
+            TextView TV_totalUse = (TextView)findViewById(R.id.TV_totalUseVar);
+
+            // Set colours according to total time spent
+            if(totalTime <= xDays*CORRECT_USAGE_DAY) TV_totalUse.setTextColor(Color.GREEN);
+            else if(totalTime > xDays*DANGEROUS_USAGE_DAY) TV_totalUse.setTextColor(Color.RED);
+            else TV_totalUse.setTextColor(Color.rgb(255,128,64));
+
+            // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
+            long secondsInMilli = 1000;
+            long minutesInMilli = secondsInMilli * 60;
+            long hoursInMilli = minutesInMilli * 60;
+            long daysInMilli = hoursInMilli * 24;
+
+            long elapsedDays = totalTime / daysInMilli;
+            totalTime = totalTime % daysInMilli;
+
+            long elapsedHours = totalTime / hoursInMilli;
+            totalTime = totalTime % hoursInMilli;
+
+            long elapsedMinutes = totalTime / minutesInMilli;
+            totalTime = totalTime % minutesInMilli;
+
+            if(elapsedDays == 0){
+                if(elapsedHours == 0){
+                    TV_totalUse.setText(elapsedMinutes + getString(R.string.minutes));
+                }
+                else{
+                    TV_totalUse.setText(elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes));
+                }
+            }
+            else{
+                TV_totalUse.setText(elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes));
+            }
 
             // Sort list
             mAppLabelComparator = new AppNameComparator(mAppLabelMap);
@@ -198,14 +238,42 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.getLastTimeUsed(),
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
-                holder.usageTime.setText(
-                        DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
-                Double usageTimeInt = pkgStats.getTotalTimeInForeground()/(double)3600000;
-                System.out.println("usageTimeINt: " + usageTimeInt);
-                System.out.println("xDays*CORRECT: " + xDays*CORRECT_USAGE);
 
-                if(usageTimeInt <= xDays*CORRECT_USAGE) holder.usageTime.setTextColor(Color.GREEN);
-                else if(usageTimeInt > xDays*DANGEROUS_USAGE) holder.usageTime.setTextColor(Color.RED);
+                // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
+                long secondsInMilli = 1000;
+                long minutesInMilli = secondsInMilli * 60;
+                long hoursInMilli = minutesInMilli * 60;
+                long daysInMilli = hoursInMilli * 24;
+
+                totalTime = pkgStats.getTotalTimeInForeground();
+
+                long elapsedDays = totalTime / daysInMilli;
+                totalTime = totalTime % daysInMilli;
+
+                long elapsedHours = totalTime / hoursInMilli;
+                totalTime = totalTime % hoursInMilli;
+
+                long elapsedMinutes = totalTime / minutesInMilli;
+                totalTime = totalTime % minutesInMilli;
+
+                if(elapsedDays == 0){
+                    if(elapsedHours == 0){
+                        holder.usageTime.setText(elapsedMinutes + getString(R.string.minutes_tag));
+                    }
+                    else{
+                        holder.usageTime.setText(elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag));
+                    }
+                }
+                else{
+                    holder.usageTime.setText(elapsedDays + getString(R.string.days_tag) + elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag));
+                }
+
+//                holder.usageTime.setText(
+//                        DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
+                Double usageTimeInt = pkgStats.getTotalTimeInForeground()/(double)3600000;
+
+                if(usageTimeInt <= xDays*CORRECT_USAGE_APP) holder.usageTime.setTextColor(Color.GREEN);
+                else if(usageTimeInt > xDays*DANGEROUS_USAGE_APP) holder.usageTime.setTextColor(Color.RED);
                 else holder.usageTime.setTextColor(Color.rgb(255,128,64));
                 holder.icon.setImageDrawable(mIcons.get(pkgStats.getPackageName()));
             } else {
@@ -242,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        startService(new Intent(this, RunService.class));
+        //startService(new Intent(this, RunService.class));
 
         setContentView(R.layout.main_activity_stats);
 
