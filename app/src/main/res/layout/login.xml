@@ -111,29 +111,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.10670315" />
 
-    <TextView
-        android:id="@+id/TV_nomDisp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/nomDisp"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="@+id/PT_nomDisp"
-        app:layout_constraintTop_toBottomOf="@+id/RG_Tipus" />
-
-    <EditText
-        android:id="@+id/PT_nomDisp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/hint_nomDisp"
-        android:inputType="textPersonName"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_noDeviceName" />
-
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
@@ -156,16 +133,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="290dp" />
-
-    <TextView
-        android:id="@+id/TV_noDeviceName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/error_noDeviceName"
-        android:textColor="#F44336"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@+id/PT_nomDisp"
-        app:layout_constraintTop_toBottomOf="@+id/TV_nomDisp" />
 
     <TextView
         android:id="@+id/TV_noTypeDevice"
