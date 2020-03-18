@@ -18,4 +18,7 @@ public interface TodoApi {
 
     @POST("/users/register")
     Call<User> register(@Body UserRegister register);
+
+    @POST("/users/{id}/name")
+    Call<String> sendName(@Body String name);
 }

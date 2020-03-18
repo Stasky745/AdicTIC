@@ -56,4 +56,7 @@
     <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
+    <string name="current_names">Els noms que tens assignats fins ara són:</string>
+    <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
+
 </resources>
