@@ -47,14 +47,12 @@ public class Login extends AppCompatActivity {
         // This is the listener that will be used when the user presses the "Login" button
         b_log.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EditText u = (EditText) Login.this.findViewById(R.id.login_username);
-                EditText p = (EditText) Login.this.findViewById(R.id.login_password);
-                RadioButton tutor = (RadioButton)findViewById(R.id.RB_tutor);
-                RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
+                final EditText u = (EditText) Login.this.findViewById(R.id.login_username);
+                final EditText p = (EditText) Login.this.findViewById(R.id.login_password);
+                final RadioButton tutor = (RadioButton)findViewById(R.id.RB_tutor);
+                final RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
 
-                TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
-
-                final String[] token = new String[1];
+                final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
 
                 noTypeDevice.setVisibility(View.GONE);
 
@@ -70,20 +68,24 @@ public class Login extends AppCompatActivity {
                                 }
 
                                 // Get new Instance ID token
-                                token[0] = task.getResult().getToken();
+                                String token = task.getResult().getToken();
 
                                 // Log and toast
-                                Log.d(TAG, token[0]);
+                                Log.d(TAG, token);
+
+                                if(tutor.isChecked()) {
+                                    Log.d(TAG, "TOKEN PASSAR: " + token);
+                                    Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1, token);
+                                }
+                                else if(tutelat.isChecked()){
+                                    Log.d(TAG, "TOKEN PASSAR: " + token);
+                                    Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0, token);
+                                }
+                                else{
+                                    noTypeDevice.setVisibility(View.VISIBLE);
+                                }
                             }
                         });
-
-                if(tutor.isChecked()) Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1, token[0]);
-                else if(tutelat.isChecked()){
-                    Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0, token[0]);
-                }
-                else{
-                    noTypeDevice.setVisibility(View.VISIBLE);
-                }
             }
         });
 
@@ -103,6 +105,8 @@ public class Login extends AppCompatActivity {
         ul.password = password;
         ul.tutor = tutor;
         ul.token = token;
+
+        System.out.println(token);
 
         Call<User> call = mTodoService.login(ul);
 
