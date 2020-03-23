@@ -114,8 +114,24 @@ public class Login extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
-                    Login.this.startActivity(new Intent(Login.this, MainActivity.class));
-                    Login.this.finish();
+
+                    User usuari = response.body();
+
+                    if(usuari.tutor == 1 || usuari.existeix == 1) {
+                        Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                        Login.this.finish();
+                    }
+                    else{
+                        Bundle extras = new Bundle();
+
+                        extras.putSerializable("user",usuari);
+
+                        Intent i = new Intent(Login.this,NomFill.class);
+                        i.putExtras(extras);
+
+                        Login.this.startActivity(i);
+                        Login.this.finish();
+                    }
                 } else {
                     Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                     toast.show();

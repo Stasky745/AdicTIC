@@ -1,6 +1,11 @@
 package com.example.adictic.entity;
 
-public class User {
+import java.io.Serializable;
+import java.util.List;
+
+public class User implements Serializable {
     public long id;
-    public String name;
+    public int tutor;
+    public int existeix;
+    public List<FillNom> llista;
 }
