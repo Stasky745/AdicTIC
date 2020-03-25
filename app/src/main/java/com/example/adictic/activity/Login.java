@@ -53,6 +53,14 @@ public class Login extends AppCompatActivity {
                 final RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
 
                 final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
+                final TextView noUsername = (TextView)findViewById(R.id.TV_noUsername);
+
+                if(u.getText().length() == 0) noUsername.setVisibility(View.VISIBLE);
+                else noUsername.setVisibility(View.GONE);
+
+                TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
+
+                errorPw.setVisibility(View.GONE);
 
                 noTypeDevice.setVisibility(View.GONE);
 
@@ -135,8 +143,9 @@ public class Login extends AppCompatActivity {
                         Login.this.finish();
                     }
                 } else {
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                    toast.show();
+                    TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
+
+                    errorPw.setVisibility(View.VISIBLE);
                 }
             }
 

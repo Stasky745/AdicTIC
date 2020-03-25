@@ -54,6 +54,9 @@
     <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
     <string name="error_noRegister">ERROR: No s\'ha pogut registrar.</string>
     <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
+    <string name="error_noUsername">Escriu un nom d\'usuari.</string>
+    <string name="error_password">Contrasenya no vàlida.</string>
+
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
