@@ -21,8 +21,11 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
+import com.example.adictic.TodoApp;
 import com.example.adictic.entity.FillNom;
+import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
+import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
 
 import java.util.List;
@@ -30,6 +33,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
     private MyAdapter mAdapter;
@@ -79,11 +85,24 @@ public class NomFill extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nom_fill);
 
+        mTodoService = ((TodoApp)this.getApplication()).getAPI();
+
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
 
         User usuari = (User) bundle.getSerializable("user");
+        final String token = bundle.getString("token");
+        final long idParent = bundle.getLong("id");
+
         final List<FillNom> llista = usuari.llista;
+
+        TextView tv = (TextView)findViewById(R.id.TV_fillsActuals);
+        if(llista.isEmpty()){
+            tv.setVisibility(GONE);
+        }
+        else{
+            tv.setVisibility(VISIBLE);
+        }
 
         final EditText tv_nom = (EditText)findViewById(R.id.TXT_fillNou);
 
@@ -137,32 +156,81 @@ public class NomFill extends AppCompatActivity {
             public void onClick(View v) {
 
                 TextView TV_errorNoName = (TextView)findViewById(R.id.TV_errorNoName);
-                TV_errorNoName.setVisibility(View.GONE);
+                TV_errorNoName.setVisibility(GONE);
 
                 if(tv_nom.getText().toString().equals("")){
-                    TV_errorNoName.setVisibility(View.VISIBLE);
+                    TV_errorNoName.setVisibility(VISIBLE);
                 }
                 else{
-                    Call<String> call = mTodoService.sendName(tv_nom.getText().toString());
+                    long id = 0;
+                    boolean existeix = false;
+                    int i = 0;
 
-                    call.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            if (response.isSuccessful()) {
-                                NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
-                                NomFill.this.finish();
-                            } else {
+                    while(!existeix && i < llista.size()){
+                        if(tv_nom.getText().toString().equals(llista.get(i).deviceName)){
+                            id=llista.get(i).idChild;
+                            existeix=true;
+                        }
+                        i++;
+                    }
+
+                    if(existeix) { /** Canviar token d'un fill que existeix **/
+                        VellFillLogin fillVell = new VellFillLogin();
+                        fillVell.deviceName = tv_nom.getText().toString();
+                        fillVell.idChild = id;
+                        fillVell.token = token;
+
+                        System.out.println("DEVICE NAME: " + fillVell.deviceName);
+                        System.out.println("ID: " + fillVell.idChild);
+                        System.out.println("TOKEN: " + fillVell.token);
+
+                        Call<String> call = mTodoService.sendOldName(idParent, fillVell);
+
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.isSuccessful()) {
+                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                    NomFill.this.finish();
+                                } else {
+                                    Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                 toast.show();
                             }
-                        }
+                        });
+                    }
+                    else { /** Crear un fill nou **/
+                        NouFillLogin fillNou = new NouFillLogin();
+                        fillNou.deviceName = tv_nom.getText().toString();
+                        fillNou.token = token;
 
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) {
-                            Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    });
+                        Call<String> call = mTodoService.sendNewName(idParent, fillNou);
+
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.isSuccessful()) {
+                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                    NomFill.this.finish();
+                                } else {
+                                    Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                                    toast.show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                                Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
+                    }
                 }
             }
         });

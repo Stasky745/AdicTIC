@@ -99,7 +99,7 @@ public class Login extends AppCompatActivity {
     }
 
     // This method is called when the "Login" button is pressed in the Login fragment
-    public void checkCredentials(String username, String password, Integer tutor, String token) {
+    public void checkCredentials(String username, String password, Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
         ul.username = username;
         ul.password = password;
@@ -124,7 +124,9 @@ public class Login extends AppCompatActivity {
                     else{
                         Bundle extras = new Bundle();
 
-                        extras.putSerializable("user",usuari);
+                        extras.putSerializable("user", usuari);
+                        extras.putString("token", token);
+                        extras.putLong("id", usuari.id);
 
                         Intent i = new Intent(Login.this,NomFill.class);
                         i.putExtras(extras);
