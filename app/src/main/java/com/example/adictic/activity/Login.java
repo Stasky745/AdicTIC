@@ -2,14 +2,15 @@ package com.example.adictic.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
@@ -17,6 +18,10 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,28 +47,45 @@ public class Login extends AppCompatActivity {
         // This is the listener that will be used when the user presses the "Login" button
         b_log.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EditText u = (EditText) Login.this.findViewById(R.id.login_username);
-                EditText p = (EditText) Login.this.findViewById(R.id.login_password);
-                RadioButton tutor = (RadioButton)findViewById(R.id.RB_tutor);
-                RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
-                EditText deviceName = (EditText)findViewById(R.id.PT_nomDisp);
+                final EditText u = (EditText) Login.this.findViewById(R.id.login_username);
+                final EditText p = (EditText) Login.this.findViewById(R.id.login_password);
+                final RadioButton tutor = (RadioButton)findViewById(R.id.RB_tutor);
+                final RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
 
-                TextView noDeviceName = (TextView)findViewById(R.id.TV_noDeviceName);
-                TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
+                final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
 
-                noDeviceName.setVisibility(View.GONE);
                 noTypeDevice.setVisibility(View.GONE);
 
-                if(tutor.isChecked()) Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1,"");
-                else if(tutelat.isChecked()){
-                    if(!deviceName.getText().toString().equals("")) Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0,deviceName.getText().toString());
-                    else{
-                        noDeviceName.setVisibility(View.VISIBLE);
-                    }
-                }
-                else{
-                    noTypeDevice.setVisibility(View.VISIBLE);
-                }
+                // Firebase token
+                final String TAG = "Firebase Token: ";
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.w(TAG, "getInstanceId failed", task.getException());
+                                    return;
+                                }
+
+                                // Get new Instance ID token
+                                String token = task.getResult().getToken();
+
+                                // Log and toast
+                                Log.d(TAG, token);
+
+                                if(tutor.isChecked()) {
+                                    Log.d(TAG, "TOKEN PASSAR: " + token);
+                                    Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1, token);
+                                }
+                                else if(tutelat.isChecked()){
+                                    Log.d(TAG, "TOKEN PASSAR: " + token);
+                                    Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0, token);
+                                }
+                                else{
+                                    noTypeDevice.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        });
             }
         });
 
@@ -74,71 +96,44 @@ public class Login extends AppCompatActivity {
                 Login.this.startActivity(new Intent(Login.this, Register.class));
             }
         });
-
-        RadioGroup RadioGroup = (RadioGroup)findViewById(R.id.RG_Tipus);
-
-        RadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int isChecked){
-                TextView TV_nomDisp = (TextView)findViewById(R.id.TV_nomDisp);
-                EditText PT_nomDisp = (EditText)findViewById(R.id.PT_nomDisp);
-                if(isChecked == R.id.RB_tutelat){
-                    TV_nomDisp.setVisibility(View.VISIBLE);
-                    PT_nomDisp.setVisibility((View.VISIBLE));
-                }
-                else {
-                    TV_nomDisp.setVisibility(View.INVISIBLE);
-                    PT_nomDisp.setVisibility((View.INVISIBLE));
-                }
-            }
-        });
     }
 
     // This method is called when the "Login" button is pressed in the Login fragment
-    public void checkCredentials(String username, String password, Integer tutor, String nomDevice) {
+    public void checkCredentials(String username, String password, Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
         ul.username = username;
         ul.password = password;
         ul.tutor = tutor;
-        ul.deviceName = nomDevice;
+        ul.token = token;
+
+        System.out.println(token);
 
         Call<User> call = mTodoService.login(ul);
+
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-
                 if (response.isSuccessful()) {
-//                    String TAG = "Firebase Token: ";
-//                    FirebaseInstanceId.getInstance().getInstanceId()
-//                            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
-//                                    if (!task.isSuccessful()) {
-//                                        Log.w(TAG, "getInstanceId failed", task.getException());
-//                                        return;
-//                                    }
-//
-//                                    // Get new Instance ID token
-//                                    String token = task.getResult().getToken();
-//
-//                                    // Log and toast
-//                                    Log.d(TAG, token);
-//                                    Call<String> call = ((TodoApp)Login.this.getApplication()).getAPI().sendToken(token);
-//                                    call.enqueue(new Callback<String>() {
-//                                        @Override
-//                                        public void onResponse(Call<String> call, Response<String> response) {
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void onFailure(Call<String> call, Throwable t) {
-//
-//                                        }
-//                                    });
-//                                }
-//                            });
-                    Login.this.startActivity(new Intent(Login.this, MainActivity.class));
-                    Login.this.finish();
+
+                    User usuari = response.body();
+
+                    if(usuari.tutor == 1 || usuari.existeix == 1) {
+                        Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                        Login.this.finish();
+                    }
+                    else{
+                        Bundle extras = new Bundle();
+
+                        extras.putSerializable("user", usuari);
+                        extras.putString("token", token);
+                        extras.putLong("id", usuari.id);
+
+                        Intent i = new Intent(Login.this,NomFill.class);
+                        i.putExtras(extras);
+
+                        Login.this.startActivity(i);
+                        Login.this.finish();
+                    }
                 } else {
                     Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                     toast.show();
