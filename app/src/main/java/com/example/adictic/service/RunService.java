@@ -13,19 +13,16 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.adictic.R;
 import com.example.adictic.activity.BlockActivity;
 import com.example.adictic.activity.MainActivity;
-import com.example.adictic.R;
 
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static android.content.ContentValues.TAG;
 
 public class RunService extends Service {
 
@@ -98,8 +95,6 @@ public class RunService extends Service {
             List<ActivityManager.RunningAppProcessInfo> tasks = am.getRunningAppProcesses();
             currentApp = tasks.get(0).processName;
         }
-
-        Log.e(TAG, "Current App in foreground is: " + currentApp);
 
         if(currentApp.equals("com.android.chrome")){
             Intent dialogIntent = new Intent(this, BlockActivity.class);
