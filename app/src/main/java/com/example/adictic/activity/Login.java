@@ -2,6 +2,7 @@ package com.example.adictic.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +23,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -118,8 +122,13 @@ public class Login extends AppCompatActivity {
                     User usuari = response.body();
 
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
-                        Login.this.startActivity(new Intent(Login.this, MainActivity.class));
-                        Login.this.finish();
+                            if(usuari.tutor==1){
+                                Intent i = new Intent(Login.this, MainActivity.class);
+                                i.putExtra("llistaFills",(Serializable) usuari.llista);
+                                Login.this.startActivity(i);
+                            }
+                            else Login.this.startActivity(new Intent(Login.this, MainActivityChild.class));
+                            Login.this.finish();
                     }
                     else{
                         Bundle extras = new Bundle();
