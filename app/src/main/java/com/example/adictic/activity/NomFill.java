@@ -190,7 +190,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
                                     NomFill.this.finish();
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
@@ -216,7 +216,9 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                    Intent i = new Intent(NomFill.this, MainActivityChild.class);
+                                    i.putExtra("idChild",Long.parseLong(response.body()));
+                                    NomFill.this.startActivity(i);
                                     NomFill.this.finish();
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);

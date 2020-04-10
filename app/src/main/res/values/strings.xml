@@ -59,4 +59,7 @@
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
     <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
 
+    <string name="childs">Fills:</string>
+    <string name="emptyList">No hi ha informació</string>
+
 </resources>

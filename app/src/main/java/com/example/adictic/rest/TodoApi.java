@@ -1,10 +1,13 @@
 package com.example.adictic.rest;
 
+import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.entity.VellFillLogin;
+
+import java.util.Collection;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -28,4 +31,10 @@ public interface TodoApi {
 
     @PUT("/users/{id}/child")
     Call<String> sendNewName(@Path("id") Long id, @Body NouFillLogin fill);
+
+    @GET("/usage/{id}/{xDays}")
+    Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
+
+    @POST("/usage/{id}")
+    Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
 }
