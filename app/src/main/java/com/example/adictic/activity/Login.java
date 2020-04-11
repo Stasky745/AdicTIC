@@ -18,6 +18,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -33,6 +34,8 @@ public class Login extends AppCompatActivity {
 
     TodoApi mTodoService;
     static Login login;
+
+    public static final String TAG = "Login";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,7 +110,7 @@ public class Login extends AppCompatActivity {
     }
 
     // This method is called when the "Login" button is pressed in the Login fragment
-    public void checkCredentials(String username, String password, Integer tutor, final String token) {
+    public void checkCredentials(String username, String password, final Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
         ul.username = username;
         ul.password = password;
@@ -125,9 +128,29 @@ public class Login extends AppCompatActivity {
 
                     User usuari = response.body();
 
-                    if(usuari.tutor == 1 || usuari.existeix == 1) {
-                        Login.this.startActivity(new Intent(Login.this, MainActivity.class));
-                        Login.this.finish();
+                    if(tutor == 1 || usuari.existeix == 1) {
+                        if(tutor == 0){
+                            if(!Funcions.isAdminPermissionsOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));
+                                Login.this.finish();
+                            }
+                            else if(!Funcions.isAppUsagePermissionOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, AppUsagePermActivity.class));
+                                Login.this.finish();
+                            }
+                            else if(!Funcions.isAccessibilitySettingsOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, AccessibilityPermActivity.class));
+                                Login.this.finish();
+                            }
+                            else{
+                                Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                                Login.this.finish();
+                            }
+                        }
+                        else{
+                            Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                            Login.this.finish();
+                        }
                     }
                     else{
                         Bundle extras = new Bundle();
@@ -136,7 +159,7 @@ public class Login extends AppCompatActivity {
                         extras.putString("token", token);
                         extras.putLong("id", usuari.id);
 
-                        Intent i = new Intent(Login.this,NomFill.class);
+                        Intent i = new Intent(Login.this, NomFill.class);
                         i.putExtras(extras);
 
                         Login.this.startActivity(i);

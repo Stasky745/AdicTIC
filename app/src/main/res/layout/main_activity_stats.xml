@@ -51,7 +51,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/bt_adminTests"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_totalUse" />
@@ -75,5 +76,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/TV_totalUse"
         app:layout_constraintStart_toEndOf="@+id/TV_totalUse"
         app:layout_constraintTop_toTopOf="@+id/TV_totalUse" />
+
+    <Button
+        android:id="@+id/bt_adminTests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
