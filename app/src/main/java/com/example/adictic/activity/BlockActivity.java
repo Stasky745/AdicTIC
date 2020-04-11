@@ -33,7 +33,7 @@ public class BlockActivity extends Activity {
         }
 
 
-        Button btn1 = (Button) findViewById(R.id.btn_sortir);
+        Button btn1 = findViewById(R.id.btn_sortir);
         btn1.setOnClickListener(new View.OnClickListener() {
 
             @Override

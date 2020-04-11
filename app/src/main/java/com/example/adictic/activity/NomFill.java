@@ -27,6 +27,7 @@ import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Global;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class NomFill extends AppCompatActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             convertView = inflter.inflate(R.layout.nom_fill_item,null);
 
-            TextView nom = (TextView) convertView.findViewById(R.id.TV_nomFill);
+            TextView nom = convertView.findViewById(R.id.TV_nomFill);
             oldColors = nom.getTextColors();
             nom.setText(llista.get(position).deviceName);
 
@@ -96,7 +97,7 @@ public class NomFill extends AppCompatActivity {
 
         final List<FillNom> llista = usuari.llista;
 
-        TextView tv = (TextView)findViewById(R.id.TV_fillsActuals);
+        TextView tv = findViewById(R.id.TV_fillsActuals);
         if(llista.isEmpty()){
             tv.setVisibility(GONE);
         }
@@ -104,9 +105,9 @@ public class NomFill extends AppCompatActivity {
             tv.setVisibility(VISIBLE);
         }
 
-        final EditText tv_nom = (EditText)findViewById(R.id.TXT_fillNou);
+        final EditText tv_nom = findViewById(R.id.TXT_fillNou);
 
-        final ListView listView = (ListView) findViewById(R.id.LST_nomsActuals);
+        final ListView listView = findViewById(R.id.LST_nomsActuals);
 
         mAdapter = new MyAdapter(llista);
         listView.setAdapter(mAdapter);
@@ -150,12 +151,12 @@ public class NomFill extends AppCompatActivity {
             }
         });
 
-        Button b_log = (Button)findViewById(R.id.BT_fillNou);
+        Button b_log = findViewById(R.id.BT_fillNou);
 
         b_log.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                TextView TV_errorNoName = (TextView)findViewById(R.id.TV_errorNoName);
+                TextView TV_errorNoName = findViewById(R.id.TV_errorNoName);
                 TV_errorNoName.setVisibility(GONE);
 
                 if(tv_nom.getText().toString().equals("")){
@@ -190,7 +191,8 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
+                                    Global.ID = idParent;
+                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
                                     NomFill.this.finish();
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
@@ -216,8 +218,8 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    Intent i = new Intent(NomFill.this, MainActivityChild.class);
-                                    i.putExtra("idChild",Long.parseLong(response.body()));
+                                    Global.ID = idParent;
+                                    Intent i = new Intent(NomFill.this, NavActivity.class);
                                     NomFill.this.startActivity(i);
                                     NomFill.this.finish();
                                 } else {

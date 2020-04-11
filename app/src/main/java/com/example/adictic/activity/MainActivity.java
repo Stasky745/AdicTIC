@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
             }
             mPackageStats.addAll(map.values());
 
-            TextView TV_totalUse = (TextView)findViewById(R.id.TV_totalUseVar);
+            TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
 
             // Set colours according to total time spent
             if(totalTime <= xDays*CORRECT_USAGE_DAY) TV_totalUse.setTextColor(Color.GREEN);
@@ -233,11 +233,11 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 // Creates a ViewHolder and store references to the two children views
                 // we want to bind data to.
                 holder = new AppViewHolder();
-                holder.pkgName = (TextView) convertView.findViewById(R.id.package_name);
-                holder.lastTimeUsed = (TextView) convertView.findViewById(R.id.last_time_used);
-                holder.usageTime = (TextView) convertView.findViewById(R.id.usage_time);
+                holder.pkgName = convertView.findViewById(R.id.package_name);
+                holder.lastTimeUsed = convertView.findViewById(R.id.last_time_used);
+                holder.usageTime = convertView.findViewById(R.id.usage_time);
 
-                holder.icon = (ImageView) convertView.findViewById(R.id.usage_icon);
+                holder.icon = convertView.findViewById(R.id.usage_icon);
                 convertView.setTag(holder);
             } else {
                 // Get the ViewHolder back to get fast access to the TextView
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 }
             }
 
-            TextView TV_totalUse = (TextView)findViewById(R.id.TV_totalUseVar);
+            TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
 
             // Set colours according to total time spent
             if(totalTime <= xDays*CORRECT_USAGE_DAY) TV_totalUse.setTextColor(Color.GREEN);
@@ -438,11 +438,11 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 // Creates a ViewHolder and store references to the two children views
                 // we want to bind data to.
                 holder = new AppViewHolder();
-                holder.pkgName = (TextView) convertView.findViewById(R.id.package_name);
-                holder.lastTimeUsed = (TextView) convertView.findViewById(R.id.last_time_used);
-                holder.usageTime = (TextView) convertView.findViewById(R.id.usage_time);
+                holder.pkgName = convertView.findViewById(R.id.package_name);
+                holder.lastTimeUsed = convertView.findViewById(R.id.last_time_used);
+                holder.usageTime = convertView.findViewById(R.id.usage_time);
 
-                holder.icon = (ImageView) convertView.findViewById(R.id.usage_icon);
+                holder.icon = convertView.findViewById(R.id.usage_icon);
                 convertView.setTag(holder);
             } else {
                 // Get the ViewHolder back to get fast access to the TextView
@@ -535,7 +535,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
-        Spinner spinner = (Spinner)findViewById(R.id.SP_XDays);
+        Spinner spinner = findViewById(R.id.SP_XDays);
         Resources res = getResources();
         String[] items = res.getStringArray(R.array.spinner_xDays);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
@@ -547,10 +547,10 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPm = getPackageManager();
 
-        Spinner typeSpinner = (Spinner) findViewById(R.id.typeSpinner);
+        Spinner typeSpinner = findViewById(R.id.typeSpinner);
         typeSpinner.setOnItemSelectedListener(this);
 
-        ListView listView = (ListView) findViewById(R.id.pkg_list);
+        ListView listView = findViewById(R.id.pkg_list);
 //        mAdapter = new UsageStatsAdapter();
 //        listView.setAdapter(mAdapter);
 
@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         if(fills != null && !fills.isEmpty()) {
             List<String> fillsEntries = new ArrayList<>();
             for (FillNom fill : fills) fillsEntries.add(fill.deviceName);
-            Spinner fillsSpinner = (Spinner) findViewById(R.id.sonsSpinner);
+            Spinner fillsSpinner = findViewById(R.id.sonsSpinner);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, fillsEntries);
             arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             fillsSpinner.setAdapter(arrayAdapter);
@@ -570,8 +570,8 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                     call.enqueue(new Callback<Collection<GeneralUsage>>() {
                         @Override
                         public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
-                            TextView emptyView = (TextView) findViewById(R.id.TV_emptyList);
-                            ListView listView = (ListView) findViewById(R.id.pkg_list);
+                            TextView emptyView = findViewById(R.id.TV_emptyList);
+                            ListView listView = findViewById(R.id.pkg_list);
                             if (response.isSuccessful() && response.body()!=null && !response.body().isEmpty()) {
                                 listView.setVisibility(View.VISIBLE);
                                 emptyView.setVisibility(View.GONE);
@@ -622,7 +622,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                     break;
             }
 
-            ListView listView = (ListView) findViewById(R.id.pkg_list);
+            ListView listView = findViewById(R.id.pkg_list);
             mAdapter = new UsageStatsAdapter();
             listView.setAdapter(mAdapter);
         }

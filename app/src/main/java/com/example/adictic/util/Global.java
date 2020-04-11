@@ -17,6 +17,9 @@ public class Global {
     public static final int RQ_DELETE_POST = 3;
     public static final int RQ_GALLERY = 3;
 
+    public static long ID = -1;
+    public static int tutor = 0;
+
     // IMPORTANT: you have to change the value of BASE_URL_PORTFORWARDING when deploying the app
     // OPENSHIFT
     // public static final String BASE_URL_PORTFORWARDING = "https://project2-pdsudg.rhcloud.com";
