@@ -20,6 +20,9 @@ public interface TodoApi {
     @POST("/users/login")
     Call<User> login(@Body UserLogin login);
 
+    @POST("/users/logout")
+    Call<String> logout();
+
     @GET("/users/check")
     Call<String> check();
 

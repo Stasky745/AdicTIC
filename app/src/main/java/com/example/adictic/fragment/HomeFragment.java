@@ -1,4 +1,4 @@
-package com.example.adictic.activity;
+package com.example.adictic.fragment;
 
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -18,7 +17,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -28,42 +26,33 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.MainActivityChild;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.service.AppUsageWorker;
-import com.google.android.material.navigation.NavigationView;
+import com.example.adictic.util.Global;
 
 import java.text.DateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivityChild extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class HomeFragment extends Fragment {
+
     private static final String TAG = "UsageStatsActivity";
     private static final boolean localLOGV = false;
     private UsageStatsManager mUsageStatsManager;
@@ -79,42 +68,96 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
     private float CORRECT_USAGE_DAY = 3;
     private float DANGEROUS_USAGE_DAY = 6;
 
-    public static class AppNameComparator implements Comparator<UsageStats> {
-        private Map<String, String> mAppLabelList;
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
 
-        AppNameComparator(Map<String, String> appList) {
-            mAppLabelList = appList;
-        }
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        Spinner spinner = root.findViewById(R.id.SP_XDays);
+        Resources res = getResources();
+        String[] items = res.getStringArray(R.array.spinner_xDays);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, items);
+        spinner.setAdapter(adapter);
+        //spinner.setOnItemSelectedListener(this);
+        final TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
 
-        @Override
-        public final int compare(UsageStats a, UsageStats b) {
-            String alabel = mAppLabelList.get(a.getPackageName());
-            String blabel = mAppLabelList.get(b.getPackageName());
-            return alabel.compareTo(blabel);
-        }
-    }
+        Button pujarInfo = root.findViewById(R.id.Debug_PujarInfo);
+        pujarInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-    public static class LastTimeUsedComparator implements Comparator<UsageStats> {
-        @Override
-        public final int compare(UsageStats a, UsageStats b) {
-            // return by descending order
-            return (int)(b.getLastTimeUsed() - a.getLastTimeUsed());
-        }
-    }
+                List<GeneralUsage> gul = new ArrayList<>();
+                List<UsageStats> stats;
+                for (int i = 0; i < xDays; i++) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(Calendar.HOUR_OF_DAY, 23);
+                    cal.set(Calendar.MINUTE, 59);
+                    cal.set(Calendar.SECOND, 59);
+                    cal.add(Calendar.DAY_OF_YEAR, -i);
+                    System.out.println(cal.getTime());
 
-    public static class UsageTimeComparator implements Comparator<UsageStats> {
-        @Override
-        public final int compare(UsageStats a, UsageStats b) {
-            return (int)(b.getTotalTimeInForeground() - a.getTotalTimeInForeground());
-        }
-    }
+                    Calendar cal2 = Calendar.getInstance();
+                    cal2.add(Calendar.DAY_OF_YEAR, -i);
+                    cal2.set(Calendar.HOUR_OF_DAY, 0);
+                    cal2.set(Calendar.MINUTE, 0);
+                    cal2.set(Calendar.SECOND, 0);
+                    System.out.println(cal2.getTime());
+                    stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
+                            cal2.getTimeInMillis(), cal.getTimeInMillis());
 
-    // View Holder used when displaying views
-    static class AppViewHolder {
-        TextView pkgName;
-        TextView lastTimeUsed;
-        TextView usageTime;
-        ImageView icon;
+                    List<AppUsage> appUsages = new ArrayList<>();
+                    final int statCount = stats.size();
+                    for (int j = 0; j < statCount; j++) {
+                        final android.app.usage.UsageStats pkgStats = stats.get(j);
+                        ApplicationInfo appInfo = null;
+                        try {
+                            appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                            AppUsage appUsage = new AppUsage();
+                            appUsage.appName = pkgStats.getPackageName();
+                            appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
+                            appUsage.totalTime = pkgStats.getTotalTimeInForeground();
+                            appUsages.add(appUsage);
+                        }
+                    }
+                    GeneralUsage gu = new GeneralUsage();
+                    gu.day = cal.get(Calendar.DAY_OF_MONTH);
+                    gu.month = cal.get(Calendar.MONTH) + 1;
+                    gu.year = cal.get(Calendar.YEAR);
+                    gu.usage = appUsages;
+                    gul.add(gu);
+                }
+
+                Call<String> call = mTodoService.sendAppUsage(Global.ID, gul);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+            }
+        });
+
+        mUsageStatsManager = (UsageStatsManager) getActivity().getSystemService(Context.USAGE_STATS_SERVICE);
+        requestPermissions();
+        mInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mPm =  getActivity().getPackageManager();
+
+        Spinner typeSpinner = root.findViewById(R.id.typeSpinner);
+        //typeSpinner.setOnItemSelectedListener(getContext());
+
+        ListView listView = root.findViewById(R.id.pkg_list);
+        mAdapter = new UsageStatsAdapter(root);
+        listView.setAdapter(mAdapter);
+
+        return root;
     }
 
     class UsageStatsAdapter extends BaseAdapter {
@@ -124,16 +167,16 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
         private int mDisplayOrder = _DISPLAY_ORDER_USAGE_TIME;
-        private LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
-        private UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
-        private AppNameComparator mAppLabelComparator;
+        private MainActivityChild.LastTimeUsedComparator mLastTimeUsedComparator = new MainActivityChild.LastTimeUsedComparator();
+        private MainActivityChild.UsageTimeComparator mUsageTimeComparator = new MainActivityChild.UsageTimeComparator();
+        private MainActivityChild.AppNameComparator mAppLabelComparator;
         private final ArrayMap<String, String> mAppLabelMap = new ArrayMap<>();
         private final ArrayList<UsageStats> mPackageStats = new ArrayList<>();
         private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
         private long totalTime = 0;
 
-        UsageStatsAdapter() {
+        UsageStatsAdapter(View root) {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DAY_OF_YEAR, -xDays);
 
@@ -153,7 +196,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                 try {
                     ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
                     if(pkgStats.getTotalTimeInForeground()>5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.getPackageName());
+                        Drawable appIcon = getActivity().getPackageManager().getApplicationIcon(pkgStats.getPackageName());
                         String label = appInfo.loadLabel(mPm).toString();
                         mAppLabelMap.put(pkgStats.getPackageName(), label);
 
@@ -169,13 +212,13 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                         }
                     }
 
-                } catch (NameNotFoundException e) {
+                } catch (PackageManager.NameNotFoundException e) {
                     // This package may be gone.
                 }
             }
             mPackageStats.addAll(map.values());
 
-            TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
+            TextView TV_totalUse = root.findViewById(R.id.TV_totalUseVar);
 
             // Set colours according to total time spent
             if(totalTime <= xDays*CORRECT_USAGE_DAY) TV_totalUse.setTextColor(Color.GREEN);
@@ -210,7 +253,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
             }
 
             // Sort list
-            mAppLabelComparator = new AppNameComparator(mAppLabelMap);
+            //mAppLabelComparator = new MainActivityChild.AppNameComparator(mAppLabelMap);
             sortList();
         }
 
@@ -330,149 +373,11 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         }
     }
 
-    /** Called when the activity is first created. */
-    @Override
-    protected void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        //startService(new Intent(this, RunService.class));
-
-        setContentView(R.layout.main_activity_stats_child);
-
-        Spinner spinner = findViewById(R.id.SP_XDays);
-        Resources res = getResources();
-        String[] items = res.getStringArray(R.array.spinner_xDays);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-
-
-        Button pujarInfo = findViewById(R.id.Debug_PujarInfo);
-        pujarInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
-                List<GeneralUsage> gul = new ArrayList<>();
-                List<UsageStats> stats;
-                for (int i = 0; i < xDays; i++) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.HOUR_OF_DAY, 23);
-                    cal.set(Calendar.MINUTE, 59);
-                    cal.set(Calendar.SECOND, 59);
-                    cal.add(Calendar.DAY_OF_YEAR, -i);
-                    System.out.println(cal.getTime());
-
-                    Calendar cal2 = Calendar.getInstance();
-                    cal2.add(Calendar.DAY_OF_YEAR, -i);
-                    cal2.set(Calendar.HOUR_OF_DAY, 0);
-                    cal2.set(Calendar.MINUTE, 0);
-                    cal2.set(Calendar.SECOND, 0);
-                    System.out.println(cal2.getTime());
-                    stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                            cal2.getTimeInMillis(), cal.getTimeInMillis());
-
-                    List<AppUsage> appUsages = new ArrayList<>();
-                    final int statCount = stats.size();
-                    for (int j = 0; j < statCount; j++) {
-                        final android.app.usage.UsageStats pkgStats = stats.get(j);
-                        ApplicationInfo appInfo = null;
-                        try {
-                            appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                        } catch (NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                            AppUsage appUsage = new AppUsage();
-                            appUsage.appName = pkgStats.getPackageName();
-                            appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
-                            appUsage.totalTime = pkgStats.getTotalTimeInForeground();
-                            appUsages.add(appUsage);
-                        }
-                    }
-                    GeneralUsage gu = new GeneralUsage();
-                    gu.day = cal.get(Calendar.DAY_OF_MONTH);
-                    gu.month = cal.get(Calendar.MONTH) + 1;
-                    gu.year = cal.get(Calendar.YEAR);
-                    gu.usage = appUsages;
-                    gul.add(gu);
-                }
-
-                Call<String> call = mTodoService.sendAppUsage(getIntent().getLongExtra("idChild",-1),gul);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                            Toast toast = Toast.makeText(MainActivityChild.this, "Suuuuuuu", Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast toast = Toast.makeText(MainActivityChild.this, "Error al enviar appUsage", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                });
-
-                Constraints constraints =
-                        new Constraints.Builder()
-                                .setRequiredNetworkType(NetworkType.CONNECTED)
-                                .build();
-
-                PeriodicWorkRequest myWork =
-                        new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
-                                .setConstraints(constraints)
-                                .build();
-
-                WorkManager.getInstance()
-                        .enqueueUniquePeriodicWork("jobTag", ExistingPeriodicWorkPolicy.KEEP, myWork);
-
-            }
-        });
-
-        mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-        requestPermissions();
-        mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mPm = getPackageManager();
-
-        Spinner typeSpinner = findViewById(R.id.typeSpinner);
-        typeSpinner.setOnItemSelectedListener(this);
-
-        ListView listView = findViewById(R.id.pkg_list);
-        mAdapter = new UsageStatsAdapter();
-        listView.setAdapter(mAdapter);
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(parent.getId() == R.id.typeSpinner) mAdapter.sortList(position);
-        else if(parent.getId() == R.id.SP_XDays){
-            switch(position){
-                case 0:
-                    xDays = 1;
-                    break;
-                case 1:
-                    xDays = 3;
-                    break;
-                case 2:
-                    xDays = 5;
-                    break;
-                case 3:
-                    xDays = 7;
-                    break;
-                case 4:
-                    xDays = 10;
-                    break;
-            }
-
-            ListView listView = findViewById(R.id.pkg_list);
-            mAdapter = new UsageStatsAdapter();
-            listView.setAdapter(mAdapter);
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // do nothing
+    static class AppViewHolder {
+        TextView pkgName;
+        TextView lastTimeUsed;
+        TextView usageTime;
+        ImageView icon;
     }
 
     private void requestPermissions() {
@@ -483,5 +388,4 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
         }
     }
-
 }
