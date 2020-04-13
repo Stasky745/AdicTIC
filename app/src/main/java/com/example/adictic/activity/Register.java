@@ -32,17 +32,17 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.register);
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
-        Button b_reg = (Button)Register.this.findViewById(R.id.register_button);
+        Button b_reg = Register.this.findViewById(R.id.register_button);
         // This is the listener that will be used when the user presses the "Register" button
         b_reg.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                EditText u = (EditText) Register.this.findViewById(R.id.register_username);
-                EditText p1 = (EditText) Register.this.findViewById(R.id.register_password1);
-                EditText p2 = (EditText) Register.this.findViewById(R.id.register_password2);
-                EditText e = (EditText) Register.this.findViewById(R.id.register_email);
+                EditText u = Register.this.findViewById(R.id.register_username);
+                EditText p1 = Register.this.findViewById(R.id.register_password1);
+                EditText p2 = Register.this.findViewById(R.id.register_password2);
+                EditText e = Register.this.findViewById(R.id.register_email);
 
-                TextView noValidEmail = (TextView) Register.this.findViewById(R.id.TV_noValidEmail);
-                TextView noPwMatch = (TextView) Register.this.findViewById(R.id.TV_NoPwMatch);
+                TextView noValidEmail = Register.this.findViewById(R.id.TV_noValidEmail);
+                TextView noPwMatch = Register.this.findViewById(R.id.TV_NoPwMatch);
 
                 noValidEmail.setVisibility(GONE);
                 noPwMatch.setVisibility(GONE);
@@ -64,7 +64,7 @@ public class Register extends AppCompatActivity {
             }
         });
 
-        TextView b_login = (TextView)findViewById(R.id.TV_login);
+        TextView b_login = findViewById(R.id.TV_login);
         // This is the listener that will be used when the user presses the "Register" button
         b_login.setOnClickListener(new View.OnClickListener() {
             @Override
