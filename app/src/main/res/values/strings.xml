@@ -15,7 +15,6 @@
     <string name="appusage_pem_intent">"Donar permisos d'ús de dades a aquesta aplicació permet el següent:"</string>
 
     <!-- Strings in DevicePolicyAdmin -->
-    <string name="action_settings">Settings</string>
     <string name="device_admin">AdicTIC Device Admin</string>
     <string name="device_admin_description">"AdicTIC necessita permissos d'administrador per evitar que es desinstal·li l'aplicació, i poder bloquejar el dispositiu quan es requereixi."</string>
 
@@ -216,6 +215,13 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
+    <string name="free_time">"Temps lliure"</string>
+    <string name="block_device">"Bloquejar dispositiu"</string>
+    <string name="disconnected">"Desconnectat"</string>
+    <string name="informe">"Informe"</string>
+    <string name="horaris">"Horaris"</string>
+    <string name="block_apps">"Bloqueig d'aplicacions"</string>
+    <string name="Notifications">"Notificacions"</string>
     <string name="home_second">Home Second</string>
 
     <string name="logout">Tancar Sessió</string>
