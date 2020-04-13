@@ -18,6 +18,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Global;
 import com.example.adictic.util.Funcions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,16 +46,15 @@ public class Login extends AppCompatActivity {
 
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
-        Button b_log = (Button)findViewById(R.id.login_button);
-        TextView b_reg = (TextView)findViewById(R.id.TV_register);
+        Button b_log = findViewById(R.id.login_button);
+        TextView b_reg = findViewById(R.id.TV_register);
         // This is the listener that will be used when the user presses the "Login" button
         b_log.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                final EditText u = (EditText) Login.this.findViewById(R.id.login_username);
-                final EditText p = (EditText) Login.this.findViewById(R.id.login_password);
-                final RadioButton tutor = (RadioButton)findViewById(R.id.RB_tutor);
-                final RadioButton tutelat = (RadioButton)findViewById(R.id.RB_tutelat);
-
+                final EditText u = Login.this.findViewById(R.id.login_username);
+                final EditText p = Login.this.findViewById(R.id.login_password);
+                final RadioButton tutor = findViewById(R.id.RB_tutor);
+                final RadioButton tutelat = findViewById(R.id.RB_tutelat);
                 final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
                 final TextView noUsername = (TextView)findViewById(R.id.TV_noUsername);
 
@@ -128,7 +128,9 @@ public class Login extends AppCompatActivity {
 
                     User usuari = response.body();
 
-                    if(tutor == 1 || usuari.existeix == 1) {
+                    if(usuari.tutor == 1 || usuari.existeix == 1) {
+                        Global.tutor = usuari.tutor;
+                        Global.ID = usuari.id;
                         if(tutor == 0){
                             if(!Funcions.isAdminPermissionsOn(Login.this)){
                                 Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));

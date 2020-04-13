@@ -36,7 +36,7 @@ public class SplashScreen extends AppCompatActivity {
             public void onResponse(Call<String> call, Response<String> response) {
 
                 if (response.isSuccessful()) {
-                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                 } else {
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                 }
