@@ -27,7 +27,7 @@ public interface TodoApi {
     Call<String> check();
 
     @POST("/users/register")
-    Call<User> register(@Body UserRegister register);
+    Call<String> register(@Body UserRegister register);
 
     @POST("/users/{id}/child")
     Call<String> sendOldName(@Path("id") Long id, @Body VellFillLogin fill);

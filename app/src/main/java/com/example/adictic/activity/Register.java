@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
-import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.rest.TodoApi;
 
@@ -87,41 +86,12 @@ public class Register extends AppCompatActivity {
         ul.username = username;
         ul.password = password;
         ul.email = email;
-        Call<User> call = mTodoService.register(ul);
-        call.enqueue(new Callback<User>() {
+        Call<String> call = mTodoService.register(ul);
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
 
                 if (response.isSuccessful()) {
-//                    String TAG = "Firebase Token: ";
-//                    FirebaseInstanceId.getInstance().getInstanceId()
-//                            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
-//                                    if (!task.isSuccessful()) {
-//                                        Log.w(TAG, "getInstanceId failed", task.getException());
-//                                        return;
-//                                    }
-//
-//                                    // Get new Instance ID token
-//                                    String token = task.getResult().getToken();
-//
-//                                    // Log and toast
-//                                    Log.d(TAG, token);
-//                                    Call<String> call = ((TodoApp)Register.this.getApplication()).getAPI().sendToken(token);
-//                                    call.enqueue(new Callback<String>() {
-//                                        @Override
-//                                        public void onResponse(Call<String> call, Response<String> response) {
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void onFailure(Call<String> call, Throwable t) {
-//
-//                                        }
-//                                    });
-//                                }
-//                            });
                     Register.this.startActivity(new Intent(Register.this, Login.class));
                     Login.getInstance().finish();
                     Toast toast = Toast.makeText(Register.this, getString(R.string.good_register), Toast.LENGTH_SHORT);
@@ -133,7 +103,7 @@ public class Register extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
                 Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);
                 toast.show();
             }
