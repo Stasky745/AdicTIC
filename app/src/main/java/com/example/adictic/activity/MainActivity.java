@@ -10,6 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -125,10 +126,29 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         UsageStatsAdapter() {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DAY_OF_YEAR, -xDays);
+            cal.set(Calendar.HOUR_OF_DAY,23);
+            cal.set(Calendar.MINUTE,59);
+            cal.set(Calendar.SECOND,59);
+
+            Calendar cal2 = Calendar.getInstance();
+            cal2.add(Calendar.DAY_OF_YEAR, -xDays);
+            cal2.set(Calendar.HOUR_OF_DAY,0);
+            cal2.set(Calendar.MINUTE,0);
+            cal2.set(Calendar.SECOND,0);
+
+//            final List<UsageStats> stats =
+//                    mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
+//                            cal.getTimeInMillis(), System.currentTimeMillis());
+//            if (stats == null) {
+//                return;
+//            }
+
+            System.out.println("CAL 1: " + cal.getTimeInMillis());
+            System.out.println("CAL 2: " + cal2.getTimeInMillis());
 
             final List<UsageStats> stats =
                     mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                            cal.getTimeInMillis(), System.currentTimeMillis());
+                            cal2.getTimeInMillis(), cal.getTimeInMillis());
             if (stats == null) {
                 return;
             }
@@ -529,8 +549,6 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        //startService(new Intent(this, RunService.class));
-
         setContentView(R.layout.main_activity_stats);
 
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
@@ -543,7 +561,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
         spinner.setOnItemSelectedListener(this);
 
         mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-        requestPermissions();
+        //requestPermissions();
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mPm = getPackageManager();
 

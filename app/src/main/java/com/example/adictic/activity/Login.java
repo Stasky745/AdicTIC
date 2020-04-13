@@ -19,6 +19,7 @@ import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
+import com.example.adictic.util.Funcions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -34,6 +35,8 @@ public class Login extends AppCompatActivity {
 
     TodoApi mTodoService;
     static Login login;
+
+    public static final String TAG = "Login";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,8 +55,15 @@ public class Login extends AppCompatActivity {
                 final EditText p = Login.this.findViewById(R.id.login_password);
                 final RadioButton tutor = findViewById(R.id.RB_tutor);
                 final RadioButton tutelat = findViewById(R.id.RB_tutelat);
+                final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
+                final TextView noUsername = (TextView)findViewById(R.id.TV_noUsername);
 
-                final TextView noTypeDevice = findViewById(R.id.TV_noTypeDevice);
+                if(u.getText().length() == 0) noUsername.setVisibility(View.VISIBLE);
+                else noUsername.setVisibility(View.GONE);
+
+                TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
+
+                errorPw.setVisibility(View.GONE);
 
                 noTypeDevice.setVisibility(View.GONE);
 
@@ -100,7 +110,7 @@ public class Login extends AppCompatActivity {
     }
 
     // This method is called when the "Login" button is pressed in the Login fragment
-    public void checkCredentials(String username, String password, Integer tutor, final String token) {
+    public void checkCredentials(String username, String password, final Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
         ul.username = username;
         ul.password = password;
@@ -121,8 +131,28 @@ public class Login extends AppCompatActivity {
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
                         Global.tutor = usuari.tutor;
                         Global.ID = usuari.id;
-                        Login.this.startActivity(new Intent(Login.this, NavActivity.class));
-                        Login.this.finish();
+                        if(tutor == 0){
+                            if(!Funcions.isAdminPermissionsOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));
+                                Login.this.finish();
+                            }
+                            else if(!Funcions.isAppUsagePermissionOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, AppUsagePermActivity.class));
+                                Login.this.finish();
+                            }
+                            else if(!Funcions.isAccessibilitySettingsOn(Login.this)){
+                                Login.this.startActivity(new Intent(Login.this, AccessibilityPermActivity.class));
+                                Login.this.finish();
+                            }
+                            else{
+                                Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                                Login.this.finish();
+                            }
+                        }
+                        else{
+                            Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                            Login.this.finish();
+                        }
                     }
                     else{
                         Bundle extras = new Bundle();
@@ -131,15 +161,16 @@ public class Login extends AppCompatActivity {
                         extras.putString("token", token);
                         extras.putLong("id", usuari.id);
 
-                        Intent i = new Intent(Login.this,NomFill.class);
+                        Intent i = new Intent(Login.this, NomFill.class);
                         i.putExtras(extras);
 
                         Login.this.startActivity(i);
                         Login.this.finish();
                     }
                 } else {
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                    toast.show();
+                    TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
+
+                    errorPw.setVisibility(View.VISIBLE);
                 }
             }
 

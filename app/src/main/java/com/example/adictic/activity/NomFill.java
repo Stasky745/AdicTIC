@@ -28,6 +28,7 @@ import com.example.adictic.entity.User;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
+import com.example.adictic.util.Funcions;
 
 import java.util.List;
 
@@ -192,8 +193,22 @@ public class NomFill extends AppCompatActivity {
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
                                     Global.ID = idParent;
-                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                    NomFill.this.finish();
+                                    if(!Funcions.isAdminPermissionsOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else if(!Funcions.isAppUsagePermissionOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else if(!Funcions.isAccessibilitySettingsOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else{
+                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                        NomFill.this.finish();
+                                    }
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                     toast.show();
@@ -219,9 +234,22 @@ public class NomFill extends AppCompatActivity {
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
                                     Global.ID = idParent;
-                                    Intent i = new Intent(NomFill.this, NavActivity.class);
-                                    NomFill.this.startActivity(i);
-                                    NomFill.this.finish();
+                                    if(!Funcions.isAdminPermissionsOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else if(!Funcions.isAppUsagePermissionOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else if(!Funcions.isAccessibilitySettingsOn(NomFill.this)){
+                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                        NomFill.this.finish();
+                                    }
+                                    else{
+                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                        NomFill.this.finish();
+                                    }
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                     toast.show();
