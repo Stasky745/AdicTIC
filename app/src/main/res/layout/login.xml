@@ -21,7 +21,7 @@
         android:layout_marginTop="24dp"
         android:text="@string/password"
         app:layout_constraintStart_toStartOf="@+id/login_password"
-        app:layout_constraintTop_toBottomOf="@+id/login_username" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_noUsername" />
 
     <EditText
         android:id="@+id/login_username"
@@ -143,5 +143,29 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/RG_Tipus"
         app:layout_constraintStart_toStartOf="@+id/login_password" />
+
+    <TextView
+        android:id="@+id/TV_noUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/error_noUsername"
+        android:textColor="#F44336"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_username" />
+
+    <TextView
+        android:id="@+id/TV_noPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/error_password"
+        android:textColor="#F44336"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_password" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
