@@ -11,6 +11,9 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.util.Global;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
@@ -44,14 +47,21 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
-                if (isActivity) {
+                if (isActivity){
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentActivity", componentName.getPackageName());
 
-                    if (componentName.getPackageName().equals("com.google.android.youtube")) {
+                    if (Global.blockedApps.contains(componentName.getPackageName())) {
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
+                    }
+                    else if(Global.tutorAvailable && Global.tutorToken != null){
+                        FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                        fm.send(new RemoteMessage.Builder(Global.tutorToken + "@fcm.googleapis.com")
+                                .addData("Code", "sendCurrentApp")
+                                .addData("App", componentName.getPackageName())
+                                .build());
                     }
                 }
             }

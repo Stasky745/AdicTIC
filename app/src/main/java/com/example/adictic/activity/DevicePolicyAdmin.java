@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.example.adictic.R;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.Global;
 
 public class DevicePolicyAdmin extends Activity {
 
@@ -24,17 +23,20 @@ public class DevicePolicyAdmin extends Activity {
     private Button bt_okay;
     protected static final int REQUEST_ENABLE = 1;
 
+    ComponentName mDPAdmin;
+    DevicePolicyManager mDPM;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_perm_info);
-        Global.mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-        Global.mDPAdmin = new ComponentName(this,
+        mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mDPAdmin = new ComponentName(this,
                 MyDevicePolicyReceiver.class);
 
-        System.out.println("mDPM: " + Global.mDPM);
-        System.out.println("mDPAdmin: " + Global.mDPAdmin);
+        System.out.println("mDPM: " + mDPM);
+        System.out.println("mDPAdmin: " + mDPAdmin);
 
         bt_okay = (Button)findViewById(R.id.BT_okAdminPerm);
 
@@ -45,7 +47,7 @@ public class DevicePolicyAdmin extends Activity {
                         DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                 intent.putExtra(
                         DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        Global.mDPAdmin);
+                        mDPAdmin);
                 intent.putExtra(
                         DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                         getString(R.string.admin_pem_intent));
@@ -67,7 +69,7 @@ public class DevicePolicyAdmin extends Activity {
                         DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                 intent.putExtra(
                         DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        Global.mDPAdmin);
+                        mDPAdmin);
                 intent.putExtra(
                         DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                         getString(R.string.admin_pem_intent));
