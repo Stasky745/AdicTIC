@@ -14,7 +14,7 @@
         app:layout_constraintGuide_percent="0.07" />
 
     <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
+        android:id="@+id/HSV_mainParent"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
@@ -23,18 +23,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/HSV_mainParent_LL"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical" />
     </HorizontalScrollView>
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/BT_FreeTime"
@@ -75,6 +68,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:clickable="true"
+        android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -85,6 +80,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:clickable="true"
+        android:focusable="auto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline11"
         app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -95,6 +92,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:clickable="true"
+        android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_Informe"
@@ -105,9 +104,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
+        android:clickable="true"
+        android:focusable="auto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline11"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/TV_Horaris"
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <TextView
@@ -115,6 +116,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="auto"
         android:text="@string/informe"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/IV_Informe"
@@ -132,20 +135,24 @@
         app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/TV_Horaris"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="auto"
         android:text="@string/horaris"
         app:layout_constraintEnd_toEndOf="@+id/IV_Horaris"
         app:layout_constraintStart_toStartOf="@+id/IV_Horaris"
         app:layout_constraintTop_toBottomOf="@+id/IV_Horaris" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/TV_BlockApps"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="auto"
         android:text="@string/block_apps"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/IV_BlockApps"
@@ -153,10 +160,12 @@
         app:layout_constraintTop_toBottomOf="@+id/IV_BlockApps" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/TV_Notificacions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:focusable="auto"
         android:text="@string/Notifications"
         app:layout_constraintEnd_toEndOf="@+id/IV_Notifications"
         app:layout_constraintStart_toStartOf="@+id/IV_Notifications"
