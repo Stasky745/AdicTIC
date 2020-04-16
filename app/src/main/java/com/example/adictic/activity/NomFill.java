@@ -206,7 +206,7 @@ public class NomFill extends AppCompatActivity {
                                         NomFill.this.finish();
                                     }
                                     else{
-                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
                                         NomFill.this.finish();
                                     }
                                 } else {
@@ -247,7 +247,7 @@ public class NomFill extends AppCompatActivity {
                                         NomFill.this.finish();
                                     }
                                     else{
-                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivity.class));
+                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
                                         NomFill.this.finish();
                                     }
                                 } else {

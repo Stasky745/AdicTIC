@@ -127,10 +127,10 @@ public class Login extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     User usuari = response.body();
-
+                    Global.tutor = usuari.tutor;
+                    Global.ID = usuari.id;
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
-                        Global.tutor = usuari.tutor;
-                        Global.ID = usuari.id;
+
                         if(tutor == 0){
                             if(!Funcions.isAdminPermissionsOn(Login.this)){
                                 Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));
@@ -145,12 +145,12 @@ public class Login extends AppCompatActivity {
                                 Login.this.finish();
                             }
                             else{
-                                Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                                Login.this.startActivity(new Intent(Login.this, NavActivity.class));
                                 Login.this.finish();
                             }
                         }
                         else{
-                            Login.this.startActivity(new Intent(Login.this, MainActivity.class));
+                            Login.this.startActivity(new Intent(Login.this, NavActivity.class));
                             Login.this.finish();
                         }
                     }

@@ -44,15 +44,16 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
-                if (isActivity)
+                if (isActivity) {
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentActivity", componentName.getPackageName());
 
-                    if(componentName.getPackageName().equals("com.google.android.youtube")){
+                    if (componentName.getPackageName().equals("com.google.android.youtube")) {
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
+                }
             }
         }
     }

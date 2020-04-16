@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Global;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,12 +32,14 @@ public class SplashScreen extends AppCompatActivity {
 
         TodoApi todoApi = ((TodoApp) this.getApplication()).getAPI();
 
-        Call<String> call = todoApi.check();
-        call.enqueue(new Callback<String>() {
+        Call<User> call = todoApi.check();
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
 
                 if (response.isSuccessful()) {
+                    Global.ID = response.body().id;
+                    Global.tutor = response.body().tutor;
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                 } else {
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
@@ -43,7 +47,7 @@ public class SplashScreen extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                 toast.show();
             }
