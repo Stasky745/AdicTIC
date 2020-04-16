@@ -3,13 +3,17 @@ package com.example.adictic.service;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-//import com.google.firebase.messaging.FirebaseMessagingException;
-//import com.google.firebase.messaging.Message;
+
+import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.util.Global;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
@@ -47,23 +51,18 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentActivity", componentName.getPackageName());
 
-//                    if (Global.blockedApps.contains(componentName.getPackageName())) {
-//                        Intent lockIntent = new Intent(this, BlockActivity.class);
-//                        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        this.startActivity(lockIntent);
-//                    }
-//                    else if(Global.tutorAvailable && Global.tutorToken != null){
-//                        com.google.firebase.messaging.Message message = Message.builder()
-//                                .putData("Code", "sendCurrentApp")
-//                                .setToken(Global.tutorToken)
-//                                .build();
-//
-//                        try {
-//                            String response = FirebaseMessaging.getInstance().send(message);
-//                        } catch (FirebaseMessagingException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
+                    if (Global.blockedApps.contains(componentName.getPackageName())) {
+                        Intent lockIntent = new Intent(this, BlockActivity.class);
+                        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        this.startActivity(lockIntent);
+                    }
+                    else if(Global.tutorAvailable && Global.tutorToken != null){
+                        FirebaseMessaging fm = FirebaseMessaging.getInstance();
+                        fm.send(new RemoteMessage.Builder(Global.tutorToken + "@fcm.googleapis.com")
+                                .addData("Code", "sendCurrentApp")
+                                .addData("App", componentName.getPackageName())
+                                .build());
+                    }
                 }
             }
         }
