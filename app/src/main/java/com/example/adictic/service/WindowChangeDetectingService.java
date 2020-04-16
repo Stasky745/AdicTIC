@@ -3,14 +3,13 @@ package com.example.adictic.service;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-
-import com.example.adictic.activity.BlockActivity;
+//import com.google.firebase.messaging.FirebaseMessagingException;
+//import com.google.firebase.messaging.Message;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
@@ -44,15 +43,27 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
-                if (isActivity) {
+                if (isActivity){
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentActivity", componentName.getPackageName());
 
-                    if (componentName.getPackageName().equals("com.google.android.youtube")) {
-                        Intent lockIntent = new Intent(this, BlockActivity.class);
-                        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        this.startActivity(lockIntent);
-                    }
+//                    if (Global.blockedApps.contains(componentName.getPackageName())) {
+//                        Intent lockIntent = new Intent(this, BlockActivity.class);
+//                        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        this.startActivity(lockIntent);
+//                    }
+//                    else if(Global.tutorAvailable && Global.tutorToken != null){
+//                        com.google.firebase.messaging.Message message = Message.builder()
+//                                .putData("Code", "sendCurrentApp")
+//                                .setToken(Global.tutorToken)
+//                                .build();
+//
+//                        try {
+//                            String response = FirebaseMessaging.getInstance().send(message);
+//                        } catch (FirebaseMessagingException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
             }
         }
