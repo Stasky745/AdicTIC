@@ -12,7 +12,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".TodoApp"
+
+    android:name=".TodoApp"
         android:allowBackup="true"
         android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
