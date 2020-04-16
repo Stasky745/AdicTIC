@@ -1,5 +1,6 @@
 package com.example.adictic.rest;
 
+import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
@@ -24,7 +25,7 @@ public interface TodoApi {
     Call<String> logout();
 
     @GET("/users/check")
-    Call<String> check();
+    Call<User> check();
 
     @POST("/users/register")
     Call<String> register(@Body UserRegister register);
@@ -40,4 +41,7 @@ public interface TodoApi {
 
     @POST("/usage/{id}")
     Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
+
+    @GET("/users/{id}/child")
+    Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
 }

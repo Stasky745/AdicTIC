@@ -45,4 +45,8 @@
         android:name="com.example.adictic.fragment.SettingsFragment"
         android:label="@string/action_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/nav_mainParent"
+        android:name="com.example.adictic.fragment.MainParentFragment"
+        android:label="@string/menu_home" />
 </navigation>
