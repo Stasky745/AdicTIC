@@ -23,7 +23,7 @@ public class AccessibilityPermActivity extends Activity {
         Button bt_okay = (Button)findViewById(R.id.BT_okAccessibilityPerm);
 
         if(Funcions.isAccessibilitySettingsOn(this)){
-            this.startActivity(new Intent(this, MainActivity.class));
+            this.startActivity(new Intent(this, MainActivityChild.class));
             this.finish();
         }
 
@@ -39,7 +39,7 @@ public class AccessibilityPermActivity extends Activity {
     protected void onResume() {
 
         if(Funcions.isAccessibilitySettingsOn(this)){
-            this.startActivity(new Intent(this, MainActivity.class));
+            this.startActivity(new Intent(this, MainActivityChild.class));
             this.finish();
         }
 
@@ -52,7 +52,7 @@ public class AccessibilityPermActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 0) {
             if(Funcions.isAccessibilitySettingsOn(this)){
-                this.startActivity(new Intent(this, MainActivity.class));
+                this.startActivity(new Intent(this, MainActivityChild.class));
                 this.finish();
             }
         }
