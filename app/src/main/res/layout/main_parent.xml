@@ -76,7 +76,7 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <ImageView
-        android:id="@+id/IV_Horaris"
+        android:id="@+id/IV_AppUsage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
@@ -100,7 +100,7 @@
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <ImageView
-        android:id="@+id/IV_Notifications"
+        android:id="@+id/IV_Horaris"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
@@ -108,7 +108,7 @@
         android:focusable="auto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline11"
-        app:layout_constraintTop_toBottomOf="@+id/TV_Horaris"
+        app:layout_constraintTop_toBottomOf="@+id/TV_AppUsage"
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <TextView
@@ -135,16 +135,16 @@
         app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
 
     <TextView
-        android:id="@+id/TV_Horaris"
+        android:id="@+id/TV_AppUsage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="auto"
-        android:text="@string/horaris"
-        app:layout_constraintEnd_toEndOf="@+id/IV_Horaris"
-        app:layout_constraintStart_toStartOf="@+id/IV_Horaris"
-        app:layout_constraintTop_toBottomOf="@+id/IV_Horaris" />
+        android:text="@string/app_usage"
+        app:layout_constraintEnd_toEndOf="@+id/IV_AppUsage"
+        app:layout_constraintStart_toStartOf="@+id/IV_AppUsage"
+        app:layout_constraintTop_toBottomOf="@+id/IV_AppUsage" />
 
     <TextView
         android:id="@+id/TV_BlockApps"
@@ -160,16 +160,16 @@
         app:layout_constraintTop_toBottomOf="@+id/IV_BlockApps" />
 
     <TextView
-        android:id="@+id/TV_Notificacions"
+        android:id="@+id/TV_Horaris"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:clickable="true"
         android:focusable="auto"
-        android:text="@string/Notifications"
-        app:layout_constraintEnd_toEndOf="@+id/IV_Notifications"
-        app:layout_constraintStart_toStartOf="@+id/IV_Notifications"
-        app:layout_constraintTop_toBottomOf="@+id/IV_Notifications" />
+        android:text="@string/horaris"
+        app:layout_constraintEnd_toEndOf="@+id/IV_Horaris"
+        app:layout_constraintStart_toStartOf="@+id/IV_Horaris"
+        app:layout_constraintTop_toBottomOf="@+id/IV_Horaris" />
 
     <View
         android:id="@+id/divider"

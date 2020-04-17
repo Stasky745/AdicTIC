@@ -1,6 +1,5 @@
 package com.example.adictic.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Funcions;
 import com.example.adictic.util.Global;
 
 import java.util.Collection;
@@ -68,12 +66,12 @@ public class MainParentFragment extends Fragment {
 
         ImageView im_informe = (ImageView) getActivity().findViewById(R.id.IV_Informe);
         TextView tv_informe = (TextView) getActivity().findViewById(R.id.TV_Informe);
-        ImageView im_horaris = (ImageView) getActivity().findViewById(R.id.IV_Horaris);
-        TextView tv_horaris = (TextView) getActivity().findViewById(R.id.TV_Horaris);
+        ImageView im_horaris = (ImageView) getActivity().findViewById(R.id.IV_AppUsage);
+        TextView tv_horaris = (TextView) getActivity().findViewById(R.id.TV_AppUsage);
         ImageView im_blockApps = (ImageView) getActivity().findViewById(R.id.IV_BlockApps);
         TextView tv_blockApps = (TextView) getActivity().findViewById(R.id.TV_BlockApps);
-        ImageView im_notif = (ImageView) getActivity().findViewById(R.id.IV_Notifications);
-        TextView tv_notif = (TextView) getActivity().findViewById(R.id.TV_Notificacions);
+        ImageView im_notif = (ImageView) getActivity().findViewById(R.id.IV_Horaris);
+        TextView tv_notif = (TextView) getActivity().findViewById(R.id.TV_Horaris);
 
         /*im_informe.setOnClickListener(new View.OnClickListener() {
             @Override
