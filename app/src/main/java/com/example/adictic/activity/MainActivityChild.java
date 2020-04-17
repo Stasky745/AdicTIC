@@ -29,12 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
@@ -47,10 +42,8 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.service.AppUsageWorker;
-import com.google.android.material.navigation.NavigationView;
 
 import java.text.DateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -423,7 +416,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                                 .setConstraints(constraints)
                                 .build();
 
-                WorkManager.getInstance()
+                WorkManager.getInstance(getApplicationContext())
                         .enqueueUniquePeriodicWork("jobTag", ExistingPeriodicWorkPolicy.KEEP, myWork);
 
             }

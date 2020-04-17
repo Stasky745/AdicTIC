@@ -22,11 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".activity.NavActivity"
             android:label="@string/title_activity_nav"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activity.Login"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activity.Login" />
         <activity
             android:name=".activity.BlockActivity"
             android:noHistory="true" />

@@ -18,6 +18,8 @@ public class Global {
     public static long ID = -1;
     public static int tutor = 0;
 
+    public static int dayOfYear = 0;
+
     public static String tutorToken = null;
     public static Boolean tutorAvailable = false;
 
