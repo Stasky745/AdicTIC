@@ -15,6 +15,9 @@ import com.example.adictic.util.Global;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class WindowChangeDetectingService extends AccessibilityService {
 
     @Override
@@ -51,16 +54,20 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentActivity", componentName.getPackageName());
 
+                    String time = new SimpleDateFormat("HH:mm").format(new Date());
+
+                    System.out.println("TIME: "+ time);
+
                     if (Global.blockedApps.contains(componentName.getPackageName())) {
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
-                    else if(Global.tutorAvailable && Global.tutorToken != null){
+                    else if(Global.liveApp && Global.tutorToken != null){
                         FirebaseMessaging fm = FirebaseMessaging.getInstance();
                         fm.send(new RemoteMessage.Builder(Global.tutorToken + "@fcm.googleapis.com")
-                                .addData("Code", "sendCurrentApp")
-                                .addData("App", componentName.getPackageName())
+                                .addData("currentAppUpdate", componentName.getPackageName())
+                                .addData("time", time)
                                 .build());
                     }
                 }
