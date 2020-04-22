@@ -24,13 +24,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.ui.AppBarConfiguration;
 
 import com.example.adictic.R;
@@ -39,7 +35,6 @@ import com.example.adictic.activity.MainActivityChild;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -68,6 +63,8 @@ public class HomeFragment extends Fragment {
     private float CORRECT_USAGE_DAY = 3;
     private float DANGEROUS_USAGE_DAY = 6;
 
+
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -79,6 +76,7 @@ public class HomeFragment extends Fragment {
         spinner.setAdapter(adapter);
         //spinner.setOnItemSelectedListener(this);
         final TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
+        final TodoApp todoApp = ((TodoApp) getActivity().getApplicationContext());
 
         Button pujarInfo = root.findViewById(R.id.Debug_PujarInfo);
         pujarInfo.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +128,7 @@ public class HomeFragment extends Fragment {
                     gul.add(gu);
                 }
 
-                Call<String> call = mTodoService.sendAppUsage(Global.ID, gul);
+                Call<String> call = mTodoService.sendAppUsage(todoApp.getID(), gul);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {

@@ -27,7 +27,6 @@ import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 import com.example.adictic.util.Funcions;
 
 import java.util.List;
@@ -43,6 +42,7 @@ public class NomFill extends AppCompatActivity {
     private MyAdapter mAdapter;
 
     TodoApi mTodoService;
+    TodoApp todoApp = ((TodoApp)this.getApplication());
 
     ColorStateList oldColors;
 
@@ -177,7 +177,7 @@ public class NomFill extends AppCompatActivity {
                     }
 
                     if(existeix) { /** Canviar token d'un fill que existeix **/
-                        VellFillLogin fillVell = new VellFillLogin();
+                        final VellFillLogin fillVell = new VellFillLogin();
                         fillVell.deviceName = tv_nom.getText().toString();
                         fillVell.idChild = id;
                         fillVell.token = token;
@@ -192,7 +192,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    Global.ID = idParent;
+                                    todoApp.setID(fillVell.idChild);
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -233,7 +233,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    Global.ID = idParent;
+                                    todoApp.setID(Long.parseLong(response.body()));
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();

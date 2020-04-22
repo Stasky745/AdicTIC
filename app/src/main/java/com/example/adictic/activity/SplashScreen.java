@@ -10,7 +10,6 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +30,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onResume();
 
         TodoApi todoApi = ((TodoApp) this.getApplication()).getAPI();
+        final TodoApp todoApp = ((TodoApp) this.getApplication());
 
         Call<User> call = todoApi.check();
         call.enqueue(new Callback<User>() {
@@ -38,8 +38,8 @@ public class SplashScreen extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
 
                 if (response.isSuccessful()) {
-                    Global.ID = response.body().id;
-                    Global.tutor = response.body().tutor;
+                    todoApp.setID(response.body().id);
+                    todoApp.setTutor(response.body().tutor);
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                 } else {
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
