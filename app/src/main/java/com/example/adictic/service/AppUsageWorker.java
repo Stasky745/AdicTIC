@@ -15,7 +15,6 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.Global;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,7 +44,7 @@ public class AppUsageWorker extends Worker {
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
         List<GeneralUsage> gul = new ArrayList<>();
         List<UsageStats> stats;
-        for (int i = Global.dayOfYear; i < Calendar.getInstance().get(Calendar.DAY_OF_YEAR); i++) {
+        for (int i = ((TodoApp)this.getApplicationContext()).getDayOfYear(); i < Calendar.getInstance().get(Calendar.DAY_OF_YEAR); i++) {
             Calendar finalTime = Calendar.getInstance();
             finalTime.set(Calendar.DAY_OF_YEAR, i);
             finalTime.set(Calendar.HOUR_OF_DAY, 23);
@@ -105,7 +104,7 @@ public class AppUsageWorker extends Worker {
 
         // Indicate whether the task finished successfully with the Result
         if(ok){
-            Global.dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+            ((TodoApp)this.getApplicationContext()).setDayOfYear(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
             return Result.success();
         }
         else return Result.retry();

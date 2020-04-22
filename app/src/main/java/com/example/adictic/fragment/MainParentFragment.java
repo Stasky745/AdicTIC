@@ -16,7 +16,6 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 
 import java.util.Collection;
 
@@ -34,7 +33,7 @@ public class MainParentFragment extends Fragment {
         View root = inflater.inflate(R.layout.main_parent, container, false);
         mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
 
-        Call<Collection<FillNom>> call = mTodoService.getUserChilds(Global.ID);
+        Call<Collection<FillNom>> call = mTodoService.getUserChilds(((TodoApp) getActivity().getApplication()).getID());
         call.enqueue(new Callback<Collection<FillNom>>() {
             @Override
             public void onResponse(Call<Collection<FillNom>> call, Response<Collection<FillNom>> response) {

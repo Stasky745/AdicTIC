@@ -27,7 +27,7 @@ public class TodoApp extends Application {
     TodoApi mTodoService;
 
     private long ID=-1;
-    private boolean tutor=false;
+    private int tutor=0;
     private String tutorToken = null;
     private int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     private boolean freeUse = false;
@@ -45,8 +45,8 @@ public class TodoApp extends Application {
     public void setID(Long l){ ID=l; }
     public Long getID(){ return ID; }
 
-    public void setTutor(boolean i){ tutor=i; }
-    public boolean getTutor(){ return tutor; }
+    public void setTutor(int i){ tutor=i; }
+    public int getTutor(){ return tutor; }
 
     public void setDayOfYear(int i){ dayOfYear=i; }
     public int getDayOfYear(){ return dayOfYear; }

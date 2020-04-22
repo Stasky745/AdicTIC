@@ -10,8 +10,8 @@ import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
-import com.example.adictic.util.Global;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -58,14 +58,14 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                     System.out.println("TIME: "+ time);
 
-                    if (Global.blockedApps.contains(componentName.getPackageName())) {
+                    if (((TodoApp) this.getApplication()).getBlockedApps().contains(componentName.getPackageName())) {
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
-                    else if(Global.liveApp && Global.tutorToken != null){
+                    else if(((TodoApp) this.getApplication()).getLiveApp() && ((TodoApp) this.getApplication()).getTutorToken() != null){
                         FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                        fm.send(new RemoteMessage.Builder(Global.tutorToken + "@fcm.googleapis.com")
+                        fm.send(new RemoteMessage.Builder(((TodoApp) this.getApplication()).getTutorToken() + "@fcm.googleapis.com")
                                 .addData("currentAppUpdate", componentName.getPackageName())
                                 .addData("time", time)
                                 .build());
