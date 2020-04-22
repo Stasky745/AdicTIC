@@ -8,8 +8,12 @@ import android.util.Log;
 
 import com.example.adictic.Constants;
 import com.example.adictic.MyNotificationManager;
+import com.example.adictic.TodoApp;
+import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
 
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -25,14 +29,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
     }
 
+    public void updateLimitAppsList(Map<String,String> map){
+        map.remove("limitApp");
+        for(Map.Entry<String,String> entry : map.entrySet()){
+            ((TodoApp)this.getApplication()).getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
+        }
+    }
+
+    private void updateBlockedAppsList(Map<String,String> map){
+        map.remove("blockApp");
+        for(Map.Entry<String,String> entry : map.entrySet()){
+            ((TodoApp)this.getApplication()).getBlockedApps().add(entry.getKey());
+        }
+    }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
+        Map<String,String> messageMap = remoteMessage.getData();
+
         // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
+        if (messageMap.size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -50,6 +70,45 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mNotificationManager.createNotificationChannel(mChannel);
             }
 
+                         /** Accions del dispositiu fill**/
+            if(messageMap.containsKey("blockDevice")){
+                if(messageMap.get("blockDevice") == "1") ((TodoApp)this.getApplication()).setBlockedDevice(true);
+                else ((TodoApp)this.getApplication()).setBlockedDevice(false);
+            }
+            else if(messageMap.containsKey("freeUse")){
+                if(messageMap.get("freeUse") == "1") ((TodoApp)this.getApplication()).setFreeUse(true);
+                else ((TodoApp)this.getApplication()).setFreeUse(false);
+            }
+            else if(messageMap.containsKey("limitApp")){
+                updateLimitAppsList(messageMap);
+
+                /** FER CRIDA WORKMANAGER **/
+                Funcions.runLimitAppsWorker(getApplicationContext());
+            }
+            else if(messageMap.containsKey("blockApp")){
+                updateBlockedAppsList(messageMap);
+            }
+            else if(messageMap.containsKey("liveApp")){
+                String s = messageMap.get("liveApp");
+                if(s == null) ((TodoApp)this.getApplication()).setTutorToken(null);
+                else ((TodoApp)this.getApplication()).setTutorToken(s);
+            }
+            else if(messageMap.containsKey("tutorToken")){
+                ((TodoApp)this.getApplication()).setTutorToken(messageMap.get("tutorToken"));
+            }
+
+                    /** Accions del dispositiu pare **/
+            else if(messageMap.containsKey("currentAppUpdate")){
+                String aux = messageMap.get("currentAppUpdate");
+                if(aux.equals("null")){
+                    ((TodoApp)this.getApplication()).setCurrentAppKid(null);
+                    ((TodoApp)this.getApplication()).setTimeOpenedCurrentAppKid(null);
+                }
+                else {
+                    ((TodoApp)this.getApplication()).setCurrentAppKid(aux);
+                    ((TodoApp)this.getApplication()).setTimeOpenedCurrentAppKid(messageMap.get("time"));
+                }
+            }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
 
         }

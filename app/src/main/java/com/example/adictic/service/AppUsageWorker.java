@@ -14,6 +14,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.Global;
 
 import java.util.ArrayList;
@@ -39,25 +40,27 @@ public class AppUsageWorker extends Worker {
         UsageStatsManager mUsageStatsManager = (UsageStatsManager) getApplicationContext().getSystemService(Context.USAGE_STATS_SERVICE);;
         PackageManager mPm = getApplicationContext().getPackageManager();
 
+        Funcions.runLimitAppsWorker(getApplicationContext());
+
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
         List<GeneralUsage> gul = new ArrayList<>();
         List<UsageStats> stats;
-        for (int i = Global.dayOfYear; i < Calendar.DAY_OF_YEAR; i++) {
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 23);
-            cal.set(Calendar.MINUTE, 59);
-            cal.set(Calendar.SECOND, 59);
-            cal.add(Calendar.DAY_OF_YEAR, i);
-            System.out.println(cal.getTime());
+        for (int i = Global.dayOfYear; i < Calendar.getInstance().get(Calendar.DAY_OF_YEAR); i++) {
+            Calendar finalTime = Calendar.getInstance();
+            finalTime.set(Calendar.DAY_OF_YEAR, i);
+            finalTime.set(Calendar.HOUR_OF_DAY, 23);
+            finalTime.set(Calendar.MINUTE, 59);
+            finalTime.set(Calendar.SECOND, 59);
+            System.out.println(finalTime.getTime());
 
-            Calendar cal2 = Calendar.getInstance();
-            cal2.add(Calendar.DAY_OF_YEAR, i);
-            cal2.set(Calendar.HOUR_OF_DAY, 0);
-            cal2.set(Calendar.MINUTE, 0);
-            cal2.set(Calendar.SECOND, 0);
-            System.out.println(cal2.getTime());
+            Calendar initialTime = Calendar.getInstance();
+            initialTime.set(Calendar.DAY_OF_YEAR, i);
+            initialTime.set(Calendar.HOUR_OF_DAY, 0);
+            initialTime.set(Calendar.MINUTE, 0);
+            initialTime.set(Calendar.SECOND, 0);
+            System.out.println(initialTime.getTime());
             stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                    cal2.getTimeInMillis(), cal.getTimeInMillis());
+                    initialTime.getTimeInMillis(), finalTime.getTimeInMillis());
 
             List<AppUsage> appUsages = new ArrayList<>();
             final int statCount = stats.size();
@@ -69,7 +72,7 @@ public class AppUsageWorker extends Worker {
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
-                if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                if (pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                     AppUsage appUsage = new AppUsage();
                     appUsage.appName = pkgStats.getPackageName();
                     appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
@@ -78,9 +81,9 @@ public class AppUsageWorker extends Worker {
                 }
             }
             GeneralUsage gu = new GeneralUsage();
-            gu.day = cal.get(Calendar.DAY_OF_MONTH);
-            gu.month = cal.get(Calendar.MONTH) + 1;
-            gu.year = cal.get(Calendar.YEAR);
+            gu.day = finalTime.get(Calendar.DAY_OF_MONTH);
+            gu.month = finalTime.get(Calendar.MONTH) + 1;
+            gu.year = finalTime.get(Calendar.YEAR);
             gu.usage = appUsages;
             gul.add(gu);
         }
@@ -92,17 +95,19 @@ public class AppUsageWorker extends Worker {
                 if (response.isSuccessful()) {
                     ok = true;
                 }
+                else ok = false;
             }
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ok = false;
             }
         });
+
         // Indicate whether the task finished successfully with the Result
         if(ok){
-            Global.dayOfYear = Calendar.DAY_OF_YEAR;
+            Global.dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
             return Result.success();
         }
-        else return Result.failure();
+        else return Result.retry();
     }
 }

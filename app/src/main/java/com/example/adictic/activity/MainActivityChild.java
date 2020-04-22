@@ -353,14 +353,12 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                     cal.set(Calendar.MINUTE, 59);
                     cal.set(Calendar.SECOND, 59);
                     cal.add(Calendar.DAY_OF_YEAR, -i);
-                    System.out.println(cal.getTime());
 
                     Calendar cal2 = Calendar.getInstance();
                     cal2.add(Calendar.DAY_OF_YEAR, -i);
                     cal2.set(Calendar.HOUR_OF_DAY, 0);
                     cal2.set(Calendar.MINUTE, 0);
                     cal2.set(Calendar.SECOND, 0);
-                    System.out.println(cal2.getTime());
                     stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
                             cal2.getTimeInMillis(), cal.getTimeInMillis());
 
@@ -411,13 +409,23 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                                 .setRequiredNetworkType(NetworkType.CONNECTED)
                                 .build();
 
+                Calendar date = Calendar.getInstance();
+                Long now = date.getTimeInMillis();
+                date.add(Calendar.DAY_OF_YEAR, 1);
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+
+                Long future = date.getTimeInMillis();
+
                 PeriodicWorkRequest myWork =
                         new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
                                 .setConstraints(constraints)
+                                .setInitialDelay(future - now, TimeUnit.MILLISECONDS)
                                 .build();
 
                 WorkManager.getInstance(getApplicationContext())
-                        .enqueueUniquePeriodicWork("jobTag", ExistingPeriodicWorkPolicy.KEEP, myWork);
+                        .enqueueUniquePeriodicWork("dailyServerUpdate", ExistingPeriodicWorkPolicy.KEEP, myWork);
 
             }
         });

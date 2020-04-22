@@ -8,19 +8,15 @@ import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.LinearLayout;
 
-import com.example.adictic.entity.FillNom;
-import com.example.adictic.rest.TodoApi;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
-import java.util.Collection;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class Funcions {
 
@@ -80,5 +76,14 @@ public class Funcions {
             if(mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName())) found = true;
         }
         return found;
+    }
+
+    public static void runLimitAppsWorker(Context mContext){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(LimitAppsWorker.class)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
     }
 }
