@@ -34,7 +34,6 @@ public class Login extends AppCompatActivity {
 
     TodoApi mTodoService;
     static Login login;
-    TodoApp todoApp = ((TodoApp)this.getApplicationContext());
 
     public static final String TAG = "Login";
 
@@ -117,8 +116,6 @@ public class Login extends AppCompatActivity {
         ul.tutor = tutor;
         ul.token = token;
 
-        System.out.println(token);
-
         Call<User> call = mTodoService.login(ul);
 
         call.enqueue(new Callback<User>() {
@@ -127,8 +124,8 @@ public class Login extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     User usuari = response.body();
-                    todoApp.setTutor(usuari.tutor);
-                    todoApp.setID(usuari.id);
+                    TodoApp.setTutor(usuari.tutor);
+                    TodoApp.setID(usuari.id);
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
 
                         if(tutor == 0){

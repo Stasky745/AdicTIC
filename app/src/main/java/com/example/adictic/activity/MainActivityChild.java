@@ -344,6 +344,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         pujarInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
                 List<UsageStats> stats;
@@ -388,7 +389,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                     gul.add(gu);
                 }
 
-                Call<String> call = mTodoService.sendAppUsage(getIntent().getLongExtra("idChild",-1),gul);
+                Call<String> call = mTodoService.sendAppUsage(TodoApp.getID(),gul);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
