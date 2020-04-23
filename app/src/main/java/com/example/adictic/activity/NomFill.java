@@ -42,7 +42,6 @@ public class NomFill extends AppCompatActivity {
     private MyAdapter mAdapter;
 
     TodoApi mTodoService;
-    TodoApp todoApp = ((TodoApp)this.getApplication());
 
     ColorStateList oldColors;
 
@@ -182,17 +181,13 @@ public class NomFill extends AppCompatActivity {
                         fillVell.idChild = id;
                         fillVell.token = token;
 
-                        System.out.println("DEVICE NAME: " + fillVell.deviceName);
-                        System.out.println("ID: " + fillVell.idChild);
-                        System.out.println("TOKEN: " + fillVell.token);
-
                         Call<String> call = mTodoService.sendOldName(idParent, fillVell);
 
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    todoApp.setID(fillVell.idChild);
+                                    TodoApp.setID(fillVell.idChild);
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -227,13 +222,13 @@ public class NomFill extends AppCompatActivity {
                         fillNou.deviceName = tv_nom.getText().toString();
                         fillNou.token = token;
 
-                        Call<String> call = mTodoService.sendNewName(idParent, fillNou);
+                        Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
 
-                        call.enqueue(new Callback<String>() {
+                        call.enqueue(new Callback<Long>() {
                             @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
+                            public void onResponse(Call<Long> call, Response<Long> response) {
                                 if (response.isSuccessful()) {
-                                    todoApp.setID(Long.parseLong(response.body()));
+                                    TodoApp.setID(response.body());
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -257,7 +252,7 @@ public class NomFill extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<String> call, Throwable t) {
+                            public void onFailure(Call<Long> call, Throwable t) {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                 toast.show();
                             }

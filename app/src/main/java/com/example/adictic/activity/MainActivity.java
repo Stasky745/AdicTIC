@@ -10,7 +10,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -38,7 +37,6 @@ import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -142,9 +140,6 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 //            if (stats == null) {
 //                return;
 //            }
-
-            System.out.println("CAL 1: " + cal.getTimeInMillis());
-            System.out.println("CAL 2: " + cal2.getTimeInMillis());
 
             final List<UsageStats> stats =
                     mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
@@ -443,7 +438,6 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            System.out.println("Entra a getView");
 
             // A ViewHolder keeps references to children views to avoid unneccessary calls
             // to findViewById() on each row.

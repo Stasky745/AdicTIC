@@ -12,19 +12,22 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.rest.TodoApi;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class WindowChangeDetectingService extends AccessibilityService {
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
-
-        System.out.println("CONNECTED");
 
         //Configure these here for compatibility with API 13 and below.
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
@@ -41,7 +44,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            System.out.println("EVENT CHANGED");
             if (event.getPackageName() != null && event.getClassName() != null) {
                 ComponentName componentName = new ComponentName(
                         event.getPackageName().toString(),
@@ -52,20 +54,31 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 boolean isActivity = activityInfo != null;
                 if (isActivity){
                     Log.i("CurrentActivity", componentName.flattenToShortString());
-                    Log.i("CurrentActivity", componentName.getPackageName());
+                    Log.i("CurrentPackage", componentName.getPackageName());
 
                     String time = new SimpleDateFormat("HH:mm").format(new Date());
 
-                    System.out.println("TIME: "+ time);
+                    if (TodoApp.getStartFreeUse()!=0 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
+                        TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
-                    if (((TodoApp) this.getApplication()).getBlockedApps().contains(componentName.getPackageName())) {
+                        Call<String> call = mTodoService.callBlockedApp(TodoApp.getID(),componentName.getPackageName());
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.isSuccessful()) { }
+                            }
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) { }
+                        });
+
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
-                    else if(((TodoApp) this.getApplication()).getLiveApp() && ((TodoApp) this.getApplication()).getTutorToken() != null){
+
+                    if(TodoApp.getLiveApp() && TodoApp.getTutorToken() != null){
                         FirebaseMessaging fm = FirebaseMessaging.getInstance();
-                        fm.send(new RemoteMessage.Builder(((TodoApp) this.getApplication()).getTutorToken() + "@fcm.googleapis.com")
+                        fm.send(new RemoteMessage.Builder(TodoApp.getTutorToken() + "@fcm.googleapis.com")
                                 .addData("currentAppUpdate", componentName.getPackageName())
                                 .addData("time", time)
                                 .build());

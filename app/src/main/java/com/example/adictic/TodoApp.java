@@ -26,51 +26,55 @@ public class TodoApp extends Application {
 
     TodoApi mTodoService;
 
-    private long ID=-1;
-    private int tutor=0;
-    private String tutorToken = null;
-    private int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-    private boolean freeUse = false;
-    private boolean blockedDevice = false;
-    private boolean liveApp = false;
-    private String currentAppKid = null;
-    private String timeOpenedCurrentAppKid = null;
+    private static long ID=-1;
+    private static Integer tutor=0;
+    private static String tutorToken = null;
+    private static int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+    private static boolean freeUse = false;
+    private static long startFreeUse = 0;
+    private static boolean blockedDevice = false;
+    private static boolean liveApp = false;
+    private static String currentAppKid = null;
+    private static String timeOpenedCurrentAppKid = null;
 
-    private Map<String,Long> limitApps = new HashMap<>();
-    private List<String> blockedApps = new ArrayList<>();
+    private static Map<String,Long> limitApps = new HashMap<>();
+    private static List<String> blockedApps = new ArrayList<>();
 
-    public void setTutorToken(String s){ tutorToken = s; }
-    public String getTutorToken(){ return tutorToken; }
+    public static void setStartFreeUse(long l){startFreeUse = l;}
+    public static long getStartFreeUse(){return startFreeUse;}
 
-    public void setID(Long l){ ID=l; }
-    public Long getID(){ return ID; }
+    public static void setTutorToken(String s){ TodoApp.tutorToken = s; }
+    public static String getTutorToken(){ return TodoApp.tutorToken; }
 
-    public void setTutor(int i){ tutor=i; }
-    public int getTutor(){ return tutor; }
+    public static void setID(Long l){ TodoApp.ID=l; }
+    public static Long getID(){ return TodoApp.ID; }
 
-    public void setDayOfYear(int i){ dayOfYear=i; }
-    public int getDayOfYear(){ return dayOfYear; }
+    public static void setTutor(Integer i){ TodoApp.tutor=i; }
+    public static Integer getTutor(){ return TodoApp.tutor; }
 
-    public void setFreeUse(boolean b){ freeUse=b; }
-    public boolean getFreeUse(){ return freeUse; }
+    public static void setDayOfYear(int i){ TodoApp.dayOfYear=i; }
+    public static int getDayOfYear(){ return TodoApp.dayOfYear; }
 
-    public void setLiveApp(boolean b){ liveApp=b; }
-    public boolean getLiveApp(){ return liveApp; }
+    public static void setFreeUse(boolean b){ TodoApp.freeUse=b; }
+    public static boolean getFreeUse(){ return TodoApp.freeUse; }
 
-    public void setCurrentAppKid(String s){ currentAppKid = s; }
-    public String getCurrentAppKid(){ return currentAppKid; }
+    public static void setLiveApp(boolean b){ TodoApp.liveApp=b; }
+    public static boolean getLiveApp(){ return TodoApp.liveApp; }
 
-    public void setTimeOpenedCurrentAppKid(String s){ timeOpenedCurrentAppKid = s; }
-    public String getTimeOpenedCurrentAppKid(){ return timeOpenedCurrentAppKid; }
+    public static void setCurrentAppKid(String s){ TodoApp.currentAppKid = s; }
+    public static String getCurrentAppKid(){ return TodoApp.currentAppKid; }
 
-    public void setLimitApps(Map<String,Long> m){ limitApps = m; }
-    public Map<String,Long> getLimitApps(){ return limitApps; }
+    public static void setTimeOpenedCurrentAppKid(String s){ TodoApp.timeOpenedCurrentAppKid = s; }
+    public static String getTimeOpenedCurrentAppKid(){ return TodoApp.timeOpenedCurrentAppKid; }
 
-    public void setBlockedDevice(Boolean b){ blockedDevice=b; }
-    public boolean getBlockedDevice(){ return blockedDevice; }
+    public static void setLimitApps(Map<String,Long> m){ TodoApp.limitApps = m; }
+    public static Map<String,Long> getLimitApps(){ return TodoApp.limitApps; }
 
-    public void setBlockedApps(List<String> l){ blockedApps=l; }
-    public List<String> getBlockedApps(){ return blockedApps; }
+    public static void setBlockedDevice(boolean b){ TodoApp.blockedDevice=b; }
+    public static boolean getBlockedDevice(){ return TodoApp.blockedDevice; }
+
+    public static void setBlockedApps(List<String> l){ TodoApp.blockedApps=l; }
+    public static List<String> getBlockedApps(){ return TodoApp.blockedApps; }
 
     @Override
     public void onCreate() {

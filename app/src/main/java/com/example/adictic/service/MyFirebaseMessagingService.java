@@ -13,6 +13,7 @@ import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Calendar;
 import java.util.Map;
 
 //class extending FirebaseMessagingService
@@ -32,14 +33,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void updateLimitAppsList(Map<String,String> map){
         map.remove("limitApp");
         for(Map.Entry<String,String> entry : map.entrySet()){
-            ((TodoApp)this.getApplication()).getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
+            TodoApp.getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
         }
     }
 
     private void updateBlockedAppsList(Map<String,String> map){
         map.remove("blockApp");
         for(Map.Entry<String,String> entry : map.entrySet()){
-            ((TodoApp)this.getApplication()).getBlockedApps().add(entry.getKey());
+            TodoApp.getBlockedApps().add(entry.getKey());
         }
     }
 
@@ -72,42 +73,42 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                          /** Accions del dispositiu fill**/
             if(messageMap.containsKey("blockDevice")){
-                if(messageMap.get("blockDevice") == "1") ((TodoApp)this.getApplication()).setBlockedDevice(true);
-                else ((TodoApp)this.getApplication()).setBlockedDevice(false);
+                if(messageMap.get("blockDevice") == "1") TodoApp.setBlockedDevice(true);
+                else TodoApp.setBlockedDevice(false);
             }
             else if(messageMap.containsKey("freeUse")){
-                if(messageMap.get("freeUse") == "1") ((TodoApp)this.getApplication()).setFreeUse(true);
-                else ((TodoApp)this.getApplication()).setFreeUse(false);
+                if(messageMap.get("freeUse") == "1"){
+                    Funcions.startFreeUseLimitList(getApplicationContext());
+                    TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
+                }
+                else{
+                    TodoApp.setTutorToken(null);
+                    Funcions.updateLimitedAppsList();
+                    TodoApp.setStartFreeUse(0);
+                }
             }
             else if(messageMap.containsKey("limitApp")){
                 updateLimitAppsList(messageMap);
 
                 /** FER CRIDA WORKMANAGER **/
-                Funcions.runLimitAppsWorker(getApplicationContext());
+                Funcions.runLimitAppsWorker(getApplicationContext(), 0);
             }
             else if(messageMap.containsKey("blockApp")){
                 updateBlockedAppsList(messageMap);
             }
             else if(messageMap.containsKey("liveApp")){
                 String s = messageMap.get("liveApp");
-                if(s == null) ((TodoApp)this.getApplication()).setTutorToken(null);
-                else ((TodoApp)this.getApplication()).setTutorToken(s);
-            }
-            else if(messageMap.containsKey("tutorToken")){
-                ((TodoApp)this.getApplication()).setTutorToken(messageMap.get("tutorToken"));
+                if(s.equals("-1")) TodoApp.setTutorToken(null);
+                else TodoApp.setTutorToken(s);
             }
 
                     /** Accions del dispositiu pare **/
             else if(messageMap.containsKey("currentAppUpdate")){
                 String aux = messageMap.get("currentAppUpdate");
-                if(aux.equals("null")){
-                    ((TodoApp)this.getApplication()).setCurrentAppKid(null);
-                    ((TodoApp)this.getApplication()).setTimeOpenedCurrentAppKid(null);
-                }
-                else {
-                    ((TodoApp)this.getApplication()).setCurrentAppKid(aux);
-                    ((TodoApp)this.getApplication()).setTimeOpenedCurrentAppKid(messageMap.get("time"));
-                }
+
+                TodoApp.setCurrentAppKid(aux);
+                TodoApp.setTimeOpenedCurrentAppKid(messageMap.get("time"));
+
             }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
 

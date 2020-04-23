@@ -30,7 +30,6 @@ public class SplashScreen extends AppCompatActivity {
         super.onResume();
 
         TodoApi todoApi = ((TodoApp) this.getApplication()).getAPI();
-        final TodoApp todoApp = ((TodoApp) this.getApplication());
 
         Call<User> call = todoApi.check();
         call.enqueue(new Callback<User>() {
@@ -38,9 +37,8 @@ public class SplashScreen extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
 
                 if (response.isSuccessful()) {
-                    todoApp.setID(response.body().id);
-                    todoApp.setTutor(response.body().tutor);
-                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                    if(TodoApp.getTutor() == 1) SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                    else SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivityChild.class));
                 } else {
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                 }
