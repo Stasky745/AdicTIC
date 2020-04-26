@@ -2,6 +2,7 @@ package com.example.adictic.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -73,7 +74,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                          /** Accions del dispositiu fill**/
             if(messageMap.containsKey("blockDevice")){
-                if(messageMap.get("blockDevice") == "1") TodoApp.setBlockedDevice(true);
+                if(messageMap.get("blockDevice") == "1"){
+                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    TodoApp.setBlockedDevice(true);
+                    mDPM.lockNow();
+                }
                 else TodoApp.setBlockedDevice(false);
             }
             else if(messageMap.containsKey("freeUse")){
