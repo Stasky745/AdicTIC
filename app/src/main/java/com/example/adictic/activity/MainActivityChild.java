@@ -1,5 +1,6 @@
 package com.example.adictic.activity;
 
+import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -328,6 +329,8 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+
+        final DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         //startService(new Intent(this, RunService.class));
 
         setContentView(R.layout.main_activity_stats_child);
@@ -344,6 +347,8 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         pujarInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mDPM.lockNow();
 
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
