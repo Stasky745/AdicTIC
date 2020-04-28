@@ -1,5 +1,6 @@
 package com.example.adictic.rest;
 
+import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.NouFillLogin;
@@ -34,7 +35,7 @@ public interface TodoApi {
     Call<String> sendOldName(@Path("id") Long id, @Body VellFillLogin fill);
 
     @PUT("/users/{id}/child")
-    Call<String> sendNewName(@Path("id") Long id, @Body NouFillLogin fill);
+    Call<Long> sendNewName(@Path("id") Long id, @Body NouFillLogin fill);
 
     @GET("/usage/{id}/{xDays}")
     Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
@@ -42,6 +43,12 @@ public interface TodoApi {
     @POST("/usage/{id}")
     Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
 
+    @GET("/users/{idChild}/blockedLists")
+    Call<BlockedLimitedLists> getBlockedLimitedLists(@Path("id") Long childId);
+
     @GET("/users/{id}/child")
     Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
+
+    @POST("/users/{idChild}/callBlockedApp")
+    Call<String> callBlockedApp(@Path("id") Long childId, @Body String packageName);
 }
