@@ -18,7 +18,6 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 import com.example.adictic.util.Funcions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -117,8 +116,6 @@ public class Login extends AppCompatActivity {
         ul.tutor = tutor;
         ul.token = token;
 
-        System.out.println(token);
-
         Call<User> call = mTodoService.login(ul);
 
         call.enqueue(new Callback<User>() {
@@ -127,8 +124,8 @@ public class Login extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     User usuari = response.body();
-                    Global.tutor = usuari.tutor;
-                    Global.ID = usuari.id;
+                    TodoApp.setTutor(usuari.tutor);
+                    TodoApp.setID(usuari.id);
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
 
                         if(tutor == 0){

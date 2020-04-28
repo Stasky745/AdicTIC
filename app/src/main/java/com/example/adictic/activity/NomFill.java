@@ -27,7 +27,6 @@ import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Global;
 import com.example.adictic.util.Funcions;
 
 import java.util.List;
@@ -177,14 +176,10 @@ public class NomFill extends AppCompatActivity {
                     }
 
                     if(existeix) { /** Canviar token d'un fill que existeix **/
-                        VellFillLogin fillVell = new VellFillLogin();
+                        final VellFillLogin fillVell = new VellFillLogin();
                         fillVell.deviceName = tv_nom.getText().toString();
                         fillVell.idChild = id;
                         fillVell.token = token;
-
-                        System.out.println("DEVICE NAME: " + fillVell.deviceName);
-                        System.out.println("ID: " + fillVell.idChild);
-                        System.out.println("TOKEN: " + fillVell.token);
 
                         Call<String> call = mTodoService.sendOldName(idParent, fillVell);
 
@@ -192,7 +187,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    Global.ID = idParent;
+                                    TodoApp.setID(fillVell.idChild);
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -227,13 +222,13 @@ public class NomFill extends AppCompatActivity {
                         fillNou.deviceName = tv_nom.getText().toString();
                         fillNou.token = token;
 
-                        Call<String> call = mTodoService.sendNewName(idParent, fillNou);
+                        Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
 
-                        call.enqueue(new Callback<String>() {
+                        call.enqueue(new Callback<Long>() {
                             @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
+                            public void onResponse(Call<Long> call, Response<Long> response) {
                                 if (response.isSuccessful()) {
-                                    Global.ID = idParent;
+                                    TodoApp.setID(response.body());
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -257,7 +252,7 @@ public class NomFill extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onFailure(Call<String> call, Throwable t) {
+                            public void onFailure(Call<Long> call, Throwable t) {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                 toast.show();
                             }
