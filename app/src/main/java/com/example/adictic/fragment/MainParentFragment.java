@@ -26,6 +26,7 @@ import retrofit2.Response;
 public class MainParentFragment extends Fragment {
 
     private TodoApi mTodoService;
+    private long idChildSelected = -1;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -44,6 +45,7 @@ public class MainParentFragment extends Fragment {
                     row.setLayoutParams(new LinearLayout.LayoutParams
                             (LinearLayout.LayoutParams.WRAP_CONTENT,
                                     LinearLayout.LayoutParams.WRAP_CONTENT));
+                    boolean primer = true;
                     for(FillNom child : response.body()) {
                         Button btnTag = new Button(getActivity());
                         btnTag.setLayoutParams(new LinearLayout.LayoutParams
@@ -51,6 +53,18 @@ public class MainParentFragment extends Fragment {
                                         LinearLayout.LayoutParams.MATCH_PARENT));
                         btnTag.setText(child.deviceName);
                         btnTag.setId(i);
+                        btnTag.setTag(child.idChild);
+                        if(primer) {
+                            idChildSelected = child.idChild;
+                            btnTag.setSelected(true);
+                            primer = false;
+                        }
+                        btnTag.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                idChildSelected = (long)v.getTag();
+                            }
+                        });
                         row.addView(btnTag);
                         i++;
                     }
@@ -63,22 +77,25 @@ public class MainParentFragment extends Fragment {
             }
         });
 
-        ImageView im_informe = (ImageView) getActivity().findViewById(R.id.IV_Informe);
-        TextView tv_informe = (TextView) getActivity().findViewById(R.id.TV_Informe);
-        ImageView im_horaris = (ImageView) getActivity().findViewById(R.id.IV_AppUsage);
-        TextView tv_horaris = (TextView) getActivity().findViewById(R.id.TV_AppUsage);
-        ImageView im_blockApps = (ImageView) getActivity().findViewById(R.id.IV_BlockApps);
-        TextView tv_blockApps = (TextView) getActivity().findViewById(R.id.TV_BlockApps);
-        ImageView im_notif = (ImageView) getActivity().findViewById(R.id.IV_Horaris);
-        TextView tv_notif = (TextView) getActivity().findViewById(R.id.TV_Horaris);
+        ImageView im_informe = (ImageView) root.findViewById(R.id.IV_Informe);
+        TextView tv_informe = (TextView) root.findViewById(R.id.TV_Informe);
+        ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_AppUsage);
+        TextView tv_horaris = (TextView) root.findViewById(R.id.TV_AppUsage);
+        ImageView im_blockApps = (ImageView) root.findViewById(R.id.IV_BlockApps);
+        TextView tv_blockApps = (TextView) root.findViewById(R.id.TV_BlockApps);
+        ImageView im_notif = (ImageView) root.findViewById(R.id.IV_Horaris);
+        TextView tv_notif = (TextView) root.findViewById(R.id.TV_Horaris);
 
-        /*im_informe.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener informe = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().startActivity(new Intent(getActivity(),Informe.class));
+                //getActivity().startActivity(new Intent(getActivity(),Informe.class));
+                System.out.println("idChild: "+idChildSelected);
             }
-        });*/
+        };
 
+        im_informe.setOnClickListener(informe);
+        tv_informe.setOnClickListener(informe);
 
         return root;
     }

@@ -38,7 +38,8 @@ public class SplashScreen extends AppCompatActivity {
 
                 if (response.isSuccessful()) {
                     if(TodoApp.getTutor() == 1) SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                    else SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivityChild.class));
+                    else if(TodoApp.getTutor() == 0) SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivityChild.class));
+                    else SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                 } else {
                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                 }
