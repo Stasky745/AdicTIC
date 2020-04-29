@@ -27,7 +27,7 @@ public class TodoApp extends Application {
     TodoApi mTodoService;
 
     private static long ID=-1;
-    private static Integer tutor=0;
+    private static Integer tutor=-1;
     private static String tutorToken = null;
     private static int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     private static boolean freeUse = false;
