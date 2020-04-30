@@ -47,6 +47,10 @@ public class AppUsageWorker extends Worker {
 
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
+        for(GeneralUsage gu : gul){
+
+        }
+
         Call<String> call = mTodoService.sendAppUsage(TodoApp.getID(),gul);
         call.enqueue(new Callback<String>() {
             @Override

@@ -85,6 +85,7 @@ public class Funcions {
         int i = 0;
         while(!found && i < mActiveAdmins.size()){
             if(mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName())) found = true;
+            i++;
         }
         return found;
     }
@@ -118,6 +119,12 @@ public class Funcions {
             gu.month = finalTime.get(Calendar.MONTH) + 1;
             gu.year = finalTime.get(Calendar.YEAR);
             gu.usage = appUsages;
+
+            gu.totalTime = Long.parseLong("0");
+            for(AppUsage au : appUsages){
+                gu.totalTime += au.totalTime;
+            }
+
             gul.add(gu);
         } else {
             for (int i = iTime; i < fTime; i++) {
@@ -140,6 +147,7 @@ public class Funcions {
                 gu.month = finalTime.get(Calendar.MONTH) + 1;
                 gu.year = finalTime.get(Calendar.YEAR);
                 gu.usage = appUsages;
+
                 gul.add(gu);
             }
         }

@@ -226,4 +226,6 @@
     <string name="home_second">Home Second</string>
 
     <string name="logout">Tancar Sessió</string>
+    <string name="daily_usage">"Ús diari del dispositiu"</string>
+    <string name="press_pie_chart">"Prem a la gràfica per saber el temps."</string>
 </resources>

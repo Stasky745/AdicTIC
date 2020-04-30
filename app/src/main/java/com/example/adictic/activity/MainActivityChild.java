@@ -142,12 +142,12 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
             final int statCount = stats.size();
             for (int i = 0; i < statCount; i++) {
                 final UsageStats pkgStats = stats.get(i);
-
+                Drawable appIcon = null;
                 // load application labels for each application
                 try {
                     ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
                     if(pkgStats.getTotalTimeInForeground()>5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.getPackageName());
+                        appIcon = getPackageManager().getApplicationIcon(pkgStats.getPackageName());
                         String label = appInfo.loadLabel(mPm).toString();
                         mAppLabelMap.put(pkgStats.getPackageName(), label);
 
@@ -162,10 +162,21 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                             existingStats.add(pkgStats);
                         }
                     }
-
                 } catch (NameNotFoundException e) {
-                    // This package may be gone.
+                    if(pkgStats.getTotalTimeInForeground()>5000) {
+                        mAppLabelMap.put(pkgStats.getPackageName(), pkgStats.getPackageName());
+                        totalTime = totalTime + pkgStats.getTotalTimeInForeground();
+                        UsageStats existingStats =
+                                map.get(pkgStats.getPackageName());
+                        if (existingStats == null) {
+                            map.put(pkgStats.getPackageName(), pkgStats);
+                            mIcons.put(pkgStats.getPackageName(), getResources().getDrawable(android.R.drawable.ic_menu_delete));
+                        } else {
+                            existingStats.add(pkgStats);
+                        }
+                    }
                 }
+
             }
             mPackageStats.addAll(map.values());
 
@@ -348,7 +359,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
             @Override
             public void onClick(View v) {
 
-                mDPM.lockNow();
+                //mDPM.lockNow();
 
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
@@ -375,10 +386,8 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                         ApplicationInfo appInfo = null;
                         try {
                             appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                        } catch (NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                        } catch (NameNotFoundException e) {}
+                        if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo==null || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {
                             AppUsage appUsage = new AppUsage();
                             appUsage.appName = pkgStats.getPackageName();
                             appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();

@@ -40,6 +40,10 @@ public interface TodoApi {
     @GET("/usage/{id}/{xDays}")
     Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
 
+    /** format {dd-mm-aaaa} o {mm-aaaa} per tot el mes**/
+    @GET("/usage/{id}/{dataInicial}/{dataFinal}")
+    Call<Collection<GeneralUsage>> getGenericAppUsage(@Path("id") Long childId, @Path("dataInicial") String dataInicial, @Path("dataFinal") String dataFinal);
+
     @POST("/usage/{id}")
     Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
 
