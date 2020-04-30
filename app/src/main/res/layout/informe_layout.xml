@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/Ch_Line"
+        android:layout_width="350dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/TV_LineChart"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_LineChart" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/Ch_Pie"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/TV_PieChart"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_PieChart" />
+
+    <TextView
+        android:id="@+id/TV_LineChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        android:text="@string/daily_usage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/TV_PieChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/graphDivider"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp"
+        android:text="@string/press_pie_chart"
+        app:layout_constraintTop_toBottomOf="@+id/graphDivider" />
+
+    <View
+        android:id="@+id/graphDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/Ch_Line"
+        app:layout_constraintTop_toBottomOf="@+id/Ch_Line"
+        android:layout_marginTop="35dp"
+
+        android:background="?android:attr/listDivider" />
+
+
+</RelativeLayout>

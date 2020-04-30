@@ -142,7 +142,7 @@ public class Login extends AppCompatActivity {
                                 Login.this.finish();
                             }
                             else{
-                                Login.this.startActivity(new Intent(Login.this, NavActivity.class));
+                                Login.this.startActivity(new Intent(Login.this, MainActivityChild.class));
                                 Login.this.finish();
                             }
                         }

@@ -1,5 +1,6 @@
 package com.example.adictic.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.Informe;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
 
@@ -89,8 +91,10 @@ public class MainParentFragment extends Fragment {
         View.OnClickListener informe = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //getActivity().startActivity(new Intent(getActivity(),Informe.class));
-                System.out.println("idChild: "+idChildSelected);
+                Intent i = new Intent(getActivity(), Informe.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+                System.out.println("idChild: " + idChildSelected);
             }
         };
 

@@ -11,8 +11,15 @@ import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import com.example.adictic.R;
+import com.example.adictic.TodoApp;
+import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.util.Funcions;
+
+import java.util.Calendar;
 
 public class AppUsagePermActivity extends Activity {
 
@@ -28,7 +35,6 @@ public class AppUsagePermActivity extends Activity {
         bt_okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("IEEEPA");
                 UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
                 AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
             }
@@ -39,6 +45,16 @@ public class AppUsagePermActivity extends Activity {
     protected void onResume() {
 
         if(Funcions.isAppUsagePermissionOn(this)){
+
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_YEAR,-6);
+            TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
+
+            OneTimeWorkRequest myWork =
+                    new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
+
+            WorkManager.getInstance(this).enqueue(myWork);
+
             if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 this.finish();

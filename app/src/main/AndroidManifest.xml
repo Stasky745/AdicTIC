@@ -69,6 +69,7 @@
 
         <!-- DEVICE ADMIN POLICIES -->
         <activity android:name=".activity.DevicePolicyAdmin"/>
+        <activity android:name=".activity.Informe" />
 
         <receiver
             android:name=".activity.DevicePolicyAdmin$MyDevicePolicyReceiver"
