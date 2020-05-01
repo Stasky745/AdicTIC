@@ -19,6 +19,8 @@ import androidx.work.WorkManager;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.MonthEntity;
+import com.example.adictic.entity.YearEntity;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
@@ -88,6 +90,19 @@ public class Funcions {
             i++;
         }
         return found;
+    }
+
+    public static Map<Integer,Map<Integer,List<Integer>>> convertYearEntityToMap(List<YearEntity> yearList){
+        Map<Integer,Map<Integer,List<Integer>>> res = new HashMap<>();
+        for(YearEntity yEntity : yearList){
+            Map<Integer,List<Integer>> mMap = new HashMap<>();
+            for(MonthEntity mEntity : yEntity.months){
+                mMap.put(mEntity.month,mEntity.days);
+            }
+            res.put(yEntity.year,mMap);
+        }
+
+        return res;
     }
 
     public static void runLimitAppsWorker(Context mContext, long delay){
