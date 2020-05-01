@@ -2,8 +2,6 @@ package com.example.adictic.activity;
 
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.adictic.R;
 import com.google.android.material.navigation.NavigationView;
@@ -31,7 +29,7 @@ public class NavActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_mainParent, R.id.nav_home, R.id.nav_slideshow, R.id.nav_settings)
+                R.id.nav_mainParent, R.id.nav_advice, R.id.nav_settings, R.id.nav_community, R.id.nav_help)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);

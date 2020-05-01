@@ -211,9 +211,13 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu">MENÚ</string>
+    <string name="menu_home">Inici</string>
+    <string name="menu_settings">Configuració</string>
+    <string name="menu_community">Comunitat</string>
+    <string name="menu_advice">Assessorament</string>
+    <string name="menu_contact">Contacte</string>
+    <string name="menu_help">Ajuda</string>
 
     <string name="free_time">"Temps lliure"</string>
     <string name="block_device">"Bloquejar dispositiu"</string>
@@ -224,6 +228,14 @@
     <string name="block_apps">"Bloqueig d'aplicacions"</string>
     <string name="Notifications">"Notificacions"</string>
     <string name="home_second">Home Second</string>
+
+    <string name="advice_infoContent">Contingut informatiu</string>
+    <string name="advice_mostAskQuest">Preguntes freqüents</string>
+    <string name="advice_recommendations">Recomanacions</string>
+    <string name="advice_onlineChat">Chat online</string>
+    <string name="advice_privateConsult">Consulta privada</string>
+    <string name="advice_OurCenters">Els nostres centres</string>
+
 
     <string name="logout">Tancar Sessió</string>
 </resources>

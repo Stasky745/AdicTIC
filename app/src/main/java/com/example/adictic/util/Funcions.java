@@ -85,6 +85,7 @@ public class Funcions {
         int i = 0;
         while(!found && i < mActiveAdmins.size()){
             if(mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName())) found = true;
+            i++;
         }
         return found;
     }
