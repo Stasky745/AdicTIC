@@ -359,8 +359,6 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
             @Override
             public void onClick(View v) {
 
-                //mDPM.lockNow();
-
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
                 List<UsageStats> stats;
