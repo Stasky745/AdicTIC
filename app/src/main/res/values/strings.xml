@@ -192,6 +192,7 @@
     <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
     <string name="error_noUsername">Escriu un nom d\'usuari.</string>
     <string name="error_password">Contrasenya no vàlida.</string>
+    <string name="error_noData">"No s'ha pogut extreure informació del servidor"</string>
 
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
@@ -227,5 +228,7 @@
 
     <string name="logout">Tancar Sessió</string>
     <string name="daily_usage">"Ús diari del dispositiu"</string>
-    <string name="press_pie_chart">"Prem a la gràfica per saber el temps."</string>
+    <string name="press_pie_chart">"Prem a la gràfica per saber més informació."</string>
+    <string name="log_month">"Informe:"</string>
+    <string name="year">"Any:"</string>
 </resources>
