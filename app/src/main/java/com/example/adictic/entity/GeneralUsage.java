@@ -7,4 +7,6 @@ public class GeneralUsage {
     public Integer month;
     public Integer year;
     public Collection<AppUsage> usage;
+
+    public Long totalTime;
 }
