@@ -408,7 +408,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                         } catch (NameNotFoundException e) {}
                         if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo==null || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {
                             AppUsage appUsage = new AppUsage();
-                            appUsage.appName = pkgStats.getPackageName();
+                            appUsage.pkgName = pkgStats.getPackageName();
                             appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
                             appUsage.totalTime = pkgStats.getTotalTimeInForeground();
                             appUsages.add(appUsage);

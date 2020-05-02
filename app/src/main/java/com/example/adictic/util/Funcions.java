@@ -202,7 +202,8 @@ public class Funcions {
             }
             if (pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
-                appUsage.appName = pkgStats.getPackageName();
+                appUsage.appTitle = appInfo.loadLabel(mPm).toString();
+                appUsage.pkgName = pkgStats.getPackageName();
                 appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
                 appUsage.totalTime = pkgStats.getTotalTimeInForeground();
                 appUsages.add(appUsage);

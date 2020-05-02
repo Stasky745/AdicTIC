@@ -125,20 +125,24 @@ public class Informe extends AppCompatActivity {
                 if(response.isSuccessful()){
                     /** Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
-                    daysMap = Funcions.convertYearEntityToMap(yEntityList);
-                    System.out.println(daysMap.keySet());
-                    yearList.addAll(daysMap.keySet());
-                    Collections.sort(yearList,Collections.reverseOrder());
+                    if(yEntityList.isEmpty()) showError();
+                    else {
+                        daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
-                    currentYear = yearList.get(0);
+                        System.out.println(daysMap.keySet());
+                        yearList.addAll(daysMap.keySet());
+                        Collections.sort(yearList, Collections.reverseOrder());
 
-                    monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-                    Collections.sort(monthList,Collections.reverseOrder());
+                        currentYear = yearList.get(0);
 
-                    currentMonth = monthList.get(0)-1;
-                    dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
+                        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
+                        Collections.sort(monthList, Collections.reverseOrder());
 
-                    getStats(currentMonth+1,currentYear);
+                        currentMonth = monthList.get(0) - 1;
+                        dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth + 1] + " " + currentYear);
+
+                        getStats(currentMonth + 1, currentYear);
+                    }
                 }
                 else{
                     showError();
@@ -219,8 +223,8 @@ public class Informe extends AppCompatActivity {
             totalTime+=24*60*60*1000;
             totalUsageTime+=gu.totalTime;
             for(AppUsage au: gu.usage){
-                if(mapUsage.containsKey(au.appName)) mapUsage.put(au.appName,mapUsage.get(au.appName)+au.totalTime);
-                else mapUsage.put(au.appName,au.totalTime);
+                if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
+                else mapUsage.put(au.appTitle,au.totalTime);
             }
             barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
         }
@@ -283,15 +287,15 @@ public class Informe extends AppCompatActivity {
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                PieEntry pe = (PieEntry) e;
+                final PieEntry pe = (PieEntry) e;
 
                 TV_pieApp.setText(pe.getLabel());
+
 
                 Pair<Integer,Integer> appTime = Funcions.millisToString(e.getY());
 
                 if(appTime.first == 0) pieChart.setCenterText(getResources().getString(R.string.mins,appTime.second));
                 else pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes,appTime.first,appTime.second));
-
             }
 
             @Override
@@ -319,8 +323,6 @@ public class Informe extends AppCompatActivity {
         xAxis.setValueFormatter(new MyXAxisBarFormatter());
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawLabels(true);
-
-        //barChart.setExtraBottomOffset(30);
 
         barChart.getAxisLeft().setValueFormatter(new MyYAxisBarFormatter());
         barChart.getAxisRight().setEnabled(false);
