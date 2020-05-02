@@ -85,25 +85,27 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.chip.Chip
-                android:theme="@style/Theme.MaterialComponents.Light"
                 android:id="@+id/CH_rangeDates"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:checkable="true"
                 android:checked="false"
                 android:text="@string/chip_range_dates"
+                android:theme="@style/Theme.MaterialComponents.Light"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/divider3"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.chip.Chip
-                android:theme="@style/Theme.MaterialComponents.Light"
                 android:id="@+id/CH_singleDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
+                android:checkable="true"
                 android:checked="false"
                 android:text="@string/chip_single_date"
+                android:theme="@style/Theme.MaterialComponents.Light"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/divider3"
                 app:layout_constraintTop_toTopOf="parent" />
