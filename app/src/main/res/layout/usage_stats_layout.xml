@@ -73,56 +73,33 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        app:checkedChip="@id/CH_singleDate"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:singleLine="true"
         app:singleSelection="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <com.google.android.material.chip.Chip
+            android:id="@+id/CH_singleDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:checkable="true"
+            android:checked="false"
+            android:text="@string/chip_single_date"
+            android:theme="@style/Theme.MaterialComponents.Light" />
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/CH_rangeDates"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:checkable="true"
-                android:checked="false"
-                android:text="@string/chip_range_dates"
-                android:theme="@style/Theme.MaterialComponents.Light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/divider3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/CH_singleDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:checkable="true"
-                android:checked="false"
-                android:text="@string/chip_single_date"
-                android:theme="@style/Theme.MaterialComponents.Light"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/divider3"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/divider3"
-                android:layout_width="1dp"
-                android:layout_height="30dp"
-                android:layout_marginEnd="16dp"
-                android:background="?android:attr/listDivider"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/CH_rangeDates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:checkable="true"
+            android:checked="false"
+            android:text="@string/chip_range_dates"
+            android:theme="@style/Theme.MaterialComponents.Light" />
 
     </com.google.android.material.chip.ChipGroup>
 

@@ -37,6 +37,7 @@
         <activity android:name=".activity.MainActivityChild" />
         <activity android:name=".activity.AppUsagePermActivity"/>
         <activity android:name=".activity.AccessibilityPermActivity"/>
+        <activity android:name=".activity.DayUsageActivity"/>
         <activity
             android:name=".activity.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
