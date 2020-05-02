@@ -140,6 +140,7 @@ public class Login extends AppCompatActivity {
                     if(usuari.tutor == 1 || usuari.existeix == 1) {
 
                         if(tutor == 0){
+                            TodoApp.setID(response.body().id);
                             if(!Funcions.isAdminPermissionsOn(Login.this)){
                                 Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));
                                 Login.this.finish();

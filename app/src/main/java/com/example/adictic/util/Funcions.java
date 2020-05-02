@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -19,6 +20,8 @@ import androidx.work.WorkManager;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.MonthEntity;
+import com.example.adictic.entity.YearEntity;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
@@ -74,6 +77,19 @@ public class Funcions {
         }
     }
 
+    public static Pair<Integer,Integer> millisToString(float l){
+        float minuts = l/(60000);
+        int hores = 0;
+
+        while(minuts >= 60){
+            hores++;
+            minuts-=60;
+        }
+
+        Pair<Integer,Integer> res = new Pair<>(hores,Math.round(minuts));
+        return res;
+    }
+
     // To check if Admin Permissions are on
     public static boolean isAdminPermissionsOn(Context mContext){
         DevicePolicyManager mDPM = (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -88,6 +104,19 @@ public class Funcions {
             i++;
         }
         return found;
+    }
+
+    public static Map<Integer,Map<Integer,List<Integer>>> convertYearEntityToMap(List<YearEntity> yearList){
+        Map<Integer,Map<Integer,List<Integer>>> res = new HashMap<>();
+        for(YearEntity yEntity : yearList){
+            Map<Integer,List<Integer>> mMap = new HashMap<>();
+            for(MonthEntity mEntity : yEntity.months){
+                mMap.put(mEntity.month,mEntity.days);
+            }
+            res.put(yEntity.year,mMap);
+        }
+
+        return res;
     }
 
     public static void runLimitAppsWorker(Context mContext, long delay){
@@ -119,6 +148,12 @@ public class Funcions {
             gu.month = finalTime.get(Calendar.MONTH) + 1;
             gu.year = finalTime.get(Calendar.YEAR);
             gu.usage = appUsages;
+
+            gu.totalTime = Long.parseLong("0");
+            for(AppUsage au : appUsages){
+                gu.totalTime += au.totalTime;
+            }
+
             gul.add(gu);
         } else {
             for (int i = iTime; i < fTime; i++) {
@@ -141,6 +176,7 @@ public class Funcions {
                 gu.month = finalTime.get(Calendar.MONTH) + 1;
                 gu.year = finalTime.get(Calendar.YEAR);
                 gu.usage = appUsages;
+
                 gul.add(gu);
             }
         }

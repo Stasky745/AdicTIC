@@ -176,6 +176,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                         }
                     }
                 }
+
             }
             mPackageStats.addAll(map.values());
 
@@ -378,6 +379,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         pujarInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+              
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
                 List<UsageStats> stats;
