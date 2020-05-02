@@ -8,8 +8,10 @@ import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.entity.VellFillLogin;
+import com.example.adictic.entity.YearEntity;
 
 import java.util.Collection;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -40,6 +42,10 @@ public interface TodoApi {
     @GET("/usage/{id}/{xDays}")
     Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
 
+    /** format {dd-mm-aaaa} o {mm-aaaa} per tot el mes**/
+    @GET("/usage/{id}/{dataInicial}/{dataFinal}")
+    Call<Collection<GeneralUsage>> getGenericAppUsage(@Path("id") Long childId, @Path("dataInicial") String dataInicial, @Path("dataFinal") String dataFinal);
+
     @POST("/usage/{id}")
     Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
 
@@ -51,4 +57,8 @@ public interface TodoApi {
 
     @POST("/users/{idChild}/callBlockedApp")
     Call<String> callBlockedApp(@Path("id") Long childId, @Body String packageName);
+
+    @GET("/usage/{id}/daysUsage")
+    Call<List<YearEntity>> getDaysWithData(@Path("id") Long childId);
+
 }
