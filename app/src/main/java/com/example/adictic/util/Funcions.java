@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -74,6 +75,19 @@ public class Funcions {
             Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
             return false;
         }
+    }
+
+    public static Pair<Integer,Integer> millisToString(float l){
+        float minuts = l/(60000);
+        int hores = 0;
+
+        while(minuts >= 60){
+            hores++;
+            minuts-=60;
+        }
+
+        Pair<Integer,Integer> res = new Pair<>(hores,Math.round(minuts));
+        return res;
     }
 
     // To check if Admin Permissions are on

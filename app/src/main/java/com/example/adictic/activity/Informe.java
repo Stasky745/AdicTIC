@@ -1,8 +1,10 @@
 package com.example.adictic.activity;
 
-import android.app.DatePickerDialog;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -33,6 +35,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,7 +51,6 @@ import retrofit2.Response;
 public class Informe extends AppCompatActivity {
 
      TodoApi mTodoService;
-     DatePickerDialog datePickerDialog;
      PieChart pieChart;
      TextView TV_pieApp;
      BarChart barChart;
@@ -60,6 +62,9 @@ public class Informe extends AppCompatActivity {
      int currentYear;
      int currentMonth;
      TextView error;
+     TextView TV_percentageUsage;
+     TextView TV_totalUsage;
+     double percentage;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -72,6 +77,8 @@ public class Informe extends AppCompatActivity {
         TV_pieApp = (TextView) findViewById(R.id.TV_PieChart);
         dateButton = (Button) findViewById(R.id.BT_monthPicker);
         error = (TextView) findViewById(R.id.TV_errorNoData);
+        TV_percentageUsage = (TextView) findViewById(R.id.TV_percentageUsage);
+        TV_totalUsage = (TextView) findViewById(R.id.TV_totalUse);
 
         daysMap = new HashMap<>();
         monthList = new ArrayList<>();
@@ -80,6 +87,25 @@ public class Informe extends AppCompatActivity {
         idChild = getIntent().getLongExtra("idChild",-1);
 
         getMonthYearLists();
+
+        TV_percentageUsage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String deviceTime = TV_totalUsage.getText().toString().substring(0,TV_totalUsage.getText().toString().indexOf('/')-2);
+                String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/')+2,TV_totalUsage.getText().length()-1);
+                DecimalFormat decimalFormat = new DecimalFormat("###.##");
+
+                AlertDialog dialog = new AlertDialog.Builder(Informe.this).create();
+                dialog.setMessage(getResources().getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE,getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
     }
 
     private void showError(){
@@ -97,27 +123,22 @@ public class Informe extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<YearEntity>> call, Response<List<YearEntity>> response) {
                 if(response.isSuccessful()){
-                    if(response.body() != null){
-                        /** Agafem les dades de response i convertim en map **/
-                        List<YearEntity> yEntityList = response.body();
-                        daysMap = Funcions.convertYearEntityToMap(yEntityList);
-                        System.out.println(daysMap.keySet());
-                        yearList.addAll(daysMap.keySet());
-                        Collections.sort(yearList,Collections.reverseOrder());
+                    /** Agafem les dades de response i convertim en map **/
+                    List<YearEntity> yEntityList = response.body();
+                    daysMap = Funcions.convertYearEntityToMap(yEntityList);
+                    System.out.println(daysMap.keySet());
+                    yearList.addAll(daysMap.keySet());
+                    Collections.sort(yearList,Collections.reverseOrder());
 
-                        currentYear = yearList.get(0);
+                    currentYear = yearList.get(0);
 
-                        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-                        Collections.sort(monthList,Collections.reverseOrder());
+                    monthList.addAll(daysMap.get(yearList.get(0)).keySet());
+                    Collections.sort(monthList,Collections.reverseOrder());
 
-                        currentMonth = monthList.get(0)-1;
-                        dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
+                    currentMonth = monthList.get(0)-1;
+                    dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
 
-                        getStats(currentMonth+1,currentYear);
-                    }
-                    else{
-                        showError();
-                    }
+                    getStats(currentMonth+1,currentYear);
                 }
                 else{
                     showError();
@@ -188,19 +209,37 @@ public class Informe extends AppCompatActivity {
         Map<String,Long> mapUsage = new HashMap<>();
 
         List<GeneralUsage> llista = getUsageMonths(currentMonth+1,currentYear,col);
-        System.out.println("GETUSAGEMONTHS: "+llista);
 
         List<BarEntry> barEntries = new ArrayList<>();
 
         long totalUsageTime = 0;
+        long totalTime = 0;
 
         for(GeneralUsage gu : llista){
+            totalTime+=24*60*60*1000;
             totalUsageTime+=gu.totalTime;
             for(AppUsage au: gu.usage){
                 if(mapUsage.containsKey(au.appName)) mapUsage.put(au.appName,mapUsage.get(au.appName)+au.totalTime);
                 else mapUsage.put(au.appName,au.totalTime);
             }
             barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
+        }
+
+        percentage = totalUsageTime*100.0f/totalTime;
+        TV_percentageUsage.setText(getResources().getString(R.string.percentage,Math.round(percentage)));
+
+        Pair<Integer,Integer> usagePair = Funcions.millisToString(totalUsageTime);
+        Pair<Integer,Integer> totalTimePair = Funcions.millisToString(totalTime);
+
+        if(usagePair.first == 0){
+            String first = getResources().getString(R.string.mins,usagePair.second);
+            String second = getResources().getString(R.string.hrs,totalTimePair.first);
+            TV_totalUsage.setText(getResources().getString(R.string.comp,first,second));
+        }
+        else{
+            String first = getResources().getString(R.string.hours_minutes,usagePair.first,usagePair.second);
+            String second = getResources().getString(R.string.hrs,totalTimePair.first);
+            TV_totalUsage.setText(getResources().getString(R.string.comp,first,second));
         }
 
         setBarChart(barEntries);
@@ -244,19 +283,14 @@ public class Informe extends AppCompatActivity {
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                float minuts = e.getY()/(1000);
-                int hores = 0;
                 PieEntry pe = (PieEntry) e;
 
                 TV_pieApp.setText(pe.getLabel());
 
-                while(minuts>=60){
-                    hores++;
-                    minuts /= 60;
-                }
+                Pair<Integer,Integer> appTime = Funcions.millisToString(e.getY());
 
-                if(hores==0) pieChart.setCenterText((int)minuts + " min.");
-                else pieChart.setCenterText(hores + " h.\n" + (int)minuts + " min.");
+                if(appTime.first == 0) pieChart.setCenterText(getResources().getString(R.string.mins,appTime.second));
+                else pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes,appTime.first,appTime.second));
 
             }
 
@@ -296,7 +330,7 @@ public class Informe extends AppCompatActivity {
         barChart.invalidate();
     }
 
-    class MyXAxisBarFormatter extends ValueFormatter {
+    static class MyXAxisBarFormatter extends ValueFormatter {
         List<String> mesos = Arrays.asList(" Gen"," Feb"," Mar"," Abr"," Maig"," Jun"," Jul"," Ago"," Set"," Oct"," Nov"," Des");
 
         @Override
@@ -307,7 +341,7 @@ public class Informe extends AppCompatActivity {
         }
     }
 
-    class MyYAxisBarFormatter extends ValueFormatter {
+    static class MyYAxisBarFormatter extends ValueFormatter {
         @Override
         public String getFormattedValue(float value){
             return Math.round(value)+"h.";
