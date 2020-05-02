@@ -1,6 +1,7 @@
 package com.example.adictic.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -55,14 +56,24 @@ public class Login extends AppCompatActivity {
                 final RadioButton tutor = findViewById(R.id.RB_tutor);
                 final RadioButton tutelat = findViewById(R.id.RB_tutelat);
                 final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
-                final TextView noUsername = (TextView)findViewById(R.id.TV_noUsername);
 
-                if(u.getText().length() == 0) noUsername.setVisibility(View.VISIBLE);
-                else noUsername.setVisibility(View.GONE);
-
-                TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
-
-                errorPw.setVisibility(View.GONE);
+                if(u.getText().length() == 0){
+                    u.setHint(getString(R.string.error_noUsername));
+                    u.setHintTextColor(Color.parseColor("#fc8279"));
+                    p.setHint(getString(R.string.hint_password));
+                    p.setHintTextColor(Color.parseColor("#808080"));
+                }
+                else{
+                    u.setHint(getString(R.string.hint_username));
+                    u.setHintTextColor(Color.parseColor("#808080"));
+                    if(p.getText().length()==0){
+                        p.setHint(getString(R.string.error_password));
+                        p.setHintTextColor(Color.parseColor("#fc8279"));
+                    } else {
+                        p.setHint(getString(R.string.hint_password));
+                        p.setHintTextColor(Color.parseColor("#808080"));
+                    }
+                }
 
                 noTypeDevice.setVisibility(View.GONE);
 
@@ -165,9 +176,8 @@ public class Login extends AppCompatActivity {
                         Login.this.finish();
                     }
                 } else {
-                    TextView errorPw = (TextView)findViewById(R.id.TV_noPassword);
-
-                    errorPw.setVisibility(View.VISIBLE);
+                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }
 

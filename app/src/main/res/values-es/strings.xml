@@ -160,26 +160,26 @@
     <string name="block_warning">Aquesta aplicació està bloquejada</string>
     <string name="sortir">Sortir</string>
 
-    <string name="username">Nom d\'usuari:</string>
-    <string name="password">Contrasenya:</string>
-    <string name="password2">Repeteix la contrasenya:</string>
-    <string name="email">Correu electrònic:</string>
-    <string name="hint_username">Nom d\'usuari</string>
-    <string name="hint_password">Contrasenya</string>
-    <string name="hint_email">Correu electrònic</string>
-    <string name="no_user">No tens usuari? </string>
-    <string name="have_account">Ja tens compte? </string>
-    <string name="register">Registra\'t</string>
-    <string name="go_login">Inicia sessió</string>
-    <string name="tipus">Aquest dispositiu és de:</string>
+    <string name="username">Nombre de usuario:</string>
+    <string name="password">Contraseña:</string>
+    <string name="password2">Repite la contraseña:</string>
+    <string name="email">Correo electronico:</string>
+    <string name="hint_username">Nombre de usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_email">Correo electronico</string>
+    <string name="no_user">No tienes usuario? </string>
+    <string name="have_account">Ya tienes cuenta? </string>
+    <string name="register">Registrate</string>
+    <string name="go_login">Inicia sessión</string>
+    <string name="tipus">Este dispositivo és de:</string>
 
-    <string name="tutor">Pare / Mare / Tutor</string>
-    <string name="tutelat">Adolescent</string>
+    <string name="tutor">Padre / Madre / Tutor</string>
+    <string name="tutelat">Adolescente</string>
 
-    <string name="login">Iniciar\nSessió</string>
+    <string name="login">Iniciar\nSessión</string>
 
-    <string name="nomDisp">Nom del dispositiu:</string>
-    <string name="hint_nomDisp">Nom del dispositiu</string>
+    <string name="nomDisp">Nombre del dispositivo:</string>
+    <string name="hint_nomDisp">Nombre del dispositivo</string>
 
     <string name="title_activity_splash_screen">AdicTIC</string>
     <string name="good_register">Registre correcte!</string>
