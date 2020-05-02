@@ -86,4 +86,13 @@
         app:layout_constraintStart_toEndOf="@+id/TV_totalUse"
         app:layout_constraintTop_toTopOf="@+id/TV_totalUse" />
 
+    <Button
+        android:id="@+id/Debug_TancarSessio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tancar Sessió"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pkg_list" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
