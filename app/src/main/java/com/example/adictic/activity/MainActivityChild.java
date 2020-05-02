@@ -353,12 +353,33 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        Button logout = findViewById(R.id.Debug_TancarSessio);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
+                Call<String> call = mTodoService.logout();
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                            MainActivityChild.this.startActivity(new Intent(MainActivityChild.this, Login.class));
+                            MainActivityChild.this.finish();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+            }
+        });
 
         Button pujarInfo = findViewById(R.id.Debug_PujarInfo);
         pujarInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+              
                 TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
                 List<GeneralUsage> gul = new ArrayList<>();
                 List<UsageStats> stats;

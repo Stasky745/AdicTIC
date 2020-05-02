@@ -126,7 +126,7 @@ public class NomFill extends AppCompatActivity {
 
                     if(tv.getText().toString().equals(s.toString())){
                         tv.setTypeface(null, Typeface.BOLD);
-                        tv.setTextColor(Color.BLUE);
+                        tv.setTextColor(getResources().getColor(R.color.colorPrimary));
                     }
                     else{
                         tv.setTypeface(null, Typeface.NORMAL);
