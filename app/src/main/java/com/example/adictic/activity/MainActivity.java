@@ -365,15 +365,15 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
 
                     // load application labels for each application
                     try {
-                        ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.appName, 0);
+                        ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.pkgName, 0);
                         if(pkgStats.totalTime>5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                            Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.appName);
+                            Drawable appIcon = getPackageManager().getApplicationIcon(pkgStats.pkgName);
                             String label = appInfo.loadLabel(mPm).toString();
-                            mAppLabelMap.put(pkgStats.appName, label);
+                            mAppLabelMap.put(pkgStats.pkgName, label);
 
                             totalTime = totalTime + pkgStats.totalTime;
                             mPackageStats.add(pkgStats);
-                            mIcons.put(pkgStats.appName,appIcon);
+                            mIcons.put(pkgStats.pkgName,appIcon);
                         }
 
                     } catch (NameNotFoundException e) {
@@ -467,7 +467,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
             // Bind the data efficiently with the holder
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
-                String label = mAppLabelMap.get(pkgStats.appName);
+                String label = mAppLabelMap.get(pkgStats.pkgName);
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
@@ -508,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements OnItemSelectedLis
                 if(usageTimeInt <= xDays*CORRECT_USAGE_APP) holder.usageTime.setTextColor(Color.GREEN);
                 else if(usageTimeInt > xDays*DANGEROUS_USAGE_APP) holder.usageTime.setTextColor(Color.RED);
                 else holder.usageTime.setTextColor(Color.rgb(255,128,64));
-                holder.icon.setImageDrawable(mIcons.get(pkgStats.appName));
+                holder.icon.setImageDrawable(mIcons.get(pkgStats.pkgName));
             } else {
                 Log.w(TAG, "No usage stats info for package:" + position);
             }

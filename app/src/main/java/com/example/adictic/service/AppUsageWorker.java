@@ -47,10 +47,6 @@ public class AppUsageWorker extends Worker {
 
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
-        for(GeneralUsage gu : gul){
-
-        }
-
         Call<String> call = mTodoService.sendAppUsage(TodoApp.getID(),gul);
         call.enqueue(new Callback<String>() {
             @Override
@@ -89,7 +85,12 @@ public class AppUsageWorker extends Worker {
         });
 
         // Indicate whether the task finished successfully with the Result
-        while(ok1 == null && ok2 == null){}
+        long now = System.currentTimeMillis();
+        while(ok1 == null && ok2 == null){
+            if(System.currentTimeMillis() - now > 30*1000){
+                ok1 = ok2 = false;
+            }
+        }
         if(ok1 && ok2){
             Log.d(TAG, "Result OK");
             TodoApp.setDayOfYear(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
