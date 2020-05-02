@@ -192,6 +192,7 @@
     <string name="error_noLogin">ERROR: No s\'ha pogut entrar.</string>
     <string name="error_noUsername">Escriu un nom d\'usuari.</string>
     <string name="error_password">Contrasenya no vàlida.</string>
+    <string name="error_noData">"No s'ha pogut extreure informació del servidor"</string>
 
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
@@ -224,6 +225,20 @@
     <string name="block_apps">"Bloqueig d'aplicacions"</string>
     <string name="Notifications">"Notificacions"</string>
     <string name="home_second">Home Second</string>
+    <string name="device_usage">"Ús total del dispositiu:"</string>
 
     <string name="logout">Tancar Sessió</string>
+    <string name="daily_usage">"Ús diari del dispositiu"</string>
+    <string name="press_pie_chart">"Prem a la gràfica per saber més informació."</string>
+    <string name="log_month">"Informe:"</string>
+    <string name="year">"Any:"</string>
+
+    <string name="hours_minutes">"%d h. %d min."</string>
+    <string name="hrs">"%d h."</string>
+    <string name="hours_endl_minutes">"%d h.\n%d min."</string>
+    <string name="mins">"%d min."</string>
+    <string name="comp">"%s / %s"</string>
+    <string name="percentage">"%d%%"</string>
+
+    <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
 </resources>
