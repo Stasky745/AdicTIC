@@ -15,6 +15,7 @@ public class AppUsage {
         if(obj.getClass()==String.class) return pkgName.equals((String) obj);
 
         AppUsage that = (AppUsage) obj;
+        if(that.pkgName == null) return false;
         return pkgName.equals(that.pkgName);
     }
 }

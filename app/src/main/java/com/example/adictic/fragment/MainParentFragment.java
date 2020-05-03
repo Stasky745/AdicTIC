@@ -93,6 +93,7 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), Informe.class);
+                i.putExtra("idChild",idChildSelected);
                 getActivity().startActivity(i);
             }
         };
@@ -104,6 +105,7 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), DayUsageActivity.class);
+                i.putExtra("idChild",idChildSelected);
                 getActivity().startActivity(i);
             }
         };

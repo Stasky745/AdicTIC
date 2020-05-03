@@ -15,6 +15,27 @@
 <!--        <item name="colorAccent">@color/colorAccent</item>-->
 <!--    </style>-->
 
+    <style name="ChipStyle" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorPrimary</item>
+    </style>
+
+    <style name="MonthPickerDialogStyle">
+        <item name="monthBgSelectedColor">@color/colorPrimary</item>
+        <!--item name="monthBgColor">@color/white</item-->
+        <item name="monthFontColorNormal">@color/colorPrimary</item>
+
+        <item name="headerBgColor">@color/colorPrimary</item>
+
+    </style>
+
+    <style name="datePicker" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+    </style>
+
     <style name="FullscreenTheme" parent="AppTheme">
         <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
         <item name="android:windowActionBarOverlay">true</item>
