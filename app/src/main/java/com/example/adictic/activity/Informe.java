@@ -2,6 +2,7 @@ package com.example.adictic.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -145,12 +146,14 @@ public class Informe extends AppCompatActivity {
                     }
                 }
                 else{
+                    System.out.println("1");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<List<YearEntity>> call, Throwable t) {
+                System.out.println("2");
                 showError();
             }
         });
@@ -166,7 +169,8 @@ public class Informe extends AppCompatActivity {
                         currentYear = selectedYear;
                         getStats(currentMonth+1,currentYear);
                         dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
-                    }}, currentYear, currentMonth);
+                    }
+                }, currentYear, currentMonth);
 
         monthList.addAll(daysMap.get(yearList.get(0)).keySet());
         Collections.sort(monthList,Collections.reverseOrder());
@@ -198,12 +202,14 @@ public class Informe extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     makeGraphs(response.body());
                 } else {
+                    System.out.println("3");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
+                System.out.println("4");
                 showError();
             }
         });
@@ -328,6 +334,27 @@ public class Informe extends AppCompatActivity {
         barChart.getAxisRight().setEnabled(false);
         barChart.getLegend().setEnabled(false);
         barChart.getDescription().setEnabled(false);
+
+        barChart.dispatchSetSelected(false);
+        barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                int day = (int)e.getX() % 100;
+                int month = (int) e.getX()/100;
+
+                Intent i = new Intent(Informe.this,DayUsageActivity.class);
+                i.putExtra("idChild",idChild);
+                i.putExtra("day",day);
+                i.putExtra("month",month-1);
+                i.putExtra("year",currentYear);
+                startActivity(i);
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
 
         barChart.invalidate();
     }
