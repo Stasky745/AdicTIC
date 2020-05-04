@@ -98,6 +98,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         chipGroup = (ChipGroup) findViewById(R.id.CG_dateChips);
 
+
         daysMap = new HashMap<>();
         yearList = new ArrayList<>();
         monthList = new ArrayList<>();
@@ -116,8 +117,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             finalMonth = initialMonth = getIntent().getIntExtra("month",Calendar.getInstance().get(Calendar.MONTH));
             finalYear = initialYear = getIntent().getIntExtra("year",Calendar.getInstance().get(Calendar.YEAR));
         }
-
-        chipGroup.setSelectionRequired(true);
 
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
             @Override
@@ -141,6 +140,12 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 }
             }
         });
+
+        chipGroup.setSelectionRequired(false);
+        chipGroup.clearCheck();
+        chipGroup.check(CH_singleDate.getId());
+        chipGroup.setSelectionRequired(true);
+
         getMonthYearLists();
     }
 
