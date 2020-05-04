@@ -66,7 +66,7 @@ public interface TodoApi {
     @GET("/usage/{id}/daysUsage")
     Call<List<YearEntity>> getDaysWithData(@Path("id") Long childId);
 
-    @POST("/usage/{idChild}/installedApps")
+    @POST("/usage/{id}/installedApps")
     Call<String> postInstalledApps(@Path("id") Long childId, @Body Collection<InstalledApp> installedApps);
 
     @GET("/usage/{idChild}/installedApps")

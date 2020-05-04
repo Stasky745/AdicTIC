@@ -9,20 +9,14 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
 
-import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
 import com.example.adictic.entity.InstalledApp;
 import com.example.adictic.entity.LiveApp;
-
 import com.example.adictic.rest.TodoApi;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -54,18 +48,17 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mPm = getPackageManager();
         lastListApps = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
-        System.out.println("LAST LIST:"+lastListApps);
 
-
-        if (Build.VERSION.SDK_INT >= 16)
-            //Just in case this helps
-            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+        config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
     }
 
     private void checkInstalledApps(){
-        List<ApplicationInfo> listInstalledPkgs = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+        final List<ApplicationInfo> listInstalledPkgs = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        System.out.println("EQUAL: "+CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps));
+
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
             List<InstalledApp> listApps = new ArrayList<>();
 
@@ -77,9 +70,19 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 listApps.add(iApp);
             }
-        }
 
-        //Call<String> call = mTodoService.postInstalledApps()
+            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listApps);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.isSuccessful()) lastListApps = listInstalledPkgs;
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) { }
+            });
+        }
     }
 
     @Override
