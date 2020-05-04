@@ -187,7 +187,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 if (response.isSuccessful()) {
-                                    TodoApp.setID(fillVell.idChild);
+                                    TodoApp.setIDChild(fillVell.idChild);
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -228,7 +228,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<Long> call, Response<Long> response) {
                                 if (response.isSuccessful()) {
-                                    TodoApp.setID(response.body());
+                                    TodoApp.setIDChild(response.body());
                                     if(!Funcions.isAdminPermissionsOn(NomFill.this)){
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();

@@ -51,7 +51,7 @@ public class AppUsageWorker extends Worker {
 
         }
 
-        Call<String> call = mTodoService.sendAppUsage(TodoApp.getID(),gul);
+        Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(),gul);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -66,7 +66,7 @@ public class AppUsageWorker extends Worker {
             }
         });
 
-        Call<BlockedLimitedLists> call2 = mTodoService.getBlockedLimitedLists(TodoApp.getID());
+        Call<BlockedLimitedLists> call2 = mTodoService.getBlockedLimitedLists(TodoApp.getIDChild());
         call2.enqueue(new Callback<BlockedLimitedLists>() {
             @Override
             public void onResponse(Call<BlockedLimitedLists> call2, Response<BlockedLimitedLists> response) {

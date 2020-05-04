@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +27,9 @@ public class TodoApp extends Application {
 
     TodoApi mTodoService;
 
-    private static long ID=-1;
+    private static long IDTutor=-1;
     private static Integer tutor=-1;
-    private static String tutorToken = null;
+    private static long IDChild = -1;
     private static int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     private static boolean freeUse = false;
     private static long startFreeUse = 0;
@@ -36,6 +37,7 @@ public class TodoApp extends Application {
     private static boolean liveApp = false;
     private static String currentAppKid = null;
     private static String timeOpenedCurrentAppKid = null;
+    public final static List<String> blackListLiveApp = Arrays.asList( "com.google.android.apps.nexuslauncher");
 
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
@@ -43,11 +45,11 @@ public class TodoApp extends Application {
     public static void setStartFreeUse(long l){startFreeUse = l;}
     public static long getStartFreeUse(){return startFreeUse;}
 
-    public static void setTutorToken(String s){ TodoApp.tutorToken = s; }
-    public static String getTutorToken(){ return TodoApp.tutorToken; }
+    public static void setIDChild(long s){ TodoApp.IDChild = s; }
+    public static long getIDChild(){ return TodoApp.IDChild; }
 
-    public static void setID(Long l){ TodoApp.ID=l; }
-    public static Long getID(){ return TodoApp.ID; }
+    public static void setIDTutor(Long l){ TodoApp.IDTutor=l; }
+    public static Long getIDTutor(){ return TodoApp.IDTutor; }
 
     public static void setTutor(Integer i){ TodoApp.tutor=i; }
     public static Integer getTutor(){ return TodoApp.tutor; }
