@@ -139,13 +139,13 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
                     getStats();
                 }
-                if(chipGroup.getCheckedChipId()==View.NO_ID) chipGroup.check(checkedId);
             }
         });
         getMonthYearLists();
     }
 
     private void getStats(){
+        checkFutureDates();
         String initialDate = getResources().getString(R.string.informal_date_format,initialDay,initialMonth+1,initialYear);
         String finalDate = getResources().getString(R.string.informal_date_format,finalDay,finalMonth+1,finalYear);
 
@@ -197,6 +197,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         ListView listView = findViewById(R.id.pkg_list);
         mAdapter = new UsageStatsAdapter(appList);
+        System.out.println(mAdapter);
         listView.setAdapter(mAdapter);
     }
 
@@ -349,7 +350,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
-//                holder.lastTimeUsed.setText(((Long)pkgStats.getLastTimeUsed()).toString());
                 // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
                 long secondsInMilli = 1000;
                 long minutesInMilli = secondsInMilli * 60;
@@ -460,31 +460,35 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
             BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
 
-            if(initialYear > finalYear){
+            checkFutureDates();
+        }
+    };
+
+    private void checkFutureDates(){
+        if(initialYear > finalYear){
+            finalYear = initialYear;
+            finalMonth = initialMonth;
+            finalDay = initialDay;
+
+            BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
+        }
+        else if(initialYear == finalYear){
+            if(initialMonth > finalMonth){
                 finalYear = initialYear;
                 finalMonth = initialMonth;
                 finalDay = initialDay;
 
                 BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
             }
-            else if(initialYear == finalYear){
-                if(initialMonth > finalMonth){
-                    finalYear = initialYear;
-                    finalMonth = initialMonth;
-                    finalDay = initialDay;
+            else if(initialDay > finalDay){
+                finalYear = initialYear;
+                finalMonth = initialMonth;
+                finalDay = initialDay;
 
-                    BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
-                }
-                else if(initialDay > finalDay){
-                    finalYear = initialYear;
-                    finalMonth = initialMonth;
-                    finalDay = initialDay;
-
-                    BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
-                }
+                BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
             }
         }
-    };
+    }
 
     private DatePickerDialog.OnDateSetListener finalDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -519,8 +523,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                         monthList.addAll(daysMap.get(yearList.get(0)).keySet());
                         Collections.sort(monthList, Collections.reverseOrder());
 
-                        chipGroup.check(CH_rangeDates.getId());
-                        chipGroup.check(CH_singleDate.getId());
+                        getStats();
                     }
                 }
                 else{
