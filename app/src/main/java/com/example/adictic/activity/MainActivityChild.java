@@ -422,7 +422,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                     gul.add(gu);
                 }
 
-                Call<String> call = mTodoService.sendAppUsage(TodoApp.getID(),gul);
+                Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(),gul);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {

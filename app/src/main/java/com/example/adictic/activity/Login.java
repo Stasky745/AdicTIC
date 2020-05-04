@@ -136,34 +136,8 @@ public class Login extends AppCompatActivity {
 
                     User usuari = response.body();
                     TodoApp.setTutor(usuari.tutor);
-                    TodoApp.setID(usuari.id);
-                    if(usuari.tutor == 1 || usuari.existeix == 1) {
-
-                        if(tutor == 0){
-                            TodoApp.setID(response.body().id);
-                            if(!Funcions.isAdminPermissionsOn(Login.this)){
-                                Login.this.startActivity(new Intent(Login.this, DevicePolicyAdmin.class));
-                                Login.this.finish();
-                            }
-                            else if(!Funcions.isAppUsagePermissionOn(Login.this)){
-                                Login.this.startActivity(new Intent(Login.this, AppUsagePermActivity.class));
-                                Login.this.finish();
-                            }
-                            else if(!Funcions.isAccessibilitySettingsOn(Login.this)){
-                                Login.this.startActivity(new Intent(Login.this, AccessibilityPermActivity.class));
-                                Login.this.finish();
-                            }
-                            else{
-                                Login.this.startActivity(new Intent(Login.this, MainActivityChild.class));
-                                Login.this.finish();
-                            }
-                        }
-                        else{
-                            Login.this.startActivity(new Intent(Login.this, NavActivity.class));
-                            Login.this.finish();
-                        }
-                    }
-                    else{
+                    TodoApp.setIDTutor(usuari.id);
+                    if(usuari.tutor == 0){
                         Bundle extras = new Bundle();
 
                         extras.putSerializable("user", usuari);
@@ -174,6 +148,10 @@ public class Login extends AppCompatActivity {
                         i.putExtras(extras);
 
                         Login.this.startActivity(i);
+                        Login.this.finish();
+                    }
+                    else{
+                        Login.this.startActivity(new Intent(Login.this, NavActivity.class));
                         Login.this.finish();
                     }
                 } else {
