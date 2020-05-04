@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment {
                     gul.add(gu);
                 }
 
-                Call<String> call = mTodoService.sendAppUsage(todoApp.getID(), gul);
+                Call<String> call = mTodoService.sendAppUsage(todoApp.getIDChild(), gul);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
