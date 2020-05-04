@@ -4,18 +4,28 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.Constants;
 import com.example.adictic.MyNotificationManager;
+import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.LiveApp;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Calendar;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -74,7 +84,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                          /** Accions del dispositiu fill**/
             if(messageMap.containsKey("blockDevice")){
-                if(messageMap.get("blockDevice") == "1"){
+                if(messageMap.get("blockDevice").equals("1")){
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     TodoApp.setBlockedDevice(true);
                     mDPM.lockNow();
@@ -82,12 +92,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 else TodoApp.setBlockedDevice(false);
             }
             else if(messageMap.containsKey("freeUse")){
-                if(messageMap.get("freeUse") == "1"){
+                if(messageMap.get("freeUse").equals("1")){
                     Funcions.startFreeUseLimitList(getApplicationContext());
                     TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
                 }
                 else{
-                    TodoApp.setTutorToken(null);
                     Funcions.updateLimitedAppsList();
                     TodoApp.setStartFreeUse(0);
                 }
@@ -103,17 +112,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             else if(messageMap.containsKey("liveApp")){
                 String s = messageMap.get("liveApp");
-                if(s.equals("-1")) TodoApp.setTutorToken(null);
-                else TodoApp.setTutorToken(s);
+                if(s.equals("-1")) TodoApp.setLiveApp(false);
+                TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
+                Log.d(TAG, "Token liveApp: "+s);
             }
 
                     /** Accions del dispositiu pare **/
             else if(messageMap.containsKey("currentAppUpdate")){
                 String aux = messageMap.get("currentAppUpdate");
 
-                TodoApp.setCurrentAppKid(aux);
-                TodoApp.setTimeOpenedCurrentAppKid(messageMap.get("time"));
+                Intent intent = new Intent("liveApp");
+                    intent.putExtra("appName",aux);
+                    intent.putExtra("time",messageMap.get("Time"));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
+                Log.d(TAG, "Current AppUpdate: "+aux+" |Time: "+messageMap.get("time"));
             }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
 

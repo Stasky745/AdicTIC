@@ -3,6 +3,7 @@ package com.example.adictic.rest;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
@@ -61,4 +62,15 @@ public interface TodoApi {
     @GET("/usage/{id}/daysUsage")
     Call<List<YearEntity>> getDaysWithData(@Path("id") Long childId);
 
+    @POST("/usage/{id}/liveApp")
+    Call<String> askChildForLiveApp(@Path("id") Long childId, @Body Boolean liveApp);
+
+    @PUT("/usage/{id}/liveApp")
+    Call<String> sendTutorLiveApp(@Path("id") Long childId, @Body LiveApp login);
+
+    @POST("/users/{id}/block")
+    Call<String> blockChild(@Path("id") Long childId);
+
+    @POST("/users/{id}/unblock")
+    Call<String> unblockChild(@Path("id") Long childId);
 }
