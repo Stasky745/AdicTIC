@@ -11,6 +11,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -408,6 +409,7 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
                         } catch (NameNotFoundException e) {}
                         if (appInfo != null && pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo==null || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {
                             AppUsage appUsage = new AppUsage();
+                            if(Build.VERSION.SDK_INT >= 26) appUsage.category = appInfo.category;
                             appUsage.pkgName = pkgStats.getPackageName();
                             appUsage.appTitle = mPm.getApplicationLabel(appInfo).toString();
                             appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
