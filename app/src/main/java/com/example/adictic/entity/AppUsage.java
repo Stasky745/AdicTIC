@@ -11,12 +11,8 @@ public class AppUsage {
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (this == obj) return true;
-        if(obj == null || (getClass() != obj.getClass() && obj.getClass()!=String.class)) return false;
-        if(obj.getClass()==String.class) return pkgName.equals((String) obj);
-
-        AppUsage that = (AppUsage) obj;
-        if(that.pkgName == null) return false;
-        return pkgName.equals(that.pkgName);
+        AppUsage au = (AppUsage) obj;
+        if(au == null || getClass() != obj.getClass()) return false;
+        return pkgName.equals(au.pkgName);
     }
 }
