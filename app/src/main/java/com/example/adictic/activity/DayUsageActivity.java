@@ -63,6 +63,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
     TextView TV_initialDate;
     TextView TV_finalDate;
+    TextView TV_error;
 
     Button BT_initialDate;
     Button BT_finalDate;
@@ -74,6 +75,8 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     int finalDay;
     int finalMonth;
     int finalYear;
+
+    ListView listView;
 
     Map<Integer, Map<Integer,List<Integer>>> daysMap;
     List<Integer> yearList;
@@ -87,11 +90,16 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         setContentView(R.layout.usage_stats_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
+        listView = findViewById(R.id.pkg_list);
+
         CH_singleDate = (Chip) findViewById(R.id.CH_singleDate);
         CH_rangeDates = (Chip) findViewById(R.id.CH_rangeDates);
 
         TV_initialDate = (TextView) findViewById(R.id.TV_initialDate);
         TV_finalDate = (TextView) findViewById(R.id.TV_finalDate);
+
+        TV_error = (TextView) findViewById(R.id.TV_emptyList);
+        TV_error.setVisibility(View.GONE);
 
         BT_initialDate = (Button) findViewById(R.id.BT_initialDate);
         BT_finalDate = (Button) findViewById(R.id.BT_finalDate);
@@ -126,6 +134,10 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     TV_finalDate.setVisibility(View.INVISIBLE);
                     TV_initialDate.setText(getResources().getString(R.string.date));
                     BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
+
+                    finalDay = initialDay;
+                    finalMonth = initialMonth;
+                    finalYear = initialYear;
 
                     getStats();
                 }
@@ -163,18 +175,21 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     makeList(response.body());
                 }
                 else{
-
+                    showError();
                 }
             }
 
             @Override
             public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
-
+                showError();
             }
         });
     }
 
     private void makeList(Collection<GeneralUsage> gul){
+
+        xDays = gul.size();
+
         List<AppUsage> appList = new ArrayList<>();
         for(GeneralUsage gu : gul){
             for(AppUsage au : gu.usage){
@@ -183,7 +198,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     AppUsage current = appList.remove(index);
                     AppUsage res = new AppUsage();
                     res.appTitle = au.appTitle;
-                    res.pkgName = au.appTitle;
+                    res.pkgName = au.pkgName;
                     res.totalTime = au.totalTime + current.totalTime;
                     if(current.lastTimeUsed > au.lastTimeUsed) res.lastTimeUsed = current.lastTimeUsed;
                     else res.lastTimeUsed = au.lastTimeUsed;
@@ -196,18 +211,13 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             }
         }
 
-        xDays = gul.size();
-
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        ListView listView = findViewById(R.id.pkg_list);
         mAdapter = new UsageStatsAdapter(appList);
-        System.out.println(mAdapter);
         listView.setAdapter(mAdapter);
     }
 
     public static class AppNameComparator implements Comparator<AppUsage> {
-
         @Override
         public final int compare(AppUsage a, AppUsage b) {
             return a.appTitle.compareTo(b.appTitle);
@@ -247,25 +257,29 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         private LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
         private UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
         private AppNameComparator mAppLabelComparator;
-        private final ArrayMap<String, String> mAppLabelMap = new ArrayMap<>();
         private final ArrayList<AppUsage> mPackageStats = new ArrayList<>();
         private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
         private long totalTime = 0;
 
         UsageStatsAdapter(List<AppUsage> appList) {
-            HashMap<String, AppUsage> map = new HashMap<>();
             for (AppUsage app : appList) {
-                Drawable appIcon = null;
-                //ApplicationInfo appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
+                //Drawable appIcon = null;
                 //appIcon = getPackageManager().getApplicationIcon(app.pkgName);
-                String label = app.appTitle;
-                mAppLabelMap.put(app.pkgName, label);
-
                 totalTime = totalTime + app.totalTime;
 
+                int index = mPackageStats.indexOf(app);
+                if(index == -1) {
+                    mPackageStats.add(app);
+                }
+                else{
+                    AppUsage newApp = mPackageStats.remove(index);
+                    newApp.totalTime += app.totalTime;
+                    if(app.lastTimeUsed>newApp.lastTimeUsed) newApp.lastTimeUsed = app.lastTimeUsed;
+
+                    mPackageStats.add(newApp);
+                }
             }
-            mPackageStats.addAll(map.values());
 
             TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
 
@@ -351,7 +365,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             // Bind the data efficiently with the holder
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
-                String label = mAppLabelMap.get(pkgStats.pkgName);
+                String label = pkgStats.appTitle;
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
@@ -485,12 +499,14 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
                 BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
             }
-            else if(initialDay > finalDay){
-                finalYear = initialYear;
-                finalMonth = initialMonth;
-                finalDay = initialDay;
+            else if(initialMonth == finalMonth){
+                if(initialDay > finalDay){
+                    finalYear = initialYear;
+                    finalMonth = initialMonth;
+                    finalDay = initialDay;
 
-                BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
+                    BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
+                }
             }
         }
     }
@@ -532,20 +548,20 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     }
                 }
                 else{
-                    System.out.println("1");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<List<YearEntity>> call, Throwable t) {
-                System.out.println("2");
                 showError();
             }
         });
     }
 
     private void showError() {
+        TV_error.setVisibility(View.VISIBLE);
+        TV_error.setTextColor(Color.RED);
     }
 
     @Override
