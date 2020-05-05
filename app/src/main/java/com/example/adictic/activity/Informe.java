@@ -3,6 +3,7 @@ package com.example.adictic.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -34,6 +35,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.text.DecimalFormat;
@@ -66,6 +69,10 @@ public class Informe extends AppCompatActivity {
      TextView TV_percentageUsage;
      TextView TV_totalUsage;
      double percentage;
+     boolean pieCategory;
+
+     ChipGroup chipGroup;
+     Chip CH_appName;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -81,13 +88,16 @@ public class Informe extends AppCompatActivity {
         TV_percentageUsage = (TextView) findViewById(R.id.TV_percentageUsage);
         TV_totalUsage = (TextView) findViewById(R.id.TV_totalUse);
 
+        chipGroup = (ChipGroup) findViewById(R.id.CG_category);
+        CH_appName = (Chip) findViewById(R.id.CH_appName);
+
+        pieCategory = false;
+
         daysMap = new HashMap<>();
         monthList = new ArrayList<>();
         yearList = new ArrayList<>();
 
         idChild = getIntent().getLongExtra("idChild",-1);
-
-        getMonthYearLists();
 
         TV_percentageUsage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +117,8 @@ public class Informe extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+        getMonthYearLists();
     }
 
     private void showError(){
@@ -130,7 +142,6 @@ public class Informe extends AppCompatActivity {
                     else {
                         daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
-                        System.out.println(daysMap.keySet());
                         yearList.addAll(daysMap.keySet());
                         Collections.sort(yearList, Collections.reverseOrder());
 
@@ -218,21 +229,52 @@ public class Informe extends AppCompatActivity {
     private void makeGraphs(Collection<GeneralUsage> col){
         Map<String,Long> mapUsage = new HashMap<>();
 
+        //ArrayList<GeneralUsage> llista = new ArrayList<>(col);
         List<GeneralUsage> llista = getUsageMonths(currentMonth+1,currentYear,col);
+
+        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(0).usage);
+        if(lau.get(0).category == null) chipGroup.setVisibility(View.GONE);
+        else{
+            chipGroup.setVisibility(View.VISIBLE);
+            chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(ChipGroup group, int checkedId) {
+                    pieCategory = checkedId != CH_appName.getId();
+                }
+            });
+            chipGroup.setSelectionRequired(true);
+        }
 
         List<BarEntry> barEntries = new ArrayList<>();
 
         long totalUsageTime = 0;
         long totalTime = 0;
 
-        for(GeneralUsage gu : llista){
-            totalTime+=24*60*60*1000;
-            totalUsageTime+=gu.totalTime;
-            for(AppUsage au: gu.usage){
-                if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
-                else mapUsage.put(au.appTitle,au.totalTime);
+        if(pieCategory){
+            for(GeneralUsage gu : llista){
+                totalTime+=24*60*60*1000;
+                totalUsageTime+=gu.totalTime;
+                for(AppUsage au: gu.usage){
+                    String category = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        category = ApplicationInfo.getCategoryTitle(getApplicationContext(),au.category).toString();
+                    }
+                    if(mapUsage.containsKey(category)) mapUsage.put(category,mapUsage.get(category)+au.totalTime);
+                    else mapUsage.put(category,au.totalTime);
+                }
+                barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
             }
-            barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
+        }
+        else{
+            for(GeneralUsage gu : llista){
+                totalTime+=24*60*60*1000;
+                totalUsageTime+=gu.totalTime;
+                for(AppUsage au: gu.usage){
+                    if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
+                    else mapUsage.put(au.appTitle,au.totalTime);
+                }
+                barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
+            }
         }
 
         percentage = totalUsageTime*100.0f/totalTime;
@@ -315,6 +357,7 @@ public class Informe extends AppCompatActivity {
 
     private void setBarChart(List<BarEntry> entries){
         BarDataSet barDataSet = new BarDataSet(entries,getResources().getString(R.string.daily_usage));
+        System.out.println("ENTRIES: "+entries);
         barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
         BarData barData = new BarData(barDataSet);
@@ -323,12 +366,20 @@ public class Informe extends AppCompatActivity {
 
         barChart.animateY(1000);
 
+        barChart.setFitBars(true);
+
+
         XAxis xAxis = barChart.getXAxis();
+        System.out.println("XAXIS: "+xAxis.getAxisMinimum());
+        xAxis.setSpaceMin(barData.getBarWidth() / 2f);
+        xAxis.setSpaceMax(barData.getBarWidth() / 2f);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
-        xAxis.setValueFormatter(new MyXAxisBarFormatter());
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawLabels(true);
+        xAxis.setLabelCount(xAxis.mEntryCount-1);
+//        System.out.println("xAxis LABEL COUNT: "+xAxis.getLabelCount());
+        xAxis.setValueFormatter(new MyXAxisBarFormatter());
 
         barChart.getAxisLeft().setValueFormatter(new MyYAxisBarFormatter());
         barChart.getAxisRight().setEnabled(false);
@@ -364,9 +415,13 @@ public class Informe extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value){
-            int mes = (int) value/100;
-            int dia = (int) value%100;
-            return dia+mesos.get(mes-1);
+            if(value > 0){
+                int mes = (int) value/100;
+                int dia = (int) value%100;
+                return dia+mesos.get(mes-1);
+            }
+            else return "";
+
         }
     }
 

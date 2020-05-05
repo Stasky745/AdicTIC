@@ -7,6 +7,7 @@ public class AppUsage {
     public String appTitle;
     public Long lastTimeUsed;
     public Long totalTime;
+    public Integer category;
 
     @Override
     public boolean equals(@Nullable Object obj) {
