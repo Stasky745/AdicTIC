@@ -21,6 +21,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.DayUsageActivity;
 import com.example.adictic.activity.Informe;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
@@ -96,12 +97,12 @@ public class MainParentFragment extends Fragment {
 
         ImageView im_informe = (ImageView) root.findViewById(R.id.IV_Informe);
         TextView tv_informe = (TextView) root.findViewById(R.id.TV_Informe);
-        ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_AppUsage);
-        TextView tv_horaris = (TextView) root.findViewById(R.id.TV_AppUsage);
+        ImageView im_appUsage = (ImageView) root.findViewById(R.id.IV_AppUsage);
+        TextView tv_appUsage = (TextView) root.findViewById(R.id.TV_AppUsage);
         ImageView im_blockApps = (ImageView) root.findViewById(R.id.IV_BlockApps);
         TextView tv_blockApps = (TextView) root.findViewById(R.id.TV_BlockApps);
-        ImageView im_notif = (ImageView) root.findViewById(R.id.IV_Horaris);
-        TextView tv_notif = (TextView) root.findViewById(R.id.TV_Horaris);
+        ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_Horaris);
+        TextView tv_horaris = (TextView) root.findViewById(R.id.TV_Horaris);
 
         View.OnClickListener informe = new View.OnClickListener() {
             @Override
@@ -109,12 +110,24 @@ public class MainParentFragment extends Fragment {
                 Intent i = new Intent(getActivity(), Informe.class);
                 i.putExtra("idChild",idChildSelected);
                 getActivity().startActivity(i);
-                System.out.println("idChild: " + idChildSelected);
             }
         };
 
         im_informe.setOnClickListener(informe);
         tv_informe.setOnClickListener(informe);
+
+
+        View.OnClickListener appUsage = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), DayUsageActivity.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+            }
+        };
+
+        im_appUsage.setOnClickListener(appUsage);
+        tv_appUsage.setOnClickListener(appUsage);
 
         LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                 new IntentFilter("liveApp"));
@@ -144,6 +157,7 @@ public class MainParentFragment extends Fragment {
                 else b.setText(getString(R.string.block_device));
             }
         });
+
 
         return root;
     }

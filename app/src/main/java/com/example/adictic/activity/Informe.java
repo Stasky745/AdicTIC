@@ -2,6 +2,8 @@ package com.example.adictic.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -33,6 +35,8 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.text.DecimalFormat;
@@ -65,6 +69,10 @@ public class Informe extends AppCompatActivity {
      TextView TV_percentageUsage;
      TextView TV_totalUsage;
      double percentage;
+     boolean pieCategory;
+
+     ChipGroup chipGroup;
+     Chip CH_appName;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -80,13 +88,16 @@ public class Informe extends AppCompatActivity {
         TV_percentageUsage = (TextView) findViewById(R.id.TV_percentageUsage);
         TV_totalUsage = (TextView) findViewById(R.id.TV_totalUse);
 
+        chipGroup = (ChipGroup) findViewById(R.id.CG_category);
+        CH_appName = (Chip) findViewById(R.id.CH_appName);
+
+        pieCategory = false;
+
         daysMap = new HashMap<>();
         monthList = new ArrayList<>();
         yearList = new ArrayList<>();
 
         idChild = getIntent().getLongExtra("idChild",-1);
-
-        getMonthYearLists();
 
         TV_percentageUsage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +117,8 @@ public class Informe extends AppCompatActivity {
                 dialog.show();
             }
         });
+
+        getMonthYearLists();
     }
 
     private void showError(){
@@ -125,28 +138,33 @@ public class Informe extends AppCompatActivity {
                 if(response.isSuccessful()){
                     /** Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
-                    daysMap = Funcions.convertYearEntityToMap(yEntityList);
-                    System.out.println(daysMap.keySet());
-                    yearList.addAll(daysMap.keySet());
-                    Collections.sort(yearList,Collections.reverseOrder());
+                    if(yEntityList.isEmpty()) showError();
+                    else {
+                        daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
-                    currentYear = yearList.get(0);
+                        yearList.addAll(daysMap.keySet());
+                        Collections.sort(yearList, Collections.reverseOrder());
 
-                    monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-                    Collections.sort(monthList,Collections.reverseOrder());
+                        currentYear = yearList.get(0);
 
-                    currentMonth = monthList.get(0)-1;
-                    dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
+                        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
+                        Collections.sort(monthList, Collections.reverseOrder());
 
-                    getStats(currentMonth+1,currentYear);
+                        currentMonth = monthList.get(0) - 1;
+                        dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth + 1] + " " + currentYear);
+
+                        getStats(currentMonth + 1, currentYear);
+                    }
                 }
                 else{
+                    System.out.println("1");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<List<YearEntity>> call, Throwable t) {
+                System.out.println("2");
                 showError();
             }
         });
@@ -162,7 +180,8 @@ public class Informe extends AppCompatActivity {
                         currentYear = selectedYear;
                         getStats(currentMonth+1,currentYear);
                         dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
-                    }}, currentYear, currentMonth);
+                    }
+                }, currentYear, currentMonth);
 
         monthList.addAll(daysMap.get(yearList.get(0)).keySet());
         Collections.sort(monthList,Collections.reverseOrder());
@@ -194,12 +213,14 @@ public class Informe extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     makeGraphs(response.body());
                 } else {
+                    System.out.println("3");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
+                System.out.println("4");
                 showError();
             }
         });
@@ -208,21 +229,52 @@ public class Informe extends AppCompatActivity {
     private void makeGraphs(Collection<GeneralUsage> col){
         Map<String,Long> mapUsage = new HashMap<>();
 
+        //ArrayList<GeneralUsage> llista = new ArrayList<>(col);
         List<GeneralUsage> llista = getUsageMonths(currentMonth+1,currentYear,col);
+
+        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(0).usage);
+        if(lau.get(0).category == null) chipGroup.setVisibility(View.GONE);
+        else{
+            chipGroup.setVisibility(View.VISIBLE);
+            chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(ChipGroup group, int checkedId) {
+                    pieCategory = checkedId != CH_appName.getId();
+                }
+            });
+            chipGroup.setSelectionRequired(true);
+        }
 
         List<BarEntry> barEntries = new ArrayList<>();
 
         long totalUsageTime = 0;
         long totalTime = 0;
 
-        for(GeneralUsage gu : llista){
-            totalTime+=24*60*60*1000;
-            totalUsageTime+=gu.totalTime;
-            for(AppUsage au: gu.usage){
-                if(mapUsage.containsKey(au.appName)) mapUsage.put(au.appName,mapUsage.get(au.appName)+au.totalTime);
-                else mapUsage.put(au.appName,au.totalTime);
+        if(pieCategory){
+            for(GeneralUsage gu : llista){
+                totalTime+=24*60*60*1000;
+                totalUsageTime+=gu.totalTime;
+                for(AppUsage au: gu.usage){
+                    String category = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        category = ApplicationInfo.getCategoryTitle(getApplicationContext(),au.category).toString();
+                    }
+                    if(mapUsage.containsKey(category)) mapUsage.put(category,mapUsage.get(category)+au.totalTime);
+                    else mapUsage.put(category,au.totalTime);
+                }
+                barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
             }
-            barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
+        }
+        else{
+            for(GeneralUsage gu : llista){
+                totalTime+=24*60*60*1000;
+                totalUsageTime+=gu.totalTime;
+                for(AppUsage au: gu.usage){
+                    if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
+                    else mapUsage.put(au.appTitle,au.totalTime);
+                }
+                barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
+            }
         }
 
         percentage = totalUsageTime*100.0f/totalTime;
@@ -283,15 +335,15 @@ public class Informe extends AppCompatActivity {
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                PieEntry pe = (PieEntry) e;
+                final PieEntry pe = (PieEntry) e;
 
                 TV_pieApp.setText(pe.getLabel());
+
 
                 Pair<Integer,Integer> appTime = Funcions.millisToString(e.getY());
 
                 if(appTime.first == 0) pieChart.setCenterText(getResources().getString(R.string.mins,appTime.second));
                 else pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes,appTime.first,appTime.second));
-
             }
 
             @Override
@@ -305,6 +357,7 @@ public class Informe extends AppCompatActivity {
 
     private void setBarChart(List<BarEntry> entries){
         BarDataSet barDataSet = new BarDataSet(entries,getResources().getString(R.string.daily_usage));
+        System.out.println("ENTRIES: "+entries);
         barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
         BarData barData = new BarData(barDataSet);
@@ -313,19 +366,46 @@ public class Informe extends AppCompatActivity {
 
         barChart.animateY(1000);
 
+        barChart.setFitBars(true);
+
+
         XAxis xAxis = barChart.getXAxis();
+        System.out.println("XAXIS: "+xAxis.getAxisMinimum());
+        xAxis.setSpaceMin(barData.getBarWidth() / 2f);
+        xAxis.setSpaceMax(barData.getBarWidth() / 2f);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
-        xAxis.setValueFormatter(new MyXAxisBarFormatter());
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawLabels(true);
-
-        //barChart.setExtraBottomOffset(30);
+        xAxis.setLabelCount(xAxis.mEntryCount-1);
+//        System.out.println("xAxis LABEL COUNT: "+xAxis.getLabelCount());
+        xAxis.setValueFormatter(new MyXAxisBarFormatter());
 
         barChart.getAxisLeft().setValueFormatter(new MyYAxisBarFormatter());
         barChart.getAxisRight().setEnabled(false);
         barChart.getLegend().setEnabled(false);
         barChart.getDescription().setEnabled(false);
+
+        barChart.dispatchSetSelected(false);
+        barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                int day = (int)e.getX() % 100;
+                int month = (int) e.getX()/100;
+
+                Intent i = new Intent(Informe.this,DayUsageActivity.class);
+                i.putExtra("idChild",idChild);
+                i.putExtra("day",day);
+                i.putExtra("month",month-1);
+                i.putExtra("year",currentYear);
+                startActivity(i);
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
 
         barChart.invalidate();
     }
@@ -335,9 +415,13 @@ public class Informe extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value){
-            int mes = (int) value/100;
-            int dia = (int) value%100;
-            return dia+mesos.get(mes-1);
+            if(value > 0){
+                int mes = (int) value/100;
+                int dia = (int) value%100;
+                return dia+mesos.get(mes-1);
+            }
+            else return "";
+
         }
     }
 

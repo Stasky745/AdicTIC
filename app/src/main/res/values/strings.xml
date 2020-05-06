@@ -230,7 +230,6 @@
     <string name="block_apps">"Bloqueig d'aplicacions"</string>
     <string name="Notifications">"Notificacions"</string>
     <string name="home_second">Home Second</string>
-    <string name="device_usage">"Ús total del dispositiu:"</string>
 
     <string name="advice_infoContent">Contingut informatiu</string>
     <string name="advice_mostAskQuest">Preguntes freqüents</string>
@@ -242,7 +241,18 @@
     <string name="forgetPassword"><u>Has oblidat la contrasenya?</u></string>
 
     <string name="logout">Tancar Sessió</string>
+
+    <string name="chip_single_date">"Una sola data"</string>
+    <string name="chip_range_dates">"Entre dues dates"</string>
+
+    <string name="date">"Data:"</string>
+    <string name="initial_date">"Data inicial:"</string>
+    <string name="final_date">"Data final:"</string>
+
+    <string name="date_format">"%d %s %d"</string>
+
     <string name="daily_usage">"Ús diari del dispositiu"</string>
+    <string name="device_usage">"Ús total del dispositiu:"</string>
     <string name="press_pie_chart">"Prem a la gràfica per saber més informació."</string>
     <string name="log_month">"Informe:"</string>
     <string name="year">"Any:"</string>
@@ -253,9 +263,12 @@
     <string name="mins">"%d min."</string>
     <string name="comp">"%s / %s"</string>
     <string name="percentage">"%d%%"</string>
-
+    <string name="informal_date_format">"%d-%d-%d"</string>
+  
     <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
-
     <string name="error_liveApp">"No s'ha pogut llegir la aplicació actual del fill"</string>
     <string name="unblock_device">"Desbloquejar dispositiu"</string>
+
+    <string name="nom_app">"Nom"</string>
+    <string name="categoria_app">"Categoria"</string>
 </resources>
