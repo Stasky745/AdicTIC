@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -67,6 +68,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 iApp.pkgName = ai.packageName;
                 iApp.appName = mPm.getApplicationLabel(ai).toString();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    iApp.category = ai.category;
+                }
 
                 listApps.add(iApp);
             }
