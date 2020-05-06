@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -201,8 +202,12 @@ public class Funcions {
                 e.printStackTrace();
             }
             if (pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                System.out.println("DINS");
                 AppUsage appUsage = new AppUsage();
-                appUsage.appName = pkgStats.getPackageName();
+
+                if(Build.VERSION.SDK_INT >= 26) appUsage.category = appInfo.category;
+                appUsage.appTitle = mPm.getApplicationLabel(appInfo).toString();
+                appUsage.pkgName = pkgStats.getPackageName();
                 appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
                 appUsage.totalTime = pkgStats.getTotalTimeInForeground();
                 appUsages.add(appUsage);

@@ -9,21 +9,21 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.Toast;
 
-import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.entity.InstalledApp;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,25 +31,66 @@ import retrofit2.Response;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
+    TodoApi mTodoService;
+    PackageManager mPm;
+    List<ApplicationInfo> lastListApps;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+
+        mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
         //Configure these here for compatibility with API 13 and below.
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
         config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
-        if (Build.VERSION.SDK_INT >= 16)
-            //Just in case this helps
-            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+        mPm = getPackageManager();
+        lastListApps = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
+    }
+
+    private void checkInstalledApps(){
+        final List<ApplicationInfo> listInstalledPkgs = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        System.out.println("EQUAL: "+CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps));
+
+        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
+            List<InstalledApp> listApps = new ArrayList<>();
+
+            for (ApplicationInfo ai : listInstalledPkgs) {
+                InstalledApp iApp = new InstalledApp();
+
+                iApp.pkgName = ai.packageName;
+                iApp.appName = mPm.getApplicationLabel(ai).toString();
+
+                listApps.add(iApp);
+            }
+
+            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listApps);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.isSuccessful()) lastListApps = listInstalledPkgs;
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) { }
+            });
+        }
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+
+            checkInstalledApps();
+
             if(TodoApp.getBlockedDevice()){
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                 mDPM.lockNow();
@@ -69,7 +110,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     String time = new SimpleDateFormat("HH:mm").format(new Date());
 
                     if (TodoApp.getStartFreeUse()!=0 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
-                        TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
                         Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(),componentName.getPackageName());
                         call.enqueue(new Callback<String>() {

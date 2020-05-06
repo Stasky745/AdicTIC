@@ -27,6 +27,13 @@ public class TodoApp extends Application {
 
     TodoApi mTodoService;
 
+
+    public static int CORRECT_USAGE_DAY = 3;
+    public static int DANGEROUS_USAGE_DAY = 5;
+    public static int CORRECT_USAGE_APP = 2;
+    public static int DANGEROUS_USAGE_APP = 4;
+
+    
     private static long IDTutor=-1;
     private static Integer tutor=-1;
     private static long IDChild = -1;

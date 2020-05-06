@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.adictic">
 
@@ -37,6 +38,7 @@
         <activity android:name=".activity.MainActivityChild" />
         <activity android:name=".activity.AppUsagePermActivity"/>
         <activity android:name=".activity.AccessibilityPermActivity"/>
+        <activity android:name=".activity.DayUsageActivity"/>
         <activity
             android:name=".activity.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
