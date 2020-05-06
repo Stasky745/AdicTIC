@@ -271,4 +271,26 @@
 
     <string name="nom_app">"Nom"</string>
     <string name="categoria_app">"Categoria"</string>
+
+    <string name="horari_generic">"Genèric"</string>
+    <string name="horari_diari">"Diari"</string>
+    <string name="horari_setmanal">"Setmanal"</string>
+    <string name="horari_intro">"Escull les hores que el dispositiu estarà actiu:"</string>
+
+    <string name="monday">Dilluns</string>
+    <string name="tuesday">Dimarts</string>
+    <string name="wednesday">Dimecres</string>
+    <string name="thursday">Dijous</string>
+    <string name="friday">Divendres</string>
+    <string name="saturday">Dissabte</string>
+    <string name="sunday">Diumenge</string>
+
+    <string name="weekday">Entre setmana</string>
+    <string name="weekend">Cap de setmana</string>
+
+    <string name="wake_up">Despertar:</string>
+    <string name="sleep">Adormir:</string>
+
+    <string name="wake_up_hint">Hora de despertar</string>
+    <string name="sleep_hint">"Hora de bloquejar"</string>
 </resources>
