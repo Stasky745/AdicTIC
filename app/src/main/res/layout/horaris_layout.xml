@@ -5,177 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/CL_horariGeneric"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari">
-
-        <TextView
-            android:id="@+id/TV_wakeGeneric"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/wake_up"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/ET_wakeGeneric"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:ems="10"
-            android:hint="@string/wake_up_hint"
-            android:inputType="time"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeGeneric"
-            app:layout_constraintStart_toEndOf="@+id/TV_wakeGeneric"
-            app:layout_constraintTop_toTopOf="@+id/TV_wakeGeneric"
-            android:autofillHints="" />
-
-        <TextView
-            android:id="@+id/TV_sleepGeneric"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/sleep"
-            app:layout_constraintStart_toStartOf="@+id/TV_wakeGeneric"
-            app:layout_constraintTop_toBottomOf="@+id/ET_wakeGeneric" />
-
-        <EditText
-            android:id="@+id/ET_sleepGeneric"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/sleep_hint"
-            android:inputType="time"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepGeneric"
-            app:layout_constraintStart_toStartOf="@+id/ET_wakeGeneric"
-            app:layout_constraintTop_toTopOf="@+id/TV_sleepGeneric"
-            android:autofillHints="" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/CL_horariSetmana"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari">
-
-        <TextView
-            android:id="@+id/TV_weekday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/weekday"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/TV_wakeWeekday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/wake_up"
-            app:layout_constraintStart_toStartOf="@+id/TV_weekday"
-            app:layout_constraintTop_toBottomOf="@+id/TV_weekday" />
-
-        <EditText
-            android:id="@+id/ET_wakeWeekday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:ems="10"
-            android:hint="@string/wake_up_hint"
-            android:inputType="date"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekday"
-            app:layout_constraintStart_toEndOf="@+id/TV_wakeWeekday"
-            app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekday"
-            android:autofillHints="" />
-
-        <TextView
-            android:id="@+id/TV_sleepWeekday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/sleep"
-            app:layout_constraintStart_toStartOf="@+id/TV_wakeWeekday"
-            app:layout_constraintTop_toBottomOf="@+id/ET_wakeWeekday" />
-
-        <EditText
-            android:id="@+id/ET_sleepWeekday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/sleep_hint"
-            android:inputType="time"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekday"
-            app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekday"
-            app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekday"
-            android:autofillHints="" />
-
-        <TextView
-            android:id="@+id/TV_weekend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/weekend"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/TV_sleepWeekday"
-            app:layout_constraintTop_toBottomOf="@+id/ET_sleepWeekday" />
-
-        <TextView
-            android:id="@+id/TV_wakeWeekend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/wake_up"
-            app:layout_constraintStart_toStartOf="@+id/TV_weekend"
-            app:layout_constraintTop_toBottomOf="@+id/TV_weekend" />
-
-        <EditText
-            android:id="@+id/ET_wakeWeekend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/wake_up_hint"
-            android:inputType="time"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekend"
-            app:layout_constraintStart_toStartOf="@+id/ET_sleepWeekday"
-            app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekend"
-            android:autofillHints="" />
-
-        <TextView
-            android:id="@+id/TV_sleepWeekend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/sleep"
-            app:layout_constraintStart_toStartOf="@+id/TV_wakeWeekend"
-            app:layout_constraintTop_toBottomOf="@+id/ET_wakeWeekend" />
-
-        <EditText
-            android:id="@+id/ET_sleepWeekend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/sleep_hint"
-            android:inputType="time"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekend"
-            app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekend"
-            app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekend"
-            android:autofillHints="" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/CG_tipusHorari"
         android:layout_width="wrap_content"
@@ -232,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -608,5 +437,177 @@
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepSun" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CL_horariGeneric"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari">
+
+        <TextView
+            android:id="@+id/TV_wakeGeneric"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/wake_up"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/ET_wakeGeneric"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/wake_up_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeGeneric"
+            app:layout_constraintStart_toEndOf="@+id/TV_wakeGeneric"
+            app:layout_constraintTop_toTopOf="@+id/TV_wakeGeneric" />
+
+        <TextView
+            android:id="@+id/TV_sleepGeneric"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sleep"
+            app:layout_constraintStart_toStartOf="@+id/TV_wakeGeneric"
+            app:layout_constraintTop_toBottomOf="@+id/ET_wakeGeneric" />
+
+        <EditText
+            android:id="@+id/ET_sleepGeneric"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/sleep_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepGeneric"
+            app:layout_constraintStart_toStartOf="@+id/ET_wakeGeneric"
+            app:layout_constraintTop_toTopOf="@+id/TV_sleepGeneric" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CL_horariSetmana"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari">
+
+        <TextView
+            android:id="@+id/TV_weekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/weekday"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/TV_wakeWeekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/wake_up"
+            app:layout_constraintStart_toStartOf="@+id/TV_weekday"
+            app:layout_constraintTop_toBottomOf="@+id/TV_weekday" />
+
+        <EditText
+            android:id="@+id/ET_wakeWeekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:ems="10"
+            android:hint="@string/wake_up_hint"
+            android:inputType="date"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekday"
+            app:layout_constraintStart_toEndOf="@+id/TV_wakeWeekday"
+            app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekday"
+            android:autofillHints="" />
+
+        <TextView
+            android:id="@+id/TV_sleepWeekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sleep"
+            app:layout_constraintStart_toStartOf="@+id/TV_wakeWeekday"
+            app:layout_constraintTop_toBottomOf="@+id/ET_wakeWeekday" />
+
+        <EditText
+            android:id="@+id/ET_sleepWeekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/sleep_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekday"
+            app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekday"
+            app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekday"
+            android:autofillHints="" />
+
+        <TextView
+            android:id="@+id/TV_weekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/weekend"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/TV_sleepWeekday"
+            app:layout_constraintTop_toBottomOf="@+id/ET_sleepWeekday" />
+
+        <TextView
+            android:id="@+id/TV_wakeWeekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/wake_up"
+            app:layout_constraintStart_toStartOf="@+id/TV_weekend"
+            app:layout_constraintTop_toBottomOf="@+id/TV_weekend" />
+
+        <EditText
+            android:id="@+id/ET_wakeWeekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/wake_up_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekend"
+            app:layout_constraintStart_toStartOf="@+id/ET_sleepWeekday"
+            app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekend"
+            android:autofillHints="" />
+
+        <TextView
+            android:id="@+id/TV_sleepWeekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sleep"
+            app:layout_constraintStart_toStartOf="@+id/TV_wakeWeekend"
+            app:layout_constraintTop_toBottomOf="@+id/ET_wakeWeekend" />
+
+        <EditText
+            android:id="@+id/ET_sleepWeekend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/sleep_hint"
+            android:inputType="time"
+            app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekend"
+            app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekend"
+            app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekend"
+            android:autofillHints="" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
