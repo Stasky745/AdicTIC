@@ -13,6 +13,7 @@ import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.entity.VellFillLogin;
+import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 
 import java.util.Collection;
@@ -83,5 +84,8 @@ public interface TodoApi {
 
     @POST("/users/{id}/unblock")
     Call<String> unblockChild(@Path("id") Long childId);
+
+    @POST("/users/{id}/horaris")
+    Call<String> postHoraris(@Path("id") Long childId, @Body WakeSleepLists wakeSleepLists);
 
 }

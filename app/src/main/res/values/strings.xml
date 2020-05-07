@@ -293,4 +293,9 @@
 
     <string name="wake_up_hint">Hora de despertar</string>
     <string name="sleep_hint">"Hora de bloquejar"</string>
+
+    <string name="accept">"Acceptar"</string>
+    <string name="cancel">"Cancel·lar"</string>
+
+    <string name="successful_entry">"S'ha guardat correctament!"</string>
 </resources>
