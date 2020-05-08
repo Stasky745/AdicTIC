@@ -5,24 +5,32 @@ import android.app.NotificationManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.Constants;
 import com.example.adictic.MyNotificationManager;
-import com.example.adictic.R;
 import com.example.adictic.TodoApp;
-import com.example.adictic.entity.LiveApp;
+import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +39,7 @@ import retrofit2.Response;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     String TAG = "Firebase: ";
+    TodoApi mTodoService;
 
     @Override
     public void onNewToken(String token) {
@@ -60,6 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
+        mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
         Map<String,String> messageMap = remoteMessage.getData();
 
@@ -116,6 +126,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
                 Log.d(TAG, "Token liveApp: "+s);
             }
+            else if(messageMap.containsKey("getIcon")){
+                List<String> list = new ArrayList<>(messageMap.values());
+                sendIcon(list);
+            }
 
                     /** Accions del dispositiu pare **/
             else if(messageMap.containsKey("currentAppUpdate")){
@@ -143,5 +157,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.
+    }
+
+    private void sendIcon(List<String> list){
+        for(String s : list){
+            try {
+                PackageManager mPm = getApplicationContext().getPackageManager();
+                Drawable icon = mPm.getApplicationIcon(s);
+
+                Bitmap bitmap = ((BitmapDrawable)icon).getBitmap();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+                byte[] byteArray = stream.toByteArray();
+
+                RequestBody requestFile =
+                        RequestBody.create(
+                                MediaType.parse("image/png"),
+                                byteArray
+                        );
+
+                // MultipartBody.Part is used to send also the actual file name
+                MultipartBody.Part body =
+                        MultipartBody.Part.createFormData(s, s, requestFile);
+
+                Call<String> call = mTodoService.postIcon(s,body);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) { }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) { }
+                });
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

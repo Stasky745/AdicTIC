@@ -56,9 +56,13 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     private void checkInstalledApps(){
-        final List<ApplicationInfo> listInstalledPkgs = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+        final List<ApplicationInfo> listInstalledPkgs = new ArrayList<>();
 
-        System.out.println("EQUAL: "+CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps));
+        for(ApplicationInfo ai : mPm.getInstalledApplications(PackageManager.GET_META_DATA)){
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0){
+                listInstalledPkgs.remove(ai);
+            }
+        }
 
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
             List<InstalledApp> listApps = new ArrayList<>();
@@ -141,7 +145,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             liveApp.appName = componentName.getPackageName();
                         }
                         liveApp.time = time;
-                        System.out.println("CurrentApp: "+liveApp.appName+ " |"+((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0));
                         if(!TodoApp.blackListLiveApp.contains(componentName.getPackageName())){
                             Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
                             call.enqueue(new Callback<String>() {

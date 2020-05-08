@@ -87,7 +87,7 @@ public class AppUsageWorker extends Worker {
 
         // Indicate whether the task finished successfully with the Result
         long now = System.currentTimeMillis();
-        while(ok1 == null && ok2 == null){
+        while(ok1 == null || ok2 == null){
             if(System.currentTimeMillis() - now > 30*1000){
                 ok1 = ok2 = false;
             }

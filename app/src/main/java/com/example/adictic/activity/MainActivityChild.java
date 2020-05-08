@@ -11,7 +11,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -28,20 +27,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
-import com.example.adictic.entity.AppUsage;
-import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.service.AppUsageWorker;
 
@@ -380,67 +377,16 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         pujarInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DAY_OF_YEAR,-xDays);
+                TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
+
+                OneTimeWorkRequest ourWork =
+                        new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
+
+                WorkManager.getInstance(MainActivityChild.this).enqueue(ourWork);
               
-                TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
-                List<GeneralUsage> gul = new ArrayList<>();
-                List<UsageStats> stats;
-                for (int i = 0; i < xDays; i++) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.HOUR_OF_DAY, 23);
-                    cal.set(Calendar.MINUTE, 59);
-                    cal.set(Calendar.SECOND, 59);
-                    cal.add(Calendar.DAY_OF_YEAR, -i);
-
-                    Calendar cal2 = Calendar.getInstance();
-                    cal2.add(Calendar.DAY_OF_YEAR, -i);
-                    cal2.set(Calendar.HOUR_OF_DAY, 0);
-                    cal2.set(Calendar.MINUTE, 0);
-                    cal2.set(Calendar.SECOND, 0);
-                    stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                            cal2.getTimeInMillis(), cal.getTimeInMillis());
-
-                    List<AppUsage> appUsages = new ArrayList<>();
-                    final int statCount = stats.size();
-                    for (int j = 0; j < statCount; j++) {
-                        final android.app.usage.UsageStats pkgStats = stats.get(j);
-                        ApplicationInfo appInfo = null;
-                        try {
-                            appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                        } catch (NameNotFoundException e) {}
-                        if (appInfo != null && pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo==null || (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0)) {
-                            AppUsage appUsage = new AppUsage();
-                            if(Build.VERSION.SDK_INT >= 26) appUsage.category = appInfo.category;
-                            appUsage.pkgName = pkgStats.getPackageName();
-                            appUsage.appTitle = mPm.getApplicationLabel(appInfo).toString();
-                            appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
-                            appUsage.totalTime = pkgStats.getTotalTimeInForeground();
-                            appUsages.add(appUsage);
-                        }
-                    }
-                    GeneralUsage gu = new GeneralUsage();
-                    gu.day = cal.get(Calendar.DAY_OF_MONTH);
-                    gu.month = cal.get(Calendar.MONTH) + 1;
-                    gu.year = cal.get(Calendar.YEAR);
-                    gu.usage = appUsages;
-                    gul.add(gu);
-                }
-
-                Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(),gul);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                            Toast toast = Toast.makeText(MainActivityChild.this, "Suuuuuuu", Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast toast = Toast.makeText(MainActivityChild.this, "Error al enviar appUsage", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                });
-
                 Constraints constraints =
                         new Constraints.Builder()
                                 .setRequiredNetworkType(NetworkType.CONNECTED)
