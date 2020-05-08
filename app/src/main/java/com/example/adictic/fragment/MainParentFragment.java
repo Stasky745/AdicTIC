@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,12 +21,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.DayUsageActivity;
+import com.example.adictic.activity.HorarisActivity;
 import com.example.adictic.activity.Informe;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
 
 import java.util.Collection;
-import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -128,6 +127,18 @@ public class MainParentFragment extends Fragment {
 
         im_appUsage.setOnClickListener(appUsage);
         tv_appUsage.setOnClickListener(appUsage);
+
+        View.OnClickListener horaris = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), HorarisActivity.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+            }
+        };
+
+        im_horaris.setOnClickListener(horaris);
+        tv_horaris.setOnClickListener(horaris);
 
         LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                 new IntentFilter("liveApp"));
