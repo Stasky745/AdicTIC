@@ -97,6 +97,65 @@ public class HorarisActivity extends AppCompatActivity {
 
         setChipGroup();
         setButton();
+        setLayout();
+    }
+
+    public void setLayout(){
+        WakeSleepLists wakeSleepLists;
+
+        Call<WakeSleepLists> call = mTodoService.getHoraris(idChild);
+
+        call.enqueue(new Callback<WakeSleepLists>() {
+            @Override
+            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
+                if(response.isSuccessful()){
+                    if(response.body() != null){
+                        setTexts(response.body());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void setTexts(WakeSleepLists list){
+        switch(list.tipus){
+            case 1:
+                chipGroup.check(CH_horariDiari.getId());
+            case 2:
+                chipGroup.check(CH_horariSetmana.getId());
+            case 3:
+                chipGroup.check(CH_horariGeneric.getId());
+        }
+
+        ET_wakeMon.setText(list.wake.monday);
+        ET_wakeTue.setText(list.wake.tuesday);
+        ET_wakeWed.setText(list.wake.wednesday);
+        ET_wakeThu.setText(list.wake.thursday);
+        ET_wakeFri.setText(list.wake.friday);
+        ET_wakeSat.setText(list.wake.saturday);
+        ET_wakeSun.setText(list.wake.sunday);
+
+        ET_sleepMon.setText(list.sleep.monday);
+        ET_sleepTue.setText(list.sleep.tuesday);
+        ET_sleepWed.setText(list.sleep.wednesday);
+        ET_sleepThu.setText(list.sleep.thursday);
+        ET_sleepFri.setText(list.sleep.friday);
+        ET_sleepSat.setText(list.sleep.saturday);
+        ET_sleepSun.setText(list.sleep.sunday);
+
+        ET_wakeGeneric.setText(list.wake.monday);
+        ET_sleepGeneric.setText(list.sleep.monday);
+
+        ET_wakeWeekday.setText(list.wake.monday);
+        ET_wakeWeekend.setText(list.wake.sunday);
+
+        ET_sleepWeekday.setText(list.sleep.monday);
+        ET_sleepWeekend.setText(list.sleep.sunday);
     }
 
     public void timeDialog(View v) {
@@ -217,6 +276,8 @@ public class HorarisActivity extends AppCompatActivity {
             sleepTimeDay.sunday = ET_sleepSun.getText().toString();
 
             wakeSleepLists.sleep = sleepTimeDay;
+
+            wakeSleepLists.tipus = 1;
         }
         else if(checkedId == CH_horariSetmana.getId()){
             /** Wake up */
@@ -240,6 +301,8 @@ public class HorarisActivity extends AppCompatActivity {
             sleepTimeDay.sunday = ET_sleepWeekend.getText().toString();
 
             wakeSleepLists.sleep = sleepTimeDay;
+
+            wakeSleepLists.tipus = 2;
         }
         else{
             /** Wake up */
@@ -263,6 +326,8 @@ public class HorarisActivity extends AppCompatActivity {
             sleepTimeDay.sunday = ET_sleepGeneric.getText().toString();
 
             wakeSleepLists.sleep = sleepTimeDay;
+
+            wakeSleepLists.tipus = 3;
         }
 
         return wakeSleepLists;

@@ -88,4 +88,7 @@ public interface TodoApi {
     @POST("/users/{id}/horaris")
     Call<String> postHoraris(@Path("id") Long childId, @Body WakeSleepLists wakeSleepLists);
 
+    @GET("/users/{id}/horaris")
+    Call<WakeSleepLists> getHoraris(@Path("id") Long childId);
+
 }
