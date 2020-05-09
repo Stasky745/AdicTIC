@@ -157,7 +157,7 @@ public class Funcions {
 
             gul.add(gu);
         } else {
-            for (int i = iTime; i < fTime; i++) {
+            for (int i = iTime; i <= fTime; i++) {
                 Calendar finalTime = Calendar.getInstance();
                 finalTime.set(Calendar.DAY_OF_YEAR, i);
                 finalTime.set(Calendar.HOUR_OF_DAY, 23);
@@ -199,10 +199,9 @@ public class Funcions {
             try {
                 appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
             } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
-            if (pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                System.out.println("DINS");
+            if (appInfo!=null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
 
                 if(Build.VERSION.SDK_INT >= 26) appUsage.category = appInfo.category;

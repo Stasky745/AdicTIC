@@ -3,11 +3,8 @@ package com.example.adictic.rest;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
-
 import com.example.adictic.entity.InstalledApp;
-
 import com.example.adictic.entity.LiveApp;
-
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
@@ -19,11 +16,14 @@ import com.example.adictic.entity.YearEntity;
 import java.util.Collection;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface TodoApi {
@@ -55,7 +55,7 @@ public interface TodoApi {
     @POST("/usage/{id}")
     Call<String> sendAppUsage(@Path("id") Long childId, @Body Collection<GeneralUsage> appUsage);
 
-    @GET("/users/{idChild}/blockedLists")
+    @GET("/users/{id}/blockedLists")
     Call<BlockedLimitedLists> getBlockedLimitedLists(@Path("id") Long childId);
 
     @GET("/users/{id}/child")
@@ -90,5 +90,9 @@ public interface TodoApi {
 
     @GET("/users/{id}/horaris")
     Call<WakeSleepLists> getHoraris(@Path("id") Long childId);
+
+    @POST("/icons/{pkgName}")
+    @Multipart
+    Call<String> postIcon(@Path("pkgName") String pkgName, @Part MultipartBody.Part file);
 
 }
