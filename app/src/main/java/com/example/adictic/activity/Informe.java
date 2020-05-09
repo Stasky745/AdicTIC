@@ -226,13 +226,20 @@ public class Informe extends AppCompatActivity {
         });
     }
 
-    private void makeGraphs(Collection<GeneralUsage> col){
+    private void makeGraphs(final Collection<GeneralUsage> col){
         Map<String,Long> mapUsage = new HashMap<>();
 
-        //ArrayList<GeneralUsage> llista = new ArrayList<>(col);
-        List<GeneralUsage> llista = getUsageMonths(currentMonth+1,currentYear,col);
+        System.out.println("COL = "+col);
 
-        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(0).usage);
+        ArrayList<GeneralUsage> llista = new ArrayList<>(col);
+        //List<GeneralUsage> llista = getUsageMonths(currentMonth+1,currentYear,col);
+
+        System.out.println("LLISTA = "+llista);
+
+        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(1).usage);
+
+        System.out.println("LAU = "+lau);
+
         if(lau.get(0).category == null) chipGroup.setVisibility(View.GONE);
         else{
             chipGroup.setVisibility(View.VISIBLE);
@@ -240,6 +247,7 @@ public class Informe extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(ChipGroup group, int checkedId) {
                     pieCategory = checkedId != CH_appName.getId();
+                    makeGraphs(col);
                 }
             });
             chipGroup.setSelectionRequired(true);
@@ -252,28 +260,36 @@ public class Informe extends AppCompatActivity {
 
         if(pieCategory){
             for(GeneralUsage gu : llista){
-                totalTime+=24*60*60*1000;
-                totalUsageTime+=gu.totalTime;
-                for(AppUsage au: gu.usage){
-                    String category = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                        category = ApplicationInfo.getCategoryTitle(getApplicationContext(),au.category).toString();
+                if(gu.totalTime > 0) {
+                    totalTime += 24 * 60 * 60 * 1000;
+                    totalUsageTime += gu.totalTime;
+                    for (AppUsage au : gu.usage) {
+                        String category = null;
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            if (au.category == -1) category = "Altres";
+                            else
+                                category = ApplicationInfo.getCategoryTitle(getApplicationContext(), au.category).toString();
+                        }
+
+                        if (mapUsage.containsKey(category))
+                            mapUsage.put(category, mapUsage.get(category) + au.totalTime);
+                        else mapUsage.put(category, au.totalTime);
                     }
-                    if(mapUsage.containsKey(category)) mapUsage.put(category,mapUsage.get(category)+au.totalTime);
-                    else mapUsage.put(category,au.totalTime);
+                    barEntries.add(new BarEntry(gu.day + (gu.month * 100), gu.totalTime /(float) 3600000));
                 }
-                barEntries.add(new BarEntry(gu.day+(gu.month*100),gu.totalTime/3600000));
             }
         }
         else{
             for(GeneralUsage gu : llista){
-                totalTime+=24*60*60*1000;
-                totalUsageTime+=gu.totalTime;
-                for(AppUsage au: gu.usage){
-                    if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
-                    else mapUsage.put(au.appTitle,au.totalTime);
+                if(gu.totalTime > 0){
+                    totalTime+=24*60*60*1000;
+                    totalUsageTime+=gu.totalTime;
+                    for(AppUsage au: gu.usage){
+                        if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
+                        else mapUsage.put(au.appTitle,au.totalTime);
+                    }
+                    barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
                 }
-                barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
             }
         }
 
@@ -368,16 +384,18 @@ public class Informe extends AppCompatActivity {
 
         barChart.setFitBars(true);
 
+        barChart.getAxisLeft().setGranularityEnabled(true);
 
         XAxis xAxis = barChart.getXAxis();
-        System.out.println("XAXIS: "+xAxis.getAxisMinimum());
-        xAxis.setSpaceMin(barData.getBarWidth() / 2f);
-        xAxis.setSpaceMax(barData.getBarWidth() / 2f);
+        //xAxis.setGranularity(1);
+        xAxis.setGranularityEnabled(true);
+//        xAxis.setSpaceMin(barData.getBarWidth() / 2f);
+//        xAxis.setSpaceMax(barData.getBarWidth() / 2f);
         xAxis.setDrawAxisLine(true);
         xAxis.setDrawGridLines(false);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawLabels(true);
-        xAxis.setLabelCount(xAxis.mEntryCount-1);
+        //xAxis.setLabelCount(xAxis.mEntryCount-1);
 //        System.out.println("xAxis LABEL COUNT: "+xAxis.getLabelCount());
         xAxis.setValueFormatter(new MyXAxisBarFormatter());
 
