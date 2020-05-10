@@ -113,7 +113,7 @@ public class HomeFragment extends Fragment {
                         }
                         if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                             AppUsage appUsage = new AppUsage();
-                            appUsage.pkgName = pkgStats.getPackageName();
+                            appUsage.app.pkgName = pkgStats.getPackageName();
                             appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
                             appUsage.totalTime = pkgStats.getTotalTimeInForeground();
                             appUsages.add(appUsage);
