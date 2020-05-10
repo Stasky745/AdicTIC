@@ -1,6 +1,6 @@
 package com.example.adictic.entity;
 
-public class InstalledApp {
+public class AppInfo {
     public String pkgName;
     public String appName;
     public Integer category;
