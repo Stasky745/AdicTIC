@@ -298,4 +298,15 @@
     <string name="cancel">"Cancel·lar"</string>
 
     <string name="successful_entry">"S'ha guardat correctament!"</string>
+
+    <string name="block_now">"Bloqueja ara"</string>
+    <string name="set_limit">"Estableix límit diari"</string>
+
+    <string name="search_app_category">"Cerca una app/categoria"</string>
+
+    <string name="per_day">"/dia"</string>
+    <string name="category">"Categoria:"</string>
+    <string name="blocked">"Bloquejada"</string>
+
+    <string name="app_icon">"Logo de l'app"</string>
 </resources>

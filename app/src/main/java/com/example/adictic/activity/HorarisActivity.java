@@ -183,7 +183,7 @@ public class HorarisActivity extends AppCompatActivity {
             }
         };
 
-        TimePickerDialog timePicker = new TimePickerDialog(this,timeListener,hour,minute,true);
+        TimePickerDialog timePicker = new TimePickerDialog(this,R.style.datePicker,timeListener,hour,minute,true);
         timePicker.show();
     }
 
