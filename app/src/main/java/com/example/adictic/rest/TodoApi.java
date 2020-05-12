@@ -1,5 +1,6 @@
 package com.example.adictic.rest;
 
+import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
@@ -94,5 +95,8 @@ public interface TodoApi {
     @POST("/icons/{pkgName}")
     @Multipart
     Call<String> postIcon(@Path("pkgName") String pkgName, @Part MultipartBody.Part file);
+
+    @GET("/users/{idChild}/blockedApps")
+    Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
 
 }

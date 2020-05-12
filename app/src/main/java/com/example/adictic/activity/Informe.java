@@ -236,22 +236,19 @@ public class Informe extends AppCompatActivity {
 
         System.out.println("LLISTA = "+llista);
 
-        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(1).usage);
+        ArrayList<AppUsage> lau = new ArrayList<>(llista.get(0).usage);
 
         System.out.println("LAU = "+lau);
 
-        if(lau.get(0).category == null) chipGroup.setVisibility(View.GONE);
-        else{
-            chipGroup.setVisibility(View.VISIBLE);
-            chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(ChipGroup group, int checkedId) {
-                    pieCategory = checkedId != CH_appName.getId();
-                    makeGraphs(col);
-                }
-            });
-            chipGroup.setSelectionRequired(true);
-        }
+        chipGroup.setVisibility(View.VISIBLE);
+        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(ChipGroup group, int checkedId) {
+                pieCategory = checkedId != CH_appName.getId();
+                makeGraphs(col);
+            }
+        });
+        chipGroup.setSelectionRequired(true);
 
         List<BarEntry> barEntries = new ArrayList<>();
 
