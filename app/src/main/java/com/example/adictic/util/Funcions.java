@@ -19,6 +19,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.MonthEntity;
@@ -203,10 +204,12 @@ public class Funcions {
             }
             if (appInfo!=null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
+                AppInfo app = new AppInfo();
+                appUsage.app = app;
 
-                if(Build.VERSION.SDK_INT >= 26) appUsage.category = appInfo.category;
-                appUsage.appTitle = mPm.getApplicationLabel(appInfo).toString();
-                appUsage.pkgName = pkgStats.getPackageName();
+                if(Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
+                appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
+                appUsage.app.pkgName = pkgStats.getPackageName();
                 appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
                 appUsage.totalTime = pkgStats.getTotalTimeInForeground();
                 appUsages.add(appUsage);

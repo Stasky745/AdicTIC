@@ -15,7 +15,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
-import com.example.adictic.entity.InstalledApp;
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 
@@ -65,10 +65,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
         }
 
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
-            List<InstalledApp> listApps = new ArrayList<>();
+            List<AppInfo> listApps = new ArrayList<>();
 
             for (ApplicationInfo ai : listInstalledPkgs) {
-                InstalledApp iApp = new InstalledApp();
+                AppInfo iApp = new AppInfo();
 
                 iApp.pkgName = ai.packageName;
                 iApp.appName = mPm.getApplicationLabel(ai).toString();

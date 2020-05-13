@@ -263,9 +263,9 @@ public class Informe extends AppCompatActivity {
                     for (AppUsage au : gu.usage) {
                         String category = null;
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            if (au.category == -1) category = "Altres";
+                            if (au.app.category == -1) category = "Altres";
                             else
-                                category = ApplicationInfo.getCategoryTitle(getApplicationContext(), au.category).toString();
+                                category = ApplicationInfo.getCategoryTitle(getApplicationContext(), au.app.category).toString();
                         }
 
                         if (mapUsage.containsKey(category))
@@ -282,8 +282,8 @@ public class Informe extends AppCompatActivity {
                     totalTime+=24*60*60*1000;
                     totalUsageTime+=gu.totalTime;
                     for(AppUsage au: gu.usage){
-                        if(mapUsage.containsKey(au.appTitle)) mapUsage.put(au.appTitle,mapUsage.get(au.appTitle)+au.totalTime);
-                        else mapUsage.put(au.appTitle,au.totalTime);
+                        if(mapUsage.containsKey(au.app.appName)) mapUsage.put(au.app.appName,mapUsage.get(au.app.appName)+au.totalTime);
+                        else mapUsage.put(au.app.appName,au.totalTime);
                     }
                     barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
                 }
