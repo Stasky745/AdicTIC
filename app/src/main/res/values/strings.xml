@@ -305,8 +305,9 @@
     <string name="search_app_category">"Cerca una app/categoria"</string>
 
     <string name="per_day">"/dia"</string>
-    <string name="category">"Categoria:"</string>
+    <string name="category">"Categoria: %s"</string>
     <string name="blocked">"Bloquejada"</string>
+    <string name="other">"Altres"</string>
 
     <string name="app_icon">"Logo de l'app"</string>
 </resources>

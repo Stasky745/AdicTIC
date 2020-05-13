@@ -5,10 +5,13 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +28,7 @@ import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -38,6 +42,10 @@ public class BlockAppsActivity extends AppCompatActivity {
     List<BlockAppEntity> blockAppList;
     List<String> selectedApps;
 
+    RV_Adapter RVadapter;
+
+    EditText ET_Search;
+
     RecyclerView RV_appList;
 
     @Override
@@ -49,12 +57,52 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
+        ET_Search = (EditText) findViewById(R.id.ET_search);
+
         selectedApps = new ArrayList<>();
         RV_appList = (RecyclerView) findViewById(R.id.RV_Apps);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-        RV_appList.setLayoutManager(linearLayoutManager);
+        RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
         setRecyclerView();
+        setSearchBar();
+    }
+
+    private void setSearchBar(){
+        ET_Search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filter(s.toString());
+            }
+        });
+    }
+
+    private void filter(String s) {
+        List<BlockAppEntity> filterList = new ArrayList<>();
+
+        for(BlockAppEntity blockedApp : blockAppList){
+            CharSequence cat = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                cat = ApplicationInfo.getCategoryTitle(getApplicationContext(), blockedApp.appCategory);
+                if (cat == null) {
+                    cat = getResources().getString(R.string.other);
+                }
+            }
+            if ((cat != null && cat.toString().toLowerCase().contains(s.toLowerCase())) || blockedApp.appName.toLowerCase().contains(s.toLowerCase())) {
+                filterList.add(blockedApp);
+            }
+        }
+
+        RVadapter.filterList(filterList);
     }
 
     private void setRecyclerView(){
@@ -65,8 +113,9 @@ public class BlockAppsActivity extends AppCompatActivity {
             public void onResponse(Call<Collection<BlockAppEntity>> call, Response<Collection<BlockAppEntity>> response) {
                 if(response.isSuccessful() && response.body() != null){
                     blockAppList = new ArrayList<>(response.body());
+                    Collections.sort(blockAppList);
+                    RVadapter = new RV_Adapter(BlockAppsActivity.this,blockAppList);
 
-                    RV_Adapter RVadapter = new RV_Adapter(BlockAppsActivity.this,blockAppList);
                     RV_appList.setAdapter(RVadapter);
                 }
             }
@@ -78,44 +127,70 @@ public class BlockAppsActivity extends AppCompatActivity {
         });
     }
 
-    private class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
+    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
         List<BlockAppEntity> blockAppList;
         Context mContext;
+        LayoutInflater mInflater;
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            String pkgName;
+            protected View mRootView;
+
+            ImageView IV_appIcon;
+            TextView TV_appName, TV_appMaxTime, TV_category, TV_hPerDay;
+
+            MyViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                mRootView = itemView;
+
+                IV_appIcon = (ImageView) itemView.findViewById(R.id.IV_appIcon);
+                TV_appName = (TextView) itemView.findViewById(R.id.TV_appName);
+                TV_appMaxTime = (TextView) itemView.findViewById(R.id.TV_appMaxTime);
+                TV_category = (TextView) itemView.findViewById(R.id.TV_Category);
+
+                TV_hPerDay = (TextView) itemView.findViewById(R.id.TV_hPerDay);
+            }
+        }
 
         RV_Adapter(Context context, List<BlockAppEntity> list){
             mContext = context;
             blockAppList = list;
+            mInflater = LayoutInflater.from(mContext);
         }
 
 
         @NonNull
         @Override
-        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RV_Adapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             // infalte the item Layout
-            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.block_app_item, parent, false);
+            View v = mInflater.inflate(R.layout.block_app_item, parent, false);
+
 
             // set the view's size, margins, paddings and layout parameters
             return new MyViewHolder(v);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
+        public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
             holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
-            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(getResources().getColor(R.color.colorBackground));
-            else holder.itemView.setBackgroundColor(Color.WHITE);
+            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(getResources().getColor(R.color.background_activity));
+            else holder.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
 
-            BlockAppEntity blockedApp = blockAppList.get(position);
+            final BlockAppEntity blockedApp = blockAppList.get(position);
 
             holder.pkgName = blockedApp.pkgName;
 
             holder.TV_appName.setText(blockedApp.appName);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                holder.TV_category.setText(ApplicationInfo.getCategoryTitle(mContext,blockedApp.appCategory));
+                CharSequence cat = ApplicationInfo.getCategoryTitle(mContext,blockedApp.appCategory);
+                if(cat == null){
+                    cat = getResources().getString(R.string.other);
+                }
+                holder.TV_category.setText(cat);
             }
             else{
                 holder.TV_category.setVisibility(View.INVISIBLE);
-                holder.TV_categoryLabel.setVisibility(View.INVISIBLE);
             }
 
             if (blockedApp.appTime>0){
@@ -130,6 +205,20 @@ public class BlockAppsActivity extends AppCompatActivity {
                 holder.TV_hPerDay.setVisibility(View.GONE);
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
+
+            holder.mRootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(selectedApps.contains(blockedApp.pkgName)){
+                        selectedApps.remove(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+                    }
+                    else{
+                        selectedApps.add(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.background_activity));
+                    }
+                }
+            });
         }
 
         @Override
@@ -137,32 +226,9 @@ public class BlockAppsActivity extends AppCompatActivity {
             return blockAppList.size();
         }
 
-        class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            String pkgName;
-
-            ImageView IV_appIcon;
-            TextView TV_appName, TV_appMaxTime, TV_category, TV_hPerDay, TV_categoryLabel;
-
-            MyViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                IV_appIcon = (ImageView) findViewById(R.id.IV_appIcon);
-                TV_appName = (TextView) findViewById(R.id.TV_appName);
-                TV_appMaxTime = (TextView) findViewById(R.id.TV_appMaxTime);
-                TV_category = (TextView) findViewById(R.id.TV_Category);
-
-                TV_hPerDay = (TextView) findViewById(R.id.TV_hPerDay);
-                TV_categoryLabel = (TextView) findViewById(R.id.TV_categoryLabel);
-            }
-
-            @Override
-            public void onClick(View v){
-                MyViewHolder mvh = new MyViewHolder(v);
-                if(selectedApps.contains(mvh.pkgName)) selectedApps.remove(mvh.pkgName);
-                else selectedApps.add(mvh.pkgName);
-
-                notifyItemChanged(mvh.getAdapterPosition());
-            }
+        public void filterList(List<BlockAppEntity> fList){
+            blockAppList = fList;
+            notifyDataSetChanged();
         }
     }
 }

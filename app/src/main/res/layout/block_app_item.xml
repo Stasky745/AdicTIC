@@ -20,8 +20,16 @@
 
     <TextView
         android:id="@+id/TV_appName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/TV_appMaxTime"
         app:layout_constraintStart_toEndOf="@+id/IV_appIcon"
         app:layout_constraintTop_toTopOf="@+id/IV_appIcon" />
@@ -38,24 +46,18 @@
         android:id="@+id/TV_hPerDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:text="@string/per_day"
         app:layout_constraintBottom_toBottomOf="@+id/IV_appIcon"
         app:layout_constraintEnd_toEndOf="@+id/TV_appMaxTime" />
 
     <TextView
-        android:id="@+id/TV_categoryLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/category"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_appIcon"
-        app:layout_constraintStart_toEndOf="@+id/IV_appIcon" />
-
-    <TextView
         android:id="@+id/TV_Category"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/TV_categoryLabel"
-        app:layout_constraintStart_toEndOf="@+id/TV_categoryLabel" />
+        android:layout_marginBottom="8dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/IV_appIcon"
+        app:layout_constraintEnd_toEndOf="@+id/TV_appName"
+        app:layout_constraintStart_toStartOf="@+id/TV_appName" />
 </androidx.constraintlayout.widget.ConstraintLayout>

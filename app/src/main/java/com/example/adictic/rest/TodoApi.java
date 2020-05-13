@@ -96,7 +96,7 @@ public interface TodoApi {
     @Multipart
     Call<String> postIcon(@Path("pkgName") String pkgName, @Part MultipartBody.Part file);
 
-    @GET("/users/{idChild}/blockedApps")
+    @GET("/usage/{idChild}/blockedApps")
     Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
 
 }
