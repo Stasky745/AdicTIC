@@ -20,6 +20,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.BlockAppsActivity;
 import com.example.adictic.activity.DayUsageActivity;
 import com.example.adictic.activity.HorarisActivity;
 import com.example.adictic.activity.Informe;
@@ -102,6 +103,18 @@ public class MainParentFragment extends Fragment {
         TextView tv_blockApps = (TextView) root.findViewById(R.id.TV_BlockApps);
         ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_Horaris);
         TextView tv_horaris = (TextView) root.findViewById(R.id.TV_Horaris);
+
+        View.OnClickListener blockApps = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), BlockAppsActivity.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+            }
+        };
+
+        im_blockApps.setOnClickListener(blockApps);
+        tv_blockApps.setOnClickListener(blockApps);
 
         View.OnClickListener informe = new View.OnClickListener() {
             @Override

@@ -48,7 +48,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
         mPm = getPackageManager();
-        lastListApps = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+        lastListApps = new ArrayList<>();
+        checkInstalledApps();
 
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
@@ -58,9 +59,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private void checkInstalledApps(){
         final List<ApplicationInfo> listInstalledPkgs = new ArrayList<>();
 
-        for(ApplicationInfo ai : mPm.getInstalledApplications(PackageManager.GET_META_DATA)){
+        for(ApplicationInfo ai : mPm.getInstalledApplications(0)){
             if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0){
-                listInstalledPkgs.remove(ai);
+                listInstalledPkgs.add(ai);
             }
         }
 

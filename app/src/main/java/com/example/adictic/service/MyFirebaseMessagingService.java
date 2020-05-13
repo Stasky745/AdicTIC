@@ -127,7 +127,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "Token liveApp: "+s);
             }
             else if(messageMap.containsKey("getIcon")){
-                List<String> list = new ArrayList<>(messageMap.values());
+                List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
             }
 
