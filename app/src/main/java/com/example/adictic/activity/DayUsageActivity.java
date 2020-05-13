@@ -197,8 +197,8 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 if(index!=-1){
                     AppUsage current = appList.remove(index);
                     AppUsage res = new AppUsage();
-                    res.appTitle = au.appTitle;
-                    res.pkgName = au.pkgName;
+                    res.app.appName = au.app.appName;
+                    res.app.pkgName = au.app.pkgName;
                     res.totalTime = au.totalTime + current.totalTime;
                     if(current.lastTimeUsed > au.lastTimeUsed) res.lastTimeUsed = current.lastTimeUsed;
                     else res.lastTimeUsed = au.lastTimeUsed;
@@ -220,7 +220,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     public static class AppNameComparator implements Comparator<AppUsage> {
         @Override
         public final int compare(AppUsage a, AppUsage b) {
-            return a.appTitle.compareTo(b.appTitle);
+            return a.app.appName.compareTo(b.app.appName);
         }
     }
 
@@ -365,7 +365,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             // Bind the data efficiently with the holder
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
-                String label = pkgStats.appTitle;
+                String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
                         System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
