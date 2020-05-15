@@ -1,5 +1,6 @@
 package com.example.adictic.activity;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
@@ -11,9 +12,12 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.BlockAppEntity;
+import com.example.adictic.entity.BlockList;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 
@@ -46,6 +51,9 @@ public class BlockAppsActivity extends AppCompatActivity {
 
     EditText ET_Search;
 
+    Button BT_blockNow;
+    Button BT_limitApp;
+
     RecyclerView RV_appList;
 
     @Override
@@ -63,8 +71,65 @@ public class BlockAppsActivity extends AppCompatActivity {
         RV_appList = (RecyclerView) findViewById(R.id.RV_Apps);
         RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
+        BT_blockNow = (Button) findViewById(R.id.BT_blockNow);
+        BT_limitApp = (Button) findViewById(R.id.BT_limitUse);
+
+        setButtons();
         setRecyclerView();
         setSearchBar();
+    }
+
+    private void setButtons(){
+        BT_blockNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+                else{
+                    Call<String> call = mTodoService.blockApps(idChild,selectedApps);
+
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) { }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) { }
+                    });
+                }
+            }
+        });
+
+        BT_limitApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+                else useTimePicker();
+            }
+        });
+    }
+
+    private void useTimePicker(){
+        TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                final long time = (hourOfDay*60*60*1000)+(minute*60*1000);
+
+                BlockList bList = new BlockList();
+                bList.pkgList = selectedApps;
+                bList.time = time;
+                Call<String> call = mTodoService.limitApps(idChild,bList);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) { }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) { }
+                });
+            }
+        };
+
+        TimePickerDialog timePicker = new TimePickerDialog(this,R.style.datePicker,timeListener,0,0,true);
+        timePicker.show();
     }
 
     private void setSearchBar(){

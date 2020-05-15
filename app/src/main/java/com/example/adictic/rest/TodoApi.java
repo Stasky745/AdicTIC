@@ -1,6 +1,7 @@
 package com.example.adictic.rest;
 
 import com.example.adictic.entity.BlockAppEntity;
+import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
@@ -98,5 +99,11 @@ public interface TodoApi {
 
     @GET("/usage/{idChild}/blockedApps")
     Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
+
+    @POST("/usage/{idChild}/limitedApps")
+    Call<String> limitApps(@Path("idChild") Long childId, BlockList bList);
+
+    @POST("/usage/{idChild}/blockedApps")
+    Call<String> blockApps(@Path("idChild") Long childId, List<String> bList);
 
 }
