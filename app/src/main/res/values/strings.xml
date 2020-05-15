@@ -310,4 +310,6 @@
     <string name="other">"Altres"</string>
 
     <string name="app_icon">"Logo de l'app"</string>
+
+    <string name="select_apps">"Selecciona les aplicacions que vols bloquejar"</string>
 </resources>

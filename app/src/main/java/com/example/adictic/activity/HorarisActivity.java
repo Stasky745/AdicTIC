@@ -101,8 +101,6 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     public void setLayout(){
-        WakeSleepLists wakeSleepLists;
-
         Call<WakeSleepLists> call = mTodoService.getHoraris(idChild);
 
         call.enqueue(new Callback<WakeSleepLists>() {

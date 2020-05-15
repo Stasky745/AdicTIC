@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -49,11 +50,41 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mPm = getPackageManager();
         lastListApps = new ArrayList<>();
-        checkInstalledApps();
+        if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
+    }
+
+    private List<ApplicationInfo> getLaunchableApps(){
+        Intent main = new Intent(Intent.ACTION_MAIN);
+        main.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ApplicationInfo> res = new ArrayList<>();
+
+        List<ResolveInfo> list = mPm.queryIntentActivities(main,0);
+
+        List<String> launcherApps = getLauncherApps();
+
+        for(ResolveInfo ri : list){
+            ApplicationInfo ai = ri.activityInfo.applicationInfo;
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && !launcherApps.contains(ai.packageName)) res.add(ai);
+        }
+
+        return res;
+    }
+
+    private List<String> getLauncherApps(){
+        Intent launcherAppsIntent = new Intent(Intent.ACTION_MAIN);
+        launcherAppsIntent.addCategory(Intent.CATEGORY_HOME);
+
+        List<String> res = new ArrayList<>();
+        List<ResolveInfo> list = mPm.queryIntentActivities(launcherAppsIntent,0);
+
+        for(ResolveInfo ri : list) res.add(ri.activityInfo.applicationInfo.packageName);
+
+        return res;
     }
 
     private void checkInstalledApps(){
@@ -64,6 +95,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 listInstalledPkgs.add(ai);
             }
         }
+
+//        final List<ApplicationInfo> listInstalledPkgs = getLaunchableApps();
 
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
             List<AppInfo> listApps = new ArrayList<>();
@@ -98,7 +131,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
-            checkInstalledApps();
+            if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
             if(TodoApp.getBlockedDevice()){
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
