@@ -312,4 +312,11 @@
     <string name="app_icon">"Logo de l'app"</string>
 
     <string name="select_apps">"Selecciona les aplicacions que vols bloquejar"</string>
+
+    <string name="free_use_activation">"Tens ús il·limitat d'aquest dispositiu"</string>
+    <string name="free_use_deactivation">"S'ha acabat l'ús il·limitat d'aquest dispositiu"</string>
+
+    <string name="update_blocked_apps">"S'ha actualitzat la llista d'apps bloquejades"</string>
+
+    <string name="horaris_notification">"S'han actualitzat els horaris"</string>
 </resources>
