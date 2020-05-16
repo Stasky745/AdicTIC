@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,7 +36,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     TodoApi mTodoService;
     PackageManager mPm;
-    List<ApplicationInfo> lastListApps;
+    List<AppInfo> lastListApps;
 
     @Override
     protected void onServiceConnected() {
@@ -48,38 +50,60 @@ public class WindowChangeDetectingService extends AccessibilityService {
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
         mPm = getPackageManager();
-        lastListApps = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
+        lastListApps = new ArrayList<>();
+        if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
     }
 
-    private void checkInstalledApps(){
-        final List<ApplicationInfo> listInstalledPkgs = new ArrayList<>();
+    private List<AppInfo> getLaunchableApps(){
+        Intent main = new Intent(Intent.ACTION_MAIN);
+        main.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        for(ApplicationInfo ai : mPm.getInstalledApplications(PackageManager.GET_META_DATA)){
-            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0){
-                listInstalledPkgs.remove(ai);
+        List<AppInfo> res = new ArrayList<>();
+
+        List<ResolveInfo> list = mPm.queryIntentActivities(main,0);
+
+        List<String> launcherApps = getLauncherApps();
+
+        List<String> duplicatesList = new ArrayList<>();
+
+        for(ResolveInfo ri : list){
+            ApplicationInfo ai = ri.activityInfo.applicationInfo;
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
+                duplicatesList.add(ai.packageName);
+                AppInfo appInfo = new AppInfo();
+                appInfo.appName = mPm.getApplicationLabel(ai).toString();
+                appInfo.pkgName = ai.packageName;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    appInfo.category = ai.category;
+                }
+                res.add(appInfo);
             }
         }
 
+        return res;
+    }
+
+    private List<String> getLauncherApps(){
+        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
+
+        List<String> res = new ArrayList<>();
+
+        for(ApplicationInfo ai : list){
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) res.add(ai.packageName);
+        }
+
+        return res;
+    }
+
+    private void checkInstalledApps(){
+        final List<AppInfo> listInstalledPkgs = getLaunchableApps();
+
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
-            List<AppInfo> listApps = new ArrayList<>();
-
-            for (ApplicationInfo ai : listInstalledPkgs) {
-                AppInfo iApp = new AppInfo();
-
-                iApp.pkgName = ai.packageName;
-                iApp.appName = mPm.getApplicationLabel(ai).toString();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    iApp.category = ai.category;
-                }
-
-                listApps.add(iApp);
-            }
-
-            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listApps);
+            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
                 @Override
@@ -97,10 +121,12 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
-            checkInstalledApps();
+            if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
             if(TodoApp.getBlockedDevice()){
+                System.out.println("dins");
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                assert mDPM != null;
                 mDPM.lockNow();
             }
             if (event.getPackageName() != null && event.getClassName() != null) {
@@ -115,9 +141,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentPackage", componentName.getPackageName());
 
-                    String time = new SimpleDateFormat("HH:mm").format(new Date());
+                    String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
-                    if (TodoApp.getStartFreeUse()!=0 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
+                    if (TodoApp.getStartFreeUse()!=1 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
 
                         Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(),componentName.getPackageName());
                         call.enqueue(new Callback<String>() {

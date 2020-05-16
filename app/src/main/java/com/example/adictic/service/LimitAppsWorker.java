@@ -12,6 +12,7 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.util.Funcions;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ public class LimitAppsWorker extends Worker {
 
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
 
+        long nextHorari = Funcions.checkHoraris(getApplicationContext()) - Calendar.getInstance().getTimeInMillis();
+
         List<AppUsage> listCurrentUsage = (List<AppUsage>) gul.get(0).usage;
 
         Map<String,Long> limitApps = TodoApp.getLimitApps();
@@ -46,7 +49,9 @@ public class LimitAppsWorker extends Worker {
             }
         }
 
-        Funcions.runLimitAppsWorker(getApplicationContext(),nextWorker);
+        if(nextHorari == -2) nextHorari = nextWorker+1;
+
+        Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(nextHorari, nextWorker));
 
         return Result.success();
     }

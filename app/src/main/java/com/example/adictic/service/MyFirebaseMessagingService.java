@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.Constants;
 import com.example.adictic.MyNotificationManager;
+import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -59,11 +60,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private void updateBlockedAppsList(Map<String,String> map){
         map.remove("blockApp");
-        for(Map.Entry<String,String> entry : map.entrySet()){
-            TodoApp.getBlockedApps().add(entry.getKey());
-        }
-    }
 
+        List<String> blockList = new ArrayList<>(map.keySet());
+        TodoApp.setBlockedApps(blockList);
+    }
+    
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -72,6 +73,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
         Map<String,String> messageMap = remoteMessage.getData();
+
+        String title = null;
+        String body = null;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -105,10 +109,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(messageMap.get("freeUse").equals("1")){
                     Funcions.startFreeUseLimitList(getApplicationContext());
                     TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
+
+                    title = getString(R.string.free_use_activation);
                 }
                 else{
                     Funcions.updateLimitedAppsList();
                     TodoApp.setStartFreeUse(0);
+                    title = getString(R.string.free_use_deactivation);
                 }
             }
             else if(messageMap.containsKey("limitApp")){
@@ -116,9 +123,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 /** FER CRIDA WORKMANAGER **/
                 Funcions.runLimitAppsWorker(getApplicationContext(), 0);
+
+                title = getString(R.string.update_blocked_apps);
             }
             else if(messageMap.containsKey("blockApp")){
                 updateBlockedAppsList(messageMap);
+                System.out.println("Blocked: "+TodoApp.getBlockedApps());
+
+                title = getString(R.string.update_blocked_apps);
             }
             else if(messageMap.containsKey("liveApp")){
                 String s = messageMap.get("liveApp");
@@ -127,8 +139,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "Token liveApp: "+s);
             }
             else if(messageMap.containsKey("getIcon")){
-                List<String> list = new ArrayList<>(messageMap.values());
+                messageMap.remove("getIcon");
+                List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
+            }
+            else if(messageMap.containsKey("horaris")){
+                Funcions.runLimitAppsWorker(getApplicationContext(),0);
+
+                title = getString(R.string.horaris_notification);
             }
 
                     /** Accions del dispositiu pare **/
@@ -147,11 +165,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            String title = remoteMessage.getNotification().getTitle();
-            String body = remoteMessage.getNotification().getBody();
-
+        if (title != null || body != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+
+            if(body == null) body = "";
             MyNotificationManager.getInstance(this).displayNotification(title, body);
         }
 

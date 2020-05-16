@@ -73,6 +73,7 @@
         <activity android:name=".activity.DevicePolicyAdmin"/>
         <activity android:name=".activity.Informe" />
         <activity android:name=".activity.HorarisActivity" />
+        <activity android:name=".activity.BlockAppsActivity" />
 
         <receiver
             android:name=".activity.DevicePolicyAdmin$MyDevicePolicyReceiver"

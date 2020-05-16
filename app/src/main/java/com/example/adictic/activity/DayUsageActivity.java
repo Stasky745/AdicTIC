@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,6 +62,8 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     Chip CH_singleDate;
     Chip CH_rangeDates;
 
+    Spinner SP_sort;
+
     TextView TV_initialDate;
     TextView TV_finalDate;
     TextView TV_error;
@@ -91,6 +94,10 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
         listView = findViewById(R.id.pkg_list);
+
+        SP_sort = (Spinner) findViewById(R.id.typeSpinner);
+
+        SP_sort.setOnItemSelectedListener(this);
 
         CH_singleDate = (Chip) findViewById(R.id.CH_singleDate);
         CH_rangeDates = (Chip) findViewById(R.id.CH_rangeDates);
@@ -436,7 +443,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     }
 
     public void btnInitialDate(View view){
-        DatePickerDialog initialPicker = new DatePickerDialog(this,initialDateListener,initialYear,initialMonth,initialDay);
+        DatePickerDialog initialPicker = new DatePickerDialog(this,R.style.datePicker,initialDateListener,initialYear,initialMonth,initialDay);
         initialPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
 
         int firstYear = yearList.get(yearList.size()-1);
@@ -455,7 +462,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     }
 
     public void btnFinalDate(View view){
-        DatePickerDialog finalPicker = new DatePickerDialog(this,finalDateListener,finalYear,finalMonth,finalDay);
+        DatePickerDialog finalPicker = new DatePickerDialog(this,R.style.datePicker,finalDateListener,finalYear,finalMonth,finalDay);
         finalPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
 
         Calendar cal = Calendar.getInstance();
@@ -566,7 +573,8 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent.getId() == R.id.typeSpinner) mAdapter.sortList(position);
+        System.out.println("DINS ONITEMSELECTED");
+        mAdapter.sortList(position);
     }
 
     @Override

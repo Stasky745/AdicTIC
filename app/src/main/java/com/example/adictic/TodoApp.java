@@ -49,6 +49,15 @@ public class TodoApp extends Application {
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
 
+    private static Map<Integer,String> wakeHoraris = new HashMap<>();
+    private static Map<Integer,String> sleepHoraris = new HashMap<>();
+
+    public static Map<Integer,String> getWakeHoraris(){ return wakeHoraris; }
+    public static void setWakeHoraris(Map<Integer,String> m){ wakeHoraris = m; }
+
+    public static Map<Integer,String> getSleepHoraris(){ return sleepHoraris; }
+    public static void setSleepHoraris(Map<Integer,String> m){ sleepHoraris = m; }
+
     public static void setStartFreeUse(long l){startFreeUse = l;}
     public static long getStartFreeUse(){return startFreeUse;}
 
