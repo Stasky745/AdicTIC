@@ -101,8 +101,6 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     public void setLayout(){
-        WakeSleepLists wakeSleepLists;
-
         Call<WakeSleepLists> call = mTodoService.getHoraris(idChild);
 
         call.enqueue(new Callback<WakeSleepLists>() {
@@ -183,7 +181,7 @@ public class HorarisActivity extends AppCompatActivity {
             }
         };
 
-        TimePickerDialog timePicker = new TimePickerDialog(this,timeListener,hour,minute,true);
+        TimePickerDialog timePicker = new TimePickerDialog(this,R.style.datePicker,timeListener,hour,minute,true);
         timePicker.show();
     }
 

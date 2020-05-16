@@ -23,7 +23,10 @@ import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.MonthEntity;
+import com.example.adictic.entity.TimeDay;
+import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
+import com.example.adictic.rest.TodoApi;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
@@ -34,7 +37,123 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class Funcions {
+    
+    private static void setHoraris(WakeSleepLists list){
+        TimeDay sleep = list.sleep;
+        TimeDay wake = list.wake;
+        
+        Map<Integer,String> sleepMap = new HashMap<>();
+        Map<Integer,String> wakeMap = new HashMap<>();
+        
+        sleepMap.put(Calendar.MONDAY,sleep.monday);
+        sleepMap.put(Calendar.TUESDAY,sleep.tuesday);
+        sleepMap.put(Calendar.WEDNESDAY,sleep.wednesday);
+        sleepMap.put(Calendar.THURSDAY,sleep.thursday);
+        sleepMap.put(Calendar.FRIDAY,sleep.friday);
+        sleepMap.put(Calendar.SATURDAY,sleep.saturday);
+        sleepMap.put(Calendar.SUNDAY,sleep.sunday);
+
+        wakeMap.put(Calendar.MONDAY,wake.monday);
+        wakeMap.put(Calendar.TUESDAY,wake.tuesday);
+        wakeMap.put(Calendar.WEDNESDAY,wake.wednesday);
+        wakeMap.put(Calendar.THURSDAY,wake.thursday);
+        wakeMap.put(Calendar.FRIDAY,wake.friday);
+        wakeMap.put(Calendar.SATURDAY,wake.saturday);
+        wakeMap.put(Calendar.SUNDAY,wake.sunday);
+
+        TodoApp.setWakeHoraris(wakeMap);
+        TodoApp.setSleepHoraris(sleepMap);
+    }
+
+    private static long getHorariInMillis(){
+        Calendar cal = Calendar.getInstance();
+        String wakeTime = TodoApp.getWakeHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
+        String sleepTime = TodoApp.getSleepHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
+
+        int wakeHour = Integer.parseInt(wakeTime.split(":")[0]);
+        int wakeMinute = Integer.parseInt(wakeTime.split(":")[1]);
+
+        int sleepHour = Integer.parseInt(sleepTime.split(":")[0]);
+        int sleepMinute = Integer.parseInt(sleepTime.split(":")[1]);
+
+        Calendar calWake = Calendar.getInstance();
+        calWake.set(Calendar.HOUR_OF_DAY,wakeHour);
+        calWake.set(Calendar.MINUTE,wakeMinute);
+
+        Calendar calSleep = Calendar.getInstance();
+        calSleep.set(Calendar.HOUR_OF_DAY,sleepHour);
+        calSleep.set(Calendar.MINUTE,sleepMinute);
+
+        long timeNow = cal.getTimeInMillis();
+        long wakeMillis = calWake.getTimeInMillis();
+        long sleepMillis = calSleep.getTimeInMillis();
+
+        if(wakeMillis > sleepMillis){
+            if(timeNow>=wakeMillis){
+                TodoApp.setBlockedDevice(false);
+                calSleep.add(Calendar.DAY_OF_YEAR,1);
+
+                return calSleep.getTimeInMillis();
+            }
+            else if(timeNow>=sleepMillis) {
+                TodoApp.setBlockedDevice(true);
+                return wakeMillis;
+            }
+            else{
+                return sleepMillis;
+            }
+        }
+        else{
+            if(timeNow>=sleepMillis){
+                TodoApp.setBlockedDevice(true);
+                calWake.add(Calendar.DAY_OF_YEAR,1);
+
+                return calWake.getTimeInMillis();
+            }
+            else if(timeNow>=wakeMillis){
+                TodoApp.setBlockedDevice(false);
+                return sleepMillis;
+            }
+            else return wakeMillis;
+        }
+    }
+
+
+    public static long checkHoraris(Context ctx){
+        
+        TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
+        
+        Call<WakeSleepLists> call = mTodoService.getHoraris(TodoApp.getIDChild());
+
+        final long[] res = {-1};
+
+        call.enqueue(new Callback<WakeSleepLists>() {
+            @Override
+            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    setHoraris(response.body());
+                    res[0] = getHorariInMillis();
+                }
+                else if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
+                else res[0] = -2;
+            }
+
+            @Override
+            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
+                if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
+                else res[0] = -2;
+            }
+        });
+
+        while(res[0] == -1){}
+
+        return res[0];
+    }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
     public static boolean isAppUsagePermissionOn(Context mContext){
