@@ -26,6 +26,7 @@ import com.example.adictic.activity.HorarisActivity;
 import com.example.adictic.activity.Informe;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 
 import java.util.Collection;
 
@@ -39,11 +40,15 @@ public class MainParentFragment extends Fragment {
     private long idChildSelected = -1;
     private View root;
 
+    ImageView IV_liveIcon;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.main_parent, container, false);
         mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
+
+        IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
 
         Call<Collection<FillNom>> call = mTodoService.getUserChilds(((TodoApp) getActivity().getApplication()).getIDTutor());
         call.enqueue(new Callback<Collection<FillNom>>() {
@@ -189,6 +194,11 @@ public class MainParentFragment extends Fragment {
     private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+
+            String pkgName = intent.getStringExtra("pkgName");
+
+            Funcions.setIconDrawable(getContext(),pkgName,IV_liveIcon);
+
             currentApp.setText(intent.getStringExtra("appName"));
         }
     };

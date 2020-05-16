@@ -7,13 +7,14 @@
 
     <ImageView
         android:id="@+id/IV_appIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:contentDescription="@string/app_icon"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline27"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher" />
@@ -23,41 +24,76 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/TV_appMaxTime"
+        app:layout_constraintEnd_toStartOf="@+id/guideline28"
         app:layout_constraintStart_toEndOf="@+id/IV_appIcon"
         app:layout_constraintTop_toTopOf="@+id/IV_appIcon" />
 
     <TextView
         android:id="@+id/TV_appMaxTime"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="none"
+        android:maxLines="3"
+        android:scrollHorizontally="false"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline28"
         app:layout_constraintTop_toTopOf="@+id/TV_appName" />
 
     <TextView
         android:id="@+id/TV_hPerDay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:text="@string/per_day"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_appIcon"
-        app:layout_constraintEnd_toEndOf="@+id/TV_appMaxTime" />
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/TV_Category"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline28" />
 
     <TextView
         android:id="@+id/TV_Category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/IV_appIcon"
-        app:layout_constraintEnd_toEndOf="@+id/TV_appName"
-        app:layout_constraintStart_toStartOf="@+id/TV_appName" />
+        app:layout_constraintEnd_toStartOf="@+id/guideline28"
+        app:layout_constraintStart_toStartOf="@+id/TV_appName"
+        app:layout_constraintTop_toBottomOf="@+id/TV_appName" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline27"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2214112" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.86374694" />
+
+    <ImageView
+        android:id="@+id/IV_block"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="@+id/guideline28"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/block_round" />
 </androidx.constraintlayout.widget.ConstraintLayout>
