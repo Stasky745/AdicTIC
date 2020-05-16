@@ -1,11 +1,11 @@
 package com.example.adictic.rest;
 
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
@@ -63,7 +63,7 @@ public interface TodoApi {
     @GET("/users/{id}/child")
     Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
 
-    @POST("/users/{idChild}/callBlockedApp")
+    @POST("/users/{id}/callBlockedApp")
     Call<String> callBlockedApp(@Path("id") Long childId, @Body String packageName);
 
     @GET("/usage/{id}/daysUsage")
@@ -101,9 +101,9 @@ public interface TodoApi {
     Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
 
     @POST("/usage/{idChild}/limitedApps")
-    Call<String> limitApps(@Path("idChild") Long childId, BlockList bList);
+    Call<String> limitApps(@Path("idChild") Long childId, @Body BlockList bList);
 
     @POST("/usage/{idChild}/blockedApps")
-    Call<String> blockApps(@Path("idChild") Long childId, List<String> bList);
+    Call<String> blockApps(@Path("idChild") Long childId, @Body List<String> bList);
 
 }
