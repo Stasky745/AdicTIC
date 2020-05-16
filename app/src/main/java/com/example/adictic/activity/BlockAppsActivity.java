@@ -89,7 +89,9 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                     call.enqueue(new Callback<String>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) { }
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            if(response.isSuccessful()) setRecyclerView();
+                        }
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) { }
@@ -114,13 +116,15 @@ public class BlockAppsActivity extends AppCompatActivity {
                 final long time = (hourOfDay*60*60*1000)+(minute*60*1000);
 
                 BlockList bList = new BlockList();
-                bList.pkgList = selectedApps;
+                bList.apps = selectedApps;
                 bList.time = time;
                 Call<String> call = mTodoService.limitApps(idChild,bList);
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) { }
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.isSuccessful()) setRecyclerView();
+                    }
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) { }
@@ -201,7 +205,8 @@ public class BlockAppsActivity extends AppCompatActivity {
             String pkgName;
             protected View mRootView;
 
-            ImageView IV_appIcon;
+            ImageView IV_appIcon, IV_block;
+
             TextView TV_appName, TV_appMaxTime, TV_category, TV_hPerDay;
 
             MyViewHolder(@NonNull View itemView) {
@@ -210,6 +215,8 @@ public class BlockAppsActivity extends AppCompatActivity {
                 mRootView = itemView;
 
                 IV_appIcon = (ImageView) itemView.findViewById(R.id.IV_appIcon);
+                IV_block = (ImageView) itemView.findViewById(R.id.IV_block);
+
                 TV_appName = (TextView) itemView.findViewById(R.id.TV_appName);
                 TV_appMaxTime = (TextView) itemView.findViewById(R.id.TV_appMaxTime);
                 TV_category = (TextView) itemView.findViewById(R.id.TV_Category);
@@ -246,7 +253,10 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             holder.pkgName = blockedApp.pkgName;
 
+            Funcions.setIconDrawable(mContext,blockedApp.pkgName,holder.IV_appIcon);
+
             holder.TV_appName.setText(blockedApp.appName);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 CharSequence cat = ApplicationInfo.getCategoryTitle(mContext,blockedApp.appCategory);
                 if(cat == null){
@@ -260,14 +270,18 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if (blockedApp.appTime>0){
                 Pair<Integer,Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
-                holder.TV_appMaxTime.setText(getResources().getString(R.string.hours_minutes,pairTime.first,pairTime.second));
+                holder.TV_appMaxTime.setText(getString(R.string.hours_minutes,pairTime.first,pairTime.second));
+                holder.TV_hPerDay.setVisibility(View.VISIBLE);
+                holder.IV_block.setVisibility(View.GONE);
             }
             else if(blockedApp.appTime == 0){
                 holder.TV_hPerDay.setVisibility(View.GONE);
-                holder.TV_appMaxTime.setText(getResources().getString(R.string.blocked));
+                holder.TV_appMaxTime.setVisibility(View.GONE);
+                holder.IV_block.setVisibility(View.VISIBLE);
             }
             else{
                 holder.TV_hPerDay.setVisibility(View.GONE);
+                holder.IV_block.setVisibility(View.GONE);
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
 
@@ -289,6 +303,11 @@ public class BlockAppsActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return blockAppList.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
         }
 
         public void filterList(List<BlockAppEntity> fList){

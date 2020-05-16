@@ -7,11 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.Constants;
@@ -154,7 +155,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String aux = messageMap.get("currentAppUpdate");
 
                 Intent intent = new Intent("liveApp");
-                    intent.putExtra("appName",aux);
+                    intent.putExtra("appName",messageMap.get("appName"));
+                    intent.putExtra("pkgName",aux);
                     intent.putExtra("time",messageMap.get("Time"));
                     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
@@ -176,13 +178,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
     }
 
+    @NonNull
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
+    }
+
     private void sendIcon(List<String> list){
         for(String s : list){
             try {
                 PackageManager mPm = getApplicationContext().getPackageManager();
                 Drawable icon = mPm.getApplicationIcon(s);
 
-                Bitmap bitmap = ((BitmapDrawable)icon).getBitmap();
+                Bitmap bitmap = getBitmapFromDrawable(icon);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
                 byte[] byteArray = stream.toByteArray();
@@ -195,7 +206,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 // MultipartBody.Part is used to send also the actual file name
                 MultipartBody.Part body =
-                        MultipartBody.Part.createFormData(s, s, requestFile);
+                        MultipartBody.Part.createFormData("file", s, requestFile);
 
                 Call<String> call = mTodoService.postIcon(s,body);
 
