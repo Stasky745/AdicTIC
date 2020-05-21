@@ -53,6 +53,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
     Button BT_blockNow;
     Button BT_limitApp;
+    Button BT_unlock;
 
     RecyclerView RV_appList;
 
@@ -73,6 +74,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         BT_blockNow = (Button) findViewById(R.id.BT_blockNow);
         BT_limitApp = (Button) findViewById(R.id.BT_limitUse);
+        BT_unlock = (Button) findViewById(R.id.BT_unlock);
 
         setButtons();
         setRecyclerView();
@@ -105,6 +107,26 @@ public class BlockAppsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
                 else useTimePicker();
+            }
+        });
+
+        BT_unlock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+                else{
+                    Call<String> call = mTodoService.unlockApps(idChild,selectedApps);
+
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            if(response.isSuccessful()) setRecyclerView();
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) { }
+                    });
+                }
             }
         });
     }
