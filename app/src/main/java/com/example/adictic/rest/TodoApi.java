@@ -110,4 +110,7 @@ public interface TodoApi {
     @POST("/usage/{idChild}/blockedApps")
     Call<String> blockApps(@Path("idChild") Long childId, @Body List<String> bList);
 
+    @POST("/usage/{idChild}/unlockApps")
+    Call<String> unlockApps(@Path("idChild") Long childId, @Body List<String> bList);
+
 }

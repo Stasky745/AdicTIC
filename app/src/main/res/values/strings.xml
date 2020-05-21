@@ -299,8 +299,9 @@
 
     <string name="successful_entry">"S'ha guardat correctament!"</string>
 
-    <string name="block_now">"Bloqueja ara"</string>
-    <string name="set_limit">"Estableix límit diari"</string>
+    <string name="block_now">"Bloqueja"</string>
+    <string name="set_limit">"Límit diari"</string>
+    <string name="unlock">"Desbloqueja"</string>
 
     <string name="search_app_category">"Cerca per app/categoria"</string>
 
