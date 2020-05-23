@@ -1,6 +1,7 @@
 package com.example.adictic;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
@@ -11,12 +12,25 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -98,16 +112,7 @@ public class TodoApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        ClearableCookieJar cookieJar =
-                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
-
-        OkHttpClient httpClient = new OkHttpClient.Builder()
-                .cookieJar(cookieJar)
-                .addInterceptor(interceptor)
-                .build();
+        OkHttpClient httpClient = getOkHttpClient(getApplicationContext());
 
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -126,5 +131,58 @@ public class TodoApp extends Application {
 
     public TodoApi getAPI() {
         return mTodoService;
+    }
+
+    public OkHttpClient getOkHttpClient(Context context) {
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        ClearableCookieJar cookieJar =
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
+
+        try {
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+
+            trustManagerFactory.init(readKeyStore(context));
+
+            X509TrustManager trustManager = (X509TrustManager) trustManagerFactory.getTrustManagers()[0];
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{trustManager}, null);
+
+            return new OkHttpClient.Builder()
+                    .cookieJar(cookieJar)
+                    .addInterceptor(interceptor)
+                    .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            //Evita el problema javax.net.ssl.SSLPeerUnverifiedException: Hostname not verified però no és molt segur
+                            return true;
+                        }
+                    })
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private KeyStore readKeyStore(Context context) {
+
+        char[] password = "adictic".toCharArray();
+
+        try(InputStream is = context.getResources().openRawResource(R.raw.ssl_server)) {
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(is, password);
+            return ks;
+        } catch (CertificateException | NoSuchAlgorithmException | IOException | KeyStoreException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

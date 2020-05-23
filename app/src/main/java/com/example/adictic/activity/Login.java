@@ -19,7 +19,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Funcions;
+import com.example.adictic.util.Crypt;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -122,11 +122,10 @@ public class Login extends AppCompatActivity {
     // This method is called when the "Login" button is pressed in the Login fragment
     public void checkCredentials(String username, String password, final Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
-        ul.username = username;
-        ul.password = password;
+        ul.username = Crypt.getAES(username);
+        ul.password = Crypt.getSHA256(password);
         ul.tutor = tutor;
-        ul.token = token;
-
+        ul.token = Crypt.getAES(token);
         Call<User> call = mTodoService.login(ul);
 
         call.enqueue(new Callback<User>() {
