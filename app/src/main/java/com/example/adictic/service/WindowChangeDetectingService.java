@@ -163,6 +163,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             " "+TodoApp.getIDChild());
                     if(TodoApp.getLiveApp() && TodoApp.getIDChild() != -1){
                         LiveApp liveApp = new LiveApp();
+                        liveApp.pkgName = componentName.getPackageName();
                         ApplicationInfo appInfo = null;
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);

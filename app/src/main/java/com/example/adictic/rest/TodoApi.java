@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -97,6 +98,9 @@ public interface TodoApi {
     @Multipart
     Call<String> postIcon(@Path("pkgName") String pkgName, @Part MultipartBody.Part file);
 
+    @GET("/icons/{pkgName}")
+    Call<ResponseBody> getIcon(@Path("pkgName") String pkgName);
+
     @GET("/usage/{idChild}/blockedApps")
     Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
 
@@ -105,5 +109,8 @@ public interface TodoApi {
 
     @POST("/usage/{idChild}/blockedApps")
     Call<String> blockApps(@Path("idChild") Long childId, @Body List<String> bList);
+
+    @POST("/usage/{idChild}/unlockApps")
+    Call<String> unlockApps(@Path("idChild") Long childId, @Body List<String> bList);
 
 }
