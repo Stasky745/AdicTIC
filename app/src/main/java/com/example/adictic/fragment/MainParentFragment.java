@@ -23,7 +23,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockAppsActivity;
 import com.example.adictic.activity.DayUsageActivity;
 import com.example.adictic.activity.HorarisActivity;
-import com.example.adictic.activity.Informe;
+import com.example.adictic.activity.informe.InformeActivity;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -124,7 +124,7 @@ public class MainParentFragment extends Fragment {
         View.OnClickListener informe = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity(), Informe.class);
+                Intent i = new Intent(getActivity(), InformeActivity.class);
                 i.putExtra("idChild",idChildSelected);
                 getActivity().startActivity(i);
             }
