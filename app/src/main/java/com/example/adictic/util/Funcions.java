@@ -8,11 +8,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.ImageView;
 
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -37,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -123,6 +127,26 @@ public class Funcions {
         }
     }
 
+    public static void setIconDrawable(Context ctx, String pkgName, final ImageView d){
+        TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
+
+        Call<ResponseBody> call = mTodoService.getIcon(pkgName);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
+                    d.setImageBitmap(bmp);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+    }
 
     public static long checkHoraris(Context ctx){
         
