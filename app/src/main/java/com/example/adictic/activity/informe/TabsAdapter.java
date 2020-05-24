@@ -1,0 +1,36 @@
+package com.example.adictic.activity.informe;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.example.adictic.entity.GeneralUsage;
+
+import java.util.Collection;
+
+public class TabsAdapter extends FragmentStatePagerAdapter {
+
+    private long childId;
+    Collection<GeneralUsage> genericAppUsage;
+
+    TabsAdapter(@NonNull FragmentManager fm, int behavior) {
+        super(fm, behavior);
+    }
+
+    void setChildId(long id){ childId = id; }
+
+    void setGenericAppUsage(Collection<GeneralUsage> col){ genericAppUsage = col; }
+
+    @NonNull
+    @Override
+    public Fragment getItem(int position) {
+        if(position == 0) return new GraphsFragment(childId,genericAppUsage);
+        else return new GraphsFragment(childId,genericAppUsage);
+    }
+
+    @Override
+    public int getCount() {
+        return 2;
+    }
+}

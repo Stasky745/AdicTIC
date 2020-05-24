@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.YearEntity;
@@ -131,6 +132,10 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             finalDay = initialDay = day;
             finalMonth = initialMonth = getIntent().getIntExtra("month",Calendar.getInstance().get(Calendar.MONTH));
             finalYear = initialYear = getIntent().getIntExtra("year",Calendar.getInstance().get(Calendar.YEAR));
+
+            System.out.println("DAY: "+finalDay);
+            System.out.println("MONTH: "+finalMonth);
+            System.out.println("YEAR: "+finalYear);
         }
 
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
@@ -204,6 +209,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 if(index!=-1){
                     AppUsage current = appList.remove(index);
                     AppUsage res = new AppUsage();
+                    res.app = new AppInfo();
                     res.app.appName = au.app.appName;
                     res.app.pkgName = au.app.pkgName;
                     res.totalTime = au.totalTime + current.totalTime;

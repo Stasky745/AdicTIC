@@ -320,4 +320,12 @@
     <string name="update_blocked_apps">"S'ha actualitzat la llista d'apps bloquejades"</string>
 
     <string name="horaris_notification">"S'han actualitzat els horaris"</string>
+
+    <string name="informe_graphs">"Gràfiques"</string>
+    <string name="informe_resum">"Resum"</string>
+
+    <string name="overused_apps">"Aplicacions massa utilitzades"</string>
+    <string name="access_intents">"Intents d'accés"</string>
+    <string name="access_intents_label">"Intents d'accés a aplicacions bloquejades"</string>
+    <string name="tips">"Consells"</string>
 </resources>
