@@ -15,6 +15,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Crypt;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,9 +84,9 @@ public class Register extends AppCompatActivity {
     // This method is called when the "Register" button is pressed in the Register fragment
     public void checkCredentials(String username, String password, String email) {
         UserRegister ul = new UserRegister();
-        ul.username = username;
-        ul.password = password;
-        ul.email = email;
+        ul.username = Crypt.getAES(username);
+        ul.password = Crypt.getSHA256(password);
+        ul.email = Crypt.getAES(email);
         Call<String> call = mTodoService.register(ul);
         call.enqueue(new Callback<String>() {
             @Override
