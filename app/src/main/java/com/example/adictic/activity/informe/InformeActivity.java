@@ -86,7 +86,7 @@ public class InformeActivity extends AppCompatActivity {
             }
         });
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = (ViewPager) findViewById(R.id.VP_viewPager);
@@ -103,6 +103,7 @@ public class InformeActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 viewPager.setCurrentItem(position);
+                tabLayout.selectTab(tabLayout.getTabAt(position));
             }
 
             @Override
