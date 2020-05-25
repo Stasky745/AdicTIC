@@ -328,4 +328,46 @@
     <string name="access_intents">"Intents d'accés"</string>
     <string name="access_intents_label">"Intents d'accés a aplicacions bloquejades"</string>
     <string name="tips">"Consells"</string>
+
+    <!-- FAQ -->
+    <string name="que_es_addiccio">"Què és una addicció?"</string>
+    <string name="def_noves_tecn">"De què parlem quan diem addicció a les noves tecnologies?"</string>
+    <string name="causes_addiccio">"Quines són les causes de l'addicció a les noves tecnologies?"</string>
+    <string name="consequencies_us">"Quines són les conseqüències d'un ús problemàtic de les noves tecnologies?"</string>
+    <string name="prevenir_problemes">"Com prevenir els problemes relacionats amb les noves tecnologies?"</string>
+    <string name="actuacio">"Com actuar davant del dubte de conducta problemàtica amb les noves tecnologies?"</string>
+    <string name="tractament_addiccio">"Quin és el tractament de l'addicció a les noves tecnologies?"</string>
+    <string name="riscos_noves_tec">"Quins són els riscos de les noves tecnologies?"</string>
+
+    <!-- Respostes -->
+    <string name="que_es_addiccio_cat">"<p>La Organització Mundial de la Salut (OMS) defineix <strong style="color:#FF9800;">addicció </strong>com una malaltia física i psicoemocional que es basa en la dependència o necessitat cap a una substància, activitat o relació. Quan parlem d’addicció és important adoptar una perspectiva <strong style="color:#FF9800;">bio-psico-social </strong>ja que s’hi veuen implicats factors biològics, psicològics i socials.</p>
+
+<p>Per entendre millor el concepte, a continuació es presenten algunes de les <strong style="color:#FF9800;">característiques principals:</strong> </p>
+
+<p>- <strong style="color:#FF9800;">Importància:</strong> la conducta de la qual es depèn és més important que la resta dels aspectes de la vida de la persona i controla els seus pensaments, sentiments i comportament</p>
+
+<p>- <strong style="color:#FF9800;">Inestabilitat emocional:</strong> canvis d’humor freqüents modulats per la conducta</p>
+
+<p>- Tolerància: s’augmenta la durada, freqüència i/o intensitat de la conducta per tal d’obtenir els mateixos efectes positius que abans. La persona cada cop necessita més</p>
+
+<p>- <strong style="color:#FF9800;">Síndrome d’abstinència:</strong> malestar físic i/o psicològic al interrompre o disminuir la conducta</p>
+
+<p>- <strong style="color:#FF9800;">Conflictivitat:</strong> la conducta cada cop genera majors conflictes amb l’entorn (relacions familiars, relació de parella, etc.), les activitats on està implicat/da (feina, amistats, aficions...) i amb un/a mateix/a. La conducta es manté malgrat la presència d’efectes perjudicials</p>
+
+<p>- <strong style="color:#FF9800;">Recaiguda:</strong> facilitat per reprendre funcionaments anteriors que potencien la dependència</p>
+
+<p>L’addicció és una malaltia progressiva en què a mesura que va passant el temps, n’augmenten les seves conseqüències. Abans d’arribar fins al punt de parlar d’una addicció cal diferenciar varis conceptes que formen part d’un mateix <strong style="color:#FF9800;">contínuum</strong> (experimentació – ús – abús – addicció) i entre els quals hi ha un límit molt fi. </p>
+
+<p>- <strong style="color:#FF9800;">Experimentació:</strong> primer acostament al consum/conducta per curiositat i amb la possibilitat de continuar o interrompre</p>
+
+<p>- <strong style="color:#FF9800;">Ús:</strong> consum/conducta ocasional que té com a objectiu principal la cerca de sensacions. No hi ha deteriorament ni episodis d’intoxicació</p>
+
+<p>- <strong style="color:#FF9800;">Abús:</strong> consum/conducta regular amb episodis d’intoxicació i pèrdua progressiva del control. Afectacions quant a deteriorament i canvis en l’estat d’ànim</p>
+
+<p>- <strong style="color:#FF9800;">Addicció:</strong> dependència per manca de control que implica cerca compulsiva del consum/conducta, fort deteriorament i conductes de risc</p>
+
+<p>Griffiths, M.D. (2010). The role of context in online gaming excess and addiction: Some case study evidence. <em>Int J Ment Health Addict</em>, <em>8</em> (1): 119-25.</p>
+
+ "</string>
+
 </resources>
