@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
-import com.example.adictic.activity.ContingutInformatiu;
+import com.example.adictic.activity.PreguntesFrequents;
 
 public class AdviceFragment extends Fragment {
 
@@ -25,10 +25,12 @@ public class AdviceFragment extends Fragment {
         ConstraintLayout cl5 = (ConstraintLayout) root.findViewById(R.id.constraint_advice_5);
         ConstraintLayout cl6 = (ConstraintLayout) root.findViewById(R.id.constraint_advice_6);
 
-        cl1.setOnClickListener(new View.OnClickListener() {
+
+
+        cl2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), ContingutInformatiu.class));
+                startActivity(new Intent(getActivity(), PreguntesFrequents.class));
             }
         });
         return root;

@@ -12,7 +12,11 @@ import java.util.Collection;
 public class TabsAdapter extends FragmentStatePagerAdapter {
 
     private long childId;
-    Collection<GeneralUsage> genericAppUsage;
+    private Collection<GeneralUsage> genericAppUsage;
+
+    private long totalTime, totalUsageTime;
+
+    private int age;
 
     TabsAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
@@ -20,13 +24,20 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
 
     void setChildId(long id){ childId = id; }
 
+    void setAge(int a){ age = a; }
+
     void setGenericAppUsage(Collection<GeneralUsage> col){ genericAppUsage = col; }
+
+    void setTimes(long tT, long tUT){
+        totalTime = tT;
+        totalUsageTime = tUT;
+    }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
         if(position == 0) return new GraphsFragment(childId,genericAppUsage);
-        else return new GraphsFragment(childId,genericAppUsage);
+        else return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age);
     }
 
     @Override

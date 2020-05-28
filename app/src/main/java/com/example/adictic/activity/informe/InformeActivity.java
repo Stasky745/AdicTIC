@@ -51,6 +51,8 @@ public class InformeActivity extends AppCompatActivity {
 
     private Map<Integer, Map<Integer,List<Integer>>> daysMap;
 
+    private long totalUsageTime, totalTime;
+
     private TextView TV_percentageUsage;
     private TextView TV_totalUsage;
     private double percentage;
@@ -92,6 +94,8 @@ public class InformeActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.VP_viewPager);
         tabsAdapter = new TabsAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
         tabsAdapter.setChildId(idChild);
+
+        getAge();
 
         //viewPager.setAdapter(tabsAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -142,6 +146,23 @@ public class InformeActivity extends AppCompatActivity {
         getMonthYearLists();
     }
 
+    private void getAge(){
+        Call call = mTodoService.getAge(idChild);
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+                if(response.isSuccessful()){
+                    tabsAdapter.setAge((int) response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+
+            }
+        });
+    }
+
     private void getStats(int month, int year){
         Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChild,month+"-"+year,month+"-"+year);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
@@ -167,12 +188,13 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void setPercentages(Collection<GeneralUsage> col){
-        long totalTime = 0;
-        long totalUsageTime = 0;
+        totalTime = col.size()*24*60*60*1000;
+        totalUsageTime = 0;
         for(GeneralUsage gu : col){
-            totalTime += 24*60*60*1000;
             totalUsageTime += gu.totalTime;
         }
+
+        tabsAdapter.setTimes(totalTime,totalUsageTime);
 
         percentage = totalUsageTime*100.0f/totalTime;
         TV_percentageUsage.setText(getString(R.string.percentage,Math.round(percentage)));
