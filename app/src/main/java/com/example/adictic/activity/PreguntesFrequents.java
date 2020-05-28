@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 
-public class ContingutInformatiu extends AppCompatActivity {
+public class PreguntesFrequents extends AppCompatActivity {
 
     private Button BT_QueEsAddiccio;
     private Button BT_defNovesTec;
@@ -34,9 +34,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/queEsUnaAddiccioCAT.html");
+                i.putExtra("file", "PreguntesFrequents/queEsUnaAddiccioCAT.html");
                 startActivity(i);
             }
         });
@@ -45,9 +45,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/addiccioNovesTecnoCAT.html");
+                i.putExtra("file", "PreguntesFrequents/addiccioNovesTecnoCAT.html");
                 startActivity(i);
             }
         });
@@ -56,9 +56,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/causesAddiccioCAT.html");
+                i.putExtra("file", "PreguntesFrequents/causesAddiccioCAT.html");
                 startActivity(i);
             }
         });
@@ -67,9 +67,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/consequenciesCAT.html");
+                i.putExtra("file", "PreguntesFrequents/consequenciesCAT.html");
                 startActivity(i);
             }
         });
@@ -78,9 +78,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/prevencioCAT.html");
+                i.putExtra("file", "PreguntesFrequents/prevencioCAT.html");
                 startActivity(i);
             }
         });
@@ -89,9 +89,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/actuarDubteCAT.html");
+                i.putExtra("file", "PreguntesFrequents/actuarDubteCAT.html");
                 startActivity(i);
             }
         });
@@ -100,9 +100,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/tractamentCAT.html");
+                i.putExtra("file", "PreguntesFrequents/tractamentCAT.html");
                 startActivity(i);
             }
         });
@@ -111,9 +111,9 @@ public class ContingutInformatiu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(ContingutInformatiu.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
-                i.putExtra("file", "ContingutInformatiu/riscosCAT.html");
+                i.putExtra("file", "PreguntesFrequents/riscosCAT.html");
                 startActivity(i);
             }
         });

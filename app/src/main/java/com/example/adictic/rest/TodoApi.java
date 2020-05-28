@@ -113,4 +113,7 @@ public interface TodoApi {
     @POST("/usage/{idChild}/unlockApps")
     Call<String> unlockApps(@Path("idChild") Long childId, @Body List<String> bList);
 
+    @GET("/users/{idChild}/age")
+    Call<Integer> getAge(@Path("idChild") Long idChild);
+
 }

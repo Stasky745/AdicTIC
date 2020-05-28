@@ -73,7 +73,7 @@
         <activity android:name=".activity.HorarisActivity" />
         <activity android:name=".activity.BlockAppsActivity" />
         <activity android:name=".activity.informe.InformeActivity" />
-        <activity android:name=".activity.ContingutInformatiu" />
+        <activity android:name=".activity.PreguntesFrequents" />
         <activity android:name=".activity.InformationActivity" />
 
         <receiver
