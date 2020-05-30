@@ -342,4 +342,19 @@
     <string name="birthday">"Escull la data de naixement"</string>
     <string name="error_no_bday">"Falta la data de naixement"</string>
 
+    <!-- Resum Informe -->
+    <string name="intro_bona">"Per una persona de %d anys, la quantitat d'ús d'un dispositiu recomanada és de %s hores al dia. Aquest mes s'ha aconseguit mantenir una mitjana de %s hores al dia, inferior a la recomanada!"</string>
+    <string name="intro_dolenta">"Per una persona de %d anys, la quantitat d'ús d'un dispositiu recomanada és de %s hores al dia. Aquest mes s'ha aconseguit mantenir una mitjana de %s hores al dia, superior a la recomanada. S'hauria de procurar baixar aquesta mitjana per sota els valors suggerits."</string>
+    <string name="us_apps_buit">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes s'ha mantingut aquest ideal! Enhorabona!"</string>
+    <string name="us_apps">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes hi ha hagut algunes aplicacions que han superat aquesta pauta. S'hauria de procurar reduir l'ús d'aquestes."</string>
+    <string name="intents_acces_buit">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. Aquest mes no s'ha intentat accedir amb una mitjana de més de 5 cops diaris a cap aplicació bloquejada, la xifra que triem que pot presentar un problema d'addicció a la persona. Felicitats!"</string>
+    <string name="intents_acces">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. A continuació es llisten totes les aplicacions que s'han intentat accedir més de 5 cops diaris, la xifra que hem escollit com a marca de possible addicció."</string>
+    <string name="resum_bo">"Aquest mes s'han seguit les pautes i recomanacions al peu de la lletra, continua així!"</string>
+    <string name="resum">"No s'han seguit adequadament les pautes recomanades durant aquest mes. De cares al següent s'hauria de mirar de:"</string>
+    <string name="resum_us_device">"\n    - Reduir l'ús del dispositiu"</string>
+    <string name="resum_us_apps">"\n    - Reduir i limitar l'ús disponible de les aplicacions massa utilitzades."</string>
+    <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
+
+    <string name="go_information">"Vés a la documentació"</string>
+
 </resources>

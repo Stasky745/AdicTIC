@@ -8,11 +8,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.example.adictic.entity.GeneralUsage;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class TabsAdapter extends FragmentStatePagerAdapter {
 
     private long childId;
     private Collection<GeneralUsage> genericAppUsage;
+    private Map<String, Long> timesBlockedMap;
 
     private long totalTime, totalUsageTime;
 
@@ -28,6 +30,8 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
 
     void setGenericAppUsage(Collection<GeneralUsage> col){ genericAppUsage = col; }
 
+    void setTimesBlockedMap(Map<String,Long> map){ timesBlockedMap = map; }
+
     void setTimes(long tT, long tUT){
         totalTime = tT;
         totalUsageTime = tUT;
@@ -37,7 +41,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if(position == 0) return new GraphsFragment(childId,genericAppUsage);
-        else return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age);
+        else return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age, timesBlockedMap);
     }
 
     @Override
