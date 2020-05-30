@@ -3,7 +3,6 @@ package com.example.adictic.activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -156,6 +155,13 @@ public class NomFill extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = listView.getItemAtPosition(position);
                 FillNom fill = (FillNom)o;
+                String[] bday = fill.birthday.split("/");
+
+                int year = Integer.parseInt(bday[0]);
+                int month = Integer.parseInt(bday[1]);
+                int day = Integer.parseInt(bday[2]);
+
+                BT_birthday.setText(getString(R.string.date_format,day,getResources().getStringArray(R.array.month_names)[month],year));
 
                 tv_nom.setText(fill.deviceName);
             }
@@ -174,9 +180,6 @@ public class NomFill extends AppCompatActivity {
 
                 if(tv_nom.getText().toString().equals("")){
                     TV_errorNoName.setVisibility(VISIBLE);
-                }
-                else if(birthday == null){
-                    TV_errorNoBday.setVisibility(VISIBLE);
                 }
                 else{
                     long id = 0;
@@ -234,46 +237,49 @@ public class NomFill extends AppCompatActivity {
                         });
                     }
                     else { /** Crear un fill nou **/
-                        NouFillLogin fillNou = new NouFillLogin();
-                        fillNou.deviceName = tv_nom.getText().toString();
-                        fillNou.token = token;
-                        fillNou.birthday = birthday;
 
-                        Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
+                        if(birthday == null){
+                            TV_errorNoBday.setVisibility(VISIBLE);
+                        }
+                        else {
+                            NouFillLogin fillNou = new NouFillLogin();
+                            fillNou.deviceName = tv_nom.getText().toString();
+                            fillNou.token = token;
+                            fillNou.birthday = birthday;
 
-                        call.enqueue(new Callback<Long>() {
-                            @Override
-                            public void onResponse(Call<Long> call, Response<Long> response) {
-                                if (response.isSuccessful()) {
-                                    TodoApp.setIDChild(response.body());
-                                    if(!Funcions.isAdminPermissionsOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                        NomFill.this.finish();
+                            Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
+
+                            call.enqueue(new Callback<Long>() {
+                                @Override
+                                public void onResponse(Call<Long> call, Response<Long> response) {
+                                    if (response.isSuccessful()) {
+                                        TodoApp.setIDChild(response.body());
+                                        if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                            NomFill.this.finish();
+                                        } else if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
+                                            NomFill.this.finish();
+                                        } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                            NomFill.this.finish();
+                                        } else {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
+                                            NomFill.this.finish();
+                                        }
+                                    } else {
+                                        Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                                        toast.show();
                                     }
-                                    else if(!Funcions.isAppUsagePermissionOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                    else if(!Funcions.isAccessibilitySettingsOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                    else{
-                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
-                                        NomFill.this.finish();
-                                    }
-                                } else {
+                                }
+
+                                @Override
+                                public void onFailure(Call<Long> call, Throwable t) {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                     toast.show();
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Long> call, Throwable t) {
-                                Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }
@@ -302,7 +308,7 @@ public class NomFill extends AppCompatActivity {
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
             birthday = year+"/"+(month+1)+"/"+dayOfMonth;
 
-            BT_birthday.setText(getResources().getString(R.string.date_format,dayOfMonth,getResources().getStringArray(R.array.month_names)[month+1],year));
+            BT_birthday.setText(getString(R.string.date_format,dayOfMonth,getResources().getStringArray(R.array.month_names)[month+1],year));
         }
     };
 }
