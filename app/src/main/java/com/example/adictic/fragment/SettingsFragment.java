@@ -3,8 +3,10 @@ package com.example.adictic.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,12 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.Login;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Global;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,18 +83,31 @@ public class SettingsFragment extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<String> call = mTodoService.logout();
-                call.enqueue(new Callback<String>() {
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                            getActivity().startActivity(new Intent(getActivity(), Login.class));
-                            getActivity().finish();
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        Call<String> call = null;
+                        if (!task.isSuccessful()) {
+                            call = mTodoService.logout("");
+                        } else {
+                            // Get new Instance ID token
+                            String token = task.getResult().getToken();
+                            call = mTodoService.logout(Crypt.getAES(token));
                         }
-                    }
+                        call.enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.isSuccessful()) {
+                                    getActivity().startActivity(new Intent(getActivity(), Login.class));
+                                    getActivity().finish();
+                                }
+                            }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+                            }
+                        });
                     }
                 });
             }
