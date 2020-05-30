@@ -199,7 +199,6 @@ public class GraphsFragment extends Fragment {
 
     private void setBarChart(List<BarEntry> entries){
         BarDataSet barDataSet = new BarDataSet(entries,getResources().getString(R.string.daily_usage));
-        System.out.println("ENTRIES: "+entries);
         barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
         BarData barData = new BarData(barDataSet);
@@ -222,7 +221,6 @@ public class GraphsFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawLabels(true);
         //xAxis.setLabelCount(xAxis.mEntryCount-1);
-//        System.out.println("xAxis LABEL COUNT: "+xAxis.getLabelCount());
         xAxis.setValueFormatter(new MyXAxisBarFormatter());
 
         barChart.getAxisLeft().setValueFormatter(new MyYAxisBarFormatter());

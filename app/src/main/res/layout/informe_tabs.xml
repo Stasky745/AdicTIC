@@ -89,6 +89,8 @@
         android:id="@+id/TV_usePercentage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/TV_totalUseLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/TV_deviceUsage"
