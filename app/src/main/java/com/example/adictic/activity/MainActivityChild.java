@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.work.Constraints;
@@ -41,6 +42,11 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.service.AppUsageWorker;
+import com.example.adictic.util.Crypt;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -353,24 +359,37 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
 
         Button logout = findViewById(R.id.Debug_TancarSessio);
         logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TodoApi mTodoService = ((TodoApp)getApplication()).getAPI();
-                Call<String> call = mTodoService.logout();
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                            MainActivityChild.this.startActivity(new Intent(MainActivityChild.this, Login.class));
-                            MainActivityChild.this.finish();
-                        }
-                    }
+              @Override
+              public void onClick(View v) {
+                  FirebaseInstanceId.getInstance().getInstanceId()
+                          .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                      @Override
+                      public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                          TodoApi mTodoService = ((TodoApp) getApplication()).getAPI();
+                          Call<String> call = null;
+                          if (!task.isSuccessful()) {
+                              call = mTodoService.logout("");
+                          } else {
+                              // Get new Instance ID token
+                              String token = task.getResult().getToken();
+                              call = mTodoService.logout(Crypt.getAES(token));
+                          }
+                          call.enqueue(new Callback<String>() {
+                              @Override
+                              public void onResponse(Call<String> call, Response<String> response) {
+                                  if (response.isSuccessful()) {
+                                      MainActivityChild.this.startActivity(new Intent(MainActivityChild.this, Login.class));
+                                      MainActivityChild.this.finish();
+                                  }
+                              }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                    }
-                });
-            }
+                              @Override
+                              public void onFailure(Call<String> call, Throwable t) {
+                              }
+                          });
+                      }
+                  });
+              }
         });
 
         Button pujarInfo = findViewById(R.id.Debug_PujarInfo);
