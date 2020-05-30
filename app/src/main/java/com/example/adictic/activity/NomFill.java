@@ -218,45 +218,50 @@ public class NomFill extends AppCompatActivity {
                         });
                     }
                     else { /** Crear un fill nou **/
-                        NouFillLogin fillNou = new NouFillLogin();
-                        fillNou.deviceName = tv_nom.getText().toString();
-                        fillNou.token = token;
+                        if (tv_nom.getText().toString().isEmpty()) {
+                            Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noChildName), Toast.LENGTH_SHORT);
+                            toast.show();
+                        } else if (birthday == null) {
+                            Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noDateChild), Toast.LENGTH_SHORT);
+                            toast.show();
+                        } else {
+                            NouFillLogin fillNou = new NouFillLogin();
+                            fillNou.deviceName = tv_nom.getText().toString();
+                            fillNou.token = token;
 
-                        Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
+                            Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
 
-                        call.enqueue(new Callback<Long>() {
-                            @Override
-                            public void onResponse(Call<Long> call, Response<Long> response) {
-                                if (response.isSuccessful()) {
-                                    TodoApp.setIDChild(response.body());
-                                    if(!Funcions.isAdminPermissionsOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                        NomFill.this.finish();
+                            call.enqueue(new Callback<Long>() {
+                                @Override
+                                public void onResponse(Call<Long> call, Response<Long> response) {
+                                    if (response.isSuccessful()) {
+                                        TodoApp.setIDChild(response.body());
+                                        if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                            NomFill.this.finish();
+                                        } else if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
+                                            NomFill.this.finish();
+                                        } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                            NomFill.this.finish();
+                                        } else {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
+                                            NomFill.this.finish();
+                                        }
+                                    } else {
+                                        Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                                        toast.show();
                                     }
-                                    else if(!Funcions.isAppUsagePermissionOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                    else if(!Funcions.isAccessibilitySettingsOn(NomFill.this)){
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                    else{
-                                        NomFill.this.startActivity(new Intent(NomFill.this, MainActivityChild.class));
-                                        NomFill.this.finish();
-                                    }
-                                } else {
+                                }
+
+                                @Override
+                                public void onFailure(Call<Long> call, Throwable t) {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                     toast.show();
                                 }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Long> call, Throwable t) {
-                                Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
+                            });
+                        }
                     }
                 }
             }

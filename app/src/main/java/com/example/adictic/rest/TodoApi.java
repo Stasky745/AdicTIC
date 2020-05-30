@@ -34,10 +34,13 @@ public interface TodoApi {
     Call<User> login(@Body UserLogin login);
 
     @POST("/users/logout")
-    Call<String> logout();
+    Call<String> logout(@Body String token);
 
     @GET("/users/check")
     Call<User> check();
+
+    @POST("/users/check")
+    Call<User> checkWithToken(@Body String token);
 
     @POST("/users/register")
     Call<String> register(@Body UserRegister register);
