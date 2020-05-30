@@ -132,10 +132,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             finalDay = initialDay = day;
             finalMonth = initialMonth = getIntent().getIntExtra("month",Calendar.getInstance().get(Calendar.MONTH));
             finalYear = initialYear = getIntent().getIntExtra("year",Calendar.getInstance().get(Calendar.YEAR));
-
-            System.out.println("DAY: "+finalDay);
-            System.out.println("MONTH: "+finalMonth);
-            System.out.println("YEAR: "+finalYear);
         }
 
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
@@ -455,8 +451,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         int firstYear = yearList.get(yearList.size()-1);
         int firstMonth = monthList.get(monthList.size()-1);
         int firstDay = Collections.min(daysMap.get(firstYear).get(firstMonth));
-
-        System.out.println("First date: "+firstDay+"/"+firstMonth+"/"+firstYear);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH,firstDay);

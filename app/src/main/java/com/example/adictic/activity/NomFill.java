@@ -1,8 +1,8 @@
 package com.example.adictic.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -44,6 +46,9 @@ public class NomFill extends AppCompatActivity {
     TodoApi mTodoService;
 
     ColorStateList oldColors;
+
+    Button BT_birthday;
+    String birthday;
 
     private class MyAdapter extends BaseAdapter{
         private List<FillNom> llista;
@@ -87,6 +92,10 @@ public class NomFill extends AppCompatActivity {
         setContentView(R.layout.nom_fill);
 
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
+
+        BT_birthday = (Button) findViewById(R.id.BT_birthday);
+
+        setBirthdayButton();
 
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
@@ -157,10 +166,16 @@ public class NomFill extends AppCompatActivity {
             public void onClick(View v) {
 
                 TextView TV_errorNoName = findViewById(R.id.TV_errorNoName);
+                TextView TV_errorNoBday = findViewById(R.id.TV_errorNoBday);
+
+                TV_errorNoBday.setVisibility(GONE);
                 TV_errorNoName.setVisibility(GONE);
 
                 if(tv_nom.getText().toString().equals("")){
                     TV_errorNoName.setVisibility(VISIBLE);
+                }
+                else if(birthday == null){
+                    TV_errorNoBday.setVisibility(VISIBLE);
                 }
                 else{
                     long id = 0;
@@ -221,6 +236,7 @@ public class NomFill extends AppCompatActivity {
                         NouFillLogin fillNou = new NouFillLogin();
                         fillNou.deviceName = tv_nom.getText().toString();
                         fillNou.token = token;
+                        fillNou.birthday = birthday;
 
                         Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
 
@@ -262,4 +278,30 @@ public class NomFill extends AppCompatActivity {
             }
         });
     }
+
+    private void setBirthdayButton(){
+        BT_birthday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePicker = new DatePickerDialog(NomFill.this,R.style.datePicker,birthdayListener,year,month,day);
+                datePicker.getDatePicker().setMaxDate(cal.getTimeInMillis());
+
+                datePicker.show();
+            }
+        });
+    }
+
+    private DatePickerDialog.OnDateSetListener birthdayListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            birthday = year+"/"+(month+1)+"/"+dayOfMonth;
+
+            BT_birthday.setText(getResources().getString(R.string.date_format,dayOfMonth,getResources().getStringArray(R.array.month_names)[month+1],year));
+        }
+    };
 }
