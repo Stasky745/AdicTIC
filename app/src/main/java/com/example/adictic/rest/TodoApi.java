@@ -1,6 +1,7 @@
 package com.example.adictic.rest;
 
 import com.example.adictic.entity.AppInfo;
+import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
@@ -35,9 +36,6 @@ public interface TodoApi {
 
     @POST("/users/logout")
     Call<String> logout(@Body String token);
-
-    @GET("/users/check")
-    Call<User> check();
 
     @POST("/users/check")
     Call<User> checkWithToken(@Body String token);
@@ -119,4 +117,6 @@ public interface TodoApi {
     @GET("/users/{idChild}/age")
     Call<Integer> getAge(@Path("idChild") Long idChild);
 
+    @GET("/usage/{idChild}/timesTried")
+    Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
 }

@@ -13,7 +13,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.TimesAccessedDay;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -24,6 +26,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +79,7 @@ public class InformeActivity extends AppCompatActivity {
                 String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/')+2,TV_totalUsage.getText().length()-1);
                 DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
-                AlertDialog dialog = new AlertDialog.Builder(getApplicationContext()).create();
+                AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
                 dialog.setMessage(getResources().getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE,getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
@@ -96,6 +99,7 @@ public class InformeActivity extends AppCompatActivity {
         tabsAdapter.setChildId(idChild);
 
         getAge();
+        getTimesBlockedMap();
 
         //viewPager.setAdapter(tabsAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -147,20 +151,48 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void getAge(){
-        Call call = mTodoService.getAge(idChild);
-        call.enqueue(new Callback() {
+        Call<Integer> call = mTodoService.getAge(idChild);
+        call.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call call, Response response) {
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if(response.isSuccessful()){
-                    tabsAdapter.setAge((int) response.body());
+                    tabsAdapter.setAge(response.body());
                 }
             }
 
             @Override
-            public void onFailure(Call call, Throwable t) {
+            public void onFailure(Call<Integer> call, Throwable t) {
 
             }
         });
+    }
+
+    private void getTimesBlockedMap(){
+        Call<List<AppTimesAccessed>> call = mTodoService.getAccessBlocked(idChild);
+        call.enqueue(new Callback<List<AppTimesAccessed>>() {
+            @Override
+            public void onResponse(Call<List<AppTimesAccessed>> call, Response<List<AppTimesAccessed>> response) {
+                if(response.isSuccessful() && response.body() != null) setTimesBlockedMap(new ArrayList<>(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<List<AppTimesAccessed>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void setTimesBlockedMap(ArrayList<AppTimesAccessed> list){
+        Map<String,Long> map = new HashMap<>();
+        for(AppTimesAccessed ata : list){
+            String pkgName = ata.app;
+            int times = 0;
+            for(TimesAccessedDay tad : ata.times){
+                times += tad.times;
+            }
+            map.put(pkgName, (long) times);
+        }
+        tabsAdapter.setTimesBlockedMap(map);
     }
 
     private void getStats(int month, int year){
@@ -195,6 +227,7 @@ public class InformeActivity extends AppCompatActivity {
         }
 
         tabsAdapter.setTimes(totalTime,totalUsageTime);
+        viewPager.setAdapter(tabsAdapter);
 
         percentage = totalUsageTime*100.0f/totalTime;
         TV_percentageUsage.setText(getString(R.string.percentage,Math.round(percentage)));
@@ -282,14 +315,12 @@ public class InformeActivity extends AppCompatActivity {
                     }
                 }
                 else{
-                    System.out.println("1");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<List<YearEntity>> call, Throwable t) {
-                System.out.println("2");
                 showError();
             }
         });
