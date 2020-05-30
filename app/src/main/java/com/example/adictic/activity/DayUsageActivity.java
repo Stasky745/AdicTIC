@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.YearEntity;
@@ -204,6 +205,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 if(index!=-1){
                     AppUsage current = appList.remove(index);
                     AppUsage res = new AppUsage();
+                    res.app = new AppInfo();
                     res.app.appName = au.app.appName;
                     res.app.pkgName = au.app.pkgName;
                     res.totalTime = au.totalTime + current.totalTime;
@@ -449,8 +451,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         int firstYear = yearList.get(yearList.size()-1);
         int firstMonth = monthList.get(monthList.size()-1);
         int firstDay = Collections.min(daysMap.get(firstYear).get(firstMonth));
-
-        System.out.println("First date: "+firstDay+"/"+firstMonth+"/"+firstYear);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH,firstDay);

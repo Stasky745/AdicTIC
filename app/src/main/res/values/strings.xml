@@ -320,4 +320,26 @@
     <string name="update_blocked_apps">"S'ha actualitzat la llista d'apps bloquejades"</string>
 
     <string name="horaris_notification">"S'han actualitzat els horaris"</string>
+
+    <string name="informe_graphs">"Gràfiques"</string>
+    <string name="informe_resum">"Resum"</string>
+
+    <string name="overused_apps">"Aplicacions massa utilitzades"</string>
+    <string name="access_intents">"Intents d'accés"</string>
+    <string name="access_intents_label">"Intents d'accés a aplicacions bloquejades"</string>
+    <string name="tips">"Consells"</string>
+
+    <!-- FAQ -->
+    <string name="que_es_addiccio">"Què és una addicció?"</string>
+    <string name="def_noves_tecn">"De què parlem quan diem addicció a les noves tecnologies?"</string>
+    <string name="causes_addiccio">"Quines són les causes de l'addicció a les noves tecnologies?"</string>
+    <string name="consequencies_us">"Quines són les conseqüències d'un ús problemàtic de les noves tecnologies?"</string>
+    <string name="prevenir_problemes">"Com prevenir els problemes relacionats amb les noves tecnologies?"</string>
+    <string name="actuacio">"Com actuar davant del dubte de conducta problemàtica amb les noves tecnologies?"</string>
+    <string name="tractament_addiccio">"Quin és el tractament de l'addicció a les noves tecnologies?"</string>
+    <string name="riscos_noves_tec">"Quins són els riscos de les noves tecnologies?"</string>
+
+    <string name="birthday">"Escull la data de naixement"</string>
+    <string name="error_no_bday">"Falta la data de naixement"</string>
+
 </resources>
