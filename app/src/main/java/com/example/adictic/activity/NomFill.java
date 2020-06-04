@@ -28,6 +28,7 @@ import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 
 import java.util.Calendar;
@@ -198,7 +199,7 @@ public class NomFill extends AppCompatActivity {
                         final VellFillLogin fillVell = new VellFillLogin();
                         fillVell.deviceName = tv_nom.getText().toString();
                         fillVell.idChild = id;
-                        fillVell.token = token;
+                        fillVell.token = Crypt.getAES(token);
 
                         Call<String> call = mTodoService.sendOldName(idParent, fillVell);
 
@@ -244,7 +245,7 @@ public class NomFill extends AppCompatActivity {
                         else {
                             NouFillLogin fillNou = new NouFillLogin();
                             fillNou.deviceName = tv_nom.getText().toString();
-                            fillNou.token = token;
+                            fillNou.token = Crypt.getAES(token);
                             fillNou.birthday = birthday;
 
                             Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
