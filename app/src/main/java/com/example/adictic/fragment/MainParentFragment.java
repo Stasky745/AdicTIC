@@ -40,7 +40,7 @@ public class MainParentFragment extends Fragment {
     private long idChildSelected = -1;
     private View root;
 
-    ImageView IV_liveIcon;
+    private ImageView IV_liveIcon;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

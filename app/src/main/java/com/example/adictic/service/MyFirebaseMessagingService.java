@@ -26,7 +26,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -109,13 +108,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if(messageMap.containsKey("freeUse")){
                 if(messageMap.get("freeUse").equals("1")){
                     Funcions.startFreeUseLimitList(getApplicationContext());
-                    TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
 
                     title = getString(R.string.free_use_activation);
                 }
                 else{
                     Funcions.updateLimitedAppsList();
-                    TodoApp.setStartFreeUse(0);
                     title = getString(R.string.free_use_deactivation);
                 }
             }
