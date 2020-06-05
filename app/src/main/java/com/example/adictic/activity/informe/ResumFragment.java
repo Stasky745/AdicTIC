@@ -72,7 +72,9 @@ public class ResumFragment extends Fragment {
         totalUsageTime = totalUsageT;
         mitjanaHoresDia = round(10.0*totalUsageT / (appList.size()*HORES_A_MILLIS))/10.0;
 
-        age = Math.abs(a);
+        /** Assegurem que l'edat no surt de rang **/
+        age = Math.min(Math.abs(a),Math.abs(20));
+
         intentsAcces = map;
     }
 

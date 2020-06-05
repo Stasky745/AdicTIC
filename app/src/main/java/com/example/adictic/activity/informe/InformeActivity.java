@@ -220,7 +220,7 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void setPercentages(Collection<GeneralUsage> col){
-        totalTime = col.size()*24*60*60*1000;
+        totalTime = col.size()*24L*60*60*1000;
         totalUsageTime = 0;
         for(GeneralUsage gu : col){
             totalUsageTime += gu.totalTime;
@@ -234,6 +234,7 @@ public class InformeActivity extends AppCompatActivity {
 
         Pair<Integer,Integer> usagePair = Funcions.millisToString(totalUsageTime);
         Pair<Integer,Integer> totalTimePair = Funcions.millisToString(totalTime);
+
 
         if(usagePair.first == 0){
             String first = getString(R.string.mins,usagePair.second);
