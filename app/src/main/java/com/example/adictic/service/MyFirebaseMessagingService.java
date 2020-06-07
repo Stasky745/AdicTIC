@@ -132,7 +132,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             else if(messageMap.containsKey("liveApp")){
                 String s = messageMap.get("liveApp");
-                if(s.equals("-1")) TodoApp.setLiveApp(false);
                 TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
                 Log.d(TAG, "Token liveApp: "+s);
             }
@@ -165,9 +164,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (title != null || body != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
             if(body == null) body = "";
+            Log.d(TAG, "Message Notification Body: " + body);
+
             MyNotificationManager.getInstance(this).displayNotification(title, body);
         }
 
