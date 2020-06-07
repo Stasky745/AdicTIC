@@ -1,5 +1,6 @@
 package com.example.adictic.util;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
@@ -8,13 +9,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.provider.Settings;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.work.ExistingWorkPolicy;
@@ -198,28 +198,16 @@ public class Funcions {
 
     // To check if accessibility service is enabled
     public static boolean isAccessibilitySettingsOn(Context mContext) {
-        String TAG = "Accessibility Settings";
+        AccessibilityManager am = (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
 
-        int accessibilityEnabled = 0;
-        final String service = mContext.getPackageName() + "/" + WindowChangeDetectingService.class.getCanonicalName();
-        try {
-            accessibilityEnabled = Settings.Secure.getInt(
-                    mContext.getApplicationContext().getContentResolver(),
-                    android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
-            Log.v(TAG, "accessibilityEnabled = " + accessibilityEnabled);
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, "Error finding setting, default accessibility to not found: "
-                    + e.getMessage());
+        for (AccessibilityServiceInfo enabledService : enabledServices) {
+            ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
+            if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(WindowChangeDetectingService.class.getName()))
+                return true;
         }
-        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
 
-        if (accessibilityEnabled == 1) {
-            Log.v(TAG, "***ACCESSIBILITY IS ENABLED*** -----------------");
-            return true;
-        } else {
-            Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
-            return false;
-        }
+        return false;
     }
 
     public static Pair<Integer,Integer> millisToString(float l){
@@ -369,6 +357,7 @@ public class Funcions {
             newMap.put(entry.getKey(),entry.getValue()+millisToAdd);
         }
 
+        TodoApp.setStartFreeUse(0);
         TodoApp.setLimitApps(newMap);
     }
 
@@ -386,6 +375,7 @@ public class Funcions {
             newMap.put(entry.getKey(),entry.getValue()-appUsage.totalTime);
         }
 
+        TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
         TodoApp.setLimitApps(newMap);
     }
 }

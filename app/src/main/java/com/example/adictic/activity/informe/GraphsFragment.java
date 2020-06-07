@@ -36,7 +36,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -227,6 +226,7 @@ public class GraphsFragment extends Fragment {
         barChart.getAxisRight().setEnabled(false);
         barChart.getLegend().setEnabled(false);
         barChart.getDescription().setEnabled(false);
+        barChart.setScaleYEnabled(false);
 
         barChart.dispatchSetSelected(false);
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
@@ -253,14 +253,14 @@ public class GraphsFragment extends Fragment {
     }
 
     static class MyXAxisBarFormatter extends ValueFormatter {
-        List<String> mesos = Arrays.asList(" Gen"," Feb"," Mar"," Abr"," Maig"," Jun"," Jul"," Ago"," Set"," Oct"," Nov"," Des");
+        //List<String> mesos = Arrays.asList(" Gen"," Feb"," Mar"," Abr"," Maig"," Jun"," Jul"," Ago"," Set"," Oct"," Nov"," Des");
 
         @Override
         public String getFormattedValue(float value){
             if(value > 0){
-                int mes = (int) value/100;
-                int dia = (int) value%100;
-                return dia+mesos.get(mes-1);
+                //int mes = (int) value/100;
+                String dia = String.valueOf((int) value%100);
+                return dia;
             }
             else return "";
 

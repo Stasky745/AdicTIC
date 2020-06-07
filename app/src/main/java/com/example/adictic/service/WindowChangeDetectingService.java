@@ -24,6 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -37,12 +38,16 @@ public class WindowChangeDetectingService extends AccessibilityService {
     TodoApi mTodoService;
     PackageManager mPm;
     List<AppInfo> lastListApps;
+    Calendar dayUpdatedInstalledApps;
 
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
 
         mTodoService = ((TodoApp)getApplicationContext()).getAPI();
+
+        dayUpdatedInstalledApps = Calendar.getInstance();
+        dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR,-1);
 
         //Configure these here for compatibility with API 13 and below.
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
@@ -102,13 +107,17 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private void checkInstalledApps(){
         final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
-        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps)) {
+        Calendar today = Calendar.getInstance();
+        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps) || today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR)) {
             Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    if(response.isSuccessful()) lastListApps = listInstalledPkgs;
+                    if(response.isSuccessful()){
+                        lastListApps = listInstalledPkgs;
+                        dayUpdatedInstalledApps = Calendar.getInstance();
+                    }
                 }
 
                 @Override
@@ -124,7 +133,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
             if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
             if(TodoApp.getBlockedDevice()){
-                System.out.println("dins");
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                 assert mDPM != null;
                 mDPM.lockNow();
