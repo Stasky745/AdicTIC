@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -268,8 +269,8 @@ public class BlockAppsActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
             holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
-            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(getResources().getColor(R.color.background_activity));
-            else holder.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
+            else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
             final BlockAppEntity blockedApp = blockAppList.get(position);
 

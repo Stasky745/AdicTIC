@@ -222,7 +222,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         mInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        mAdapter = new UsageStatsAdapter(appList);
+        mAdapter = new UsageStatsAdapter(appList, getApplicationContext());
         listView.setAdapter(mAdapter);
     }
 
@@ -270,8 +270,10 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
         private long totalTime = 0;
+        private Context mContext;
 
-        UsageStatsAdapter(List<AppUsage> appList) {
+        UsageStatsAdapter(List<AppUsage> appList, Context c) {
+            mContext = c;
             for (AppUsage app : appList) {
                 //Drawable appIcon = null;
                 //appIcon = getPackageManager().getApplicationIcon(app.pkgName);
@@ -374,6 +376,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             // Bind the data efficiently with the holder
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
+                Funcions.setIconDrawable(mContext, pkgStats.app.pkgName,holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
                 holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,

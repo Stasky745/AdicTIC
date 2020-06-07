@@ -26,7 +26,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -109,13 +108,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if(messageMap.containsKey("freeUse")){
                 if(messageMap.get("freeUse").equals("1")){
                     Funcions.startFreeUseLimitList(getApplicationContext());
-                    TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
 
                     title = getString(R.string.free_use_activation);
                 }
                 else{
                     Funcions.updateLimitedAppsList();
-                    TodoApp.setStartFreeUse(0);
                     title = getString(R.string.free_use_deactivation);
                 }
             }
@@ -135,7 +132,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             else if(messageMap.containsKey("liveApp")){
                 String s = messageMap.get("liveApp");
-                if(s.equals("-1")) TodoApp.setLiveApp(false);
                 TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
                 Log.d(TAG, "Token liveApp: "+s);
             }
@@ -168,9 +164,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (title != null || body != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-
             if(body == null) body = "";
+            Log.d(TAG, "Message Notification Body: " + body);
+
             MyNotificationManager.getInstance(this).displayNotification(title, body);
         }
 
