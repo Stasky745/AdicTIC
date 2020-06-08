@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.adictic.activity.MainActivity;
+import com.example.adictic.activity.MainActivityChild;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -46,7 +46,7 @@ public class MyNotificationManager {
          *  But for your project you can customize it as you want
          * */
 
-        Intent mainIntent = new Intent(mCtx, MainActivity.class);
+        Intent mainIntent = new Intent(mCtx, MainActivityChild.class);
 //
 //        Intent gameIntent = new Intent(mCtx, GameProfile.class);
 //        gameIntent.putExtra("gameId", gameID);

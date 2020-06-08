@@ -33,7 +33,6 @@
             android:noHistory="true" />
         <activity android:name=".activity.Register" />
         <activity android:name=".activity.NomFill" />
-        <activity android:name=".activity.MainActivity"/>
         <activity android:name=".activity.MainActivityChild" />
         <activity android:name=".activity.AppUsagePermActivity"/>
         <activity android:name=".activity.AccessibilityPermActivity"/>
