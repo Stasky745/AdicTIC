@@ -1,243 +1,220 @@
 <resources>
 
-    <string name="ok">"D'acord"</string>
 
-    <string name="admin_pem_title">"Permisos d'administrador"</string>
-    <string name="admin_pem_info">"Aquesta aplicació requereix de permisos d'administrador a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Bloquejar el dispositiu. \n\n  • Evitar que l'aplicació es desinstali sense permís"</string>
-    <string name="admin_pem_intent">"Donar permisos d'administrador a aquesta aplicació permet el següent:"</string>
+    <string name = "ok"> "Aceptar" </string>
 
-    <string name="accessibility_pem_title">"Permisos d'accessibilitat"</string>
-    <string name="accessibility_pem_info">"Aquesta aplicació requereix de permisos d'accessibilitat a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Bloquejar aplicacions. \n\n  • Detectar activitat al moment."</string>
-    <string name="accessibility_pem_intent">"Donar permisos d'accessibilitat a aquesta aplicació permet el següent:"</string>
+    <string name = "admin_pem_title"> "Permisos de administrador" </string>
+    <string name = "admin_pem_info"> "Esta aplicación requiere de permisos de administrador a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Bloquear el dispositivo. \n \n • Evitar que la aplicación se desinstala sin permiso "</string>
+    <string name = "admin_pem_intent"> "Dar permisos de administrador a esta aplicación permite lo siguiente:" </string>
 
-    <string name="appusage_pem_title">"Permisos d'ús de dades"</string>
-    <string name="appusage_pem_info">"Aquesta aplicació requereix de permisos d'ús de dades a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Extreure informació de les aplicacions."</string>
-    <string name="appusage_pem_intent">"Donar permisos d'ús de dades a aquesta aplicació permet el següent:"</string>
+    <string name = "accessibility_pem_title"> "Permisos de accesibilidad" </string>
+    <string name = "accessibility_pem_info"> "Esta aplicación requiere de permisos de accesibilidad a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Bloquear aplicaciones. \n \n • Detectar actividad al momento. "</string>
+
+    <string name = "appusage_pem_title"> "Permisos de uso de datos" </string>
+    <string name = "appusage_pem_info"> "Esta aplicación requiere de permisos de uso de datos a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Extraer información de las aplicaciones." </string>
 
     <!-- Strings in DevicePolicyAdmin -->
-    <string name="device_admin">AdicTIC Device Admin</string>
-    <string name="device_admin_description">"AdicTIC necessita permissos d'administrador per evitar que es desinstal·li l'aplicació, i poder bloquejar el dispositiu quan es requereixi."</string>
+    <string name = "device_admin"> AdicTIC Device Admin </string>
+    <string name = "device_admin_description"> "AdicTIC necesita permisos de administrador para evitar que se desinstale la aplicación, y poder bloquear el dispositivo cuando se requiera." </string>
 
-    <!-- Strings used in preference headers and preference definitions -->
-    <string name="header_general">General</string>
-    <string name="header_quality">Password quality</string>
-    <string name="header_expiration">Password expiration</string>
-    <string name="header_lock_wipe">Lock screen / Wipe</string>
-    <string name="header_encryption">Encryption</string>
+    <string name = "app_name"> AdicTIC </string>
+    <string name = "last_time_used"> "Abierta última vez:" </string>
+    <string name = "time_span"> "Tiempo de uso:" </string>
+    <string name = "lastXDays"> "Ver actividad de los últimos:" </string>
 
-    <string name="enable_admin">Enable admin</string>
-    <string name="device_capabilities_category">Device capabilities</string>
-    <string name="disable_camera">Disable all device cameras</string>
-    <string name="disable_keyguard_widgets">Disable keyguard widgets</string>
-    <string name="disable_keyguard_secure_camera">Disable keyguard secure camera</string>
-    <string name="disable_keyguard_notifications">Disable keyguard notifications</string>
-    <string name="disable_keyguard_unredacted_notifications">Disable keyguard unredacted notifications</string>
-    <string name="disable_keyguard_trust_agents">Disable keyguard Trust Agents</string>
-    <string name="keyguard_widgets_disabled">Keyguard widgets disabled</string>
-    <string name="keyguard_widgets_enabled">Keyguard widgets enabled</string>
-    <string name="keyguard_secure_camera_disabled">Keyguard secure camera disabled</string>
-    <string name="keyguard_secure_camera_enabled">Keyguard secure camera enabled</string>
-    <string name="keyguard_secure_notifications_disabled">Keyguard notifications disabled</string>
-    <string name="keyguard_secure_notifications_enabled">Keyguard notifications enabled</string>
-    <string name="keyguard_unredacted_notifications_disabled">Keyguard unredacted notifications disabled</string>
-    <string name="keyguard_unredacted_notifications_enabled">Keyguard unredacted notifications enabled</string>
-    <string name="keyguard_trust_agents_disabled">Keyguard Trust Agents disabled</string>
-    <string name="keyguard_trust_agents_enabled">Keyguard Trust Agents enabled</string>
-    <string name="camera_disabled">Device cameras disabled</string>
-    <string name="camera_enabled">Device cameras enabled</string>
-    <string name="password_controls_category">Password controls</string>
-    <string name="set_password_user">Set password (user)</string>
-    <string name="set_password_api">Set password (via API)</string>
-    <string name="set_password_api_dialog">Set screen lock password to</string>
-    <string name="password_quality_category">Password quality</string>
-    <string name="password_quality">Password quality</string>
-    <string name="password_minimum_length">Minimum length </string>
-    <string name="password_minimum_letters">Minimum letters</string>
-    <string name="password_minimum_numeric">Minimum numeric</string>
-    <string name="password_minimum_lower_case">Minimum lower case</string>
-    <string name="password_minimum_upper_case">Minimum upper case</string>
-    <string name="password_minimum_symbols">Minimum symbols</string>
-    <string name="password_minimum_non_letter">Minimum non-letter</string>
-    <string name="password_expiration_category">Password history / Expiration</string>
-    <string name="password_history_depth">Password history depth</string>
-    <string name="password_expiration_timeout">Password expiration timeout (minutes)</string>
-    <string name="password_expiration_status">Password expiration status</string>
-    <string name="lock_wipe_category">Lock screen / Wipe</string>
-    <string name="maximum_lock_time">Max time to screen lock (minutes)</string>
-    <string name="maximum_password_fails">Max password failures for local wipe</string>
-    <string name="lock_screen">Lock screen now</string>
-    <string name="wipe_data">Wipe data</string>
-    <string name="wipe_data_summary">Wipe internal data, like a factory reset</string>
-    <string name="wipe_all_data">Wipe all data</string>
-    <string name="wipe_all_data_summary">Wipe internal data and external storage</string>
-    <string name="encryption_category">Encryption</string>
-    <string name="require_encryption">Require encryption</string>
-    <string name="activate_encryption">Activate encryption</string>
-
-    <string name="trust_agent_category">Trust Agent Features</string>
-    <string name="set_trust_agent_component_name">Enabled Component Name</string>
-    <string name="set_trust_agent_feature_list">Enabled Features (comma-separated)</string>
-
-    <!-- Manifest strings -->
-    <string name="activity_sample_device_admin">App/Device Admin</string>
-    <string name="sample_device_admin">Sample Device Admin</string>
-    <string name="sample_device_admin_description">Sample code for writing
-        a DeviceAdmin class.  This implementation provides a UI (in ApiDemos)
-        for you to directly control what the DeviceAdmin does with the
-        system.</string>
-    <string name="sample_device_admin2">Dummy Device Admin</string>
-    <string name="sample_device_admin_description2">Dummy device admin</string>
-
-    <!-- Strings used by DeviceAdminSample controller code -->
-    <string name="password_sufficient">Current password meets policy requirements</string>
-    <string name="password_insufficient">Current password does not meet policy requirements</string>
-    <string name="monkey_reset_password">You can\'t reset my password, you are a monkey!</string>
-    <string name="monkey_lock_screen">You can\'t lock my screen, you are a monkey!</string>
-    <string name="monkey_encryption">You can\'t start encryption, you are a monkey!</string>
-    <string name="monkey_wipe_data">You can\'t wipe my data, you are a monkey!</string>
-    <string name="monkey_ok">I admit defeat</string>
-    <string name="reset_password_warning">
-        You have just reset your screen lock password to \"%1$s\""</string>
-    <string name="reset_password_ok">Don\'t forget it</string>
-    <string name="add_admin_extra_app_text">
-        Additional text explaining why this needs to be added.</string>
-    <string name="status_local_global">Local=%1$s / Global=%2$s</string>
-    <string name="status_device_encryption">Device encryption status=%1$s</string>
-    <string name="status_days_hours_minutes">%1$sd %2$sh %3$sm</string>
-    <string name="number_format_warning">Bad value \"%1$s\""</string>
-    <string name="wipe_warning_first">This will erase all of your data.  Are you sure?</string>
-    <string name="wipe_warning_first_ok">Yes</string>
-    <string name="wipe_warning_first_no">No</string>
-    <string name="wipe_warning_second">This is not a test. This WILL erase all of your data!
-        Are you really absolutely sure?</string>
-    <string name="wipe_warning_second_full">This is not a test. This WILL erase all of your data,
-        including external storage! Are you really absolutely sure?</string>
-    <string name="wipe_warning_second_ok">BOOM!</string>
-    <string name="wipe_warning_second_no">Oops, run away!</string>
-    <string name="encryption_not_supported">Encryption is not supported on this device.</string>
-    <string name="encryption_not_supported_ok">OK</string>
-    <string name="encryption_status_unknown">unknown</string>
-    <string name="encryption_status_unsupported">unsupported</string>
-    <string name="encryption_status_inactive">inactive</string>
-    <string name="encryption_status_activating">activating</string>
-    <string name="encryption_status_active">active</string>
-    <string name="expiration_status_none">None</string>
-    <string name="expiration_status_past">Password expired %1$s ago</string>
-    <string name="expiration_status_future">Password will expire %1$s from now</string>
-
-    <!-- Strings used by the sample DeviceAdminReceiver -->
-    <string name="admin_receiver_status">Sample Device Admin: %1$s</string>
-    <string name="admin_receiver_status_enabled">enabled</string>
-    <string name="admin_receiver_status_disabled">disabled</string>
-    <string name="admin_receiver_status_pw_changed">pw changed</string>
-    <string name="admin_receiver_status_pw_failed">pw failed</string>
-    <string name="admin_receiver_status_pw_succeeded">pw succeeded</string>
-    <string name="admin_receiver_status_disable_warning">
-        This is an optional message to warn the user about disabling.</string>
-
-    <string name="app_name">AdicTIC</string>
-    <string name="open_app_usage_setting">Open Apps with usage access settings</string>
-    <string name="last_time_used">"Oberta últim cop: "</string>
-    <string name="time_span">"Temps d'ús: "</string>
-    <string name="lastXDays">"Veure activitat dels últims: "</string>
-
-    <string name="display_order_text">Ordenat per:</string>
-    <string name="app_name_label">App</string>
-    <string name="last_time_used_label">Oberta últim cop</string>
+    <string name = "display_order_text"> Ordenado por: </string>
     <!-- label for usage time -->
-    <string name="usage_time_label">Temps \'ús</string>
-    <string name="total_use">Temps total: </string>
+    <string name = "total_use"> Tiempo total: </string>
 
-    <string name="days">" dies "</string>
-    <string name="hours">" hores "</string>
-    <string name="minutes">" minuts"</string>
+    <string name = "days"> "días" </string>
+    <string name = "hours"> "s" </string>
+    <string name = "minutes"> "minutos" </string>
 
-    <string name="days_tag">"d "</string>
-    <string name="hours_tag">"h "</string>
-    <string name="minutes_tag">"m"</string>
+    <string name = "days_tag"> "d" </string>
+    <string name = "hours_tag"> "h" </string>
+    <string name = "minutes_tag"> "m" </string>
 
-    <string name="block_app">Bloquejada</string>
-    <string name="block_warning">Aquesta aplicació està bloquejada</string>
-    <string name="sortir">Sortir</string>
+    <string name = "block_app"> Bloqueada </string>
+    <string name = "block_warning"> Esta aplicación está bloqueada </string>
+    <string name = "sortir"> Salir </string>
 
-    <string name="username">Nombre de usuario:</string>
-    <string name="password">Contraseña:</string>
-    <string name="password2">Repite la contraseña:</string>
-    <string name="email">Correo electronico:</string>
-    <string name="hint_username">Nombre de usuario</string>
-    <string name="hint_password">Contraseña</string>
-    <string name="hint_email">Correo electronico</string>
-    <string name="no_user">No tienes usuario? </string>
-    <string name="have_account">Ya tienes cuenta? </string>
-    <string name="register">Registrate</string>
-    <string name="go_login">Inicia sessión</string>
-    <string name="tipus">Este dispositivo és de:</string>
+    <string name = "username"> Nombre de usuario: </string>
+    <string name = "password"> Contraseña: </string>
+    <string name = "password2"> Repite la contraseña: </string>
+    <string name = "email"> Correo electronico: </string>
+    <string name = "hint_username"> Nombre de usuario </string>
+    <string name = "hint_password"> Contraseña </string>
+    <string name = "hint_email"> Correo electronico </string>
+    <string name = "no_user"> No tienes usuario? </string>
+    <string name = "have_account"> Ya tienes cuenta? </string>
+    <string name = "register"> Registrate </string>
+    <string name = "go_login"> Iniciar sessión </string>
+    <string name = "tipus"> Este dispositiva de: </string>
 
-    <string name="tutor">Padre / Madre / Tutor</string>
-    <string name="tutelat">Adolescente</string>
+    <string name = "tutor"> Padre / Madre / Tutor </string>
+    <string name = "tutelat"> Adolescente </string>
 
-    <string name="login">Iniciar\nSessión</string>
+    <string name = "login"> Iniciar \nSessión </string>
 
-    <string name="nomDisp">Nombre del dispositivo:</string>
-    <string name="hint_nomDisp">Nombre del dispositivo</string>
+    <string name = "hint_nomDisp"> Número del DISPOSITIVO </string>
 
-    <string name="title_activity_splash_screen">AdicTIC</string>
-    <string name="good_register">Registre correcte!</string>
+    <string name = "title_activity_splash_screen"> AdicTIC </string>
+    <string name = "good_register"> Registro correcto! </string>
 
-    <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
-    <string name="error_noTipus">Camp de tipus de dispositiu buit.</string>
-    <string name="error_noValidEmail">Format de correu no vàlid.</string>
-    <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
-    <string name="error_noRegister">ERROR: No s\'ha pogut registrar.</string>
-    <string name="error_noLogin">ERROR: No s\'ha trobat usuari al servidor amb les dades entrades.</string>
-    <string name="error_noUsername">Escriu un nom d\'usuari.</string>
-    <string name="error_password">Contrasenya no vàlida.</string>
+    <string name = "error_noDeviceName"> Campo del nombre de dispositivo vacío. </string>
+    <string name = "error_noTipus"> Campo de tipo de dispositivo vacío. </string>
+    <string name = "error_noValidEmail"> Formato de correo no válido. </string>
+    <string name = "error_noPwMatch"> Las contraseñas no son iguales. </string>
+    <string name = "error_noRegister"> ERROR: No se ha podido registrar. </string>
+    <string name = "error_noLogin"> ERROR: No se ha encontrado usuario al servidor con los datos entradas. </string>
+    <string name = "error_noUsername"> Escribir nombre de \ usuario. </string>
+    <string name = "error_password"> Contraseña no válida. </string>
+    <string name = "error_noData"> "No se pudo extraer información del servidor" </string>
 
-    <string name="the_image_of_the_other_app">The image of the other app.</string>
+    <string name = "the_image_of_the_other_app"> The image of the other app. </string>
 
-    <string name="current_names">Els noms que tens assignats fins ara són:</string>
-    <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
-    <string name="accessibility_service_name">\"Adictic Accessibility Service\"</string>
-    <string name="accessibility_service_description">\"Aquest servei s\'utilitza per bloquejar aplicacions\"</string>
-    <string name="nomfill_enter">Entrar</string>
+    <string name = "current_names"> Los nombres asignados actualmente hasta ahora son: </string>
+    <string name = "new_name_entry"> "Entra el nombre de este dispositivo. Para sustituir uno anterior, entra el mismo nombre." </string>
+    <string name = "accessibility_service_name"> \"Adictic Accessibility Service \" </string>
+    <string name = "accessibility_service_description"> \"Este servicio es utiliza para bloquear aplicaciones \" </string>
+    <string name = "nomfill_enter"> Entrar </string>
 
-    <string name="childs">Fills:</string>
-    <string name="emptyList">No hi ha informació</string>
+    <string name = "emptyList"> No hay información </string>
 
-    <string name="title_activity_nav">NavActivity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name = "title_activity_nav"> NavActivity </string>
 
-    <string name="menu">MENÚ</string>
-    <string name="menu_home">Inici</string>
-    <string name="menu_settings">Configuració</string>
-    <string name="menu_community">Comunitat</string>
-    <string name="menu_advice">Assessorament</string>
-    <string name="menu_contact">Contacte</string>
-    <string name="menu_help">Ajuda</string>
+    <string name = "menu"> MENÚ </string>
+    <string name = "menu_home"> Inicio </string>
+    <string name = "menu_settings"> Configuración </string>
+    <string name = "menu_advice"> Asesoramiento </string>
+    <string name = "menu_help"> Ayuda </string>
 
-    <string name="free_time">"Temps lliure"</string>
-    <string name="block_device">"Bloquejar dispositiu"</string>
-    <string name="disconnected">"Desconnectat"</string>
-    <string name="informe">"Informe"</string>
-    <string name="horaris">"Horaris"</string>
-    <string name="app_usage">"Ús d'aplicacions"</string>
-    <string name="block_apps">"Bloqueig d'aplicacions"</string>
-    <string name="Notifications">"Notificacions"</string>
-    <string name="home_second">Home Second</string>
+    <string name = "free_time"> "Tiempo libre" </string>
+    <string name = "block_device"> "Bloquear dispositivo" </string>
+    <string name = "disconnected"> "Desconectado" </string>
+    <string name = "informe"> "Informe" </string>
+    <string name = "horaris"> "Horarios" </string>
+    <string name = "app_usage"> "Uso de aplicaciones" </string>
+    <string name = "block_apps"> "Bloqueo de aplicaciones" </string>
+    <string name = "home_second"> Home Second </string>
 
-    <string name="advice_infoContent">Contingut informatiu</string>
-    <string name="advice_mostAskQuest">Preguntes freqüents</string>
-    <string name="advice_recommendations">Recomanacions</string>
-    <string name="advice_onlineChat">Chat online</string>
-    <string name="advice_privateConsult">Consulta privada</string>
-    <string name="advice_OurCenters">Els nostres centres</string>
+    <string name = "advice_infoContent"> Contenido informativo </string>
+    <string name = "advice_mostAskQuest"> Preguntas frecuentes </string>
+    <string name = "advice_recommendations"> Recomendaciones </string>
+    <string name = "advice_onlineChat"> Chat online </string>
+    <string name = "advice_privateConsult"> Consulta privada </string>
+    <string name = "advice_OurCenters"> Nuestros centros </string>
 
-    <string name="forgetPassword"><u>Has oblidat la contrasenya?</u></string>
+    <string name = "forgetPassword"> <u> Olvido contraseña? </u> </string>
 
-    <string name="logout">Tancar Sessió</string>
+    <string name = "logout"> Cerrar Sesión </string>
+
+    <string name = "chip_single_date"> "Una sola fecha" </string>
+    <string name = "chip_range_dates"> "Entre dos fechas" </string>
+
+    <string name = "date"> "Fecha:" </string>
+    <string name = "initial_date"> "Fecha inicial:" </string>
+    <string name = "final_date"> "Fecha final:" </string>
+
+    <string name = "date_format"> "%d%s%d" </string>
+
+    <string name = "daily_usage"> "Uso diario del dispositivo" </string>
+    <string name = "device_usage"> "Uso total del dispositivo:" </string>
+    <string name = "press_pie_chart"> "Pulsa en la gráfica para saber más información." </string>
+
+    <string name = "hours_minutes"> "%d h.%de m." </string>
+    <string name = "hrs"> "%d h." </string>
+    <string name = "hours_endl_minutes"> "%d h. \n%d min." </string>
+    <string name = "mins"> "%d min." </string>
+    <string name = "comp"> "%s /%s" </string>
+    <string name = "percentage"> "%d %%" </string>
+    <string name = "informal_date_format"> "%d-%d-%d" </string>
+
+    <string name = "percentage_info"> "Este usuario ha utilizado el dispositivo%s de las%s posibles. Esto quiere decir que ha sido un%s %%del tiempo utilizándolo." </string>
+    <string name = "error_liveApp"> "No se pudo leer la aplicación actual del hijo" </string>
+    <string name = "unblock_device"> "Desbloquear dispositivo" </string>
+
+    <string name = "nom_app"> "Nombre" </string>
+    <string name = "categoria_app"> "Categoría" </string>
+
+    <string name = "horari_generic"> "Genéricos" </string>
+    <string name = "horari_diari"> "Diario" </string>
+    <string name = "horari_setmanal"> "Semanal" </string>
+    <string name = "horari_intro"> "Elige las horas que el dispositivo estará activo:" </string>
+
+    <string name = "monday"> Lunes </string>
+    <string name = "tuesday"> Martes </string>
+    <string name = "wednesday"> Miércoles </string>
+    <string name = "thursday"> Jueves </string>
+    <string name = "friday"> Viernes </string>
+    <string name = "saturday"> Sábado </string>
+    <string name = "sunday"> Domingo </string>
+
+    <string name = "weekday"> Entre semana </string>
+    <string name = "weekend"> Fin de semana </string>
+
+    <string name = "wake_up"> Despertar: </string>
+    <string name = "sleep"> Adormecer: </string>
+
+    <string name = "wake_up_hint"> Hora de despertar </string>
+    <string name = "sleep_hint"> "Hora de bloquear" </string>
+
+    <string name = "accept"> "Aceptar" </string>
+
+    <string name = "successful_entry"> "Se ha guardado correctamente!" </string>
+
+    <string name = "block_now"> "Bloquear" </string>
+    <string name = "set_limit"> "Límite diario" </string>
+    <string name = "unlock"> "Desbloquear" </string>
+
+    <string name = "search_app_category"> "Búsqueda por app / categoría" </string>
+
+    <string name = "per_day"> "/ día" </string>
+    <string name = "other"> "Otros" </string>
+
+    <string name = "app_icon"> "Logo de la app" </string>
+
+    <string name = "select_apps"> "Seleccionar las aplicaciones que quieres bloquear" </string>
+
+    <string name = "free_use_activation"> "Tienes uso ilimitado de este dispositivo" </string>
+    <string name = "free_use_deactivation"> "Se acabó el uso ilimitado de este dispositivo" </string>
+
+    <string name = "update_blocked_apps"> "Se ha actualizado la lista de apps bloqueadas" </string>
+
+    <string name = "horaris_notification"> "Se han actualizado los horarios" </string>
+
+    <string name = "informe_graphs"> "Gráficas" </string>
+    <string name = "informe_resum"> "Resumen" </string>
+
+    <string name = "overused_apps"> "Aplicaciones demasiado utilizadas" </string>
+    <string name = "access_intents"> "Intentos de acceso" </string>
+    <string name = "access_intents_label"> "Intentos de acceso a aplicaciones bloqueadas" </string>
+
+    <!-- FAQ -->
+    <string name = "que_es_addiccio"> "¿Qué es una adicción?" </string>
+    <string name = "def_noves_tecn"> "De qué hablamos cuando decimos adicción a las nuevas tecnologías?" </string>
+    <string name = "causes_addiccio"> "¿Cuáles son las causas de la adicción a las nuevas tecnologías?" </string>
+    <string name = "consequencies_us"> "¿Cuáles son las consecuencias de un uso problemático de las nuevas tecnologías?" </string>
+    <string name = "prevenir_problemes"> "Cómo prevenir los problemas relacionados con las nuevas tecnologías?" </string>
+    <string name = "actuacio"> "Cómo actuar ante la duda de conducta problemática con las nuevas tecnologías?" </string>
+    <string name = "tractament_addiccio"> "¿Cuál es el tratamiento de la adicción a las nuevas tecnologías?" </string>
+    <string name = "riscos_noves_tec"> "¿Cuáles son los riesgos de las nuevas tecnologías?" </string>
+
+    <string name = "birthday"> "Elige la fecha de nacimiento" </string>
+    <string name = "error_no_bday"> "Falta la fecha de nacimiento" </string>
+
+    <!-- Resumen Informe -->
+    <string name = "intro_bona"> "Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de%s horas al día. Este mes se ha conseguido mantener un promedio de%s horas al día , inferior a la recomendada! "</string>
+    <string name = "intro_dolenta"> "Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de%s horas al día. Este mes se ha conseguido mantener un promedio de%s horas al día , superior a la recomendada. Se debería procurar bajar esta media por debajo de los valores sugeridos. "</string>
+    <string name = "us_apps_buit"> "Idealmente, el uso diario de cada aplicación debería ser inferior al uso diario total recomendado. Este mes se ha mantenido este ideal! Enhorabuena!" </string>
+    <string name = "us_apps"> "Idealmente, el uso diario de cada aplicación debería ser inferior al uso diario total recomendado. Este mes ha habido algunas aplicaciones que han superado esta pauta. Se debería procurar reducir uso de estas. "</string>
+    <string name = "intents_acces_buit"> "Un número excesivo de intentos acceder a una aplicación bloqueada puede ser causa de olvido que ésta no está disponible, o una indicación de que la persona intenta por todos los medios acceder a ella, y esto podría deberse a un problema de adicción. Este mes no se ha intentado acceder con una media de más de 5 golpes diarios a ninguna aplicación bloqueada, la cifra que elegimos que puede presentar un problema de adicción a la persona. Felicidades! "</string>
+    <string name = "intents_acces"> "Un número excesivo de intentos acceder a una aplicación bloqueada puede ser causa de olvido que ésta no está disponible, o una indicación de que la persona intenta por todos los medios acceder a ella, y esto podría deberse a un problema de adicción. a continuación se listan todas las aplicaciones que se han intentado acceder más de 5 golpes diarios, la cifra que hemos escogido como marca de posible adicción. "</string>
+    <string name = "resum_bo"> "Este mes se han seguido las pautas y recomendaciones al pie de la letra, sigue así!" </string>
+    <string name = "resum"> "No se han seguido adecuadamente las pautas recomendadas durante este mes. De caras al siguiente debería tratar de:" </string>
+    <string name = "resum_us_device"> "\n - Reducir el uso del dispositivo" </string>
+    <string name = "resum_us_apps"> "\n - Reducir y limitar el uso disponible de las aplicaciones demasiado utilizadas." </string>
+    <string name = "resum_intents_acces"> "\n - Vigilar el uso de las aplicaciones a las que se ha intentado acceder un número demasiado elevado de golpes, y procurar determinar si esto es debido a una posible adicción." </string>
+
+    <string name = "go_information"> "Ir a la documentación" </string>
 </resources>

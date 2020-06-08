@@ -26,13 +26,11 @@
         app:layout_constraintTop_toBottomOf="@+id/TV_totalUseLabel">
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/TAB_graphs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/informe_graphs" />
 
         <com.google.android.material.tabs.TabItem
-            android:id="@+id/TAB_resum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/informe_resum" />

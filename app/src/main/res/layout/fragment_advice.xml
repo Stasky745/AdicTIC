@@ -48,7 +48,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_privateConsult"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -64,7 +63,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_privateConsult"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -75,7 +73,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_privateConsult"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -113,7 +110,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_onlineChat"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -129,7 +125,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_onlineChat"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -140,7 +135,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_onlineChat"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -177,7 +171,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_recommendations"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -193,7 +186,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_recommendations"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -204,7 +196,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_recommendations"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -242,7 +233,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_ourCenters"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -258,7 +248,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_ourCenters"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -269,7 +258,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_ourCenters"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -306,7 +294,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_mostAskQuest"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -322,7 +309,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_mostAskQuest"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -333,7 +319,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_mostAskQuest"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -371,7 +356,6 @@
             app:layout_constraintGuide_percent="0.89" />
 
         <TextView
-            android:id="@+id/TV_advice_infoContent"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/colorBackground"
@@ -387,7 +371,6 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
-            android:id="@+id/IV_advice_infoContent"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
@@ -398,7 +381,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/AL_advice_infoContent"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@color/colorBackground"
