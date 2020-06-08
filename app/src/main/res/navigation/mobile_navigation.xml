@@ -2,7 +2,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_mainParent">
 
     <fragment
@@ -28,12 +27,6 @@
             android:name="myArg"
             app:argType="string" />
     </fragment>
-
-    <fragment
-        android:id="@+id/nav_community"
-        android:name="com.example.adictic.fragment.CommunityFragment"
-        android:label="@string/menu_advice"
-        tools:layout="@layout/fragment_community" />
 
     <fragment
         android:id="@+id/nav_advice"
