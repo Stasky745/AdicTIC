@@ -2,22 +2,19 @@ package com.example.adictic.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.Login;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Crypt;
-import com.example.adictic.util.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
