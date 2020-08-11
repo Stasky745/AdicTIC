@@ -1,5 +1,6 @@
 package com.example.adictic.activity.informe;
 
+import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
@@ -41,8 +42,6 @@ public class ResumFragment extends Fragment {
 
     private RecyclerView RV_abusedApps, RV_clickedBlockedApps;
 
-    private long totalPossibleTime, totalUsageTime;
-
     private double mitjanaHoresDia;
 
     private Map<String,Long> tempsApps = new HashMap<>();
@@ -68,12 +67,10 @@ public class ResumFragment extends Fragment {
 
     ResumFragment(Collection<GeneralUsage> col, long totalTime, long totalUsageT, int a, Map<String,Long> map){
         appList = new ArrayList<>(col);
-        totalPossibleTime = totalTime;
-        totalUsageTime = totalUsageT;
         mitjanaHoresDia = round(10.0*totalUsageT / (appList.size()*HORES_A_MILLIS))/10.0;
 
         /** Assegurem que l'edat no surt de rang **/
-        age = Math.min(Math.abs(a),20);
+        age = Math.abs(a);
 
         intentsAcces = map;
     }
@@ -93,10 +90,10 @@ public class ResumFragment extends Fragment {
     }
 
     private void setResum(){
-        if(tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaHoresDia <= ageTimes[age]) TV_resum.setText(getString(R.string.resum_bo));
+        if(tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaHoresDia <= ageTimes[Math.min(age,20)]) TV_resum.setText(getString(R.string.resum_bo));
         else{
             String resum_final = getString(R.string.resum);
-            if(mitjanaHoresDia > ageTimes[age]) resum_final+=getString(R.string.resum_us_device);
+            if(mitjanaHoresDia > ageTimes[Math.min(age,20)]) resum_final+=getString(R.string.resum_us_device);
             if (!tempsApps.isEmpty()) resum_final+=getString(R.string.resum_us_apps);
             if(!intentsAcces.isEmpty()) resum_final+=getString(R.string.resum_intents_acces);
             TV_resum.setText(resum_final);
@@ -163,14 +160,14 @@ public class ResumFragment extends Fragment {
 
     private void setIntro(){
         String tempsRecomanat;
-        if(ageTimes[age] != 1.5) tempsRecomanat = String.valueOf(Math.round(ageTimes[age]));
-        else tempsRecomanat = String.valueOf(ageTimes[age]);
+        if(ageTimes[Math.min(age,20)] != 1.5) tempsRecomanat = String.valueOf(Math.round(ageTimes[Math.min(age,20)]));
+        else tempsRecomanat = String.valueOf(ageTimes[Math.min(age,20)]);
 
         String mitj;
         if(10*mitjanaHoresDia % 10 == 0) mitj = String.valueOf(Math.round(mitjanaHoresDia));
         else mitj = String.valueOf(mitjanaHoresDia);
 
-        if(mitjanaHoresDia <= ageTimes[age]) TV_intro.setText(getString(R.string.intro_bona,age, tempsRecomanat,mitj));
+        if(mitjanaHoresDia <= ageTimes[Math.min(age,20)]) TV_intro.setText(getString(R.string.intro_bona,age, tempsRecomanat,mitj));
         else TV_intro.setText(getString(R.string.intro_dolenta,age, tempsRecomanat,mitj));
     }
 
@@ -217,10 +214,10 @@ public class ResumFragment extends Fragment {
         TV_clickedBlockedApps = (TextView) root.findViewById(R.id.TV_clickedBlockedAppsInfo);
         TV_resum = (TextView) root.findViewById(R.id.TV_resum);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            TV_intro.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
-            TV_appUsageInfo.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
-            TV_clickedBlockedApps.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
-            TV_resum.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+            TV_intro.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_appUsageInfo.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_clickedBlockedApps.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_resum.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
         }
 
         BT_appsUsage = (Button) root.findViewById(R.id.BT_appsUsage);

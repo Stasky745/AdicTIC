@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ChangedPackages;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -16,15 +17,18 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +43,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     PackageManager mPm;
     List<AppInfo> lastListApps;
     Calendar dayUpdatedInstalledApps;
+    List<AppChange> uninstalledApps;
+    List<AppChange> installedApps;
 
     @Override
     protected void onServiceConnected() {
@@ -46,6 +52,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
+        uninstalledApps = new ArrayList<>();
+        installedApps = new ArrayList<>();
         dayUpdatedInstalledApps = Calendar.getInstance();
         dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR,-1);
 
@@ -71,13 +79,14 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         List<ResolveInfo> list = mPm.queryIntentActivities(main,0);
 
-        List<String> launcherApps = getLauncherApps();
+        //List<String> launcherApps = getLauncherApps();
 
         List<String> duplicatesList = new ArrayList<>();
 
         for(ResolveInfo ri : list){
             ApplicationInfo ai = ri.activityInfo.applicationInfo;
-            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
+            // if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
+            if(!duplicatesList.contains(ai.packageName)) {
                 duplicatesList.add(ai.packageName);
                 AppInfo appInfo = new AppInfo();
                 appInfo.appName = mPm.getApplicationLabel(ai).toString();
@@ -92,16 +101,29 @@ public class WindowChangeDetectingService extends AccessibilityService {
         return res;
     }
 
-    private List<String> getLauncherApps(){
-        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
+//    private List<String> getLauncherApps(){
+//        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
+//
+//        List<String> res = new ArrayList<>();
+//
+//        for(ApplicationInfo ai : list){
+//            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) res.add(ai.packageName);
+//        }
+//
+//        return res;
+//    }
 
-        List<String> res = new ArrayList<>();
+    private void setChangedAppLists(List<AppInfo> listNewPkgs, Calendar today){
+        Collection<AppInfo> differentApps = CollectionUtils.disjunction(listNewPkgs,lastListApps);
 
-        for(ApplicationInfo ai : list){
-            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) res.add(ai.packageName);
+        for(AppInfo ai : differentApps){
+            AppChange ac = new AppChange();
+            ac.pkgName = ai.pkgName;
+            ac.day = today.get(Calendar.YEAR)+"/"+(today.get(Calendar.MONTH)+1)+"/"+today.get(Calendar.DAY_OF_MONTH);
+
+            if(listNewPkgs.contains(ai)) installedApps.add(ac);
+            else uninstalledApps.add(ac);
         }
-
-        return res;
     }
 
     private void checkInstalledApps(){
@@ -109,6 +131,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         Calendar today = Calendar.getInstance();
         if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps) || today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR)) {
+            setChangedAppLists(listInstalledPkgs, today);
+
             Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
@@ -117,6 +141,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     if(response.isSuccessful()){
                         lastListApps = listInstalledPkgs;
                         dayUpdatedInstalledApps = Calendar.getInstance();
+
+                        installedApps.clear();
+                        uninstalledApps.clear();
                     }
                 }
 
@@ -131,6 +158,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
             if(TodoApp.getIDChild() != -1) checkInstalledApps();
+
+            checkInstalledApps(); /** Borrar després, aquí per fer proves **/
 
             if(TodoApp.getBlockedDevice()){
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);

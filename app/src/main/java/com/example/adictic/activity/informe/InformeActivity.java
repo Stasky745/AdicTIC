@@ -80,8 +80,8 @@ public class InformeActivity extends AppCompatActivity {
                 DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
                 AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
-                dialog.setMessage(getResources().getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
-                dialog.setButton(AlertDialog.BUTTON_POSITIVE,getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                dialog.setMessage(getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
+                dialog.setButton(AlertDialog.BUTTON_POSITIVE,getString(R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
