@@ -76,6 +76,7 @@ public class GraphsFragment extends Fragment {
 
         chipGroup = (ChipGroup) root.findViewById (R.id.CG_category);
         CH_appName = (Chip) root.findViewById (R.id.CH_appName);
+        chipGroup.check(CH_appName.getId());
 
         pieCategory = false;
 

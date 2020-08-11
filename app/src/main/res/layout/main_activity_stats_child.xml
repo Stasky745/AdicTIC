@@ -95,4 +95,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pkg_list" />
 
+    <Button
+        android:id="@+id/BT_pujarApps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pujar Apps"
+        app:layout_constraintBottom_toBottomOf="@+id/Debug_TancarSessio"
+        app:layout_constraintEnd_toStartOf="@+id/Debug_PujarInfo"
+        app:layout_constraintStart_toEndOf="@+id/Debug_TancarSessio"
+        app:layout_constraintTop_toTopOf="@+id/Debug_TancarSessio" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
