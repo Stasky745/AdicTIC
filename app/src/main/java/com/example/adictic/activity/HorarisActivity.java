@@ -57,7 +57,7 @@ public class HorarisActivity extends AppCompatActivity {
         setContentView(R.layout.horaris_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
-        getIntent().getLongExtra("idChild",-1);
+        idChild = getIntent().getLongExtra("idChild",-1);
 
         chipGroup = (ChipGroup) findViewById(R.id.CG_tipusHorari);
         CH_horariDiari = (Chip) findViewById(R.id.CH_diariHorari);

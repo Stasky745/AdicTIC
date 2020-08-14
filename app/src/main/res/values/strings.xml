@@ -136,10 +136,13 @@
     <string name="nom_app">"Nom"</string>
     <string name="categoria_app">"Categoria"</string>
 
+    <string name="editar_horari">"Editar horaris"</string>
     <string name="horari_generic">"Genèric"</string>
     <string name="horari_diari">"Diari"</string>
     <string name="horari_setmanal">"Setmanal"</string>
     <string name="horari_intro">"Escull les hores que el dispositiu estarà actiu:"</string>
+    <string name="horari_actual">"El %s es va a dormir a les %s\n
+        El %s es desperta a les %s"</string>
 
     <string name="monday">Dilluns</string>
     <string name="tuesday">Dimarts</string>
@@ -216,5 +219,10 @@
     <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
 
     <string name="go_information">"Vés a la documentació"</string>
+
+    <string name="edit">"Editar"</string>
+    <string name="afegir">"Afegir"</string>
+    <string name="esborrar">"Esborrar"</string>
+    <string name="events">"Events"</string>
 
 </resources>
