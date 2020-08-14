@@ -10,6 +10,8 @@ public class WakeSleepLists implements Parcelable {
     public TimeDay sleep;
     public int tipus; // 1-diari ; 2-setmana; 3-generic
 
+    public WakeSleepLists(){}
+
     protected WakeSleepLists(Parcel in) {
         wake = (TimeDay) in.readValue(TimeDay.class.getClassLoader());
         sleep = (TimeDay) in.readValue(TimeDay.class.getClassLoader());

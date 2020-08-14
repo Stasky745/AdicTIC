@@ -12,6 +12,8 @@ public class TimeDay implements Parcelable {
     public String saturday;
     public String sunday;
 
+    public TimeDay(){ }
+
     protected TimeDay(Parcel in) {
         monday = in.readString();
         tuesday = in.readString();
