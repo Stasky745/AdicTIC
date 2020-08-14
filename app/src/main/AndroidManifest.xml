@@ -74,6 +74,7 @@
         <activity android:name=".activity.informe.InformeActivity" />
         <activity android:name=".activity.PreguntesFrequents" />
         <activity android:name=".activity.InformationActivity" />
+        <activity android:name=".activity.HorarisMainActivity" />
 
         <receiver
             android:name=".activity.DevicePolicyAdmin$MyDevicePolicyReceiver"
