@@ -7,6 +7,7 @@ import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
@@ -93,7 +94,7 @@ public interface TodoApi {
     Call<String> postHoraris(@Path("id") Long childId, @Body WakeSleepLists wakeSleepLists);
 
     @GET("/users/{id}/horaris")
-    Call<WakeSleepLists> getHoraris(@Path("id") Long childId);
+    Call<Horaris> getHoraris(@Path("id") Long childId);
 
     @POST("/icons/{pkgName}")
     @Multipart
