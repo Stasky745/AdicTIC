@@ -51,6 +51,8 @@ public class HorarisActivity extends AppCompatActivity {
 
     Button BT_sendHoraris;
 
+    WakeSleepLists wakeSleepList;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -97,27 +99,9 @@ public class HorarisActivity extends AppCompatActivity {
 
         setChipGroup();
         setButton();
-        setLayout();
-    }
+        wakeSleepList = getIntent().getParcelableExtra("wakeSleepLists");
 
-    public void setLayout(){
-        Call<WakeSleepLists> call = mTodoService.getHoraris(idChild);
-
-        call.enqueue(new Callback<WakeSleepLists>() {
-            @Override
-            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
-                if(response.isSuccessful()){
-                    if(response.body() != null){
-                        setTexts(response.body());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
-
-            }
-        });
+        if(wakeSleepList!=null) setTexts(wakeSleepList);
     }
 
     public void setTexts(WakeSleepLists list){
@@ -253,7 +237,7 @@ public class HorarisActivity extends AppCompatActivity {
         TimeDay sleepTimeDay = new TimeDay();
 
         if(checkedId == CH_horariDiari.getId()){
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeMon.getText().toString();
             wakeTimeDay.tuesday = ET_wakeTue.getText().toString();
             wakeTimeDay.wednesday = ET_wakeWed.getText().toString();
@@ -264,7 +248,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepMon.getText().toString();
             sleepTimeDay.tuesday = ET_sleepTue.getText().toString();
             sleepTimeDay.wednesday = ET_sleepWed.getText().toString();
@@ -278,7 +262,7 @@ public class HorarisActivity extends AppCompatActivity {
             wakeSleepLists.tipus = 1;
         }
         else if(checkedId == CH_horariSetmana.getId()){
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeWeekday.getText().toString();
             wakeTimeDay.tuesday = ET_wakeWeekday.getText().toString();
             wakeTimeDay.wednesday = ET_wakeWeekday.getText().toString();
@@ -289,7 +273,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepWeekday.getText().toString();
             sleepTimeDay.tuesday = ET_sleepWeekday.getText().toString();
             sleepTimeDay.wednesday = ET_sleepWeekday.getText().toString();
@@ -303,7 +287,7 @@ public class HorarisActivity extends AppCompatActivity {
             wakeSleepLists.tipus = 2;
         }
         else{
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeGeneric.getText().toString();
             wakeTimeDay.tuesday = ET_wakeGeneric.getText().toString();
             wakeTimeDay.wednesday = ET_wakeGeneric.getText().toString();
@@ -314,7 +298,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepGeneric.getText().toString();
             sleepTimeDay.tuesday = ET_sleepGeneric.getText().toString();
             sleepTimeDay.wednesday = ET_sleepGeneric.getText().toString();
