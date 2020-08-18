@@ -225,4 +225,15 @@
     <string name="esborrar">"Esborrar"</string>
     <string name="events">"Events"</string>
 
+    <string name="closing_activity">"Sortint de l'activitat"</string>
+    <string name="exit_without_save">"Vols sortir sense guardar?"</string>
+
+    <string name="yes">"Sí"</string>
+    <string name="no">"No"</string>
+
+    <string name="esborrar_event">"Esborrar event"</string>
+    <string name="esborrar_event_text">"Vols esborrar l'event %s?"</string>
+
+    <string name="no_event_selected">"No has seleccionat cap event"</string>
+
 </resources>

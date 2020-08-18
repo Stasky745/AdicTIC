@@ -1,7 +1,10 @@
 package com.example.adictic.activity;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +36,8 @@ public class HorarisActivity extends AppCompatActivity {
 
     long idChild;
 
+    int canvis;
+
     static ChipGroup chipGroup;
     static Chip CH_horariGeneric;
     static Chip CH_horariDiari;
@@ -58,6 +63,8 @@ public class HorarisActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
+
+        canvis = 0;
 
         idChild = getIntent().getLongExtra("idChild",-1);
 
@@ -104,6 +111,31 @@ public class HorarisActivity extends AppCompatActivity {
         if(wakeSleepList!=null) setTexts(wakeSleepList);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(canvis == 0 && wakeSleepList.tipus == chipGroup.getCheckedChipId()){
+            Intent returnIntent = new Intent();
+            setResult(RESULT_CANCELED,returnIntent);
+            super.onBackPressed();
+        }
+        else{
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(getString(R.string.closing_activity))
+                    .setMessage(getString(R.string.exit_without_save))
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent returnIntent = new Intent();
+                            setResult(RESULT_CANCELED,returnIntent);
+                            HorarisActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.no),null)
+                    .show();
+        }
+    }
+
     public void setTexts(WakeSleepLists list){
         switch(list.tipus){
             case 1:
@@ -147,7 +179,6 @@ public class HorarisActivity extends AppCompatActivity {
     private void openTimePicker(final TextView et){
         int hour, minute;
 
-        System.out.println("TEXT: "+et.getText().toString());
         if(et.getText().equals("") || et.getText() == null){
             hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             minute = Calendar.getInstance().get(Calendar.MINUTE);
@@ -161,7 +192,10 @@ public class HorarisActivity extends AppCompatActivity {
         TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                et.setText(hourOfDay+":"+minute);
+                if(!et.getText().equals(hourOfDay+":"+minute)){
+                    et.setText(hourOfDay+":"+minute);
+                    canvis=1;
+                }
             }
         };
 
@@ -201,32 +235,13 @@ public class HorarisActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int checkedId = chipGroup.getCheckedChipId();
 
-                WakeSleepLists wakeSleepLists = setWakeSleepLists(checkedId);
+                wakeSleepList = setWakeSleepLists(checkedId);
 
-                Call<String> call = mTodoService.postHoraris(idChild,wakeSleepLists);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()){
-                            Context context = getApplicationContext();
-                            CharSequence text = getResources().getString(R.string.successful_entry);
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context,text,duration);
-                            toast.show();
-                        }
-                        else {
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-
-                    }
-                });
-
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("wakeSleepList",wakeSleepList);
+                returnIntent.putExtra("canvis",canvis);
+                setResult(RESULT_OK,returnIntent);
+                finish();
             }
         });
     }
