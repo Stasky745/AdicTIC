@@ -313,11 +313,11 @@ public class BlockAppsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if(selectedApps.contains(blockedApp.pkgName)){
                         selectedApps.remove(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(Color.parseColor("#FAFAFA"));
+                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                     }
                     else{
                         selectedApps.add(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.background_activity));
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
                     }
                 }
             });

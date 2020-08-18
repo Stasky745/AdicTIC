@@ -91,7 +91,7 @@ public interface TodoApi {
     Call<String> unblockChild(@Path("id") Long childId);
 
     @POST("/users/{id}/horaris")
-    Call<String> postHoraris(@Path("id") Long childId, @Body WakeSleepLists wakeSleepLists);
+    Call<String> postHoraris(@Path("id") Long childId, @Body Horaris horaris);
 
     @GET("/users/{id}/horaris")
     Call<Horaris> getHoraris(@Path("id") Long childId);
