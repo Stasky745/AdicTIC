@@ -236,4 +236,11 @@
 
     <string name="no_event_selected">"No has seleccionat cap event"</string>
 
+    <string name="name_tag">"Nom:"</string>
+    <string name="event_name">"Escriu el nom de l'event"</string>
+
+    <string name="start_tag">"Inici:"</string>
+    <string name="start_event_hint">"Hora d'inici"</string>
+    <string name="end_tag">"Fi:"</string>
+    <string name="end_event_hint">"Hora de fi"</string>
 </resources>
