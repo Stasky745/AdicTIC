@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,7 +45,7 @@ public class HorarisMainActivity extends AppCompatActivity {
 
     int canvis;
 
-    String selectedEvent;
+    HorarisEvents selectedEvent;
 
     RV_Adapter RVadapter;
 
@@ -71,7 +72,7 @@ public class HorarisMainActivity extends AppCompatActivity {
         eventList = new ArrayList<>();
         canvis = 0;
 
-        selectedEvent = "";
+        selectedEvent = null;
 
         setLayouts();
         getHoraris();
@@ -176,18 +177,18 @@ public class HorarisMainActivity extends AppCompatActivity {
             @SuppressLint("ShowToast")
             @Override
             public void onClick(View view) {
-                if(!selectedEvent.equals("")){
+                if(selectedEvent != null){
                     new AlertDialog.Builder(HorarisMainActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle(getString(R.string.esborrar_event))
-                            .setMessage(getString(R.string.esborrar_event_text,selectedEvent))
+                            .setMessage(getString(R.string.esborrar_event_text,selectedEvent.name))
                             .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     boolean trobat = false;
                                     int count = 0;
                                     while(count < eventList.size() && !trobat){
-                                        if(eventList.get(count).name.equals(selectedEvent)){
+                                        if(eventList.get(count).name.equals(selectedEvent.name)){
                                             trobat = true;
                                             eventList.remove(count);
                                         }
@@ -197,6 +198,36 @@ public class HorarisMainActivity extends AppCompatActivity {
                             })
                             .setNegativeButton(getString(R.string.no),null)
                             .show();
+                }
+                else{
+                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
+                }
+            }
+        });
+
+        BT_afegirEvent.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ShowToast")
+            @Override
+            public void onClick(View view) {
+                if(selectedEvent != null){
+                    FragmentManager fm = getSupportFragmentManager();
+                    HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),selectedEvent);
+                    horarisEventFragment.show(fm,"fragment_create_event");
+                }
+                else{
+                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
+                }
+            }
+        });
+
+        BT_modificarEvent.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ShowToast")
+            @Override
+            public void onClick(View view) {
+                if(selectedEvent != null){
+                    FragmentManager fm = getSupportFragmentManager();
+                    HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),selectedEvent);
+                    horarisEventFragment.show(fm,"fragment_edit_event");
                 }
                 else{
                     Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
@@ -302,7 +333,7 @@ public class HorarisMainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
-            holder.itemView.setActivated(selectedEvent.equals(eventAdapterList.get(position).name));
+            holder.itemView.setActivated(selectedEvent.name.equals(eventAdapterList.get(position).name));
             if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
@@ -320,12 +351,12 @@ public class HorarisMainActivity extends AppCompatActivity {
             holder.mRootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(selectedEvent.equals(event.name)){
-                        selectedEvent = "";
+                    if(selectedEvent.name.equals(event.name)){
+                        selectedEvent = null;
                         holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                     }
                     else{
-                        selectedEvent = event.name;
+                        selectedEvent = event;
                         holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
                     }
                 }
