@@ -26,6 +26,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
 
@@ -39,7 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HorarisMainActivity extends AppCompatActivity {
+public class HorarisMainActivity extends AppCompatActivity implements IEventDialog{
     TodoApi mTodoService;
     long idChild;
 
@@ -74,9 +75,9 @@ public class HorarisMainActivity extends AppCompatActivity {
 
         selectedEvent = null;
 
+
         setLayouts();
         getHoraris();
-        setCurrentSleepTimes();
         setButtons();
 
     }
@@ -126,6 +127,9 @@ public class HorarisMainActivity extends AppCompatActivity {
                     if(response.body() != null){
                         wakeSleepList = response.body().wakeSleepList;
                         eventList = response.body().events;
+
+                        setCurrentSleepTimes();
+
                         RVadapter = new RV_Adapter(HorarisMainActivity.this,eventList);
 
                         RV_eventList.setAdapter(RVadapter);
@@ -155,6 +159,11 @@ public class HorarisMainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Horaris horaris = new Horaris();
                 horaris.events = eventList;
+
+                if(wakeSleepList == null){
+                    wakeSleepList = new WakeSleepLists();
+                }
+
                 horaris.wakeSleepList = wakeSleepList;
 
                 Call<String> call = mTodoService.postHoraris(idChild,horaris);
@@ -162,7 +171,7 @@ public class HorarisMainActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-
+                        finish();
                     }
 
                     @Override
@@ -200,23 +209,24 @@ public class HorarisMainActivity extends AppCompatActivity {
                             .show();
                 }
                 else{
-                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
+                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
                 }
             }
         });
 
         BT_afegirEvent.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ShowToast")
             @Override
             public void onClick(View view) {
-                if(selectedEvent != null){
-                    FragmentManager fm = getSupportFragmentManager();
-                    HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),selectedEvent);
-                    horarisEventFragment.show(fm,"fragment_create_event");
-                }
-                else{
-                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
-                }
+                HorarisEvents newEvent = new HorarisEvents();
+                newEvent.id = Long.parseLong("0");
+                newEvent.name = "";
+                newEvent.start = "00:00";
+                newEvent.finish = "00:00";
+                newEvent.days = new ArrayList<>();
+
+                FragmentManager fm = getSupportFragmentManager();
+                HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),newEvent);
+                horarisEventFragment.show(fm,"fragment_create_event");
             }
         });
 
@@ -230,7 +240,7 @@ public class HorarisMainActivity extends AppCompatActivity {
                     horarisEventFragment.show(fm,"fragment_edit_event");
                 }
                 else{
-                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG);
+                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -258,42 +268,66 @@ public class HorarisMainActivity extends AppCompatActivity {
 
         String dormirAvui = "";
         String despertarDema = "";
-        if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
-            dormirAvui = wakeSleepList.sleep.monday;
-            despertarDema = wakeSleepList.sleep.tuesday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY){
-            dormirAvui = wakeSleepList.sleep.tuesday;
-            despertarDema = wakeSleepList.sleep.wednesday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY){
-            dormirAvui = wakeSleepList.sleep.wednesday;
-            despertarDema = wakeSleepList.sleep.thursday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
-            dormirAvui = wakeSleepList.sleep.thursday;
-            despertarDema = wakeSleepList.sleep.friday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
-            dormirAvui = wakeSleepList.sleep.friday;
-            despertarDema = wakeSleepList.sleep.saturday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY){
-            dormirAvui = wakeSleepList.sleep.saturday;
-            despertarDema = wakeSleepList.sleep.sunday;
-        }
-        else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
-            dormirAvui = wakeSleepList.sleep.sunday;
-            despertarDema = wakeSleepList.sleep.monday;
+
+        if(wakeSleepList != null){
+            if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY){
+                dormirAvui = wakeSleepList.sleep.monday;
+                despertarDema = wakeSleepList.wake.tuesday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY){
+                dormirAvui = wakeSleepList.sleep.tuesday;
+                despertarDema = wakeSleepList.wake.wednesday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY){
+                dormirAvui = wakeSleepList.sleep.wednesday;
+                despertarDema = wakeSleepList.wake.thursday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
+                dormirAvui = wakeSleepList.sleep.thursday;
+                despertarDema = wakeSleepList.wake.friday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+                dormirAvui = wakeSleepList.sleep.friday;
+                despertarDema = wakeSleepList.wake.saturday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY){
+                dormirAvui = wakeSleepList.sleep.saturday;
+                despertarDema = wakeSleepList.wake.sunday;
+            }
+            else if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY){
+                dormirAvui = wakeSleepList.sleep.sunday;
+                despertarDema = wakeSleepList.wake.monday;
+            }
         }
 
         TV_horarisDormir.setText(getString(R.string.horari_actual,avui,dormirAvui,dema,despertarDema));
+    }
+
+    @Override
+    public void onSelectedData(HorarisEvents newEvent) {
+        if (newEvent.id != 0){
+            int i = 0;
+            boolean found = false;
+            while(i < eventList.size() && !found){
+                if (eventList.get(i).id == newEvent.id){
+                    eventList.remove(i);
+                    found = true;
+                }
+                i++;
+            }
+        }
+        eventList.add(newEvent);
+
+        RVadapter = new RV_Adapter(HorarisMainActivity.this,eventList);
+
+        RV_eventList.setAdapter(RVadapter);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
         Context mContext;
         LayoutInflater mInflater;
         List<HorarisEvents> eventAdapterList;
+        private int checkedPosition = -1;
 
         public class MyViewHolder extends RecyclerView.ViewHolder{
             protected View mRootView;
@@ -333,7 +367,8 @@ public class HorarisMainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
-            holder.itemView.setActivated(selectedEvent.name.equals(eventAdapterList.get(position).name));
+            if(selectedEvent != null) holder.itemView.setActivated(selectedEvent.name.equals(eventAdapterList.get(position).name));
+            else holder.itemView.setActivated(false);
             if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
@@ -342,23 +377,24 @@ public class HorarisMainActivity extends AppCompatActivity {
             holder.TV_eventName.setText(event.name);
             String eventDaysString = "";
             for(int i : event.days){
-                eventDaysString += new DateFormatSymbols().getWeekdays()[i] + " ";
+                String day = new DateFormatSymbols().getWeekdays()[i];
+                String s1 = day.substring(0,1).toUpperCase();
+                eventDaysString += s1 + day.substring(1) + " ";
             }
             holder.TV_eventDays.setText(eventDaysString);
-            String eventTimesString = event.start+"\\n"+event.finish;
+            String eventTimesString = event.start+"\n"+event.finish;
             holder.TV_eventTimes.setText(eventTimesString);
 
             holder.mRootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(selectedEvent.name.equals(event.name)){
-                        selectedEvent = null;
-                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                    }
-                    else{
+                    if(selectedEvent == null || !selectedEvent.name.equals(event.name)){
                         selectedEvent = event;
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
                     }
+                    else {
+                        selectedEvent = null;
+                    }
+                    notifyDataSetChanged();
                 }
             });
         }

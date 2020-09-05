@@ -71,12 +71,15 @@
 
     <TextView
         android:id="@+id/TV_horarisDormir"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
+        android:singleLine="false"
+        android:textAlignment="viewEnd"
         app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/horari_actual" />
 
     <Button
         android:id="@+id/BT_canviHorari"

@@ -4,13 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.sql.Time;
 
 public class WakeSleepLists implements Parcelable {
     public TimeDay wake;
     public TimeDay sleep;
     public int tipus; // 1-diari ; 2-setmana; 3-generic
 
-    public WakeSleepLists(){}
+    public WakeSleepLists(){
+        wake = new TimeDay();
+        sleep = new TimeDay();
+        tipus = 1;
+    }
 
     protected WakeSleepLists(Parcel in) {
         wake = (TimeDay) in.readValue(TimeDay.class.getClassLoader());
