@@ -90,10 +90,10 @@ public interface TodoApi {
     @POST("/users/{id}/unblock")
     Call<String> unblockChild(@Path("id") Long childId);
 
-    @POST("/users/{id}/horaris")
+    @POST("/usage/{id}/horaris")
     Call<String> postHoraris(@Path("id") Long childId, @Body Horaris horaris);
 
-    @GET("/users/{id}/horaris")
+    @GET("/usage/{id}/horaris")
     Call<Horaris> getHoraris(@Path("id") Long childId);
 
     @POST("/icons/{pkgName}")

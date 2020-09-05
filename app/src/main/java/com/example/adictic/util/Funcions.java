@@ -25,6 +25,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
@@ -152,15 +153,15 @@ public class Funcions {
         
         TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
         
-        Call<WakeSleepLists> call = mTodoService.getHoraris(TodoApp.getIDChild());
+        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
 
         final long[] res = {-1};
 
-        call.enqueue(new Callback<WakeSleepLists>() {
+        call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
+            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
                 if(response.isSuccessful() && response.body() != null){
-                    setHoraris(response.body());
+                    setHoraris(response.body().wakeSleepList);
                     res[0] = getHorariInMillis();
                 }
                 else if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
@@ -168,7 +169,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
+            public void onFailure(Call<Horaris> call, Throwable t) {
                 if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
                 else res[0] = -2;
             }
@@ -377,5 +378,32 @@ public class Funcions {
 
         TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
         TodoApp.setLimitApps(newMap);
+    }
+
+    /** Retorna -1 als dos valors si no és un string acceptable **/
+    public static Pair<Integer,Integer> stringToTime(String s){
+        Integer hour, minutes;
+        String[] hora = s.split(":");
+
+        if(hora.length != 2){
+            hour = -1;
+            minutes = -1;
+        }
+        else{
+            if (Integer.parseInt(hora[0]) < 0 || Integer.parseInt(hora[0]) > 23){
+                hour = -1;
+                minutes = -1;
+            }
+            else if(Integer.parseInt(hora[1]) < 0 || Integer.parseInt(hora[1]) > 59){
+                hour = -1;
+                minutes = -1;
+            }
+            else{
+                hour = Integer.parseInt(hora[0]);
+                minutes = Integer.parseInt(hora[1]);
+            }
+        }
+
+        return new Pair<>(hour, minutes);
     }
 }

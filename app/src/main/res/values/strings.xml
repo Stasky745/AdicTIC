@@ -141,8 +141,10 @@
     <string name="horari_diari">"Diari"</string>
     <string name="horari_setmanal">"Setmanal"</string>
     <string name="horari_intro">"Escull les hores que el dispositiu estarà actiu:"</string>
-    <string name="horari_actual">"El %s es va a dormir a les %s\n
-        El %s es desperta a les %s"</string>
+    <string name="horari_actual">"El %s va a dormir a les %s\nEl %s es desperta a les %s"</string>
+    <string name="error_no_event_name">"Escriu un nom per l'event"</string>
+    <string name="error_no_event_days">"Escull quins dies passa aquest event"</string>
+    <string name="error_incorrect_times">"Tria una hora final superior a la inicial"</string>
 
     <string name="monday">Dilluns</string>
     <string name="tuesday">Dimarts</string>
