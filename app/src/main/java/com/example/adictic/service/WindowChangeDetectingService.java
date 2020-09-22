@@ -43,6 +43,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     PackageManager mPm;
     List<AppInfo> lastListApps;
     Calendar dayUpdatedInstalledApps;
+    Calendar lastTryUpdate;
     List<AppChange> uninstalledApps;
     List<AppChange> installedApps;
 
@@ -56,6 +57,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         installedApps = new ArrayList<>();
         dayUpdatedInstalledApps = Calendar.getInstance();
         dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR,-1);
+        lastTryUpdate = Calendar.getInstance();
+        lastTryUpdate.add(Calendar.DAY_OF_YEAR,-1);
 
         //Configure these here for compatibility with API 13 and below.
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
@@ -130,8 +133,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
         final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
         Calendar today = Calendar.getInstance();
-        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps) || today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR)) {
+        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps) || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
             setChangedAppLists(listInstalledPkgs, today);
+
+            lastTryUpdate = Calendar.getInstance();
 
             Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listInstalledPkgs);
 
@@ -159,9 +164,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
-            checkInstalledApps(); /** Borrar després, aquí per fer proves **/
+            //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
 
-            if(TodoApp.getBlockedDevice()){
+            if(TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()){
                 DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                 assert mDPM != null;
                 mDPM.lockNow();
