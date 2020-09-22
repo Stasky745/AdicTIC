@@ -17,6 +17,7 @@ import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -26,12 +27,15 @@ import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.LimitAppsWorker;
+import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
 import java.util.ArrayList;
@@ -261,6 +265,46 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static HorarisEvents getEventFromList(String name){
+        boolean trobat = false;
+        int i = 0;
+        List<HorarisEvents> listEvents = TodoApp.getListEvents();
+        HorarisEvents event = null;
+        while(!trobat && i<listEvents.size()){
+            event = listEvents.get(i);
+            if(event.name.equals(name)) trobat=true;
+        }
+        return event;
+    }
+
+    public static void runStartBlockEventWorker(Context mContext, String name, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putString("name",name);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void runFinishBlockEventWorker(Context mContext, String name, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putString("name",name);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
     }
 
     /** pre: si fTime = -1, agafa valors del dia actual inacabat **/
