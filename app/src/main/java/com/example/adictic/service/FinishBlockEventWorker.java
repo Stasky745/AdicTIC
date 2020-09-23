@@ -12,6 +12,7 @@ import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.util.Funcions;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 public class FinishBlockEventWorker extends Worker {
@@ -26,10 +27,23 @@ public class FinishBlockEventWorker extends Worker {
     public Result doWork() {
         String name = getInputData().getString("name");
         HorarisEvents event = Funcions.getEventFromList(name);
+        List<Integer> listDays = event.days;
+        Collections.sort(listDays);
+        int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int dayJump;
+
+        /* Si el següent dia és a la propera setmana **/
+        if(currentDay == listDays.get(listDays.size()-1)) dayJump = 7 - (currentDay - listDays.get(0));
+        /* Si el següent dia és de la mateixa setmana **/
+        else{
+            int nextDay = listDays.get(listDays.indexOf(currentDay)+1);
+            dayJump = nextDay - currentDay;
+        }
+
         String eventStart = event.start;
         Pair<Integer,Integer> timeStart = Funcions.stringToTime(eventStart);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE,1);
+        cal.add(Calendar.DATE,dayJump);
         cal.set(Calendar.HOUR_OF_DAY,timeStart.first);
         cal.set(Calendar.MINUTE,timeStart.second);
 
