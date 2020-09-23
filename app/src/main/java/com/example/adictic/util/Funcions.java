@@ -38,6 +38,9 @@ import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -278,6 +281,24 @@ public class Funcions {
         }
         return event;
     }
+
+    /** MIRAR AQUÍ
+     * public static void updateEventList(List<HorarisEvents> newEvents){
+        List<HorarisEvents> currentEvents = TodoApp.getListEvents();
+
+        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents,currentEvents));
+
+        for(HorarisEvents event : disjunctionEvents){
+            // És un nou event
+            if(newEvents.contains(event)){
+                IterableUtils.matchesAny(newEvents,HorarisEvents.compareID.compare(event));
+            }
+            else{
+                IterableUtils.matchesAny(newEvents,event,HorarisEvents.compareTo());
+            }
+        }
+
+    }**/
 
     public static void runStartBlockEventWorker(Context mContext, String name, long delay){
         Data.Builder data = new Data.Builder();
