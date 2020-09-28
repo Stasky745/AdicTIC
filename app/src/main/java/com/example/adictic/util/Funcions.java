@@ -2,6 +2,7 @@ package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
+import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -282,23 +283,48 @@ public class Funcions {
         return event;
     }
 
-    /** MIRAR AQUÍ
-     * public static void updateEventList(List<HorarisEvents> newEvents){
+     public static void updateEventList(Context mContext, List<HorarisEvents> newEvents){
         List<HorarisEvents> currentEvents = TodoApp.getListEvents();
 
         List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents,currentEvents));
 
+        WorkManager workManager = WorkManager.getInstance(mContext);
+
         for(HorarisEvents event : disjunctionEvents){
-            // És un nou event
-            if(newEvents.contains(event)){
-                IterableUtils.matchesAny(newEvents,HorarisEvents.compareID.compare(event));
+            int index = newEvents.indexOf(event);
+
+            // Event s'ha esborrat
+            if(index == -1){
+                workManager.cancelUniqueWork(event.name);
             }
-            else{
-                IterableUtils.matchesAny(newEvents,event,HorarisEvents.compareTo());
+            // És un nou event
+            else if(event.exactSame(newEvents.get(index))){
+                long now = Calendar.getInstance().getTimeInMillis();
+
+                Pair<Integer,Integer> startEvent = stringToTime(event.start);
+                Pair<Integer,Integer> finishEvent = stringToTime(event.finish);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY,startEvent.first);
+                start.set(Calendar.MINUTE,startEvent.second);
+
+                Calendar finish = Calendar.getInstance();
+                finish.set(Calendar.HOUR_OF_DAY,finishEvent.first);
+                finish.set(Calendar.MINUTE,finishEvent.second);
+
+                if(now < start.getTimeInMillis()){
+                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
+                }
+                else if(now < finish.getTimeInMillis()){
+                    runFinishBlockEventWorker(mContext,event.name,finish.getTimeInMillis()-now);
+                }
+                else{
+                    start.add(Calendar.DATE,1);
+                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
+                }
             }
         }
-
-    }**/
+    }
 
     public static void runStartBlockEventWorker(Context mContext, String name, long delay){
         Data.Builder data = new Data.Builder();

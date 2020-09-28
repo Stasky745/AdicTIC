@@ -18,13 +18,10 @@ public class HorarisEvents {
         if(getClass() != obj.getClass()) return false;
 
         HorarisEvents he = (HorarisEvents) obj;
-        return id.equals(he.id) && name.equals(he.name) && start.equals(he.start) && finish.equals(he.finish) && days.equals(he.days);
+        return id.equals(he.id);
     }
 
-    public static Comparator compareID = new Comparator<HorarisEvents>() {
-        @Override
-        public int compare(HorarisEvents o, HorarisEvents t1) {
-            return o.id.compareTo(t1.id);
-        }
-    };
+    public boolean exactSame(HorarisEvents he) {
+        return id.equals(he.id) && name.equals(he.name) && start.equals(he.start) && finish.equals(he.finish) && days.equals(he.days);
+    }
 }

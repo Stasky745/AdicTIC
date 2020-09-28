@@ -148,7 +148,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     @Override
                     public void onResponse(Call<Horaris> call, Response<Horaris> response) {
                         if(response.isSuccessful()){
-                            Funcions.updateEventList(response.body().events);
+                            Funcions.updateEventList(getApplicationContext(),response.body().events);
                         }
                     }
 
