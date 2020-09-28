@@ -324,6 +324,7 @@ public class Funcions {
                 }
             }
         }
+        TodoApp.setListEvents(newEvents);
     }
 
     public static void runStartBlockEventWorker(Context mContext, String name, long delay){
