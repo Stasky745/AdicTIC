@@ -19,6 +19,8 @@ import com.example.adictic.Constants;
 import com.example.adictic.MyNotificationManager;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -141,8 +143,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 sendIcon(list);
             }
             else if(messageMap.containsKey("horaris")){
-                Funcions.runLimitAppsWorker(getApplicationContext(),0);
+                Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+                call.enqueue(new Callback<Horaris>() {
+                    @Override
+                    public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+                        if(response.isSuccessful()){
+                            Funcions.updateEventList(getApplicationContext(),response.body().events);
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<Horaris> call, Throwable t) {
+
+                    }
+                });
+                Funcions.runLimitAppsWorker(getApplicationContext(),0);
                 title = getString(R.string.horaris_notification);
             }
 

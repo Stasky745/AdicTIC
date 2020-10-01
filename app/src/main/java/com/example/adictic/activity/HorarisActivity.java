@@ -1,7 +1,10 @@
 package com.example.adictic.activity;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +36,8 @@ public class HorarisActivity extends AppCompatActivity {
 
     long idChild;
 
+    int canvis;
+
     static ChipGroup chipGroup;
     static Chip CH_horariGeneric;
     static Chip CH_horariDiari;
@@ -51,13 +56,17 @@ public class HorarisActivity extends AppCompatActivity {
 
     Button BT_sendHoraris;
 
+    WakeSleepLists wakeSleepList;
+
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
-        getIntent().getLongExtra("idChild",-1);
+        canvis = 0;
+
+        idChild = getIntent().getLongExtra("idChild",-1);
 
         chipGroup = (ChipGroup) findViewById(R.id.CG_tipusHorari);
         CH_horariDiari = (Chip) findViewById(R.id.CH_diariHorari);
@@ -97,27 +106,34 @@ public class HorarisActivity extends AppCompatActivity {
 
         setChipGroup();
         setButton();
-        setLayout();
+        wakeSleepList = getIntent().getParcelableExtra("wakeSleepLists");
+
+        if(wakeSleepList!=null) setTexts(wakeSleepList);
     }
 
-    public void setLayout(){
-        Call<WakeSleepLists> call = mTodoService.getHoraris(idChild);
-
-        call.enqueue(new Callback<WakeSleepLists>() {
-            @Override
-            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
-                if(response.isSuccessful()){
-                    if(response.body() != null){
-                        setTexts(response.body());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
-
-            }
-        });
+    @Override
+    public void onBackPressed() {
+        if(canvis == 0 && wakeSleepList.tipus == chipGroup.getCheckedChipId()){
+            Intent returnIntent = new Intent();
+            setResult(RESULT_CANCELED,returnIntent);
+            super.onBackPressed();
+        }
+        else{
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(getString(R.string.closing_activity))
+                    .setMessage(getString(R.string.exit_without_save))
+                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent returnIntent = new Intent();
+                            setResult(RESULT_CANCELED,returnIntent);
+                            HorarisActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton(getString(R.string.no),null)
+                    .show();
+        }
     }
 
     public void setTexts(WakeSleepLists list){
@@ -163,7 +179,6 @@ public class HorarisActivity extends AppCompatActivity {
     private void openTimePicker(final TextView et){
         int hour, minute;
 
-        System.out.println("TEXT: "+et.getText().toString());
         if(et.getText().equals("") || et.getText() == null){
             hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
             minute = Calendar.getInstance().get(Calendar.MINUTE);
@@ -177,7 +192,10 @@ public class HorarisActivity extends AppCompatActivity {
         TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                et.setText(hourOfDay+":"+minute);
+                if(!et.getText().equals(hourOfDay+":"+minute)){
+                    et.setText(hourOfDay+":"+minute);
+                    canvis=1;
+                }
             }
         };
 
@@ -217,32 +235,13 @@ public class HorarisActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int checkedId = chipGroup.getCheckedChipId();
 
-                WakeSleepLists wakeSleepLists = setWakeSleepLists(checkedId);
+                wakeSleepList = setWakeSleepLists(checkedId);
 
-                Call<String> call = mTodoService.postHoraris(idChild,wakeSleepLists);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()){
-                            Context context = getApplicationContext();
-                            CharSequence text = getResources().getString(R.string.successful_entry);
-                            int duration = Toast.LENGTH_SHORT;
-
-                            Toast toast = Toast.makeText(context,text,duration);
-                            toast.show();
-                        }
-                        else {
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-
-                    }
-                });
-
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("wakeSleepList",wakeSleepList);
+                returnIntent.putExtra("canvis",canvis);
+                setResult(RESULT_OK,returnIntent);
+                finish();
             }
         });
     }
@@ -253,7 +252,7 @@ public class HorarisActivity extends AppCompatActivity {
         TimeDay sleepTimeDay = new TimeDay();
 
         if(checkedId == CH_horariDiari.getId()){
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeMon.getText().toString();
             wakeTimeDay.tuesday = ET_wakeTue.getText().toString();
             wakeTimeDay.wednesday = ET_wakeWed.getText().toString();
@@ -264,7 +263,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepMon.getText().toString();
             sleepTimeDay.tuesday = ET_sleepTue.getText().toString();
             sleepTimeDay.wednesday = ET_sleepWed.getText().toString();
@@ -278,7 +277,7 @@ public class HorarisActivity extends AppCompatActivity {
             wakeSleepLists.tipus = 1;
         }
         else if(checkedId == CH_horariSetmana.getId()){
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeWeekday.getText().toString();
             wakeTimeDay.tuesday = ET_wakeWeekday.getText().toString();
             wakeTimeDay.wednesday = ET_wakeWeekday.getText().toString();
@@ -289,7 +288,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepWeekday.getText().toString();
             sleepTimeDay.tuesday = ET_sleepWeekday.getText().toString();
             sleepTimeDay.wednesday = ET_sleepWeekday.getText().toString();
@@ -303,7 +302,7 @@ public class HorarisActivity extends AppCompatActivity {
             wakeSleepLists.tipus = 2;
         }
         else{
-            /** Wake up */
+            /* Wake up */
             wakeTimeDay.monday = ET_wakeGeneric.getText().toString();
             wakeTimeDay.tuesday = ET_wakeGeneric.getText().toString();
             wakeTimeDay.wednesday = ET_wakeGeneric.getText().toString();
@@ -314,7 +313,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             wakeSleepLists.wake = wakeTimeDay;
 
-            /** Sleep */
+            /* Sleep */
             sleepTimeDay.monday = ET_sleepGeneric.getText().toString();
             sleepTimeDay.tuesday = ET_sleepGeneric.getText().toString();
             sleepTimeDay.wednesday = ET_sleepGeneric.getText().toString();

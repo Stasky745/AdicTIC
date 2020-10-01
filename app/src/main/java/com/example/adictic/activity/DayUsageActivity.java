@@ -576,8 +576,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        System.out.println("DINS ONITEMSELECTED");
-        mAdapter.sortList(position);
+        if (mAdapter != null) mAdapter.sortList(position);
     }
 
     @Override
