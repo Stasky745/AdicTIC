@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -40,6 +42,7 @@ import androidx.work.WorkManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.AppInfo;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.util.Crypt;
@@ -49,6 +52,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -339,6 +343,47 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         }
     }
 
+    private List<AppInfo> getLaunchableApps(){
+        Intent main = new Intent(Intent.ACTION_MAIN);
+        main.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<AppInfo> res = new ArrayList<>();
+
+        List<ResolveInfo> list = mPm.queryIntentActivities(main,0);
+
+        List<String> launcherApps = getLauncherApps();
+
+        List<String> duplicatesList = new ArrayList<>();
+
+        for(ResolveInfo ri : list){
+            ApplicationInfo ai = ri.activityInfo.applicationInfo;
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
+                duplicatesList.add(ai.packageName);
+                AppInfo appInfo = new AppInfo();
+                appInfo.appName = mPm.getApplicationLabel(ai).toString();
+                appInfo.pkgName = ai.packageName;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    appInfo.category = ai.category;
+                }
+                res.add(appInfo);
+            }
+        }
+
+        return res;
+    }
+
+    private List<String> getLauncherApps(){
+        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
+
+        List<String> res = new ArrayList<>();
+
+        for(ApplicationInfo ai : list){
+            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) res.add(ai.packageName);
+        }
+
+        return res;
+    }
+
     /** Called when the activity is first created. */
     @Override
     protected void onCreate(Bundle icicle) {
@@ -356,6 +401,25 @@ public class MainActivityChild extends AppCompatActivity implements AdapterView.
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
+
+        Button updateApps = findViewById(R.id.BT_pujarApps);
+        updateApps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TodoApi mTodoService = ((TodoApp) getApplication()).getAPI();
+                Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),getLaunchableApps());
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.isSuccessful()){ }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) { }
+                });
+            }
+        });
 
         Button logout = findViewById(R.id.Debug_TancarSessio);
         logout.setOnClickListener(new View.OnClickListener() {

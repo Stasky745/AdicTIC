@@ -2,6 +2,7 @@ package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
+import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -17,6 +18,7 @@ import android.util.Pair;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -25,13 +27,20 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.LimitAppsWorker;
+import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -152,15 +161,15 @@ public class Funcions {
         
         TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
         
-        Call<WakeSleepLists> call = mTodoService.getHoraris(TodoApp.getIDChild());
+        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
 
         final long[] res = {-1};
 
-        call.enqueue(new Callback<WakeSleepLists>() {
+        call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<WakeSleepLists> call, Response<WakeSleepLists> response) {
+            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
                 if(response.isSuccessful() && response.body() != null){
-                    setHoraris(response.body());
+                    setHoraris(response.body().wakeSleepList);
                     res[0] = getHorariInMillis();
                 }
                 else if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
@@ -168,7 +177,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<WakeSleepLists> call, Throwable t) {
+            public void onFailure(Call<Horaris> call, Throwable t) {
                 if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
                 else res[0] = -2;
             }
@@ -260,6 +269,90 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static HorarisEvents getEventFromList(String name){
+        boolean trobat = false;
+        int i = 0;
+        List<HorarisEvents> listEvents = TodoApp.getListEvents();
+        HorarisEvents event = null;
+        while(!trobat && i<listEvents.size()){
+            event = listEvents.get(i);
+            if(event.name.equals(name)) trobat=true;
+        }
+        return event;
+    }
+
+     public static void updateEventList(Context mContext, List<HorarisEvents> newEvents){
+        List<HorarisEvents> currentEvents = TodoApp.getListEvents();
+
+        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents,currentEvents));
+
+        WorkManager workManager = WorkManager.getInstance(mContext);
+
+        for(HorarisEvents event : disjunctionEvents){
+            int index = newEvents.indexOf(event);
+
+            // Event s'ha esborrat
+            if(index == -1){
+                workManager.cancelUniqueWork(event.name);
+            }
+            // És un nou event
+            else if(event.exactSame(newEvents.get(index))){
+                long now = Calendar.getInstance().getTimeInMillis();
+
+                Pair<Integer,Integer> startEvent = stringToTime(event.start);
+                Pair<Integer,Integer> finishEvent = stringToTime(event.finish);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY,startEvent.first);
+                start.set(Calendar.MINUTE,startEvent.second);
+
+                Calendar finish = Calendar.getInstance();
+                finish.set(Calendar.HOUR_OF_DAY,finishEvent.first);
+                finish.set(Calendar.MINUTE,finishEvent.second);
+
+                if(now < start.getTimeInMillis()){
+                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
+                }
+                else if(now < finish.getTimeInMillis()){
+                    runFinishBlockEventWorker(mContext,event.name,finish.getTimeInMillis()-now);
+                }
+                else{
+                    start.add(Calendar.DATE,1);
+                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
+                }
+            }
+        }
+        TodoApp.setListEvents(newEvents);
+    }
+
+    public static void runStartBlockEventWorker(Context mContext, String name, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putString("name",name);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void runFinishBlockEventWorker(Context mContext, String name, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putString("name",name);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
     }
 
     /** pre: si fTime = -1, agafa valors del dia actual inacabat **/
@@ -377,5 +470,32 @@ public class Funcions {
 
         TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
         TodoApp.setLimitApps(newMap);
+    }
+
+    /** Retorna -1 als dos valors si no és un string acceptable **/
+    public static Pair<Integer,Integer> stringToTime(String s){
+        Integer hour, minutes;
+        String[] hora = s.split(":");
+
+        if(hora.length != 2){
+            hour = -1;
+            minutes = -1;
+        }
+        else{
+            if (Integer.parseInt(hora[0]) < 0 || Integer.parseInt(hora[0]) > 23){
+                hour = -1;
+                minutes = -1;
+            }
+            else if(Integer.parseInt(hora[1]) < 0 || Integer.parseInt(hora[1]) > 59){
+                hour = -1;
+                minutes = -1;
+            }
+            else{
+                hour = Integer.parseInt(hora[0]);
+                minutes = Integer.parseInt(hora[1]);
+            }
+        }
+
+        return new Pair<>(hour, minutes);
     }
 }

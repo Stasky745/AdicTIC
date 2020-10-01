@@ -3,6 +3,8 @@ package com.example.adictic;
 import android.app.Application;
 import android.content.Context;
 
+import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -58,13 +60,23 @@ public class TodoApp extends Application {
     private static boolean liveApp = false;
     private static String currentAppKid = null;
     private static String timeOpenedCurrentAppKid = null;
+    private static List<HorarisEvents> listEvents = null;
     public final static List<String> blackListLiveApp = Arrays.asList( "com.google.android.apps.nexuslauncher");
 
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
+    private static List<String> blockEvents = new ArrayList<>();
 
     private static Map<Integer,String> wakeHoraris = new HashMap<>();
     private static Map<Integer,String> sleepHoraris = new HashMap<>();
+
+    public static List<HorarisEvents> getListEvents(){ return listEvents; }
+    public static void setListEvents(List<HorarisEvents> l){ listEvents = l; }
+
+
+    public static boolean addBlockEvent(String s){ return blockEvents.add(s); }
+    public static boolean removeBlockEvent(String s){ return blockEvents.remove(s); }
+    public static List<String> getBlockEvents(){ return blockEvents; }
 
     public static Map<Integer,String> getWakeHoraris(){ return wakeHoraris; }
     public static void setWakeHoraris(Map<Integer,String> m){ wakeHoraris = m; }

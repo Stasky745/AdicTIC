@@ -71,7 +71,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -89,17 +89,16 @@
                 android:id="@+id/ET_wakeMon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:autofillHints=""
                 android:clickable="true"
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeMon"
-                app:layout_constraintStart_toEndOf="@+id/TV_wakeMon"
+                app:layout_constraintEnd_toStartOf="@+id/guideline30"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeMon" />
 
             <TextView
@@ -111,9 +110,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepMon"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeMon"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepMon" />
@@ -175,9 +174,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeTue"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepMon"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeTue" />
@@ -200,9 +199,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepTue"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeTue"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepTue" />
@@ -235,9 +234,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWed"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepTue"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeWed" />
@@ -260,9 +259,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWed"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeWed"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepWed" />
@@ -295,9 +294,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeThu"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepWed"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeThu" />
@@ -320,9 +319,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepThu"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeThu"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepThu" />
@@ -355,9 +354,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeFri"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepThu"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeFri" />
@@ -380,9 +379,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepFri"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeFri"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepFri" />
@@ -415,9 +414,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeSat"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepFri"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeSat" />
@@ -440,9 +439,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepSat"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeSat"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepSat" />
@@ -475,9 +474,9 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/wake_up_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_wakeSun"
                 app:layout_constraintStart_toStartOf="@+id/ET_sleepSat"
                 app:layout_constraintTop_toTopOf="@+id/TV_wakeSun" />
@@ -502,12 +501,19 @@
                 android:ems="10"
                 android:focusable="true"
                 android:hint="@string/sleep_hint"
+                android:onClick="timeDialog"
                 android:singleLine="true"
                 app:autoSizeTextType="uniform"
-                android:onClick="timeDialog"
                 app:layout_constraintBottom_toBottomOf="@+id/TV_sleepSun"
                 app:layout_constraintStart_toStartOf="@+id/ET_wakeSun"
                 app:layout_constraintTop_toTopOf="@+id/TV_sleepSun" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.85888076" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -519,7 +525,8 @@
         app:layout_constraintBottom_toTopOf="@+id/BT_sendHoraris"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari">
+        app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari"
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/TV_wakeGeneric"
@@ -534,17 +541,16 @@
             android:id="@+id/ET_wakeGeneric"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:autofillHints=""
             android:clickable="true"
             android:ems="10"
             android:focusable="true"
             android:hint="@string/wake_up_hint"
+            android:onClick="timeDialog"
             android:singleLine="true"
             app:autoSizeTextType="uniform"
-            android:onClick="timeDialog"
             app:layout_constraintBottom_toBottomOf="@+id/TV_wakeGeneric"
-            app:layout_constraintStart_toEndOf="@+id/TV_wakeGeneric"
+            app:layout_constraintEnd_toStartOf="@+id/guideline29"
             app:layout_constraintTop_toTopOf="@+id/TV_wakeGeneric" />
 
         <TextView
@@ -565,9 +571,9 @@
             android:ems="10"
             android:focusable="true"
             android:hint="@string/sleep_hint"
+            android:onClick="timeDialog"
             android:singleLine="true"
             app:autoSizeTextType="uniform"
-            android:onClick="timeDialog"
             app:layout_constraintBottom_toBottomOf="@+id/TV_sleepGeneric"
             app:layout_constraintStart_toStartOf="@+id/ET_wakeGeneric"
             app:layout_constraintTop_toTopOf="@+id/TV_sleepGeneric" />
@@ -578,6 +584,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline29"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -589,7 +602,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_tipusHorari"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/TV_weekday"
@@ -615,7 +628,6 @@
             android:id="@+id/ET_wakeWeekday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:autofillHints=""
             android:clickable="true"
             android:ems="10"
@@ -625,7 +637,7 @@
             android:singleLine="true"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekday"
-            app:layout_constraintStart_toEndOf="@+id/TV_wakeWeekday"
+            app:layout_constraintEnd_toStartOf="@+id/guideline17"
             app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekday" />
 
         <TextView
@@ -646,9 +658,9 @@
             android:ems="10"
             android:focusable="true"
             android:hint="@string/sleep_hint"
+            android:onClick="timeDialog"
             android:singleLine="true"
             app:autoSizeTextType="uniform"
-            android:onClick="timeDialog"
             app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekday"
             app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekday"
             app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekday" />
@@ -681,9 +693,9 @@
             android:ems="10"
             android:focusable="true"
             android:hint="@string/wake_up_hint"
+            android:onClick="timeDialog"
             android:singleLine="true"
             app:autoSizeTextType="uniform"
-            android:onClick="timeDialog"
             app:layout_constraintBottom_toBottomOf="@+id/TV_wakeWeekend"
             app:layout_constraintStart_toStartOf="@+id/ET_sleepWeekday"
             app:layout_constraintTop_toTopOf="@+id/TV_wakeWeekend" />
@@ -706,9 +718,9 @@
             android:ems="10"
             android:focusable="true"
             android:hint="@string/sleep_hint"
+            android:onClick="timeDialog"
             android:singleLine="true"
             app:autoSizeTextType="uniform"
-            android:onClick="timeDialog"
             app:layout_constraintBottom_toBottomOf="@+id/TV_sleepWeekend"
             app:layout_constraintStart_toStartOf="@+id/ET_wakeWeekend"
             app:layout_constraintTop_toTopOf="@+id/TV_sleepWeekend" />
@@ -718,7 +730,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.15085158" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

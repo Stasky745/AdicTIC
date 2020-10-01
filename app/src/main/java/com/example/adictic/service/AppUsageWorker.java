@@ -14,6 +14,7 @@ import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,8 @@ public class AppUsageWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        //List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        List<GeneralUsage> gul = new ArrayList<>();
 
         if(!TodoApp.getLimitApps().isEmpty()) Funcions.runLimitAppsWorker(getApplicationContext(),0);
         if(TodoApp.getStartFreeUse() != 0) TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
