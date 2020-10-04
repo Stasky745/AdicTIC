@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -66,6 +67,11 @@ public class TodoApp extends Application {
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
     private static List<String> blockEvents = new ArrayList<>();
+
+    private static List<Oficina> oficines = new ArrayList<>();
+
+    public static List<Oficina> getOficines(){ return oficines; }
+    public static void setOficines(List<Oficina> list){ oficines = list; }
 
     private static Map<Integer,String> wakeHoraris = new HashMap<>();
     private static Map<Integer,String> sleepHoraris = new HashMap<>();
