@@ -69,4 +69,10 @@ dependencies {
     def work_version = "2.3.4"
     implementation "androidx.work:work-runtime:$work_version"
 
+    def osmdroid_version = "6.1.8"
+    implementation "org.osmdroid:osmdroid-android:$osmdroid_version"
+    implementation "org.osmdroid:osmdroid-wms:$osmdroid_version"
+    implementation "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
+//    implementation "org.osmdroid:osmdroid-geopackage:$osmdroid_version"
+
 }

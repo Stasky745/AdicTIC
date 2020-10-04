@@ -94,10 +94,10 @@ public class OficinesActivity extends AppCompatActivity implements GoogleMap.OnM
         // [START_EXCLUDE silent]
         // [START maps_current_place_on_create_save_instance_state]
         // Retrieve location and camera position from saved instance state.
-        if(savedInstanceState != null){
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-        }
+//        if(savedInstanceState != null){
+//            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+//            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+//        }
         // [END maps_current_place_on_create_save_instance_state]
         // [END_EXCLUDE]
 
@@ -110,78 +110,77 @@ public class OficinesActivity extends AppCompatActivity implements GoogleMap.OnM
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.FR_map);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
 
-        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-
-                final Oficina oficina = (Oficina) marker.getTag();
-
-                View infoWindow = getLayoutInflater().inflate(R.layout.oficina_info,
-                        (FrameLayout) findViewById(R.id.FR_map),false);
-
-                TextView nomOficina = infoWindow.findViewById(R.id.TV_nomOficina);
-                nomOficina.setText(marker.getTitle());
-
-                TextView descOficina = infoWindow.findViewById(R.id.TV_descOficina);
-                descOficina.setText(oficina.desc);
-
-                TextView addressOficina = infoWindow.findViewById(R.id.TV_addressOficina);
-                String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
-                addressOficina.setText(address);
-
-                Button telfOficina = infoWindow.findViewById(R.id.BT_telfOficina);
-                telfOficina.setText(oficina.telf);
-                telfOficina.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Uri number = Uri.parse("tel:" + oficina.telf);
-                        Intent dial = new Intent(Intent.ACTION_DIAL,number);
-                        startActivity(dial);
-                    }
-                });
-
-                return infoWindow;
-            }
-        });
-
-        for(Oficina o : oficines){
-            Marker marker = map.addMarker(new MarkerOptions()
-                    .position(new LatLng(o.latitude,o.longitude))
-                    .title(o.name)
-                    .snippet(o.address)
-                    //.flat(true) // marker 3D
-                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // IMATGE
-                    );
-            marker.setTag(o);
-
-            markers.add(marker);
-        }
-
-        double longitude = 2.821083;
-        double latitude = 41.980421;
-
-        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))  getLocation(longitude,latitude);
-        else OnGPS();
-
-        // Ordenar markers per proximitat
-        markers = sortListbyDistance(markers, new LatLng(latitude,longitude));
-
-        setSpinner();
-
-        //map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude))); // Descomentar per començar a la posició de l'usuari
-        map.setOnMarkerClickListener(this);
+//        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//            @Override
+//            public View getInfoWindow(Marker marker) {
+//                return null;
+//            }
+//
+//            @Override
+//            public View getInfoContents(Marker marker) {
+//
+//                final Oficina oficina = (Oficina) marker.getTag();
+//
+//                View infoWindow = getLayoutInflater().inflate(R.layout.oficina_info,
+//                        (FrameLayout) findViewById(R.id.FR_map),false);
+//
+//                TextView nomOficina = infoWindow.findViewById(R.id.TV_nomOficina);
+//                nomOficina.setText(marker.getTitle());
+//
+//                TextView descOficina = infoWindow.findViewById(R.id.TV_descOficina);
+//                descOficina.setText(oficina.desc);
+//
+//                TextView addressOficina = infoWindow.findViewById(R.id.TV_addressOficina);
+//                String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
+//                addressOficina.setText(address);
+//
+//                Button telfOficina = infoWindow.findViewById(R.id.BT_telfOficina);
+//                telfOficina.setText(oficina.telf);
+//                telfOficina.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        Uri number = Uri.parse("tel:" + oficina.telf);
+//                        Intent dial = new Intent(Intent.ACTION_DIAL,number);
+//                        startActivity(dial);
+//                    }
+//                });
+//
+//                return infoWindow;
+//            }
+//        });
+//
+//        for(Oficina o : oficines){
+//            Marker marker = map.addMarker(new MarkerOptions()
+//                    .position(new LatLng(o.latitude,o.longitude))
+//                    .title(o.name)
+//                    .snippet(o.address)
+//                    //.flat(true) // marker 3D
+//                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // IMATGE
+//                    );
+//            marker.setTag(o);
+//
+//            markers.add(marker);
+//        }
+//
+//        double longitude = 2.821083;
+//        double latitude = 41.980421;
+//
+//        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))  getLocation(longitude,latitude);
+//        else OnGPS();
+//
+//        // Ordenar markers per proximitat
+//        markers = sortListbyDistance(markers, new LatLng(latitude,longitude));
+//
+//        setSpinner();
+//
+//        //map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude))); // Descomentar per començar a la posició de l'usuari
+//        map.setOnMarkerClickListener(this);
     }
 
     private void setSpinner(){
