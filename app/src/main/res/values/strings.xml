@@ -245,4 +245,8 @@
     <string name="start_event_hint">"Hora d'inici"</string>
     <string name="end_tag">"Fi:"</string>
     <string name="end_event_hint">"Hora de fi"</string>
+
+    <string name="address">"Adreça"</string>
+
+    <string name="unable_location">"No s'ha pogut trobar la localització"</string>
 </resources>
