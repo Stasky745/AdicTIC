@@ -11,7 +11,7 @@ public class Oficina {
     public Double longitude;
     public String address;
     public String ciutat;
-    public String desc;
+    public String description;
     public String telf;
 
     @NonNull
