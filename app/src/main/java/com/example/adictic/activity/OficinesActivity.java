@@ -1,213 +1,337 @@
 package com.example.adictic.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
+import android.graphics.text.LineBreaker;
+import android.icu.text.IDNA;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.Pair;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Oficina;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.example.adictic.rest.TodoApi;
 
-import java.io.IOException;
+import org.mapsforge.map.android.layers.MyLocationOverlay;
+import org.osmdroid.api.IMapController;
+import org.osmdroid.api.IMapView;
+import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
-/**
- * MARKER INFO: https://github.com/googlemaps/android-samples/blob/master/ApiDemos/java/app/src/gms/java/com/example/mapdemo/MarkerDemoActivity.java
- */
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class OficinesActivity extends AppCompatActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
-    private static final int REQUEST_LOCATION = 1;
+import static android.content.Intent.ACTION_DIAL;
+
+/** https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java **/
+
+public class OficinesActivity extends AppCompatActivity {
+    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+
+    private TodoApi mTodoService;
+
+    private MapView map = null;
 
     private static final String TAG = OficinesActivity.class.getSimpleName();
-    private GoogleMap map;
-    private CameraPosition cameraPosition;
 
     private Spinner SP_oficines;
 
     private List<Oficina> oficines = new ArrayList<>();
 
-    private LocationManager locationManager;
+    private GeoPoint currentLocation;
+    //MyLocationListener locationListener;
+    LocationManager locationManager;
 
-    // A default location (Sydney, Australia) and default zoom to use when location permission is
-    // not granted.
-    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 15;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private boolean locationPermissionGranted;
-
-    // The geographical location where the device is currently located. That is, the last-known
-    // location retrieved by the Fused Location Provider.
-    private Location lastKnownLocation;
+    MyLocationNewOverlay myLocationOverlay;
 
     ArrayList<Marker> markers = new ArrayList<>();
-
-    // Keys for storing activity state.
-    // [START maps_current_place_state_keys]
-    private static final String KEY_LOCATION = "location";
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    // [END maps_current_place_state_keys]
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // [START_EXCLUDE silent]
-        // [START maps_current_place_on_create_save_instance_state]
-        // Retrieve location and camera position from saved instance state.
-//        if(savedInstanceState != null){
-//            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-//            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-//        }
-        // [END maps_current_place_on_create_save_instance_state]
-        // [END_EXCLUDE]
+        //load/initialize the osmdroid configuration, this can be done
+        Context ctx = getApplicationContext();
+//        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        //setting this before the layout is inflated is a good idea
+        //it 'should' ensure that the map has a writable location for the map cache, even without permissions
+        //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
+        //see also StorageUtils
+        //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's
+        //tile servers will get you banned based on this string
 
         setContentView(R.layout.oficines_layout);
-        oficines = TodoApp.getOficines();
         SP_oficines = findViewById(R.id.SP_listOficines);
 
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        mTodoService = ((TodoApp) getApplication()).getAPI();
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.FR_map);
-        mapFragment.getMapAsync(this);
+        // Actualitzem la llista d'oficines
+        Call<List<Oficina>> call = mTodoService.getOficines();
+        call.enqueue(new Callback<List<Oficina>>() {
+            @Override
+            public void onResponse(Call<List<Oficina>> call, Response<List<Oficina>> response) {
+                if (response.isSuccessful()) {
+                    oficines = response.body();
+                    TodoApp.setOficines(oficines);
+                    setMap();
+                } else {
+                    oficines = TodoApp.getOficines();
+                    setMap();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Oficina>> call, Throwable t) {
+                oficines = TodoApp.getOficines();
+                setMap();
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setMap() {
+        map = (MapView) findViewById(R.id.MV_map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+
+        requestPermissionsIfNecessary(new String[]{
+                // if you need to show the current location, uncomment the line below
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                // WRITE_EXTERNAL_STORAGE is required in order to show the map
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        });
+
+        //locationListener = new MyLocationListener();
+//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        if( location != null ) {
+//            currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+//        }
+
+        map.setMultiTouchControls(true);
+
+        IMapController mapController = map.getController();
+        mapController.setZoom(17.0);
+
+        myLocationOverlay = new MyLocationNewOverlay(map);
+        myLocationOverlay.enableMyLocation();
+        myLocationOverlay.setDrawAccuracyEnabled(true);
+        map.getOverlays().add(myLocationOverlay);
+
+        for(Oficina oficina : oficines){
+            Marker marker = new Marker(map);
+            marker.setPosition(new GeoPoint(oficina.latitude, oficina.longitude));
+            marker.setTitle(oficina.name);
+            OficinaInfoWindow infoWindow = new OficinaInfoWindow(R.layout.oficina_info, map, oficina);
+
+            marker.setInfoWindow(infoWindow);
+
+            marker.setRelatedObject(oficina);
+
+            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    if(marker.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
+                    else{
+                        InfoWindow.closeAllInfoWindowsOn(map);
+                        marker.showInfoWindow();
+                    }
+                    map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+                    return true;
+                }
+            });
+
+            markers.add(marker);
+            map.getOverlays().add(marker);
+        }
+
+
+        GeoPoint startPoint;
+        if(currentLocation != null){
+            markers = sortListbyDistance(markers, currentLocation);
+            startPoint = currentLocation;
+        }
+        else{
+            startPoint = new GeoPoint(41.981177,2.818997); // Oficina Girona
+        }
+
+        if(!markers.isEmpty()) startPoint = markers.get(0).getPosition();
+
+        mapController.setCenter(startPoint);
+
+        setSpinner();
+
+        map.invalidate();
+    }
+
+    public GeoPoint setInfoWindowOffset(GeoPoint gp){
+        return new GeoPoint(gp.getLatitude()+0.0025, gp.getLongitude());
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
+    public void onResume() {
+        super.onResume();
+        Configuration.getInstance().load(getApplicationContext(),
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+        if (map!=null) {
+            map.onResume();
+        }
+    }
 
-//        map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-//            @Override
-//            public View getInfoWindow(Marker marker) {
-//                return null;
-//            }
-//
-//            @Override
-//            public View getInfoContents(Marker marker) {
-//
-//                final Oficina oficina = (Oficina) marker.getTag();
-//
-//                View infoWindow = getLayoutInflater().inflate(R.layout.oficina_info,
-//                        (FrameLayout) findViewById(R.id.FR_map),false);
-//
-//                TextView nomOficina = infoWindow.findViewById(R.id.TV_nomOficina);
-//                nomOficina.setText(marker.getTitle());
-//
-//                TextView descOficina = infoWindow.findViewById(R.id.TV_descOficina);
-//                descOficina.setText(oficina.desc);
-//
-//                TextView addressOficina = infoWindow.findViewById(R.id.TV_addressOficina);
-//                String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
-//                addressOficina.setText(address);
-//
-//                Button telfOficina = infoWindow.findViewById(R.id.BT_telfOficina);
-//                telfOficina.setText(oficina.telf);
-//                telfOficina.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        Uri number = Uri.parse("tel:" + oficina.telf);
-//                        Intent dial = new Intent(Intent.ACTION_DIAL,number);
-//                        startActivity(dial);
-//                    }
-//                });
-//
-//                return infoWindow;
-//            }
-//        });
-//
-//        for(Oficina o : oficines){
-//            Marker marker = map.addMarker(new MarkerOptions()
-//                    .position(new LatLng(o.latitude,o.longitude))
-//                    .title(o.name)
-//                    .snippet(o.address)
-//                    //.flat(true) // marker 3D
-//                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)) // IMATGE
-//                    );
-//            marker.setTag(o);
-//
-//            markers.add(marker);
-//        }
-//
-//        double longitude = 2.821083;
-//        double latitude = 41.980421;
-//
-//        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))  getLocation(longitude,latitude);
-//        else OnGPS();
-//
-//        // Ordenar markers per proximitat
-//        markers = sortListbyDistance(markers, new LatLng(latitude,longitude));
-//
-//        setSpinner();
-//
-//        //map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude,longitude))); // Descomentar per començar a la posició de l'usuari
-//        map.setOnMarkerClickListener(this);
+    @Override
+    public void onPause() {
+        super.onPause();
+        //this will refresh the osmdroid configuration on resuming.
+        //if you make changes to the configuration, use
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        //Configuration.getInstance().save(this, prefs);
+        map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        ArrayList<String> permissionsToRequest = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            permissionsToRequest.add(permissions[i]);
+        }
+        if (permissionsToRequest.size() > 0) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
+    }
+
+    private void requestPermissionsIfNecessary(String[] permissions) {
+        ArrayList<String> permissionsToRequest = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                permissionsToRequest.add(permission);
+            }
+        }
+        if (permissionsToRequest.size() > 0) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS_REQUEST_CODE);
+        }
     }
 
     private void setSpinner(){
 
-        ArrayAdapter<Oficina> adapter =
-                new ArrayAdapter<Oficina>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,oficines);
+        MarkerAdapter adapter =
+                new MarkerAdapter(getApplicationContext(),
+                        R.layout.oficina_spinner_item,
+                        markers);
 
         SP_oficines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Oficina oficina = (Oficina) SP_oficines.getSelectedItem();
-                map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(oficina.latitude,oficina.longitude)));
+                Marker marker = (Marker) SP_oficines.getSelectedItem();
+                InfoWindow.closeAllInfoWindowsOn(map);
+                map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+                marker.showInfoWindow();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
+        SP_oficines.setAdapter(adapter);
         SP_oficines.setSelection(0);
     }
 
-    public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final LatLng location){
+    private class MarkerAdapter extends ArrayAdapter{
+
+        LayoutInflater layoutInflater;
+
+        public MarkerAdapter(@NonNull Context context, int resource, @NonNull List objects) {
+            super(context, resource, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            layoutInflater = getLayoutInflater();
+
+            Marker marker = markers.get(position);
+            Oficina oficina = (Oficina) marker.getRelatedObject();
+
+            View row = layoutInflater.inflate(R.layout.oficina_spinner_item,parent,false);
+            TextView TV_nomOficina = (TextView)row.findViewById(R.id.TV_nomOficina);
+            TextView TV_oficinaCiutat = (TextView)row.findViewById(R.id.TV_oficinaCiutat);
+
+            TV_nomOficina.setText(oficina.name);
+            String ciutat = "("+oficina.ciutat.toUpperCase()+")";
+            TV_oficinaCiutat.setText(ciutat);
+
+            return row;
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            layoutInflater = getLayoutInflater();
+
+            Marker marker = markers.get(position);
+            Oficina oficina = (Oficina) marker.getRelatedObject();
+
+            View row = layoutInflater.inflate(R.layout.oficina_spinner_item,parent,false);
+            TextView TV_nomOficina = (TextView)row.findViewById(R.id.TV_nomOficina);
+            TextView TV_oficinaCiutat = (TextView)row.findViewById(R.id.TV_oficinaCiutat);
+
+            TV_nomOficina.setText(oficina.name);
+            String ciutat = "("+oficina.ciutat.toUpperCase()+")";
+            TV_oficinaCiutat.setText(ciutat);
+
+            return row;
+        }
+    }
+
+    public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location){
         Collections.sort(markers, new Comparator<Marker>() {
             @Override
             public int compare(Marker marker2, Marker marker1) {
                 //
-                if(getDistanceBetweenPoints(marker1.getPosition().latitude,marker1.getPosition().longitude,location.latitude,location.longitude)>getDistanceBetweenPoints(marker2.getPosition().latitude,marker2.getPosition().longitude,location.latitude,location.longitude)){
+                if(getDistanceBetweenPoints(marker1.getPosition().getLatitude(),marker1.getPosition().getLongitude(),location.getLatitude(),location.getLongitude())>getDistanceBetweenPoints(marker2.getPosition().getLatitude(),marker2.getPosition().getLongitude(),location.getLatitude(),location.getLongitude())){
                     return -1;
                 } else {
                     return 1;
@@ -224,42 +348,84 @@ public class OficinesActivity extends AppCompatActivity implements GoogleMap.OnM
         return results[0];
     }
 
-    private void OnGPS() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("Yes", new  DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
+    private class OficinaInfoWindow extends InfoWindow {
 
-    private void getLocation(double longitude, double latitude){
-        if (ActivityCompat.checkSelfPermission(
-                OficinesActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                OficinesActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        } else {
-            Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (locationGPS != null) {
-                latitude = locationGPS.getLatitude();
-                longitude = locationGPS.getLongitude();
-            } else {
-                Toast.makeText(this, getString(R.string.unable_location), Toast.LENGTH_SHORT).show();
-            }
+        protected Marker mMarkerRef;
+        protected Oficina oficina;
+
+        public OficinaInfoWindow(int layoutResId, MapView mapView, Oficina o) {
+            super(layoutResId, mapView);
+            oficina = o;
         }
-    }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        return false;
-    }
+        //public void setOficina(Oficina o){ this.oficina = o; }
 
+        public void onOpen(Object item) {
+            mMarkerRef = (Marker)item;
+
+            if (mView==null) {
+                Log.w(IMapView.LOGTAG, "Error trapped, OficinaInfoWindow.open, mView is null!");
+                return;
+            }
+
+            TextView TV_nomOficina = (TextView)mView.findViewById(R.id.TV_nomOficina);
+            TextView TV_descOficina = (TextView)mView.findViewById(R.id.TV_descOficina);
+            TextView TV_addressOficina = (TextView)mView.findViewById(R.id.TV_addressOficina);
+            Button BT_telfOficina = (Button)mView.findViewById(R.id.BT_telfOficina);
+
+            TV_nomOficina.setText(oficina.name);
+            TV_descOficina.setText(oficina.description);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                TV_descOficina.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            }
+
+            String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
+            TV_addressOficina.setText(address);
+            BT_telfOficina.setText(oficina.telf);
+            BT_telfOficina.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String telf = oficina.telf.replace("[^\\d+]", "");
+                    Intent intent = new Intent(ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:"+telf));
+                    startActivity(intent);
+                }
+            });
+        }
+
+        @Override
+        public void onClose() { }
+    }
+//    public class MyLocationListener implements LocationListener {
+//
+//        public void onLocationChanged(Location location) {
+//            currentLocation = new GeoPoint(location);
+//            //displayMyCurrentLocationOverlay();
+//        }
+//
+//        public void onProviderDisabled(String provider) {
+//        }
+//
+//        public void onProviderEnabled(String provider) {
+//        }
+//
+//        public void onStatusChanged(String provider, int status, Bundle extras) {
+//        }
+//    }
+
+//    private void displayMyCurrentLocationOverlay() {
+//        if( currentLocation != null) {
+//            if( myLocationOverlay == null ) {
+//                new ArrayItemizedOverlay
+//                myLocationOverlay = new ArrayItemizedOverlay(myLocationMarker);
+//                myCurrentLocationOverlayItem = new OverlayItem(currentLocation, "My Location", "My Location!");
+//                myLocationOverlay.addItem(myCurrentLocationOverlayItem);
+//                mapView.getOverlays().add(myLocationOverlay);
+//            } else {
+//                myCurrentLocationOverlayItem.setPoint(currentLocation);
+//                myLocationOverlay.requestRedraw();
+//            }
+//            map.getController().setCenter(currentLocation);
+//        }
+//    }
 }

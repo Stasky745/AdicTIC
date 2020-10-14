@@ -10,6 +10,7 @@ import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.NouFillLogin;
+import com.example.adictic.entity.Oficina;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.entity.UserRegister;
@@ -120,4 +121,7 @@ public interface TodoApi {
 
     @GET("/usage/{idChild}/timesTried")
     Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
+
+    @GET("/offices")
+    Call<List<Oficina>> getOficines();
 }
