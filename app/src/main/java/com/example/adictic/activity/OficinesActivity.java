@@ -2,6 +2,7 @@ package com.example.adictic.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,6 +49,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
@@ -74,8 +78,11 @@ public class OficinesActivity extends AppCompatActivity {
 
     private List<Oficina> oficines = new ArrayList<>();
 
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 metres
+    private static final long MIN_TIME_FOR_UPDATES = 1000*60; // 1 minut
+
     private GeoPoint currentLocation;
-    //MyLocationListener locationListener;
+    MyLocationListener locationListener;
     LocationManager locationManager;
 
     MyLocationNewOverlay myLocationOverlay;
@@ -87,7 +94,7 @@ public class OficinesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //load/initialize the osmdroid configuration, this can be done
-        Context ctx = getApplicationContext();
+//        Context ctx = getApplicationContext();
 //        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         //setting this before the layout is inflated is a good idea
         //it 'should' ensure that the map has a writable location for the map cache, even without permissions
@@ -137,23 +144,56 @@ public class OficinesActivity extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         });
 
-        //locationListener = new MyLocationListener();
-//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-//        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//        if( location != null ) {
-//            currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-//        }
+        locationListener = new MyLocationListener();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if(isNetworkEnabled){
+//            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER,null);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    MIN_TIME_FOR_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                    locationListener);
+
+            Log.d(TAG,"Network Enabled");
+
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if( location != null ) {
+                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+            }
+        }
+        else if(isGPSEnabled){
+//            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,null);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    MIN_TIME_FOR_UPDATES,
+                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                    locationListener);
+
+            Log.d(TAG,"GPS Enabled");
+
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if( location != null ) {
+                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+            }
+        }
+
+        myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()),map);
+        myLocationOverlay.enableMyLocation();
+        map.getOverlays().add(myLocationOverlay);
+
+        locationManager.removeUpdates(locationListener);
 
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
         mapController.setZoom(17.0);
 
-        myLocationOverlay = new MyLocationNewOverlay(map);
-        myLocationOverlay.enableMyLocation();
-        myLocationOverlay.setDrawAccuracyEnabled(true);
-        map.getOverlays().add(myLocationOverlay);
+//        myLocationOverlay = new MyLocationNewOverlay(map);
+//        myLocationOverlay.enableMyLocation();
+//        myLocationOverlay.setDrawAccuracyEnabled(true);
+//        map.getOverlays().add(myLocationOverlay);
 
         for(Oficina oficina : oficines){
             Marker marker = new Marker(map);
@@ -170,10 +210,12 @@ public class OficinesActivity extends AppCompatActivity {
                 public boolean onMarkerClick(Marker marker, MapView mapView) {
                     if(marker.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
                     else{
-                        InfoWindow.closeAllInfoWindowsOn(map);
+                        int pos = markers.indexOf(marker);
+                        SP_oficines.setSelection(pos);
                         marker.showInfoWindow();
+                        map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
                     }
-                    map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+
                     return true;
                 }
             });
@@ -195,10 +237,7 @@ public class OficinesActivity extends AppCompatActivity {
         if(!markers.isEmpty()) startPoint = markers.get(0).getPosition();
 
         mapController.setCenter(startPoint);
-
         setSpinner();
-
-        map.invalidate();
     }
 
     public GeoPoint setInfoWindowOffset(GeoPoint gp){
@@ -208,8 +247,7 @@ public class OficinesActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Configuration.getInstance().load(getApplicationContext(),
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+
         if (map!=null) {
             map.onResume();
         }
@@ -260,13 +298,12 @@ public class OficinesActivity extends AppCompatActivity {
 
         MarkerAdapter adapter =
                 new MarkerAdapter(getApplicationContext(),
-                        R.layout.oficina_spinner_item,
                         markers);
 
         SP_oficines.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Marker marker = (Marker) SP_oficines.getSelectedItem();
+                Marker marker = markers.get(i);
                 InfoWindow.closeAllInfoWindowsOn(map);
                 map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
                 marker.showInfoWindow();
@@ -280,41 +317,39 @@ public class OficinesActivity extends AppCompatActivity {
         SP_oficines.setSelection(0);
     }
 
-    private class MarkerAdapter extends ArrayAdapter{
+    private class MarkerAdapter extends BaseAdapter {
+        Context context;
+        LayoutInflater inflter;
+        List<Marker> markers;
 
-        LayoutInflater layoutInflater;
+        public MarkerAdapter(@NonNull Context context, List<Marker> m) {
+            this.context = context;
+            inflter = (LayoutInflater.from(context));
+            markers = m;
+        }
 
-        public MarkerAdapter(@NonNull Context context, int resource, @NonNull List objects) {
-            super(context, resource, objects);
+        @Override
+        public int getCount() {
+            return markers.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
         }
 
         @NonNull
         @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            layoutInflater = getLayoutInflater();
-
+        public View getView(int position, View convertView, ViewGroup parent) {
             Marker marker = markers.get(position);
             Oficina oficina = (Oficina) marker.getRelatedObject();
 
-            View row = layoutInflater.inflate(R.layout.oficina_spinner_item,parent,false);
-            TextView TV_nomOficina = (TextView)row.findViewById(R.id.TV_nomOficina);
-            TextView TV_oficinaCiutat = (TextView)row.findViewById(R.id.TV_oficinaCiutat);
-
-            TV_nomOficina.setText(oficina.name);
-            String ciutat = "("+oficina.ciutat.toUpperCase()+")";
-            TV_oficinaCiutat.setText(ciutat);
-
-            return row;
-        }
-
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            layoutInflater = getLayoutInflater();
-
-            Marker marker = markers.get(position);
-            Oficina oficina = (Oficina) marker.getRelatedObject();
-
-            View row = layoutInflater.inflate(R.layout.oficina_spinner_item,parent,false);
+            View row = inflter.inflate(R.layout.oficina_spinner_item,null);
             TextView TV_nomOficina = (TextView)row.findViewById(R.id.TV_nomOficina);
             TextView TV_oficinaCiutat = (TextView)row.findViewById(R.id.TV_oficinaCiutat);
 
@@ -358,8 +393,6 @@ public class OficinesActivity extends AppCompatActivity {
             oficina = o;
         }
 
-        //public void setOficina(Oficina o){ this.oficina = o; }
-
         public void onOpen(Object item) {
             mMarkerRef = (Marker)item;
 
@@ -375,7 +408,7 @@ public class OficinesActivity extends AppCompatActivity {
 
             TV_nomOficina.setText(oficina.name);
             TV_descOficina.setText(oficina.description);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 TV_descOficina.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
             }
 
@@ -396,22 +429,24 @@ public class OficinesActivity extends AppCompatActivity {
         @Override
         public void onClose() { }
     }
-//    public class MyLocationListener implements LocationListener {
-//
-//        public void onLocationChanged(Location location) {
-//            currentLocation = new GeoPoint(location);
-//            //displayMyCurrentLocationOverlay();
-//        }
-//
-//        public void onProviderDisabled(String provider) {
-//        }
-//
-//        public void onProviderEnabled(String provider) {
-//        }
-//
-//        public void onStatusChanged(String provider, int status, Bundle extras) {
-//        }
-//    }
+
+
+    class MyLocationListener implements LocationListener {
+
+        public void onLocationChanged(Location location) {
+            currentLocation = new GeoPoint(location);
+            //displayMyCurrentLocationOverlay();
+        }
+
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    }
 
 //    private void displayMyCurrentLocationOverlay() {
 //        if( currentLocation != null) {
