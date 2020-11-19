@@ -249,4 +249,6 @@
     <string name="address">"Adreça"</string>
 
     <string name="unable_location">"No s'ha pogut trobar la localització"</string>
+
+    <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
 </resources>

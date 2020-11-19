@@ -2,6 +2,7 @@ package com.example.adictic.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +45,7 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.api.IMapView;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.library.BuildConfig;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -78,8 +81,8 @@ public class OficinesActivity extends AppCompatActivity {
 
     private List<Oficina> oficines = new ArrayList<>();
 
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 metres
-    private static final long MIN_TIME_FOR_UPDATES = 1000*60; // 1 minut
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;// 10; // 10 metres
+    private static final long MIN_TIME_FOR_UPDATES = 0;//1000*60; // 1 minut
 
     private GeoPoint currentLocation;
     MyLocationListener locationListener;
@@ -94,8 +97,10 @@ public class OficinesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //load/initialize the osmdroid configuration, this can be done
-//        Context ctx = getApplicationContext();
-//        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        Context ctx = getApplicationContext();
+        try{
+            Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+        }catch(java.lang.NullPointerException exc){}
         //setting this before the layout is inflated is a good idea
         //it 'should' ensure that the map has a writable location for the map cache, even without permissions
         //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
@@ -103,8 +108,13 @@ public class OficinesActivity extends AppCompatActivity {
         //note, the load method also sets the HTTP User Agent to your application's package name, abusing osm's
         //tile servers will get you banned based on this string
 
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
+
         setContentView(R.layout.oficines_layout);
         SP_oficines = findViewById(R.id.SP_listOficines);
+
+        map = (MapView) findViewById(R.id.MV_map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
 
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
@@ -116,33 +126,55 @@ public class OficinesActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     oficines = response.body();
                     TodoApp.setOficines(oficines);
-                    setMap();
+//                    setMap();
+                    askPermissionsIfNecessary();
+
                 } else {
                     oficines = TodoApp.getOficines();
-                    setMap();
+//                    setMap();
+                    askPermissionsIfNecessary();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Oficina>> call, Throwable t) {
                 oficines = TodoApp.getOficines();
-                setMap();
+//                setMap();
+                askPermissionsIfNecessary();
             }
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void setMap() {
-        map = (MapView) findViewById(R.id.MV_map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-
+    private void askPermissionsIfNecessary(){
         requestPermissionsIfNecessary(new String[]{
                 // if you need to show the current location, uncomment the line below
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 // WRITE_EXTERNAL_STORAGE is required in order to show the map
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setMap() {
+//        ActivityCompat.requestPermissions(this,new String[]{
+//                // if you need to show the current location, uncomment the line below
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                // WRITE_EXTERNAL_STORAGE is required in order to show the map
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//        }, 1);
+
+//        requestPermissionsIfNecessary(new String[]{
+//                // if you need to show the current location, uncomment the line below
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                // WRITE_EXTERNAL_STORAGE is required in order to show the map
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//        });
 
         locationListener = new MyLocationListener();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -183,7 +215,7 @@ public class OficinesActivity extends AppCompatActivity {
         myLocationOverlay.enableMyLocation();
         map.getOverlays().add(myLocationOverlay);
 
-        locationManager.removeUpdates(locationListener);
+        //locationManager.removeUpdates(locationListener);
 
         map.setMultiTouchControls(true);
 
@@ -226,6 +258,7 @@ public class OficinesActivity extends AppCompatActivity {
 
 
         GeoPoint startPoint;
+
         if(currentLocation != null){
             markers = sortListbyDistance(markers, currentLocation);
             startPoint = currentLocation;
@@ -265,15 +298,26 @@ public class OficinesActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        ArrayList<String> permissionsToRequest = new ArrayList<>();
-        for (int i = 0; i < grantResults.length; i++) {
-            permissionsToRequest.add(permissions[i]);
-        }
-        if (permissionsToRequest.size() > 0) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
+
+        switch(requestCode){
+            case REQUEST_PERMISSIONS_REQUEST_CODE: {
+                boolean permissionsGranted = true;
+                int i = 0;
+                while(permissionsGranted && i < permissions.length){
+                    if (ContextCompat.checkSelfPermission(this, permissions[i])
+                            != PackageManager.PERMISSION_GRANTED) {
+                        // Permission is not granted
+                        permissionsGranted = false;
+                    }
+                    i++;
+                }
+
+                if(permissionsGranted) setMap();
+                else{
+                    Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
+                    this.finish();
+                }
+            }
         }
     }
 
@@ -292,6 +336,7 @@ public class OficinesActivity extends AppCompatActivity {
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
+        else setMap();
     }
 
     private void setSpinner(){
