@@ -39,9 +39,16 @@ public class MainParentFragment extends Fragment {
 
     private TodoApi mTodoService;
     private long idChildSelected = -1;
+    private FillNom fillNom;
     private View root;
 
     private ImageView IV_liveIcon;
+
+    public MainParentFragment(FillNom fill){
+        idChildSelected = fill.idChild;
+        fillNom = fill;
+
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,56 +57,6 @@ public class MainParentFragment extends Fragment {
         mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
 
         IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
-
-        Call<Collection<FillNom>> call = mTodoService.getUserChilds(((TodoApp) getActivity().getApplication()).getIDTutor());
-        call.enqueue(new Callback<Collection<FillNom>>() {
-            @Override
-            public void onResponse(Call<Collection<FillNom>> call, Response<Collection<FillNom>> response) {
-                if (response.isSuccessful() && response.body()!=null && !response.body().isEmpty()) {
-                    LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.HSV_mainParent_LL);
-                    int i = 1;
-                    LinearLayout row = new LinearLayout(getActivity());
-                    row.setLayoutParams(new LinearLayout.LayoutParams
-                            (LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT));
-                    boolean primer = true;
-                    for(FillNom child : response.body()) {
-                        Button btnTag = new Button(getActivity());
-                        btnTag.setLayoutParams(new LinearLayout.LayoutParams
-                                (LinearLayout.LayoutParams.WRAP_CONTENT,
-                                        LinearLayout.LayoutParams.MATCH_PARENT));
-                        btnTag.setText(child.deviceName);
-                        btnTag.setTag(child.idChild);
-                        if(primer) {
-                            idChildSelected = child.idChild;
-                            if(child.blocked){
-                                ((Button)getActivity().findViewById(R.id.BT_BlockDevice)).setText(getString(R.string.unblock_device));
-                            }
-                            btnTag.setSelected(true);
-                            primer = false;
-                            askChildForLiveApp(idChildSelected, true);
-                        }
-                        btnTag.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                askChildForLiveApp(idChildSelected, false);
-                                idChildSelected = (long)v.getTag();
-                                TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-                                currentApp.setText(getString(R.string.disconnected));
-                                askChildForLiveApp(idChildSelected, true);
-                            }
-                        });
-                        row.addView(btnTag);
-                        i++;
-                    }
-                    linearLayout.addView(row);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Collection<FillNom>> call, Throwable t) {
-            }
-        });
 
         ImageView im_informe = (ImageView) root.findViewById(R.id.IV_Informe);
         TextView tv_informe = (TextView) root.findViewById(R.id.TV_Informe);

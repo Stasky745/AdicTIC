@@ -29,8 +29,7 @@
 
         <activity
             android:name=".activity.NavActivity"
-            android:label="@string/title_activity_nav"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_activity_nav" />
         <activity android:name=".activity.Login" />
         <activity
             android:name=".activity.BlockActivity"
