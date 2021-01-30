@@ -19,8 +19,10 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.TodoApp;
@@ -34,7 +36,9 @@ import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.service.FinishBlockEventWorker;
+import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
@@ -269,6 +273,16 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void runGeoLocWorker(Context mContext, long delay){
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(GeoLocWorker.class, delay, TimeUnit.MILLISECONDS)
+                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniquePeriodicWork("geoLocWorker", ExistingPeriodicWorkPolicy.REPLACE, myWork);
     }
 
     public static HorarisEvents getEventFromList(String name){

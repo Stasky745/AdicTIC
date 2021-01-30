@@ -7,6 +7,7 @@ import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.GeoFill;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.NouFillLogin;
@@ -124,4 +125,13 @@ public interface TodoApi {
 
     @GET("/offices")
     Call<List<Oficina>> getOficines();
+
+    @GET("/users/geoloc")
+    Call<List<GeoFill>> getGeoLoc();
+
+    @POST("/users/geoloc")
+    Call<String> postGeolocActive(Boolean b);
+
+    @POST("/users/geoloc/{idChild}")
+    Call<String> postCurrentLocation(@Path("idChild") Long idChild, GeoFill geoFill);
 }

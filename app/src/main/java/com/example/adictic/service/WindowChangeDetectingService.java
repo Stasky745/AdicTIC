@@ -224,13 +224,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
-                                    if (response.isSuccessful()) {
-                                    }
+                                    if (response.isSuccessful()) { }
                                 }
 
                                 @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                }
+                                public void onFailure(Call<String> call, Throwable t) { }
                             });
                         }
                     }
