@@ -130,7 +130,7 @@
     <string name="informal_date_format">"%d-%d-%d"</string>
   
     <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
-    <string name="error_liveApp">"No s'ha pogut llegir la aplicació actual del fill"</string>
+    <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
     <string name="unblock_device">"Desbloquejar dispositiu"</string>
 
     <string name="nom_app">"Nom"</string>
@@ -145,6 +145,7 @@
     <string name="error_no_event_name">"Escriu un nom per l'event"</string>
     <string name="error_no_event_days">"Escull quins dies passa aquest event"</string>
     <string name="error_incorrect_times">"Tria una hora final superior a la inicial"</string>
+    <string name="error_no_fills">"No tenim cap fill vostre al nostre servidor."</string>
 
     <string name="monday">Dilluns</string>
     <string name="tuesday">Dimarts</string>
