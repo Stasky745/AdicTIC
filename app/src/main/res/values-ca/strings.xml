@@ -216,4 +216,14 @@
     <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
 
     <string name="go_information">"Vés a la documentació"</string>
+    <string name="adictic_splash">AdicTIC_Splash</string>
+    <string name="settings">Configuració</string>
+    <string name="titol">Títol</string>
+    <string name="desc">Descripció</string>
+    <string name="escriu_el_teu_dubte">Escriu el teu dubte</string>
+    <string name="enviar">Enviar</string>
+    <string name="error_local">No s\'han pogut llegir les localitzacions</string>
+    <string name="error_server_read">No s\'ha pogut llegir del servidor</string>
+    <string name="control_de_dispositiu">Control de Dispositiu</string>
+    <string name="geolocalitzacio">Geolocalització</string>
 </resources>

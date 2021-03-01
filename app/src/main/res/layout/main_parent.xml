@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <Button
+        android:id="@+id/BT_FreeTime"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -50,87 +50,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/disconnected" />
 
-    <ImageView
-        android:id="@+id/IV_Informe"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="50dp"
-        android:clickable="true"
-        android:contentDescription="@string/informe"
-        android:focusable="true"
-        android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/guideline11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider"
-        app:srcCompat="@drawable/informe" />
-
-    <ImageView
-        android:id="@+id/IV_AppUsage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="50dp"
-        android:clickable="true"
-        android:contentDescription="@string/app_usage"
-        android:focusable="true"
-        android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline11"
-        app:layout_constraintTop_toBottomOf="@+id/divider"
-        app:srcCompat="@drawable/app_usage" />
-
-    <ImageView
-        android:id="@+id/IV_BlockApps"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="50dp"
-        android:clickable="true"
-        android:contentDescription="@string/block_apps"
-        android:focusable="true"
-        android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@+id/guideline11"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_Informe"
-        app:srcCompat="@drawable/block" />
-
-    <ImageView
-        android:id="@+id/IV_Horaris"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="50dp"
-        android:clickable="true"
-        android:contentDescription="@string/horaris"
-        android:focusable="true"
-        android:scaleType="fitXY"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline11"
-        app:layout_constraintTop_toBottomOf="@+id/TV_AppUsage"
-        app:srcCompat="@drawable/horaris" />
-
-    <TextView
-        android:id="@+id/TV_Informe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/informe"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="@+id/IV_Informe"
-        app:layout_constraintStart_toStartOf="@+id/IV_Informe"
-        app:layout_constraintTop_toBottomOf="@+id/IV_Informe" />
-
     <TextView
         android:id="@+id/TV_CurrentApp"
         android:layout_width="wrap_content"
@@ -140,43 +59,6 @@
         app:layout_constraintEnd_toEndOf="@+id/IV_CurrentApp"
         app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp"
         app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
-
-    <TextView
-        android:id="@+id/TV_AppUsage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/app_usage"
-        app:layout_constraintEnd_toEndOf="@+id/IV_AppUsage"
-        app:layout_constraintStart_toStartOf="@+id/IV_AppUsage"
-        app:layout_constraintTop_toBottomOf="@+id/IV_AppUsage" />
-
-    <TextView
-        android:id="@+id/TV_BlockApps"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/block_apps"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="@+id/IV_BlockApps"
-        app:layout_constraintStart_toStartOf="@+id/IV_BlockApps"
-        app:layout_constraintTop_toBottomOf="@+id/IV_BlockApps" />
-
-    <TextView
-        android:id="@+id/TV_Horaris"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/horaris"
-        app:layout_constraintEnd_toEndOf="@+id/IV_Horaris"
-        app:layout_constraintStart_toStartOf="@+id/IV_Horaris"
-        app:layout_constraintTop_toBottomOf="@+id/IV_Horaris" />
 
     <View
         android:id="@+id/divider"
@@ -217,5 +99,138 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.67" />
+
+    <ScrollView
+        android:id="@+id/SV_Opcions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/TV_Estadistiques"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/estadistiques"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/BT_appUse"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/background_activity"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/app_usage"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/BT_Informe"
+                app:layout_constraintStart_toStartOf="@+id/BT_Informe"
+                app:layout_constraintTop_toBottomOf="@+id/BT_Informe" />
+
+            <Button
+                android:id="@+id/BT_Informe"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:background="@color/background_activity"
+                android:gravity="start|center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/informe"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/TV_Estadistiques"
+                app:layout_constraintTop_toBottomOf="@+id/TV_Estadistiques" />
+
+            <Button
+                android:id="@+id/BT_Geoloc"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/background_activity"
+                android:gravity="start|center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/geolocalitzacio"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/BT_appUse"
+                app:layout_constraintStart_toStartOf="@+id/BT_appUse"
+                app:layout_constraintTop_toBottomOf="@+id/BT_appUse" />
+
+            <TextView
+                android:id="@+id/TV_controlDispositiu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/control_de_dispositiu"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/BT_Geoloc" />
+
+            <Button
+                android:id="@+id/BT_BlockApps"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@color/background_activity"
+                android:text="@string/block_apps"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/TV_controlDispositiu"
+                app:layout_constraintTop_toBottomOf="@+id/TV_controlDispositiu" />
+
+            <Button
+                android:id="@+id/BT_horaris"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:background="@color/background_activity"
+                android:text="@string/horaris"
+                android:textAlignment="textStart"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintEnd_toEndOf="@+id/BT_BlockApps"
+                app:layout_constraintStart_toStartOf="@+id/BT_BlockApps"
+                app:layout_constraintTop_toBottomOf="@+id/BT_BlockApps" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
