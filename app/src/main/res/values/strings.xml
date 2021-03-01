@@ -89,12 +89,13 @@
     <string name="menu_help">Ajuda</string>
 
     <string name="free_time">"Temps lliure"</string>
+    <string name="stop_free_time">"Aturar temps lliure"</string>
     <string name="block_device">"Bloquejar dispositiu"</string>
     <string name="disconnected">"Desconnectat"</string>
-    <string name="informe">"Informe"</string>
+    <string name="informe">Informe</string>
     <string name="horaris">"Horaris"</string>
-    <string name="app_usage">"Ús d'aplicacions"</string>
-    <string name="block_apps">"Bloqueig d'aplicacions"</string>
+    <string name="app_usage">Ús d\'aplicacions</string>
+    <string name="block_apps">Bloqueig d\'aplicacions</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contingut informatiu</string>
@@ -254,4 +255,17 @@
     <string name="unable_location">"No s'ha pogut trobar la localització"</string>
 
     <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
+
+    <string name="estadistiques">"Informació i Estadístiques"</string>
+    <string name="adictic_splash">AdicTIC_Splash</string>
+    <string name="settings">Configuració</string>
+    <string name="titol">Títol</string>
+    <string name="desc">Descripció</string>
+    <string name="escriu_el_teu_dubte">Escriu el teu dubte</string>
+    <string name="localitat_oficina_desitjada">Localitat d\'oficina desitjada</string>
+    <string name="enviar">Enviar</string>
+    <string name="error_local">No s\'han pogut llegir les localitzacions</string>
+    <string name="error_server_read">No s\'ha pogut llegir del servidor</string>
+    <string name="control_de_dispositiu">Control de Dispositiu</string>
+    <string name="geolocalitzacio">Geolocalització</string>
 </resources>

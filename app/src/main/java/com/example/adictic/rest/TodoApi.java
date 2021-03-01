@@ -5,11 +5,13 @@ import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
+import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.LiveApp;
+import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.Oficina;
 import com.example.adictic.entity.User;
@@ -130,8 +132,14 @@ public interface TodoApi {
     Call<List<GeoFill>> getGeoLoc();
 
     @POST("/users/geoloc")
-    Call<String> postGeolocActive(Boolean b);
+    Call<String> postGeolocActive(@Body Boolean b);
 
     @POST("/users/geoloc/{idChild}")
-    Call<String> postCurrentLocation(@Path("idChild") Long idChild, GeoFill geoFill);
+    Call<String> postCurrentLocation(@Path("idChild") Long idChild, @Body GeoFill geoFill);
+
+    @GET("/poblacions")
+    Call<Collection<Localitzacio>> getLocalitzacions();
+
+    @POST("/users/{id}/dubtes")
+    Call<String> postDubte(@Path("id") Long id, @Body Dubte dubte);
 }

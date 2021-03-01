@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_activity"
     tools:context=".fragment.AdviceFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -50,7 +49,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
             android:text="@string/advice_privateConsult"
             android:textAllCaps="true"
@@ -65,7 +64,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/solid_hands_helping"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline5_1"
@@ -75,7 +74,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -112,11 +111,11 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
+            android:text="@string/advice_onlineChat"
             android:textAllCaps="true"
             android:textColor="#000"
-            android:text="@string/advice_onlineChat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline4_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -127,7 +126,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_chat_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline4_1"
@@ -137,7 +136,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -173,7 +172,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
             android:text="@string/advice_recommendations"
             android:textAllCaps="true"
@@ -188,7 +187,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_event_available_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline3_1"
@@ -198,7 +197,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -235,11 +234,11 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
+            android:text="@string/advice_OurCenters"
             android:textAllCaps="true"
             android:textColor="#000"
-            android:text="@string/advice_OurCenters"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline6_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -250,7 +249,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_room_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline6_1"
@@ -260,7 +259,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -296,7 +295,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
             android:text="@string/advice_mostAskQuest"
             android:textAllCaps="true"
@@ -311,7 +310,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/question_mark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline2_1"
@@ -321,7 +320,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -334,6 +333,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/background_activity"
         android:clickable="true"
         android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
@@ -358,7 +358,7 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:gravity="center"
             android:text="@string/advice_infoContent"
             android:textAllCaps="true"
@@ -373,7 +373,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_info_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline1_1"
@@ -383,7 +383,7 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/colorBackground"
+            android:background="@color/background_activity"
             android:src="@drawable/baseline_keyboard_arrow_right_black_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

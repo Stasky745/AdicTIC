@@ -185,7 +185,7 @@ public class GeoLocActivity extends AppCompatActivity {
                 } else {
                     fills = TodoApp.getGeoFills();
                     Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT);
-                    setMap();
+                    if(fills.get(0) != null) setMap();
                 }
             }
 
@@ -193,7 +193,7 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onFailure(Call<List<GeoFill>> call, Throwable t) {
                 fills = TodoApp.getGeoFills();
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT);
-                setMap();
+                if(fills.get(0) != null) setMap();
             }
         });
     }
@@ -245,30 +245,33 @@ public class GeoLocActivity extends AppCompatActivity {
         mapController.setZoom(17.0);
 
         for(GeoFill fill : fills){
-            Marker marker = new Marker(map);
-            marker.setPosition(new GeoPoint(fill.latitud, fill.longitud));
-            marker.setTitle(fill.nom);
-            marker.setSubDescription(fill.hora);
+            if(fill != null) {
+                Marker marker = new Marker(map);
+                if (fill.latitud != null && fill.longitud != null)
+                    marker.setPosition(new GeoPoint(fill.latitud, fill.longitud));
+                marker.setTitle(fill.nom);
+                marker.setSubDescription(fill.hora);
 
-            marker.setRelatedObject(fill);
+                marker.setRelatedObject(fill);
 
-            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    if(marker.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
-                    else{
-                        int pos = markers.indexOf(marker);
-                        SP_fills.setSelection(pos);
-                        marker.showInfoWindow();
-                        map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+                marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker, MapView mapView) {
+                        if (marker.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
+                        else {
+                            int pos = markers.indexOf(marker);
+                            SP_fills.setSelection(pos);
+                            marker.showInfoWindow();
+                            map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+                        }
+
+                        return true;
                     }
+                });
 
-                    return true;
-                }
-            });
-
-            markers.add(marker);
-            map.getOverlays().add(marker);
+                markers.add(marker);
+                map.getOverlays().add(marker);
+            }
         }
 
         GeoPoint startPoint;

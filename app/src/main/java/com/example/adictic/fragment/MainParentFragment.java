@@ -22,6 +22,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockAppsActivity;
 import com.example.adictic.activity.DayUsageActivity;
+import com.example.adictic.activity.GeoLocActivity;
 import com.example.adictic.activity.HorarisActivity;
 import com.example.adictic.activity.HorarisMainActivity;
 import com.example.adictic.activity.informe.InformeActivity;
@@ -39,7 +40,7 @@ public class MainParentFragment extends Fragment {
 
     private TodoApi mTodoService;
     private long idChildSelected = -1;
-    private FillNom fillNom;
+    private final FillNom fillNom;
     private View root;
 
     private ImageView IV_liveIcon;
@@ -47,7 +48,6 @@ public class MainParentFragment extends Fragment {
     public MainParentFragment(FillNom fill){
         idChildSelected = fill.idChild;
         fillNom = fill;
-
     }
 
     @Override
@@ -58,15 +58,6 @@ public class MainParentFragment extends Fragment {
 
         IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
 
-        ImageView im_informe = (ImageView) root.findViewById(R.id.IV_Informe);
-        TextView tv_informe = (TextView) root.findViewById(R.id.TV_Informe);
-        ImageView im_appUsage = (ImageView) root.findViewById(R.id.IV_AppUsage);
-        TextView tv_appUsage = (TextView) root.findViewById(R.id.TV_AppUsage);
-        ImageView im_blockApps = (ImageView) root.findViewById(R.id.IV_BlockApps);
-        TextView tv_blockApps = (TextView) root.findViewById(R.id.TV_BlockApps);
-        ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_Horaris);
-        TextView tv_horaris = (TextView) root.findViewById(R.id.TV_Horaris);
-
         View.OnClickListener blockApps = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,8 +67,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_blockApps.setOnClickListener(blockApps);
-        tv_blockApps.setOnClickListener(blockApps);
+        Button BT_BlockApps = (Button) root.findViewById(R.id.BT_BlockApps);
+        BT_BlockApps.setOnClickListener(blockApps);
 
         View.OnClickListener informe = new View.OnClickListener() {
             @Override
@@ -88,9 +79,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_informe.setOnClickListener(informe);
-        tv_informe.setOnClickListener(informe);
-
+        Button BT_Informe = (Button) root.findViewById(R.id.BT_Informe);
+        BT_Informe.setOnClickListener(informe);
 
         View.OnClickListener appUsage = new View.OnClickListener() {
             @Override
@@ -101,8 +91,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_appUsage.setOnClickListener(appUsage);
-        tv_appUsage.setOnClickListener(appUsage);
+        Button BT_appUse = (Button) root.findViewById(R.id.BT_appUse);
+        BT_appUse.setOnClickListener(appUsage);
 
         View.OnClickListener horaris = new View.OnClickListener() {
             @Override
@@ -113,8 +103,21 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_horaris.setOnClickListener(horaris);
-        tv_horaris.setOnClickListener(horaris);
+        Button BT_horaris = (Button) root.findViewById(R.id.BT_horaris);
+        BT_horaris.setOnClickListener(horaris);
+
+        View.OnClickListener geoloc = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), GeoLocActivity.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+            }
+        };
+
+        Button BT_Geoloc = (Button) root.findViewById(R.id.BT_Geoloc);
+        BT_Geoloc.setOnClickListener(geoloc);
+
 
         LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                 new IntentFilter("liveApp"));
@@ -145,6 +148,31 @@ public class MainParentFragment extends Fragment {
             }
         });
 
+
+        Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
+        BT_FreeTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<String> call = null;
+                if(BT_FreeTime.getText().equals(getString(R.string.free_time))){
+                    call = mTodoService.blockChild(idChildSelected);
+                }
+                else call = mTodoService.unblockChild(idChildSelected);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+                if(BT_FreeTime.getText().equals(getString(R.string.free_time))) BT_FreeTime.setText(getString(R.string.stop_free_time));
+                else BT_FreeTime.setText(getString(R.string.free_time));
+            }
+        });
 
         return root;
     }
