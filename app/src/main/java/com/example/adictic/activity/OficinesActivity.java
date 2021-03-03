@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -459,15 +461,21 @@ public class OficinesActivity extends AppCompatActivity {
 
             String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
             TV_addressOficina.setText(address);
+            TV_addressOficina.setOnLongClickListener(v -> {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Oficina_Address",TV_addressOficina.getText());
+                clipboardManager.setPrimaryClip(clip);
+
+                Toast.makeText(getApplicationContext(), getString(R.string.copied_address), Toast.LENGTH_SHORT).show();
+                return true;
+            });
+
             BT_telfOficina.setText(oficina.telf);
-            BT_telfOficina.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String telf = oficina.telf.replace("[^\\d+]", "");
-                    Intent intent = new Intent(ACTION_DIAL);
-                    intent.setData(Uri.parse("tel:"+telf));
-                    startActivity(intent);
-                }
+            BT_telfOficina.setOnClickListener(v -> {
+                String telf = oficina.telf.replace("[^\\d+]", "");
+                Intent intent = new Intent(ACTION_DIAL);
+                intent.setData(Uri.parse("tel:"+telf));
+                startActivity(intent);
             });
         }
 

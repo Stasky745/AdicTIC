@@ -268,4 +268,5 @@
     <string name="error_server_read">No s\'ha pogut llegir del servidor</string>
     <string name="control_de_dispositiu">Control de Dispositiu</string>
     <string name="geolocalitzacio">Geolocalització</string>
+    <string name="copied_address">Adreça copiada</string>
 </resources>
