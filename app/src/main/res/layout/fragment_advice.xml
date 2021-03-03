@@ -25,12 +25,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:background="@color/background_activity"
         android:clickable="true"
         android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/guideline14"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_advice_4">
+        app:layout_constraintTop_toBottomOf="@+id/constraint_advice_2">
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline5_1"
@@ -50,10 +51,11 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/background_activity"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:text="@string/advice_privateConsult"
-            android:textAllCaps="true"
-            android:textColor="#000"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline5_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -64,12 +66,17 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
             android:background="@color/background_activity"
-            android:src="@drawable/solid_hands_helping"
+            android:src="@drawable/ic_xat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline5_1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
 
         <ImageView
             android:layout_width="0dp"
@@ -79,130 +86,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline5_2"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_advice_4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        android:focusable="auto"
-        app:layout_constraintEnd_toStartOf="@+id/guideline15"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline14"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_advice_3">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.89" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="@color/background_activity"
-            android:gravity="center"
-            android:text="@string/advice_onlineChat"
-            android:textAllCaps="true"
-            android:textColor="#000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4_2"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/guideline4_1"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/background_activity"
-            android:src="@drawable/baseline_chat_black_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4_1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/background_activity"
-            android:src="@drawable/baseline_keyboard_arrow_right_black_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline4_2"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_advice_3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        android:focusable="auto"
-        app:layout_constraintEnd_toStartOf="@+id/guideline15"
-        app:layout_constraintStart_toStartOf="@+id/guideline14"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_advice_2">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3_1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.2" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3_2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.89" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:background="@color/background_activity"
-            android:gravity="center"
-            android:text="@string/advice_recommendations"
-            android:textAllCaps="true"
-            android:textColor="#000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline3_2"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/guideline3_1"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/background_activity"
-            android:src="@drawable/baseline_event_available_black_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline3_1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:background="@color/background_activity"
-            android:src="@drawable/baseline_keyboard_arrow_right_black_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline3_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -210,6 +95,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:background="@color/background_activity"
         android:clickable="true"
         android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
@@ -235,10 +121,11 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/background_activity"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:text="@string/advice_OurCenters"
-            android:textAllCaps="true"
-            android:textColor="#000"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline6_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -249,12 +136,17 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
             android:background="@color/background_activity"
-            android:src="@drawable/baseline_room_black_24"
+            android:src="@drawable/ic_geoloc"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline6_1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
 
         <ImageView
             android:layout_width="0dp"
@@ -264,7 +156,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline6_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -272,6 +165,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:background="@color/background_activity"
         android:clickable="true"
         android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
@@ -296,10 +190,11 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/background_activity"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:text="@string/advice_mostAskQuest"
-            android:textAllCaps="true"
-            android:textColor="#000"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline2_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -310,12 +205,18 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
             android:background="@color/background_activity"
-            android:src="@drawable/question_mark"
+            android:contentDescription="@string/advice_mostAskQuest"
+            android:src="@drawable/ic_faqs"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline2_1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
 
         <ImageView
             android:layout_width="0dp"
@@ -325,7 +226,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline2_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -333,7 +235,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/background_activity"
+        android:background="@color/background_activity"
         android:clickable="true"
         android:focusable="auto"
         app:layout_constraintEnd_toStartOf="@+id/guideline15"
@@ -359,10 +261,11 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:background="@color/background_activity"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:text="@string/advice_infoContent"
-            android:textAllCaps="true"
-            android:textColor="#000"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline1_2"
             app:layout_constraintHorizontal_bias="0.0"
@@ -373,12 +276,17 @@
         <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
             android:background="@color/background_activity"
-            android:src="@drawable/baseline_info_black_24"
+            android:src="@drawable/ic_info"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline1_1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
 
         <ImageView
             android:layout_width="0dp"
@@ -388,7 +296,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline1_2"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

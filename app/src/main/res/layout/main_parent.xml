@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline25"
         app:layout_constraintStart_toStartOf="@+id/guideline24"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/disconnected" />
+        app:srcCompat="@drawable/ic_wifi_off" />
 
     <TextView
         android:id="@+id/TV_CurrentApp"
@@ -154,6 +154,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="32dp"
                 android:background="@color/background_activity"
+                android:drawableStart="@drawable/ic_informe"
                 android:gravity="start|center_vertical"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
@@ -186,7 +187,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:text="@string/control_de_dispositiu"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
