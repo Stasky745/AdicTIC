@@ -91,11 +91,14 @@ public class GeoLocActivity extends AppCompatActivity {
     Runnable runnable;
     int delay = 10*1000; // Delay for 10 seconds
 
+    boolean geolocActive;
+
     @Override
     public void onResume() {
         super.onResume();
 
-        postGeolocActive(true);
+        geolocActive = true;
+        postGeolocActive();
 
         if (map!=null) {
             handler.postDelayed(runnable = new Runnable() {
@@ -115,7 +118,8 @@ public class GeoLocActivity extends AppCompatActivity {
     public void onPause() {
         handler.removeCallbacks(runnable); //stop handler when activity not visible
 
-        postGeolocActive(false);
+        geolocActive = false;
+//        postGeolocActive();
 
         super.onPause();
         //this will refresh the osmdroid configuration on resuming.
@@ -125,21 +129,23 @@ public class GeoLocActivity extends AppCompatActivity {
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    private void postGeolocActive(final boolean b){
-        Call<String> call = mTodoService.postGeolocActive(b);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if(!response.isSuccessful()){
-                    postGeolocActive(b);
+    private void postGeolocActive(){
+        if(geolocActive) {
+            Call<String> call = mTodoService.postGeolocActive(geolocActive);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (!response.isSuccessful()) {
+                        postGeolocActive();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                postGeolocActive(b);
-            }
-        });
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    postGeolocActive();
+                }
+            });
+        }
     }
 
     @Override
