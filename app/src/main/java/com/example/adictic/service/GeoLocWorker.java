@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class GeoLocWorker extends Worker {
 
-    private Context mContext;
+    private final Context mContext;
     private static final String TAG = GeoLocWorker.class.getSimpleName();
     private GeoPoint currentLocation;
     private TodoApi mTodoService;

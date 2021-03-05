@@ -485,11 +485,16 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             initialMonth = month;
             initialDay = day;
 
+            if(CH_singleDate.isChecked()){
+                finalYear = year;
+                finalMonth = month;
+                finalDay = day;
+            }
+            else checkFutureDates();
+
             getStats();
 
             BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
-
-            checkFutureDates();
         }
     };
 
