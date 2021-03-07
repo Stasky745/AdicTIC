@@ -17,6 +17,7 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
+import com.example.adictic.activity.OficinesActivity;
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
@@ -46,6 +47,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     Calendar lastTryUpdate;
     List<AppChange> uninstalledApps;
     List<AppChange> installedApps;
+
+    private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
 
     @Override
     protected void onServiceConnected() {
@@ -162,6 +165,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
+            Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
+
             if(TodoApp.getIDChild() != -1) checkInstalledApps();
 
             //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
@@ -219,13 +224,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
-                                    if (response.isSuccessful()) {
-                                    }
+                                    if (response.isSuccessful()) { }
                                 }
 
                                 @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                }
+                                public void onFailure(Call<String> call, Throwable t) { }
                             });
                         }
                     }

@@ -22,6 +22,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockAppsActivity;
 import com.example.adictic.activity.DayUsageActivity;
+import com.example.adictic.activity.GeoLocActivity;
 import com.example.adictic.activity.HorarisActivity;
 import com.example.adictic.activity.HorarisMainActivity;
 import com.example.adictic.activity.informe.InformeActivity;
@@ -39,9 +40,15 @@ public class MainParentFragment extends Fragment {
 
     private TodoApi mTodoService;
     private long idChildSelected = -1;
+    private final FillNom fillNom;
     private View root;
 
     private ImageView IV_liveIcon;
+
+    public MainParentFragment(FillNom fill){
+        idChildSelected = fill.idChild;
+        fillNom = fill;
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -50,65 +57,6 @@ public class MainParentFragment extends Fragment {
         mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
 
         IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
-
-        Call<Collection<FillNom>> call = mTodoService.getUserChilds(((TodoApp) getActivity().getApplication()).getIDTutor());
-        call.enqueue(new Callback<Collection<FillNom>>() {
-            @Override
-            public void onResponse(Call<Collection<FillNom>> call, Response<Collection<FillNom>> response) {
-                if (response.isSuccessful() && response.body()!=null && !response.body().isEmpty()) {
-                    LinearLayout linearLayout = (LinearLayout) getActivity().findViewById(R.id.HSV_mainParent_LL);
-                    int i = 1;
-                    LinearLayout row = new LinearLayout(getActivity());
-                    row.setLayoutParams(new LinearLayout.LayoutParams
-                            (LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT));
-                    boolean primer = true;
-                    for(FillNom child : response.body()) {
-                        Button btnTag = new Button(getActivity());
-                        btnTag.setLayoutParams(new LinearLayout.LayoutParams
-                                (LinearLayout.LayoutParams.WRAP_CONTENT,
-                                        LinearLayout.LayoutParams.MATCH_PARENT));
-                        btnTag.setText(child.deviceName);
-                        btnTag.setTag(child.idChild);
-                        if(primer) {
-                            idChildSelected = child.idChild;
-                            if(child.blocked){
-                                ((Button)getActivity().findViewById(R.id.BT_BlockDevice)).setText(getString(R.string.unblock_device));
-                            }
-                            btnTag.setSelected(true);
-                            primer = false;
-                            askChildForLiveApp(idChildSelected, true);
-                        }
-                        btnTag.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                askChildForLiveApp(idChildSelected, false);
-                                idChildSelected = (long)v.getTag();
-                                TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-                                currentApp.setText(getString(R.string.disconnected));
-                                askChildForLiveApp(idChildSelected, true);
-                            }
-                        });
-                        row.addView(btnTag);
-                        i++;
-                    }
-                    linearLayout.addView(row);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Collection<FillNom>> call, Throwable t) {
-            }
-        });
-
-        ImageView im_informe = (ImageView) root.findViewById(R.id.IV_Informe);
-        TextView tv_informe = (TextView) root.findViewById(R.id.TV_Informe);
-        ImageView im_appUsage = (ImageView) root.findViewById(R.id.IV_AppUsage);
-        TextView tv_appUsage = (TextView) root.findViewById(R.id.TV_AppUsage);
-        ImageView im_blockApps = (ImageView) root.findViewById(R.id.IV_BlockApps);
-        TextView tv_blockApps = (TextView) root.findViewById(R.id.TV_BlockApps);
-        ImageView im_horaris = (ImageView) root.findViewById(R.id.IV_Horaris);
-        TextView tv_horaris = (TextView) root.findViewById(R.id.TV_Horaris);
 
         View.OnClickListener blockApps = new View.OnClickListener() {
             @Override
@@ -119,8 +67,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_blockApps.setOnClickListener(blockApps);
-        tv_blockApps.setOnClickListener(blockApps);
+        Button BT_BlockApps = (Button) root.findViewById(R.id.BT_BlockApps);
+        BT_BlockApps.setOnClickListener(blockApps);
 
         View.OnClickListener informe = new View.OnClickListener() {
             @Override
@@ -131,9 +79,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_informe.setOnClickListener(informe);
-        tv_informe.setOnClickListener(informe);
-
+        Button BT_Informe = (Button) root.findViewById(R.id.BT_Informe);
+        BT_Informe.setOnClickListener(informe);
 
         View.OnClickListener appUsage = new View.OnClickListener() {
             @Override
@@ -144,8 +91,8 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_appUsage.setOnClickListener(appUsage);
-        tv_appUsage.setOnClickListener(appUsage);
+        Button BT_appUse = (Button) root.findViewById(R.id.BT_appUse);
+        BT_appUse.setOnClickListener(appUsage);
 
         View.OnClickListener horaris = new View.OnClickListener() {
             @Override
@@ -156,8 +103,21 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        im_horaris.setOnClickListener(horaris);
-        tv_horaris.setOnClickListener(horaris);
+        Button BT_horaris = (Button) root.findViewById(R.id.BT_horaris);
+        BT_horaris.setOnClickListener(horaris);
+
+        View.OnClickListener geoloc = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), GeoLocActivity.class);
+                i.putExtra("idChild",idChildSelected);
+                getActivity().startActivity(i);
+            }
+        };
+
+        Button BT_Geoloc = (Button) root.findViewById(R.id.BT_Geoloc);
+        BT_Geoloc.setOnClickListener(geoloc);
+
 
         LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                 new IntentFilter("liveApp"));
@@ -188,6 +148,31 @@ public class MainParentFragment extends Fragment {
             }
         });
 
+
+        Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
+        BT_FreeTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Call<String> call = null;
+                if(BT_FreeTime.getText().equals(getString(R.string.free_time))){
+                    call = mTodoService.blockChild(idChildSelected);
+                }
+                else call = mTodoService.unblockChild(idChildSelected);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+                if(BT_FreeTime.getText().equals(getString(R.string.free_time))) BT_FreeTime.setText(getString(R.string.stop_free_time));
+                else BT_FreeTime.setText(getString(R.string.free_time));
+            }
+        });
 
         return root;
     }
