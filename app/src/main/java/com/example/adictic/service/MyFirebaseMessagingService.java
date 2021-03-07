@@ -160,6 +160,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Funcions.runLimitAppsWorker(getApplicationContext(),0);
                 title = getString(R.string.horaris_notification);
             }
+            else if(messageMap.containsKey("geolocActive")){
+                if(messageMap.get("geolocActive").equals("1")) {
+                    TodoApp.setGeolocOpen(true);
+                    Funcions.runGeoLocWorker(getApplicationContext(),10*1000);
+                }
+                else {
+                    TodoApp.setGeolocOpen(false);
+                    Funcions.runGeoLocWorker(getApplicationContext(),3600*1000);
+                }
+            }
 
                     /** Accions del dispositiu pare **/
             else if(messageMap.containsKey("currentAppUpdate")){
