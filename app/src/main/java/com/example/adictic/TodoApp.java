@@ -3,8 +3,10 @@ package com.example.adictic;
 import android.app.Application;
 import android.content.Context;
 
+import com.example.adictic.entity.GeoFill;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Global;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -49,7 +51,11 @@ public class TodoApp extends Application {
     public static int CORRECT_USAGE_APP = 2;
     public static int DANGEROUS_USAGE_APP = 4;
 
-    
+    private static boolean geolocOpen = false;
+
+    public static boolean getGeoLocOpen(){ return geolocOpen; }
+    public static void setGeolocOpen(boolean b){ geolocOpen = b; }
+
     private static long IDTutor=-1;
     private static Integer tutor=-1;
     private static long IDChild = -1;
@@ -66,6 +72,16 @@ public class TodoApp extends Application {
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
     private static List<String> blockEvents = new ArrayList<>();
+
+    private static List<GeoFill> geoFills = new ArrayList<>();
+
+    public static List<GeoFill> getGeoFills(){ return geoFills; }
+    public static void setGeoFills(List<GeoFill> list){ geoFills = list; }
+
+    private static List<Oficina> oficines = new ArrayList<>();
+
+    public static List<Oficina> getOficines(){ return oficines; }
+    public static void setOficines(List<Oficina> list){ oficines = list; }
 
     private static Map<Integer,String> wakeHoraris = new HashMap<>();
     private static Map<Integer,String> sleepHoraris = new HashMap<>();

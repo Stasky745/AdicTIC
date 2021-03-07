@@ -217,4 +217,6 @@
     <string name = "resum_intents_acces"> "\n - Vigilar el uso de las aplicaciones a las que se ha intentado acceder un número demasiado elevado de golpes, y procurar determinar si esto es debido a una posible adicción." </string>
 
     <string name = "go_information"> "Ir a la documentación" </string>
+    <string name="adictic_splash">AdicTIC_Splash</string>
+    <string name="enviar">Enviar</string>
 </resources>
