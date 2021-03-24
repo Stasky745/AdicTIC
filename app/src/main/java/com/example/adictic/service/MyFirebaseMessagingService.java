@@ -21,6 +21,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.fragment.ChatFragment;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -184,6 +185,66 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "Current AppUpdate: "+aux+" |Time: "+messageMap.get("time"));
             }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
+            else if(messageMap.containsKey("chat")){
+                if(remoteMessage.getData().get("chat").equals("0")){
+
+                    //if the message contains data payload
+                    //It is a map of custom keyvalues
+                    //we can read it easily
+
+                    //then here we can use the title and body to build a notification
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        NotificationManager mNotificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        int importance = NotificationManager.IMPORTANCE_HIGH;
+
+                        NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                        mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
+                        mChannel.enableLights(true);
+                        mChannel.setLightColor(Color.RED);
+                        mChannel.enableVibration(true);
+                        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                        mNotificationManager.createNotificationChannel(mChannel);
+                    }
+
+                    MyNotificationManager.getInstance(this).displayNotification(title, body);
+                }
+                else if(remoteMessage.getData().get("chat").equals("1")){ //Message with Chat
+                    Long myId = Long.parseLong(remoteMessage.getData().get("myID"));
+                    Long userID = Long.parseLong(remoteMessage.getData().get("userID"));
+                    if(ChatFragment.active == userID){
+                        Intent intent = new Intent("NewMessage");
+                        intent.putExtra("message",body);
+                        intent.putExtra("senderId",userID);
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+                    }
+                    else{
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                            NotificationManager mNotificationManager =
+                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+                            NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                            mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
+                            mChannel.enableLights(true);
+                            mChannel.setLightColor(Color.RED);
+                            mChannel.enableVibration(true);
+                            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                            mNotificationManager.createNotificationChannel(mChannel);
+                        }
+
+                        MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                    }
+                }
+                else if(remoteMessage.getData().get("chat").equals("2")){
+                    Long userId = Long.parseLong(remoteMessage.getData().get("userId"));
+                    if(ChatFragment.active.equals(userId)){
+                        Intent intent = new Intent("CloseChat");
+                        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                    }
+                }
+            }
 
         }
 

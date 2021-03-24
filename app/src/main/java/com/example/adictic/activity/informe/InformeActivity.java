@@ -206,14 +206,12 @@ public class InformeActivity extends AppCompatActivity {
 
                     setPercentages(response.body());
                 } else {
-                    System.out.println("3");
                     showError();
                 }
             }
 
             @Override
             public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
-                System.out.println("4");
                 showError();
             }
         });
