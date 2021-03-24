@@ -140,6 +140,16 @@ public class Funcions {
         }
     }
 
+    public static String date2String(int dia, int mes, int any){
+        String data = "";
+        if(dia < 10) data = "0" + dia + "-";
+        else data = dia + "-";
+        if(mes < 10) data += "0" + mes + "-";
+        else data += mes + "-";
+
+        return data + any;
+    }
+
     public static void setIconDrawable(Context ctx, String pkgName, final ImageView d){
         TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
 

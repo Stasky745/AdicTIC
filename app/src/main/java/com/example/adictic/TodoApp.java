@@ -2,6 +2,7 @@ package com.example.adictic;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Color;
 
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.entity.Horaris;
@@ -25,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,10 @@ public class TodoApp extends Application {
 
     TodoApi mTodoService;
 
+    public static final int[] GRAPH_COLORS = {
+            Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
+            Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
+    };
 
     public static int CORRECT_USAGE_DAY = 3;
     public static int DANGEROUS_USAGE_DAY = 5;
@@ -67,11 +73,11 @@ public class TodoApp extends Application {
     private static String currentAppKid = null;
     private static String timeOpenedCurrentAppKid = null;
     private static List<HorarisEvents> listEvents = null;
-    public final static List<String> blackListLiveApp = Arrays.asList( "com.google.android.apps.nexuslauncher");
+    public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
 
     private static Map<String,Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
-    private static List<String> blockEvents = new ArrayList<>();
+    private static final List<String> blockEvents = new ArrayList<>();
 
     private static List<GeoFill> geoFills = new ArrayList<>();
 
@@ -90,8 +96,8 @@ public class TodoApp extends Application {
     public static void setListEvents(List<HorarisEvents> l){ listEvents = l; }
 
 
-    public static boolean addBlockEvent(String s){ return blockEvents.add(s); }
-    public static boolean removeBlockEvent(String s){ return blockEvents.remove(s); }
+    public static void addBlockEvent(String s){ blockEvents.add(s); }
+    public static void removeBlockEvent(String s){ blockEvents.remove(s); }
     public static List<String> getBlockEvents(){ return blockEvents; }
 
     public static Map<Integer,String> getWakeHoraris(){ return wakeHoraris; }
