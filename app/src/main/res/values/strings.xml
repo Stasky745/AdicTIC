@@ -129,7 +129,7 @@
     <string name="comp">"%s / %s"</string>
     <string name="percentage">"%d%%"</string>
     <string name="informal_date_format">"%d-%d-%d"</string>
-  
+
     <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
     <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
     <string name="unblock_device">"Desbloquejar dispositiu"</string>
@@ -269,4 +269,12 @@
     <string name="control_de_dispositiu">Control de Dispositiu</string>
     <string name="geolocalitzacio">Geolocalització</string>
     <string name="copied_address">Adreça copiada</string>
+
+    <string name="title_activity_dubte">Dubte</string>
+    <string name="no_chat_dubte">No tens chat obert... Bla bla bla xDDDDDDD DDDDDDDD DDDDDD DDDDDD DDDDDDD DDDDDDD</string>
+    <string name="enviar_dubte">Enviar dubte</string>
+
+    <string name="crear_dbute">Crear nou dubte</string>
+    <string name="chats_tancats">Chats tancats</string>
+    <string name="chat_obert">Chat obert</string>
 </resources>
