@@ -227,4 +227,7 @@
     <string name="control_de_dispositiu">Control de Dispositiu</string>
     <string name="geolocalitzacio">Geolocalització</string>
     <string name="copied_address">Adreça copiada</string>
+    <string name="crear_dbute">Crear nou dubte</string>
+    <string name="chats_tancats">Chats tancats</string>
+    <string name="chat_obert">Chat obert</string>
 </resources>
