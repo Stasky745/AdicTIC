@@ -17,6 +17,10 @@ public class WakeSleepLists implements Parcelable {
         tipus = 1;
     }
 
+    public boolean isEmpty(){
+        return wake.isEmpty() && sleep.isEmpty() && tipus == 1;
+    }
+
     protected WakeSleepLists(Parcel in) {
         wake = (TimeDay) in.readValue(TimeDay.class.getClassLoader());
         sleep = (TimeDay) in.readValue(TimeDay.class.getClassLoader());

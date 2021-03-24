@@ -24,10 +24,14 @@ import com.example.adictic.util.Funcions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class HorarisEventFragment extends DialogFragment{
     private HorarisEvents event;
+    private String originalStart, originalFinish, originalTitle;
+    private List<Integer> originalDays;
 
     private EditText ET_eventName, ET_eventStart, ET_eventEnd;
     private ChipGroup CG_eventDays;
@@ -49,7 +53,9 @@ public class HorarisEventFragment extends DialogFragment{
         }
     }
 
-    public HorarisEventFragment(HorarisEvents he){ event = he; }
+    public HorarisEventFragment(HorarisEvents he){
+        event = he;
+    }
 
     public static HorarisEventFragment newInstance(String title, HorarisEvents horarisEvent){
         HorarisEventFragment frag = new HorarisEventFragment(horarisEvent);
@@ -76,6 +82,10 @@ public class HorarisEventFragment extends DialogFragment{
         ET_eventEnd = (EditText) view.findViewById(R.id.ET_eventEnd);
         ET_eventEnd.setText(event.finish);
 
+        originalStart = event.start;
+        originalFinish = event.finish;
+        originalTitle = event.name;
+
         CG_eventDays = (ChipGroup) view.findViewById(R.id.CG_eventDays);
         CH_Monday = (Chip) view.findViewById(R.id.CH_monday);
         CH_Tuesday = (Chip) view.findViewById(R.id.CH_tuesday);
@@ -85,13 +95,8 @@ public class HorarisEventFragment extends DialogFragment{
         CH_Saturday = (Chip) view.findViewById(R.id.CH_saturday);
         CH_Sunday = (Chip) view.findViewById(R.id.CH_sunday);
 
-        if(event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
-        if(event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
-        if(event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
-        if(event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
-        if(event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
-        if(event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
-        if(event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
+        setDaysChecked();
+        originalDays = new ArrayList<>(event.days);
 
         BT_accept = (Button) view.findViewById(R.id.BT_accept);
         BT_cancel = (Button) view.findViewById(R.id.BT_cancel);
@@ -100,6 +105,16 @@ public class HorarisEventFragment extends DialogFragment{
 
         String title = getArguments().getString("title",getString(R.string.events));
         getDialog().setTitle(title);
+    }
+
+    private void setDaysChecked(){
+        if(event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
+        if(event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
+        if(event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
+        if(event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
+        if(event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
+        if(event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
+        if(event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
     }
 
     public void setButtons(){
@@ -176,9 +191,8 @@ public class HorarisEventFragment extends DialogFragment{
                         if(minute<10) min = "0"+minute;
                         else min = Integer.toString(minute);
 
-                        String time = hour+":"+min;
-                        ET_eventStart.setText(time);
-                        event.start = time;
+                        event.start = hour+":"+min;
+                        ET_eventStart.setText(event.start);
                     }
                 }, start.first, start.second, true);
 
@@ -203,9 +217,8 @@ public class HorarisEventFragment extends DialogFragment{
                         if(minute<10) min = "0"+minute;
                         else min = Integer.toString(minute);
 
-                        String time = hour+":"+min;
-                        ET_eventEnd.setText(time);
-                        event.finish = time;
+                        event.finish = hour+":"+min;
+                        ET_eventEnd.setText(event.finish);
                     }
                 }, finish.first, finish.second, true);
 
@@ -239,6 +252,11 @@ public class HorarisEventFragment extends DialogFragment{
         BT_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                event.start = originalStart;
+                event.finish = originalFinish;
+                event.days = originalDays;
+                setDaysChecked();
+                event.name = originalTitle;
                 dismiss();
             }
         });

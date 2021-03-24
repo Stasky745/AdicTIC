@@ -19,38 +19,35 @@
 
     <Button
         android:id="@+id/BT_acceptarHoraris"
+        style="@style/ButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
         android:layout_marginBottom="24dp"
-        android:backgroundTint="@color/background_activity"
         android:text="@string/accept"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/BT_modificarEvent"
+        style="@style/ButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:backgroundTint="@color/background_activity"
         android:text="@string/edit"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TV_eventLabel" />
 
     <Button
         android:id="@+id/BT_afegirEvent"
+        style="@style/ButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/background_activity"
         android:text="@string/afegir"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/BT_modificarEvent"
         app:layout_constraintEnd_toStartOf="@+id/BT_modificarEvent"
         app:layout_constraintStart_toEndOf="@+id/BT_esborrarEvent"
@@ -58,47 +55,21 @@
 
     <Button
         android:id="@+id/BT_esborrarEvent"
+        style="@style/ButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:backgroundTint="@color/background_activity"
         android:text="@string/esborrar"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/BT_afegirEvent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/BT_afegirEvent" />
 
     <TextView
-        android:id="@+id/TV_horarisDormir"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:singleLine="false"
-        android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toStartOf="@+id/guideline10"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/horari_actual" />
-
-    <Button
-        android:id="@+id/BT_canviHorari"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:backgroundTint="@color/background_activity"
-        android:text="@string/editar_horari"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/TV_horarisDormir"
-        app:layout_constraintStart_toStartOf="@+id/guideline10"
-        app:layout_constraintTop_toTopOf="@+id/TV_horarisDormir" />
-
-    <TextView
         android:id="@+id/TV_eventLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:text="@string/events"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -107,22 +78,6 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="232dp" />
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="409dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BT_canviHorari" />
 </androidx.constraintlayout.widget.ConstraintLayout>
