@@ -5,6 +5,7 @@ import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
+import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
@@ -16,6 +17,7 @@ import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.Oficina;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
+import com.example.adictic.entity.UserMessage;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.entity.VellFillLogin;
 import com.example.adictic.entity.WakeSleepLists;
@@ -140,6 +142,27 @@ public interface TodoApi {
     @GET("/poblacions")
     Call<Collection<Localitzacio>> getLocalitzacions();
 
-    @POST("/users/{id}/dubtes")
-    Call<String> postDubte(@Path("id") Long id, @Body Dubte dubte);
+    @POST("/users/dubtes")
+    Call<String> postDubte(@Body Dubte dubte);
+
+    ////////////////////////////////////
+    //Chat
+    ///////////////////////////////////
+
+    @GET("/message/me/hasOpen")
+    Call<Long> hasAnOpenChat();
+
+    @GET("/message/me/{id}")
+    Call<List<UserMessage>> getMyMessagesWithUser(@Path("id") String id);
+
+    @POST("/message/me/{id}")
+    Call<String> sendMessageToUser(@Path("id") String id,@Body UserMessage value);
+
+    @GET("/message/me/hasClosed")
+    Call<Boolean> hasClosedChats();
+
+    @GET("/message/me/closed")
+    Call<List<ChatInfo>> getMyClosedChats();
+
+    ///////////////////////////////////
 }
