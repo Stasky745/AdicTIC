@@ -224,6 +224,15 @@ public class MainParentFragment extends Fragment {
                 }
             }
         });
+        /** Posar icona de desplegar en la posició correcta **/
+        if(CL_infoButtons.getVisibility()==View.GONE){
+            ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+            IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
+        }
+        else{
+            ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+            IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
+        }
 
         ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_Limits);
         ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_LimitsButtons);
@@ -244,6 +253,15 @@ public class MainParentFragment extends Fragment {
                 }
             }
         });
+        /** Posar icona de desplegar en la posició correcta **/
+        if(CL_limitButtons.getVisibility()==View.GONE){
+            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+            IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
+        }
+        else{
+            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+            IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
+        }
 
         getStats();
 
@@ -257,6 +275,7 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     makeGraph(response.body());
                 } else {
                     Toast.makeText(getContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
