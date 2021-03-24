@@ -183,23 +183,23 @@ public class GeoLocActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<GeoFill>>() {
             @Override
             public void onResponse(Call<List<GeoFill>> call, Response<List<GeoFill>> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && !response.body().isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
                     TodoApp.setGeoFills(fills);
                     setMap();
 
                 } else {
                     fills = TodoApp.getGeoFills();
-                    Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT);
-                    if(fills.get(0) != null) setMap();
+                    Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    if(!fills.isEmpty()) setMap();
                 }
             }
 
             @Override
             public void onFailure(Call<List<GeoFill>> call, Throwable t) {
                 fills = TodoApp.getGeoFills();
-                Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT);
-                if(fills.get(0) != null) setMap();
+                Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                if(!fills.isEmpty()) setMap();
             }
         });
     }

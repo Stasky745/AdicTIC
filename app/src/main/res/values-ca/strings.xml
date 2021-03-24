@@ -227,4 +227,8 @@
     <string name="control_de_dispositiu">Control de Dispositiu</string>
     <string name="geolocalitzacio">Geolocalització</string>
     <string name="copied_address">Adreça copiada</string>
+    <string name="limit">limit</string>
+    <string name="dades_del_dispositiu">Dades del dispositiu</string>
+    <string name="descans_nocturn">Descans Nocturn</string>
+    <string name="error_sending_data">Error enviant dades al servidor.</string>
 </resources>

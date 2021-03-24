@@ -7,33 +7,32 @@
 
     <Button
         android:id="@+id/BT_FreeTime"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
         android:background="@color/background_activity"
         android:text="@string/free_time"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@android:color/secondary_text_light"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_CurrentApp"
-        app:layout_constraintEnd_toStartOf="@+id/IV_CurrentApp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/IV_CurrentApp" />
+        app:layout_constraintEnd_toEndOf="@+id/BT_BlockDevice"
+        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice"
+        app:layout_constraintTop_toBottomOf="@+id/BT_BlockDevice" />
 
     <Button
         android:id="@+id/BT_BlockDevice"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/background_activity"
+        android:background="@color/background_activity"
         android:text="@string/block_device"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@android:color/secondary_text_light"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_CurrentApp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/IV_CurrentApp"
-        app:layout_constraintTop_toTopOf="@+id/IV_CurrentApp" />
+        app:layout_constraintStart_toStartOf="@+id/guideline25"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/IV_CurrentApp"
@@ -44,18 +43,20 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/google_storage_bucket"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/guideline26"
-        app:layout_constraintEnd_toStartOf="@+id/guideline25"
-        app:layout_constraintStart_toStartOf="@+id/guideline24"
+        app:layout_constraintEnd_toStartOf="@+id/guideline24"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_wifi_off" />
 
     <TextView
         android:id="@+id/TV_CurrentApp"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/disconnected"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/IV_CurrentApp"
         app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp"
         app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
@@ -104,6 +105,7 @@
         android:id="@+id/SV_Opcions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -116,120 +118,268 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/TV_Estadistiques"
+                android:id="@+id/TV_PieApp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/estadistiques"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/BT_appUse"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
-                android:background="@color/background_activity"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/app_usage"
-                android:textAlignment="textStart"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/BT_Informe"
-                app:layout_constraintStart_toStartOf="@+id/BT_Informe"
-                app:layout_constraintTop_toBottomOf="@+id/BT_Informe" />
-
-            <Button
-                android:id="@+id/BT_Informe"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="32dp"
-                android:background="@color/background_activity"
-                android:drawableStart="@drawable/ic_informe"
-                android:gravity="start|center_vertical"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/informe"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
+                android:layout_marginEnd="24dp"
+                android:text="@string/press_pie_chart"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/TV_Estadistiques"
-                app:layout_constraintTop_toBottomOf="@+id/TV_Estadistiques" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/Ch_Pie" />
 
-            <Button
-                android:id="@+id/BT_Geoloc"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@color/background_activity"
-                android:gravity="start|center_vertical"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:text="@string/geolocalitzacio"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/BT_appUse"
-                app:layout_constraintStart_toStartOf="@+id/BT_appUse"
-                app:layout_constraintTop_toBottomOf="@+id/BT_appUse" />
-
-            <TextView
-                android:id="@+id/TV_controlDispositiu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/Ch_Pie"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp"
-                android:text="@string/control_de_dispositiu"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/BT_Geoloc" />
-
-            <Button
-                android:id="@+id/BT_BlockApps"
-                style="@style/Widget.AppCompat.Button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="32dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:background="@color/background_activity"
-                android:text="@string/block_apps"
-                android:textAlignment="textStart"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/TV_controlDispositiu"
-                app:layout_constraintTop_toBottomOf="@+id/TV_controlDispositiu" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" >
 
-            <Button
-                android:id="@+id/BT_horaris"
-                style="@style/Widget.AppCompat.Button.Borderless"
+            </com.github.mikephil.charting.charts.PieChart>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:background="@color/colorBackgroundGrey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TV_PieApp">
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    app:srcCompat="@drawable/ic_informe" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/dades_del_dispositiu"
+                    android:textAlignment="viewStart"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView3"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/IV_openInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    app:srcCompat="@drawable/ic_arrow_open" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_infoButtons"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:background="@color/background_activity"
-                android:text="@string/horaris"
-                android:textAlignment="textStart"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="@+id/BT_BlockApps"
-                app:layout_constraintStart_toStartOf="@+id/BT_BlockApps"
-                app:layout_constraintTop_toBottomOf="@+id/BT_BlockApps" />
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="@+id/CL_info"
+                app:layout_constraintStart_toStartOf="@+id/CL_info"
+                app:layout_constraintTop_toBottomOf="@id/CL_info">
+
+                <Button
+                    android:id="@+id/BT_appUse"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/background_activity"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/app_usage"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="@+id/BT_Informe"
+                    app:layout_constraintStart_toStartOf="@+id/BT_Informe"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_Informe" />
+
+                <Button
+                    android:id="@+id/BT_Informe"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@color/background_activity"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/informe"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_Limits"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:background="@color/colorBackgroundGrey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/CL_infoButtons">
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView"
+                    app:srcCompat="@drawable/ic_horaris" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/limit"
+                    android:textAlignment="viewStart"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/IV_openLimit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView"
+                    app:srcCompat="@drawable/ic_arrow_open" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_LimitsButtons"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toBottomOf="@id/CL_Limits"
+                app:layout_constraintEnd_toEndOf="@id/CL_Limits"
+                app:layout_constraintStart_toStartOf="@id/CL_Limits">
+
+                <Button
+                    android:id="@+id/BT_BlockApps"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:background="@color/background_activity"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/block_apps"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/BT_horaris"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/background_activity"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/horaris"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_BlockApps" />
+
+                <Button
+                    android:id="@+id/BT_nits"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/background_activity"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/descans_nocturn"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/secondary_text_light"
+                    app:layout_constraintEnd_toEndOf="@+id/BT_horaris"
+                    app:layout_constraintStart_toStartOf="@+id/BT_horaris"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_horaris" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_geoloc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
+                android:background="@color/colorBackgroundGrey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/CL_LimitsButtons">
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView4"
+                    app:srcCompat="@drawable/ic_geoloc" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/geolocalitzacio"
+                    android:textAlignment="viewStart"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView4"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
