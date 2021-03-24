@@ -18,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
@@ -64,6 +65,8 @@ public class HorarisActivity extends AppCompatActivity {
         setContentView(R.layout.horaris_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
+        wakeSleepList = new WakeSleepLists();
+
         canvis = 0;
 
         idChild = getIntent().getLongExtra("idChild",-1);
@@ -106,14 +109,35 @@ public class HorarisActivity extends AppCompatActivity {
 
         setChipGroup();
         setButton();
-        wakeSleepList = getIntent().getParcelableExtra("wakeSleepLists");
 
-        if(wakeSleepList!=null) setTexts(wakeSleepList);
+        getHoraris();
+    }
+
+    private void getHoraris(){
+        Call<Horaris> call = mTodoService.getHoraris(idChild);
+
+        call.enqueue(new Callback<Horaris>() {
+            @Override
+            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+                if(response.isSuccessful()){
+                    if(response.body() != null){
+                        wakeSleepList = response.body().wakeSleepList;
+                        if(wakeSleepList!=null) setTexts(wakeSleepList);
+                    }
+                }
+                else Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Horaris> call, Throwable t) {
+                Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onBackPressed() {
-        if(canvis == 0 && wakeSleepList.tipus == chipGroup.getCheckedChipId()){
+        if(canvis == 0){ // && wakeSleepList.tipus == chipGroup.getCheckedChipId()){
             Intent returnIntent = new Intent();
             setResult(RESULT_CANCELED,returnIntent);
             super.onBackPressed();
@@ -237,11 +261,24 @@ public class HorarisActivity extends AppCompatActivity {
 
                 wakeSleepList = setWakeSleepLists(checkedId);
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("wakeSleepList",wakeSleepList);
-                returnIntent.putExtra("canvis",canvis);
-                setResult(RESULT_OK,returnIntent);
-                finish();
+                Horaris horaris = new Horaris();
+
+                horaris.wakeSleepList = wakeSleepList;
+
+                Call<String> call = mTodoService.postHoraris(idChild,horaris);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.isSuccessful()) finish();
+                        else Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }

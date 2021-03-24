@@ -22,6 +22,16 @@ public class TimeDay implements Parcelable {
         sunday = "";
     }
 
+    public boolean isEmpty(){
+        if(!monday.equals("")) return false;
+        else if(!tuesday.equals("")) return false;
+        else if(!wednesday.equals("")) return false;
+        else if(!thursday.equals("")) return false;
+        else if(!friday.equals("")) return false;
+        else if(!saturday.equals("")) return false;
+        else return sunday.equals("");
+    }
+
     protected TimeDay(Parcel in) {
         monday = in.readString();
         tuesday = in.readString();
