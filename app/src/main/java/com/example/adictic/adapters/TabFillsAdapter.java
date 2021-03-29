@@ -13,7 +13,6 @@ import com.example.adictic.entity.FillNom;
 import com.example.adictic.fragment.MainParentFragment;
 import com.example.adictic.rest.TodoApi;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import retrofit2.Call;
