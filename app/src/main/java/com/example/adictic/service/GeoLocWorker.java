@@ -1,6 +1,7 @@
 package com.example.adictic.service;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
@@ -13,14 +14,15 @@ import androidx.work.WorkerParameters;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.rest.TodoApi;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.osmdroid.util.GeoPoint;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-
-import javax.xml.transform.Result;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,13 +32,15 @@ public class GeoLocWorker extends Worker {
 
     private final Context mContext;
     private static final String TAG = GeoLocWorker.class.getSimpleName();
-    private GeoPoint currentLocation;
+    private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
 
-    int compt = 0;
+    private final FusedLocationProviderClient fusedLocationClient;
+
 
     public GeoLocWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         mContext = context;
     }
 
@@ -51,7 +55,22 @@ public class GeoLocWorker extends Worker {
 
         mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
-        if(isNetworkEnabled){
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener((Activity) mContext, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            currentLocation = new GeoPoint(location);
+                        }
+                    }
+                });
+
+        if(currentLocation != null){
+            enviarLoc();
+            return Result.success();
+        }
+        else if(isNetworkEnabled){
             locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER,null);
 
             Log.d(TAG,"Network Enabled");
@@ -76,10 +95,6 @@ public class GeoLocWorker extends Worker {
 
             enviarLoc();
             return Result.success();
-        }
-        else if(compt < 7){
-            compt++;
-            return Result.retry();
         }
         else return Result.failure();
     }

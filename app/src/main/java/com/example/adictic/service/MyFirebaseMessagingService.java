@@ -20,7 +20,6 @@ import com.example.adictic.MyNotificationManager;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Horaris;
-import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.fragment.ChatFragment;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -162,14 +161,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = getString(R.string.horaris_notification);
             }
             else if(messageMap.containsKey("geolocActive")){
-                if(messageMap.get("geolocActive").equals("1")) {
-                    TodoApp.setGeolocOpen(true);
-                    Funcions.runGeoLocWorker(getApplicationContext(),10*1000);
-                }
-                else {
-                    TodoApp.setGeolocOpen(false);
-                    Funcions.runGeoLocWorker(getApplicationContext(),3600*1000);
-                }
+                Funcions.runGeoLocWorker(getApplicationContext());
             }
 
                     /** Accions del dispositiu pare **/

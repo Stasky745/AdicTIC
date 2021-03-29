@@ -52,7 +52,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.text.DateFormat;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;

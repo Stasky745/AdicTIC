@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 
 import com.example.adictic.entity.GeoFill;
-import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
@@ -24,7 +23,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;

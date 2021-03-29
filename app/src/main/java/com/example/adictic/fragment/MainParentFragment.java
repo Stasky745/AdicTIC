@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -43,7 +42,6 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -278,13 +276,13 @@ public class MainParentFragment extends Fragment {
                     assert response.body() != null;
                     makeGraph(response.body());
                 } else {
-                    Toast.makeText(getContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
-                Toast.makeText(getContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
     }
