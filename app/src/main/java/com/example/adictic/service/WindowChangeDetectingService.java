@@ -2,6 +2,7 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -172,9 +173,12 @@ public class WindowChangeDetectingService extends AccessibilityService {
             //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
 
             if(TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()){
-                DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                assert mDPM != null;
-                mDPM.lockNow();
+                KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
+                if(!myKM.isDeviceLocked()){
+                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    assert mDPM != null;
+                    mDPM.lockNow();
+                }
             }
             if (event.getPackageName() != null && event.getClassName() != null) {
                 ComponentName componentName = new ComponentName(
