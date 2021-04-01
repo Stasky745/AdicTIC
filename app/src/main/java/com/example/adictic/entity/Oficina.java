@@ -1,7 +1,5 @@
 package com.example.adictic.entity;
 
-import android.location.Address;
-
 import androidx.annotation.NonNull;
 
 public class Oficina {

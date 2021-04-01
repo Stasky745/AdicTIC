@@ -20,7 +20,6 @@ import com.example.adictic.entity.UserLogin;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.entity.VellFillLogin;
-import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 
 import java.util.Collection;
