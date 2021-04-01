@@ -87,7 +87,7 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        Button BT_BlockApps = (Button) root.findViewById(R.id.BT_BlockApps);
+        Button BT_BlockApps = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
         BT_BlockApps.setOnClickListener(blockApps);
 
         View.OnClickListener informe = new View.OnClickListener() {
@@ -99,7 +99,7 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        Button BT_Informe = (Button) root.findViewById(R.id.BT_Informe);
+        Button BT_Informe = (Button) root.findViewById(R.id.BT_ContingutInformatiu);
         BT_Informe.setOnClickListener(informe);
 
         View.OnClickListener appUsage = new View.OnClickListener() {
@@ -111,7 +111,7 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        Button BT_appUse = (Button) root.findViewById(R.id.BT_appUse);
+        Button BT_appUse = (Button) root.findViewById(R.id.BT_faqs);
         BT_appUse.setOnClickListener(appUsage);
 
         View.OnClickListener horaris = new View.OnClickListener() {
@@ -123,7 +123,7 @@ public class MainParentFragment extends Fragment {
             }
         };
 
-        Button BT_horaris = (Button) root.findViewById(R.id.BT_horaris);
+        Button BT_horaris = (Button) root.findViewById(R.id.BT_oficines);
         BT_horaris.setOnClickListener(horaris);
 
         View.OnClickListener geoloc = new View.OnClickListener() {
@@ -232,32 +232,32 @@ public class MainParentFragment extends Fragment {
             IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
         }
 
-        ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_Limits);
-        ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_LimitsButtons);
+        ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_suport);
+        ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
         CL_limit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(CL_limitButtons.getVisibility()==View.GONE){
                     CL_limitButtons.setVisibility(View.VISIBLE);
 
-                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
                     IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
                 }
                 else{
                     CL_limitButtons.setVisibility(View.GONE);
 
-                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
                     IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
                 }
             }
         });
         /** Posar icona de desplegar en la posició correcta **/
         if(CL_limitButtons.getVisibility()==View.GONE){
-            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
         }
         else{
-            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openLimit);
+            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
 
