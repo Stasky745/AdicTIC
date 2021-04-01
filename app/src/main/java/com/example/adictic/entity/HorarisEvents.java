@@ -2,7 +2,6 @@ package com.example.adictic.entity;
 
 import androidx.annotation.Nullable;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class HorarisEvents {

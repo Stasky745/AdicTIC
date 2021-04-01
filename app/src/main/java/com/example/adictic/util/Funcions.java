@@ -2,7 +2,6 @@ package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
-import android.app.Application;
 import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -19,10 +18,8 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.work.Data;
-import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.TodoApp;
@@ -36,7 +33,6 @@ import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
@@ -44,7 +40,6 @@ import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.IterableUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,35 +54,35 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Funcions {
-    
-    private static void setHoraris(WakeSleepLists list){
+
+    private static void setHoraris(WakeSleepLists list) {
         TimeDay sleep = list.sleep;
         TimeDay wake = list.wake;
-        
-        Map<Integer,String> sleepMap = new HashMap<>();
-        Map<Integer,String> wakeMap = new HashMap<>();
-        
-        sleepMap.put(Calendar.MONDAY,sleep.monday);
-        sleepMap.put(Calendar.TUESDAY,sleep.tuesday);
-        sleepMap.put(Calendar.WEDNESDAY,sleep.wednesday);
-        sleepMap.put(Calendar.THURSDAY,sleep.thursday);
-        sleepMap.put(Calendar.FRIDAY,sleep.friday);
-        sleepMap.put(Calendar.SATURDAY,sleep.saturday);
-        sleepMap.put(Calendar.SUNDAY,sleep.sunday);
 
-        wakeMap.put(Calendar.MONDAY,wake.monday);
-        wakeMap.put(Calendar.TUESDAY,wake.tuesday);
-        wakeMap.put(Calendar.WEDNESDAY,wake.wednesday);
-        wakeMap.put(Calendar.THURSDAY,wake.thursday);
-        wakeMap.put(Calendar.FRIDAY,wake.friday);
-        wakeMap.put(Calendar.SATURDAY,wake.saturday);
-        wakeMap.put(Calendar.SUNDAY,wake.sunday);
+        Map<Integer, String> sleepMap = new HashMap<>();
+        Map<Integer, String> wakeMap = new HashMap<>();
+
+        sleepMap.put(Calendar.MONDAY, sleep.monday);
+        sleepMap.put(Calendar.TUESDAY, sleep.tuesday);
+        sleepMap.put(Calendar.WEDNESDAY, sleep.wednesday);
+        sleepMap.put(Calendar.THURSDAY, sleep.thursday);
+        sleepMap.put(Calendar.FRIDAY, sleep.friday);
+        sleepMap.put(Calendar.SATURDAY, sleep.saturday);
+        sleepMap.put(Calendar.SUNDAY, sleep.sunday);
+
+        wakeMap.put(Calendar.MONDAY, wake.monday);
+        wakeMap.put(Calendar.TUESDAY, wake.tuesday);
+        wakeMap.put(Calendar.WEDNESDAY, wake.wednesday);
+        wakeMap.put(Calendar.THURSDAY, wake.thursday);
+        wakeMap.put(Calendar.FRIDAY, wake.friday);
+        wakeMap.put(Calendar.SATURDAY, wake.saturday);
+        wakeMap.put(Calendar.SUNDAY, wake.sunday);
 
         TodoApp.setWakeHoraris(wakeMap);
         TodoApp.setSleepHoraris(sleepMap);
     }
 
-    private static long getHorariInMillis(){
+    private static long getHorariInMillis() {
         Calendar cal = Calendar.getInstance();
         String wakeTime = TodoApp.getWakeHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
         String sleepTime = TodoApp.getSleepHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
@@ -99,66 +94,61 @@ public class Funcions {
         int sleepMinute = Integer.parseInt(sleepTime.split(":")[1]);
 
         Calendar calWake = Calendar.getInstance();
-        calWake.set(Calendar.HOUR_OF_DAY,wakeHour);
-        calWake.set(Calendar.MINUTE,wakeMinute);
+        calWake.set(Calendar.HOUR_OF_DAY, wakeHour);
+        calWake.set(Calendar.MINUTE, wakeMinute);
 
         Calendar calSleep = Calendar.getInstance();
-        calSleep.set(Calendar.HOUR_OF_DAY,sleepHour);
-        calSleep.set(Calendar.MINUTE,sleepMinute);
+        calSleep.set(Calendar.HOUR_OF_DAY, sleepHour);
+        calSleep.set(Calendar.MINUTE, sleepMinute);
 
         long timeNow = cal.getTimeInMillis();
         long wakeMillis = calWake.getTimeInMillis();
         long sleepMillis = calSleep.getTimeInMillis();
 
-        if(wakeMillis > sleepMillis){
-            if(timeNow>=wakeMillis){
+        if (wakeMillis > sleepMillis) {
+            if (timeNow >= wakeMillis) {
                 TodoApp.setBlockedDevice(false);
-                calSleep.add(Calendar.DAY_OF_YEAR,1);
+                calSleep.add(Calendar.DAY_OF_YEAR, 1);
 
                 return calSleep.getTimeInMillis();
-            }
-            else if(timeNow>=sleepMillis) {
+            } else if (timeNow >= sleepMillis) {
                 TodoApp.setBlockedDevice(true);
                 return wakeMillis;
-            }
-            else{
+            } else {
                 return sleepMillis;
             }
-        }
-        else{
-            if(timeNow>=sleepMillis){
+        } else {
+            if (timeNow >= sleepMillis) {
                 TodoApp.setBlockedDevice(true);
-                calWake.add(Calendar.DAY_OF_YEAR,1);
+                calWake.add(Calendar.DAY_OF_YEAR, 1);
 
                 return calWake.getTimeInMillis();
-            }
-            else if(timeNow>=wakeMillis){
+            } else if (timeNow >= wakeMillis) {
                 TodoApp.setBlockedDevice(false);
                 return sleepMillis;
-            }
-            else return wakeMillis;
+            } else return wakeMillis;
         }
     }
 
-    public static String date2String(int dia, int mes, int any){
+    public static String date2String(int dia, int mes, int any) {
         String data = "";
-        if(dia < 10) data = "0" + dia + "-";
+        if (dia < 10) data = "0" + dia + "-";
         else data = dia + "-";
-        if(mes < 10) data += "0" + mes + "-";
+        if (mes < 10) data += "0" + mes + "-";
         else data += mes + "-";
 
         return data + any;
     }
 
-    public static void setIconDrawable(Context ctx, String pkgName, final ImageView d){
-        TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
+    public static void setIconDrawable(Context ctx, String pkgName, final ImageView d) {
+        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
         Call<ResponseBody> call = mTodoService.getIcon(pkgName);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
                     d.setImageBitmap(bmp);
                 }
@@ -171,10 +161,10 @@ public class Funcions {
         });
     }
 
-    public static long checkHoraris(Context ctx){
-        
-        TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
-        
+    public static long checkHoraris(Context ctx) {
+
+        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
+
         Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
 
         final long[] res = {-1};
@@ -182,28 +172,30 @@ public class Funcions {
         call.enqueue(new Callback<Horaris>() {
             @Override
             public void onResponse(Call<Horaris> call, Response<Horaris> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     setHoraris(response.body().wakeSleepList);
                     res[0] = getHorariInMillis();
-                }
-                else if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
+                } else if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
+                    res[0] = getHorariInMillis();
                 else res[0] = -2;
             }
 
             @Override
             public void onFailure(Call<Horaris> call, Throwable t) {
-                if(!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty()) res[0] = getHorariInMillis();
+                if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
+                    res[0] = getHorariInMillis();
                 else res[0] = -2;
             }
         });
 
-        while(res[0] == -1){}
+        while (res[0] == -1) {
+        }
 
         return res[0];
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
-    public static boolean isAppUsagePermissionOn(Context mContext){
+    public static boolean isAppUsagePermissionOn(Context mContext) {
         boolean granted = false;
         AppOpsManager appOps = (AppOpsManager) mContext
                 .getSystemService(Context.APP_OPS_SERVICE);
@@ -233,49 +225,50 @@ public class Funcions {
         return false;
     }
 
-    public static Pair<Integer,Integer> millisToString(float l){
-        float minuts = l/(60000);
+    public static Pair<Integer, Integer> millisToString(float l) {
+        float minuts = l / (60000);
         int hores = 0;
 
-        while(minuts >= 60){
+        while (minuts >= 60) {
             hores++;
-            minuts-=60;
+            minuts -= 60;
         }
 
-        Pair<Integer,Integer> res = new Pair<>(hores,Math.round(minuts));
+        Pair<Integer, Integer> res = new Pair<>(hores, Math.round(minuts));
         return res;
     }
 
     // To check if Admin Permissions are on
-    public static boolean isAdminPermissionsOn(Context mContext){
+    public static boolean isAdminPermissionsOn(Context mContext) {
         DevicePolicyManager mDPM = (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
         List<ComponentName> mActiveAdmins = mDPM.getActiveAdmins();
 
-        if(mActiveAdmins == null) return false;
+        if (mActiveAdmins == null) return false;
 
         Boolean found = false;
         int i = 0;
-        while(!found && i < mActiveAdmins.size()){
-            if(mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName())) found = true;
+        while (!found && i < mActiveAdmins.size()) {
+            if (mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName()))
+                found = true;
             i++;
         }
         return found;
     }
 
-    public static Map<Integer,Map<Integer,List<Integer>>> convertYearEntityToMap(List<YearEntity> yearList){
-        Map<Integer,Map<Integer,List<Integer>>> res = new HashMap<>();
-        for(YearEntity yEntity : yearList){
-            Map<Integer,List<Integer>> mMap = new HashMap<>();
-            for(MonthEntity mEntity : yEntity.months){
-                mMap.put(mEntity.month,mEntity.days);
+    public static Map<Integer, Map<Integer, List<Integer>>> convertYearEntityToMap(List<YearEntity> yearList) {
+        Map<Integer, Map<Integer, List<Integer>>> res = new HashMap<>();
+        for (YearEntity yEntity : yearList) {
+            Map<Integer, List<Integer>> mMap = new HashMap<>();
+            for (MonthEntity mEntity : yEntity.months) {
+                mMap.put(mEntity.month, mEntity.days);
             }
-            res.put(yEntity.year,mMap);
+            res.put(yEntity.year, mMap);
         }
 
         return res;
     }
 
-    public static void runLimitAppsWorker(Context mContext, long delay){
+    public static void runLimitAppsWorker(Context mContext, long delay) {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(LimitAppsWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
@@ -285,14 +278,14 @@ public class Funcions {
                 .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static void runGeoLocWorker(Context mContext, long delay){
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(GeoLocWorker.class, delay, TimeUnit.MILLISECONDS)
+    public static void runGeoLocWorker(Context mContext) {
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(GeoLocWorker.class)
                         .setInitialDelay(0, TimeUnit.MILLISECONDS)
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniquePeriodicWork("geoLocWorker", ExistingPeriodicWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
     }
 
     public static HorarisEvents getEventFromList(String name){

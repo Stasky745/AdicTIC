@@ -2,29 +2,24 @@ package com.example.adictic.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.text.LineBreaker;
-import android.icu.text.IDNA;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -41,20 +36,19 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
-import org.mapsforge.map.android.layers.MyLocationOverlay;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.api.IMapView;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.library.BuildConfig;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.infowindow.BasicInfoWindow;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
@@ -73,8 +67,6 @@ import static android.content.Intent.ACTION_DIAL;
 public class OficinesActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
-    private TodoApi mTodoService;
-
     private MapView map = null;
 
     private static final String TAG = OficinesActivity.class.getSimpleName();
@@ -85,6 +77,8 @@ public class OficinesActivity extends AppCompatActivity {
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;// 10; // 10 metres
     private static final long MIN_TIME_FOR_UPDATES = 0;//1000*60; // 1 minut
+
+    private FusedLocationProviderClient fusedLocationClient;
 
     private GeoPoint currentLocation;
     MyLocationListener locationListener;
@@ -98,11 +92,15 @@ public class OficinesActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
         try{
             Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        }catch(java.lang.NullPointerException exc){}
+        }catch(java.lang.NullPointerException exc) {
+            exc.printStackTrace();
+        }
         //setting this before the layout is inflated is a good idea
         //it 'should' ensure that the map has a writable location for the map cache, even without permissions
         //if no tiles are displayed, you can try overriding the cache path using Configuration.getInstance().setCachePath
@@ -118,7 +116,7 @@ public class OficinesActivity extends AppCompatActivity {
         map = (MapView) findViewById(R.id.MV_map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
-        mTodoService = ((TodoApp) getApplication()).getAPI();
+        TodoApi mTodoService = ((TodoApp) getApplication()).getAPI();
 
         // Actualitzem la llista d'oficines
         Call<List<Oficina>> call = mTodoService.getOficines();
@@ -132,6 +130,7 @@ public class OficinesActivity extends AppCompatActivity {
                     askPermissionsIfNecessary();
 
                 } else {
+                    Toast.makeText(OficinesActivity.this, getString(R.string.error_getOffices), Toast.LENGTH_SHORT).show();
                     oficines = TodoApp.getOficines();
 //                    setMap();
                     askPermissionsIfNecessary();
@@ -140,6 +139,7 @@ public class OficinesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Oficina>> call, Throwable t) {
+                Toast.makeText(OficinesActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 oficines = TodoApp.getOficines();
 //                setMap();
                 askPermissionsIfNecessary();
@@ -178,46 +178,41 @@ public class OficinesActivity extends AppCompatActivity {
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE
 //        });
 
-        locationListener = new MyLocationListener();
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(currentLocation == null){
+            locationListener = new MyLocationListener();
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-        if(isNetworkEnabled){
+            if (isNetworkEnabled) {
 //            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER,null);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                    MIN_TIME_FOR_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                    locationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        MIN_TIME_FOR_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        locationListener);
 
-            Log.d(TAG,"Network Enabled");
+                Log.d(TAG, "Network Enabled");
 
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if( location != null ) {
-                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-            }
-        }
-        else if(isGPSEnabled){
+                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (location != null) {
+                    currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                }
+            } else if (isGPSEnabled) {
 //            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,null);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    MIN_TIME_FOR_UPDATES,
-                    MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                    locationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        MIN_TIME_FOR_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        locationListener);
 
-            Log.d(TAG,"GPS Enabled");
+                Log.d(TAG, "GPS Enabled");
 
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if( location != null ) {
-                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location != null) {
+                    currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                }
             }
         }
-
-        myLocationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()),map);
-        myLocationOverlay.enableMyLocation();
-        map.getOverlays().add(myLocationOverlay);
-
-        //locationManager.removeUpdates(locationListener);
 
         map.setMultiTouchControls(true);
 
@@ -300,25 +295,34 @@ public class OficinesActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
-        switch(requestCode){
-            case REQUEST_PERMISSIONS_REQUEST_CODE: {
-                boolean permissionsGranted = true;
-                int i = 0;
-                while(permissionsGranted && i < permissions.length){
-                    if (ContextCompat.checkSelfPermission(this, permissions[i])
-                            != PackageManager.PERMISSION_GRANTED) {
-                        // Permission is not granted
-                        permissionsGranted = false;
-                    }
-                    i++;
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            boolean permissionsGranted = true;
+            int i = 0;
+            while (permissionsGranted && i < permissions.length) {
+                if (ContextCompat.checkSelfPermission(this, permissions[i])
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // Permission is not granted
+                    permissionsGranted = false;
                 }
+                i++;
+            }
 
-                if(permissionsGranted) setMap();
-                else{
-                    Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
-                    this.finish();
-                }
+            if (permissionsGranted){
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                // Got last known location. In some rare situations this can be null.
+                                if (location != null) {
+                                    currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                                }
+                                setMap();
+                            }
+                        });
+            }
+            else {
+                Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
+                this.finish();
             }
         }
     }
@@ -338,7 +342,19 @@ public class OficinesActivity extends AppCompatActivity {
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
-        else setMap();
+        else {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                            }
+                            setMap();
+                        }
+                    });
+        }
     }
 
     private void setSpinner(){
@@ -364,7 +380,7 @@ public class OficinesActivity extends AppCompatActivity {
         SP_oficines.setSelection(0);
     }
 
-    private class MarkerAdapter extends BaseAdapter {
+    private static class MarkerAdapter extends BaseAdapter {
         Context context;
         LayoutInflater inflter;
         List<Marker> markers;
