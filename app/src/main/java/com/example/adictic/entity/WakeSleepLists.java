@@ -3,9 +3,6 @@ package com.example.adictic.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.sql.Time;
-
 public class WakeSleepLists implements Parcelable {
     public TimeDay wake;
     public TimeDay sleep;
