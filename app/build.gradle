@@ -80,4 +80,5 @@ dependencies {
     implementation "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
 //    implementation "org.osmdroid:osmdroid-geopackage:$osmdroid_version"
 
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 }

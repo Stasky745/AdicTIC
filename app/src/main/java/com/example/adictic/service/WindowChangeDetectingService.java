@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.ChangedPackages;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -18,7 +17,6 @@ import android.view.accessibility.AccessibilityEvent;
 
 import com.example.adictic.TodoApp;
 import com.example.adictic.activity.BlockActivity;
-import com.example.adictic.activity.OficinesActivity;
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
@@ -26,7 +24,6 @@ import com.example.adictic.rest.TodoApi;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
