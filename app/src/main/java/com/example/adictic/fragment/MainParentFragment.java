@@ -78,61 +78,53 @@ public class MainParentFragment extends Fragment {
 
         IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
 
-        View.OnClickListener blockApps = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), BlockAppsActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        setButtons();
+        getStats();
+
+        return root;
+    }
+
+    private void setButtons(){
+        View.OnClickListener blockApps = v -> {
+            Intent i = new Intent(getActivity(), BlockAppsActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         };
 
         Button BT_BlockApps = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
         BT_BlockApps.setOnClickListener(blockApps);
 
-        View.OnClickListener informe = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), InformeActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        View.OnClickListener informe = v -> {
+            Intent i = new Intent(getActivity(), InformeActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         };
 
         Button BT_Informe = (Button) root.findViewById(R.id.BT_ContingutInformatiu);
         BT_Informe.setOnClickListener(informe);
 
-        View.OnClickListener appUsage = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), DayUsageActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        View.OnClickListener appUsage = v -> {
+            Intent i = new Intent(getActivity(), DayUsageActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         };
 
         Button BT_appUse = (Button) root.findViewById(R.id.BT_faqs);
         BT_appUse.setOnClickListener(appUsage);
 
-        View.OnClickListener horaris = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), HorarisMainActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        View.OnClickListener horaris = v -> {
+            Intent i = new Intent(getActivity(), HorarisMainActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         };
 
         Button BT_horaris = (Button) root.findViewById(R.id.BT_oficines);
         BT_horaris.setOnClickListener(horaris);
 
-        View.OnClickListener geoloc = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), GeoLocActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        View.OnClickListener geoloc = v -> {
+            Intent i = new Intent(getActivity(), GeoLocActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         };
 
         ConstraintLayout CL_Geoloc = (ConstraintLayout) root.findViewById(R.id.CL_geoloc);
@@ -143,85 +135,74 @@ public class MainParentFragment extends Fragment {
                 new IntentFilter("liveApp"));
 
         Button blockButton = (Button) root.findViewById(R.id.BT_BlockDevice);
-        blockButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Button b = v.findViewById(R.id.BT_BlockDevice);
-                Call<String> call = null;
-                if(b.getText().equals(getString(R.string.block_device))){
-                    call = mTodoService.blockChild(idChildSelected);
-                }
-                else call = mTodoService.unblockChild(idChildSelected);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                    }
-                });
-                if(b.getText().equals(getString(R.string.block_device))) b.setText(getString(R.string.unblock_device));
-                else b.setText(getString(R.string.block_device));
+        blockButton.setOnClickListener(v -> {
+            Button b = v.findViewById(R.id.BT_BlockDevice);
+            Call<String> call = null;
+            if(b.getText().equals(getString(R.string.block_device))){
+                call = mTodoService.blockChild(idChildSelected);
             }
+            else call = mTodoService.unblockChild(idChildSelected);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful()) {
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                }
+            });
+            if(b.getText().equals(getString(R.string.block_device))) b.setText(getString(R.string.unblock_device));
+            else b.setText(getString(R.string.block_device));
         });
 
         Button nitButton = (Button) root.findViewById(R.id.BT_nits);
-        nitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), HorarisActivity.class);
-                i.putExtra("idChild",idChildSelected);
-                getActivity().startActivity(i);
-            }
+        nitButton.setOnClickListener(v -> {
+            Intent i = new Intent(getActivity(), HorarisActivity.class);
+            i.putExtra("idChild",idChildSelected);
+            startActivity(i);
         });
 
         Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
-        BT_FreeTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Call<String> call = null;
-                if(BT_FreeTime.getText().equals(getString(R.string.free_time))){
-                    call = mTodoService.blockChild(idChildSelected);
-                }
-                else call = mTodoService.unblockChild(idChildSelected);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                    }
-                });
-                if(BT_FreeTime.getText().equals(getString(R.string.free_time))) BT_FreeTime.setText(getString(R.string.stop_free_time));
-                else BT_FreeTime.setText(getString(R.string.free_time));
+        BT_FreeTime.setOnClickListener(v -> {
+            Call<String> call = null;
+            if(BT_FreeTime.getText().equals(getString(R.string.free_time))){
+                call = mTodoService.blockChild(idChildSelected);
             }
+            else call = mTodoService.unblockChild(idChildSelected);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful()) {
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                }
+            });
+            if(BT_FreeTime.getText().equals(getString(R.string.free_time))) BT_FreeTime.setText(getString(R.string.stop_free_time));
+            else BT_FreeTime.setText(getString(R.string.free_time));
         });
 
         ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
         ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
-        CL_info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(CL_infoButtons.getVisibility()==View.GONE){
-                    CL_infoButtons.setVisibility(View.VISIBLE);
+        CL_info.setOnClickListener((View.OnClickListener) v -> {
+            if(CL_infoButtons.getVisibility()==View.GONE){
+                CL_infoButtons.setVisibility(View.VISIBLE);
 
-                    ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
-                    IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
-                }
-                else{
-                    CL_infoButtons.setVisibility(View.GONE);
+                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
+            }
+            else{
+                CL_infoButtons.setVisibility(View.GONE);
 
-                    ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
-                    IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
-                }
+                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
             }
         });
+
         /** Posar icona de desplegar en la posició correcta **/
         if(CL_infoButtons.getVisibility()==View.GONE){
             ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
@@ -234,23 +215,21 @@ public class MainParentFragment extends Fragment {
 
         ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_suport);
         ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
-        CL_limit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(CL_limitButtons.getVisibility()==View.GONE){
-                    CL_limitButtons.setVisibility(View.VISIBLE);
+        CL_limit.setOnClickListener((View.OnClickListener) v -> {
+            if(CL_limitButtons.getVisibility()==View.GONE){
+                CL_limitButtons.setVisibility(View.VISIBLE);
 
-                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
-                    IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
-                }
-                else{
-                    CL_limitButtons.setVisibility(View.GONE);
+                ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+                IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
+            }
+            else{
+                CL_limitButtons.setVisibility(View.GONE);
 
-                    ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
-                    IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
-                }
+                ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+                IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
             }
         });
+
         /** Posar icona de desplegar en la posició correcta **/
         if(CL_limitButtons.getVisibility()==View.GONE){
             ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
@@ -260,10 +239,6 @@ public class MainParentFragment extends Fragment {
             ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
-
-        getStats();
-
-        return root;
     }
 
     private void getStats(){
@@ -292,7 +267,6 @@ public class MainParentFragment extends Fragment {
         long totalUsageTime = 0;
 
         Map<String,Long> mapUsage = new HashMap<>();
-        List<BarEntry> barEntries = new ArrayList<>();
 
         for(GeneralUsage gu : genericAppUsage){
             if(gu.totalTime > 0){
@@ -301,7 +275,6 @@ public class MainParentFragment extends Fragment {
                     if(mapUsage.containsKey(au.app.appName)) mapUsage.put(au.app.appName,mapUsage.get(au.app.appName)+au.totalTime);
                     else mapUsage.put(au.app.appName,au.totalTime);
                 }
-                barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
             }
         }
 
