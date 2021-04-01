@@ -134,31 +134,27 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             finalYear = initialYear = getIntent().getIntExtra("year",Calendar.getInstance().get(Calendar.YEAR));
         }
 
-        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(ChipGroup group, int checkedId) {
-                if(CH_singleDate.isChecked()){
-                    BT_finalDate.setVisibility(View.INVISIBLE);
-                    TV_finalDate.setVisibility(View.INVISIBLE);
-                    TV_initialDate.setText(getResources().getString(R.string.date));
-                    BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(CH_singleDate.isChecked()){
+                BT_finalDate.setVisibility(View.INVISIBLE);
+                TV_finalDate.setVisibility(View.INVISIBLE);
+                TV_initialDate.setText(getResources().getString(R.string.date));
+                BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
 
-                    finalDay = initialDay;
-                    finalMonth = initialMonth;
-                    finalYear = initialYear;
+                finalDay = initialDay;
+                finalMonth = initialMonth;
+                finalYear = initialYear;
 
-                    getStats();
-                }
-                else{
-                    BT_finalDate.setVisibility(View.VISIBLE);
-                    TV_finalDate.setVisibility(View.VISIBLE);
-                    TV_initialDate.setText(getResources().getString(R.string.initial_date));
-                    BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
-                    BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
-
-                    getStats();
-                }
             }
+            else{
+                BT_finalDate.setVisibility(View.VISIBLE);
+                TV_finalDate.setVisibility(View.VISIBLE);
+                TV_initialDate.setText(getResources().getString(R.string.initial_date));
+                BT_initialDate.setText(getResources().getString(R.string.date_format,initialDay,getResources().getStringArray(R.array.month_names)[initialMonth+1],initialYear));
+                BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
+
+            }
+            getStats();
         });
 
         chipGroup.setSelectionRequired(false);
@@ -179,8 +175,10 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
-                if(response.isSuccessful()){
-                    makeList(response.body());
+                if(response.isSuccessful() && response.body() != null){
+                    Collection<GeneralUsage> generalUsages = response.body();
+                    Funcions.canviarMesosDeServidor(generalUsages);
+                    makeList(generalUsages);
                 }
                 else{
                     showError();
@@ -263,14 +261,14 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
         private int mDisplayOrder = _DISPLAY_ORDER_USAGE_TIME;
-        private LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
-        private UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
-        private AppNameComparator mAppLabelComparator;
+        private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
+        private final UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
+        private final AppNameComparator mAppLabelComparator;
         private final ArrayList<AppUsage> mPackageStats = new ArrayList<>();
-        private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
+        //private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
 
         private long totalTime = 0;
-        private Context mContext;
+        private final Context mContext;
 
         UsageStatsAdapter(List<AppUsage> appList, Context c) {
             mContext = c;
@@ -316,14 +314,17 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
             if(elapsedDays == 0){
                 if(elapsedHours == 0){
-                    TV_totalUse.setText(elapsedMinutes + getString(R.string.minutes));
+                    String text = elapsedMinutes + getString(R.string.minutes);
+                    TV_totalUse.setText(text);
                 }
                 else{
-                    TV_totalUse.setText(elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes));
+                    String text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+                    TV_totalUse.setText(text);
                 }
             }
             else{
-                TV_totalUse.setText(elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes));
+                String text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+                TV_totalUse.setText(text);
             }
 
             // Sort list
@@ -412,7 +413,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
 //                holder.usageTime.setText(
 //                        DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
-                Double usageTimeInt = pkgStats.totalTime/(double)3600000;
+                double usageTimeInt = pkgStats.totalTime/(double)3600000;
 
                 if(usageTimeInt <= xDays*TodoApp.CORRECT_USAGE_APP) holder.usageTime.setTextColor(Color.GREEN);
                 else if(usageTimeInt > xDays*TodoApp.DANGEROUS_USAGE_APP) holder.usageTime.setTextColor(Color.RED);
@@ -435,13 +436,13 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         private void sortList() {
             if (mDisplayOrder == _DISPLAY_ORDER_USAGE_TIME) {
                 Log.i(TAG, "Sorting by usage time");
-                Collections.sort(mPackageStats, mUsageTimeComparator);
+                mPackageStats.sort(mUsageTimeComparator);
             } else if (mDisplayOrder == _DISPLAY_ORDER_LAST_TIME_USED) {
                 Log.i(TAG, "Sorting by last time used");
-                Collections.sort(mPackageStats, mLastTimeUsedComparator);
+                mPackageStats.sort(mLastTimeUsedComparator);
             } else if (mDisplayOrder == _DISPLAY_ORDER_APP_NAME) {
                 Log.i(TAG, "Sorting by application name");
-                Collections.sort(mPackageStats, mAppLabelComparator);
+                mPackageStats.sort(mAppLabelComparator);
             }
             notifyDataSetChanged();
         }
@@ -478,7 +479,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         finalPicker.show();
     }
 
-    private DatePickerDialog.OnDateSetListener initialDateListener = new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener initialDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker arg0, int year, int month, int day) {
             initialYear = year;
@@ -508,7 +509,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         }
         else if(initialYear == finalYear){
             if(initialMonth > finalMonth){
-                finalYear = initialYear;
                 finalMonth = initialMonth;
                 finalDay = initialDay;
 
@@ -516,8 +516,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             }
             else if(initialMonth == finalMonth){
                 if(initialDay > finalDay){
-                    finalYear = initialYear;
-                    finalMonth = initialMonth;
                     finalDay = initialDay;
 
                     BT_finalDate.setText(getResources().getString(R.string.date_format,finalDay,getResources().getStringArray(R.array.month_names)[finalMonth+1],finalYear));
@@ -526,7 +524,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         }
     }
 
-    private DatePickerDialog.OnDateSetListener finalDateListener = new DatePickerDialog.OnDateSetListener() {
+    private final DatePickerDialog.OnDateSetListener finalDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker arg0, int year, int month, int day) {
             finalYear = year;
@@ -545,19 +543,20 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
             public void onResponse(Call<List<YearEntity>> call, Response<List<YearEntity>> response) {
-                if(response.isSuccessful()){
-                    /** Agafem les dades de response i convertim en map **/
+                if(response.isSuccessful() && response.body() != null){
+                    /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
+                    Funcions.canviarMesosDeServidor(yEntityList);
                     if(yEntityList.isEmpty()) showError();
                     else {
                         daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
                         System.out.println(daysMap.keySet());
                         yearList.addAll(daysMap.keySet());
-                        Collections.sort(yearList, Collections.reverseOrder());
+                        yearList.sort(Collections.reverseOrder());
 
                         monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-                        Collections.sort(monthList, Collections.reverseOrder());
+                        monthList.sort(Collections.reverseOrder());
 
                         getStats();
                     }

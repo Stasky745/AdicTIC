@@ -290,7 +290,7 @@ public class InformeActivity extends AppCompatActivity {
                 if(response.isSuccessful() && response.body() != null){
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
-                    Funcions.canviarMesosAServidor(yEntityList);
+                    Funcions.canviarMesosDeServidor(yEntityList);
                     if(yEntityList.isEmpty()) showError();
                     else {
                         daysMap = Funcions.convertYearEntityToMap(yEntityList);

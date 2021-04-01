@@ -519,17 +519,17 @@ public class Funcions {
 
     public static void canviarMesosDeServidor (Collection<GeneralUsage> generalUsages){
         for (GeneralUsage generalUsage : generalUsages){
-            generalUsage.month = generalUsage.month-1;
+            generalUsage.month -= 1;
         }
     }
 
     public static void canviarMesosAServidor (Collection<GeneralUsage> generalUsages){
         for (GeneralUsage generalUsage : generalUsages){
-            generalUsage.month = generalUsage.month+1;
+            generalUsage.month += 1;
         }
     }
 
-    public static void canviarMesosAServidor (List<YearEntity> yearList){
+    public static void canviarMesosDeServidor (List<YearEntity> yearList){
         for (YearEntity yearEntity : yearList){
             for (MonthEntity monthEntity : yearEntity.months){
                 monthEntity.month -= 1;
