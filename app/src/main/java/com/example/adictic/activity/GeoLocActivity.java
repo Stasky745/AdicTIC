@@ -108,6 +108,21 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onResponse(Call<List<GeoFill>> call, Response<List<GeoFill>> response) {
                 if (response.isSuccessful() && !response.body().isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
+
+                    if(TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0){
+                        boolean trobat = false;
+                        int i = 0;
+                        while (!trobat && i < fills.size()){
+                            if(fills.get(i).id == TodoApp.getIDChild()){
+                                trobat = true;
+                                GeoFill fill = fills.get(i);
+                                fills.clear();
+                                fills.add(fill);
+                            }
+                            i++;
+                        }
+                    }
+
                     TodoApp.setGeoFills(fills);
                     setMap();
 
