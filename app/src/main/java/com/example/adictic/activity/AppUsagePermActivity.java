@@ -59,7 +59,7 @@ public class AppUsagePermActivity extends Activity {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 this.finish();
             } else {
-                this.startActivity(new Intent(this, MainActivityChild.class));
+                this.startActivity(new Intent(this, NavActivity.class));
                 this.finish();
             }
         }
@@ -78,7 +78,7 @@ public class AppUsagePermActivity extends Activity {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                     this.finish();
                 } else {
-                    this.startActivity(new Intent(this, MainActivityChild.class));
+                    this.startActivity(new Intent(this, NavActivity.class));
                     this.finish();
                 }
             }

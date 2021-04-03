@@ -63,6 +63,7 @@ public class HomeParentFragment extends Fragment {
                                 fills.clear();
                                 fills.add(fill);
                             }
+                            i++;
                         }
                     }
 
