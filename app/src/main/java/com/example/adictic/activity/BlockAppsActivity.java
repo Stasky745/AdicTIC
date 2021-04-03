@@ -31,6 +31,7 @@ import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
+import com.fasterxml.jackson.core.json.async.NonBlockingJsonParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,60 +75,58 @@ public class BlockAppsActivity extends AppCompatActivity {
         RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
         BT_blockNow = (Button) findViewById(R.id.BT_blockNow);
+        BT_blockNow.setVisibility(View.GONE);
         BT_limitApp = (Button) findViewById(R.id.BT_limitUse);
+        BT_limitApp.setVisibility(View.GONE);
         BT_unlock = (Button) findViewById(R.id.BT_unlock);
+        BT_unlock.setVisibility(View.GONE);
 
-        setButtons();
+        if(TodoApp.getTutor() == 1) setButtons();
         setRecyclerView();
         setSearchBar();
     }
 
     private void setButtons(){
-        BT_blockNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
-                else{
-                    Call<String> call = mTodoService.blockApps(idChild,selectedApps);
+        BT_blockNow.setVisibility(View.VISIBLE);
+        BT_limitApp.setVisibility(View.VISIBLE);
+        BT_unlock.setVisibility(View.VISIBLE);
 
-                    call.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            if(response.isSuccessful()) setRecyclerView();
-                        }
+        BT_blockNow.setOnClickListener(v -> {
+            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+            else{
+                Call<String> call = mTodoService.blockApps(idChild,selectedApps);
 
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) { }
-                    });
-                }
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.isSuccessful()) setRecyclerView();
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) { }
+                });
             }
         });
 
-        BT_limitApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
-                else useTimePicker();
-            }
+        BT_limitApp.setOnClickListener(v -> {
+            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+            else useTimePicker();
         });
 
-        BT_unlock.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
-                else{
-                    Call<String> call = mTodoService.unlockApps(idChild,selectedApps);
+        BT_unlock.setOnClickListener(v -> {
+            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+            else{
+                Call<String> call = mTodoService.unlockApps(idChild,selectedApps);
 
-                    call.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            if(response.isSuccessful()) setRecyclerView();
-                        }
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.isSuccessful()) setRecyclerView();
+                    }
 
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) { }
-                    });
-                }
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) { }
+                });
             }
         });
     }
@@ -205,6 +204,8 @@ public class BlockAppsActivity extends AppCompatActivity {
             public void onResponse(Call<Collection<BlockAppEntity>> call, Response<Collection<BlockAppEntity>> response) {
                 if(response.isSuccessful() && response.body() != null){
                     blockAppList = new ArrayList<>(response.body());
+
+                    blockAppList.removeIf(obj -> obj.pkgName.equals(getPackageName()));
                     Collections.sort(blockAppList);
                     RVadapter = new RV_Adapter(BlockAppsActivity.this,blockAppList);
 
