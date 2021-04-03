@@ -16,6 +16,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Crypt;
+import com.example.adictic.util.Funcions;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,49 +32,47 @@ public class Register extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
+
+        Funcions.closeKeyboard(findViewById(R.id.main_parent),this);
+
         mTodoService = ((TodoApp)this.getApplication()).getAPI();
 
         Button b_reg = Register.this.findViewById(R.id.register_button);
         // This is the listener that will be used when the user presses the "Register" button
-        b_reg.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText u = Register.this.findViewById(R.id.register_username);
-                EditText p1 = Register.this.findViewById(R.id.register_password1);
-                EditText p2 = Register.this.findViewById(R.id.register_password2);
-                EditText e = Register.this.findViewById(R.id.register_email);
+        b_reg.setOnClickListener(v -> {
+            EditText u = Register.this.findViewById(R.id.register_username);
+            EditText p1 = Register.this.findViewById(R.id.register_password1);
+            EditText p2 = Register.this.findViewById(R.id.register_password2);
+            EditText e = Register.this.findViewById(R.id.register_email);
 
-                TextView noValidEmail = Register.this.findViewById(R.id.TV_noValidEmail);
-                TextView noPwMatch = Register.this.findViewById(R.id.TV_NoPwMatch);
+            TextView noValidEmail = Register.this.findViewById(R.id.TV_noValidEmail);
+            TextView noPwMatch = Register.this.findViewById(R.id.TV_NoPwMatch);
 
-                noValidEmail.setVisibility(GONE);
-                noPwMatch.setVisibility(GONE);
+            noValidEmail.setVisibility(GONE);
+            noPwMatch.setVisibility(GONE);
 
-                if(p1.getText().toString().equals(p2.getText().toString())) {
-                    if(isValidEmail(e.getText())){
-                        Register.this.checkCredentials(u.getText().toString(), p1.getText().toString(), e.getText().toString());
-                    }
-                    else{
-                        noValidEmail.setVisibility(View.VISIBLE);
-                    }
+            if(p1.getText().toString().equals(p2.getText().toString())) {
+                if(isValidEmail(e.getText())){
+                    Register.this.checkCredentials(u.getText().toString(), p1.getText().toString(), e.getText().toString());
                 }
                 else{
-                    if(!isValidEmail(e.getText())){
-                        noValidEmail.setVisibility(View.VISIBLE);
-                    }
-                    noPwMatch.setVisibility(View.VISIBLE);
+                    noValidEmail.setVisibility(View.VISIBLE);
                 }
+            }
+            else{
+                if(!isValidEmail(e.getText())){
+                    noValidEmail.setVisibility(View.VISIBLE);
+                }
+                noPwMatch.setVisibility(View.VISIBLE);
             }
         });
 
         TextView b_login = findViewById(R.id.TV_login);
         // This is the listener that will be used when the user presses the "Register" button
-        b_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Register.this.startActivity(new Intent(Register.this, Login.class));
-                Login.getInstance().finish();
-                Register.this.finish();
-            }
+        b_login.setOnClickListener(v -> {
+            Register.this.startActivity(new Intent(Register.this, Login.class));
+            Login.getInstance().finish();
+            Register.this.finish();
         });
     }
 
