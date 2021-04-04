@@ -452,13 +452,14 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         DatePickerDialog initialPicker = new DatePickerDialog(this,R.style.datePicker,initialDateListener,initialYear,initialMonth,initialDay);
         initialPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
 
-        int firstYear = yearList.get(yearList.size()-1);
-        int firstMonth = monthList.get(monthList.size()-1);
-        int firstDay = Collections.min(daysMap.get(firstYear).get(firstMonth));
+        int firstYear = Collections.min(yearList);
+        int firstMonth = Collections.min(daysMap.get(firstYear).keySet());
+        List<Integer> month = daysMap.get(firstYear).get(firstMonth);
+        int firstDay = Collections.min(month);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_MONTH,firstDay);
-        cal.set(Calendar.MONTH,firstMonth-1);
+        cal.set(Calendar.MONTH,firstMonth);
         cal.set(Calendar.YEAR,firstYear);
 
         initialPicker.getDatePicker().setMinDate(cal.getTimeInMillis());
@@ -551,7 +552,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     else {
                         daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
-                        System.out.println(daysMap.keySet());
                         yearList.addAll(daysMap.keySet());
                         yearList.sort(Collections.reverseOrder());
 
