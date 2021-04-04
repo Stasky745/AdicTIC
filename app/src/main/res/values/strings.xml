@@ -283,5 +283,8 @@
     <string name="descans_nocturn">Descans Nocturn</string>
     <string name="error_sending_data">Error enviant dades al servidor.</string>
     <string name="error_getOffices">No s\'han pogut actualitzar les oficines des del servidor.</string>
+    <string name="informacio">Informació</string>
+    <string name="suport_professional">Suport Professional</string>
+    <string name="choose_month">Escull el mes per veure l\'informe</string>
 
 </resources>

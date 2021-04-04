@@ -198,7 +198,7 @@
                 app:layout_constraintTop_toBottomOf="@id/CL_info">
 
                 <Button
-                    android:id="@+id/BT_appUse"
+                    android:id="@+id/BT_faqs"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -210,12 +210,12 @@
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
                     android:textColor="@android:color/secondary_text_light"
-                    app:layout_constraintEnd_toEndOf="@+id/BT_Informe"
-                    app:layout_constraintStart_toStartOf="@+id/BT_Informe"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_Informe" />
+                    app:layout_constraintEnd_toEndOf="@+id/BT_ContingutInformatiu"
+                    app:layout_constraintStart_toStartOf="@+id/BT_ContingutInformatiu"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_ContingutInformatiu" />
 
                 <Button
-                    android:id="@+id/BT_Informe"
+                    android:id="@+id/BT_ContingutInformatiu"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -233,7 +233,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_Limits"
+                android:id="@+id/CL_suport"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="32dp"
@@ -270,7 +270,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/IV_openLimit"
+                    android:id="@+id/IV_openSuport"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
@@ -282,15 +282,15 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_LimitsButtons"
+                android:id="@+id/CL_suportButtons"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@id/CL_Limits"
-                app:layout_constraintEnd_toEndOf="@id/CL_Limits"
-                app:layout_constraintStart_toStartOf="@id/CL_Limits">
+                app:layout_constraintTop_toBottomOf="@id/CL_suport"
+                app:layout_constraintEnd_toEndOf="@id/CL_suport"
+                app:layout_constraintStart_toStartOf="@id/CL_suport">
 
                 <Button
-                    android:id="@+id/BT_BlockApps"
+                    android:id="@+id/BT_ConsultaPrivada"
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -307,7 +307,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/BT_horaris"
+                    android:id="@+id/BT_oficines"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -321,7 +321,7 @@
                     android:textColor="@android:color/secondary_text_light"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_BlockApps" />
+                    app:layout_constraintTop_toBottomOf="@+id/BT_ConsultaPrivada" />
 
                 <Button
                     android:id="@+id/BT_nits"
@@ -335,9 +335,9 @@
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
                     android:textColor="@android:color/secondary_text_light"
-                    app:layout_constraintEnd_toEndOf="@+id/BT_horaris"
-                    app:layout_constraintStart_toStartOf="@+id/BT_horaris"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_horaris" />
+                    app:layout_constraintEnd_toEndOf="@+id/BT_oficines"
+                    app:layout_constraintStart_toStartOf="@+id/BT_oficines"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_oficines" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -352,7 +352,7 @@
                 android:background="@color/colorBackgroundGrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/CL_LimitsButtons">
+                app:layout_constraintTop_toBottomOf="@id/CL_suportButtons">
 
                 <ImageView
                     android:id="@+id/imageView4"
