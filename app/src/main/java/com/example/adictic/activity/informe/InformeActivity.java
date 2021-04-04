@@ -1,10 +1,12 @@
 package com.example.adictic.activity.informe;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +20,7 @@ import com.example.adictic.entity.TimesAccessedDay;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
+import com.github.dewinjm.monthyearpicker.MonthYearPickerDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
@@ -131,7 +134,15 @@ public class InformeActivity extends AppCompatActivity {
         monthList = new ArrayList<>();
 
         dateButton = (Button) findViewById (R.id.BT_monthPicker);
-        dateButton.setOnClickListener(v -> btnMonthYear());
+        dateButton.setOnClickListener(v -> {
+            if(yearList.size() == 1) {
+                currentYear = yearList.get(0);
+                btnMonth();
+            }
+            else{
+                btnYear();
+            }
+        });
 
         getMonthYearLists();
     }
@@ -239,12 +250,41 @@ public class InformeActivity extends AppCompatActivity {
         TV_error.setVisibility(View.VISIBLE);
     }
 
-    public void btnMonthYear(){
-        //Si no va, treu final
+    private void btnYear(){
+        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
+                (selectedMonth, selectedYear) -> {
+                    currentYear = selectedYear;
+                    monthList.clear();
+                    monthList.addAll(daysMap.get(currentYear).keySet());
+                    monthList.sort(Collections.reverseOrder());
+                    currentMonth = Collections.min(monthList);
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.MONTH,currentMonth);
+                    String monthName = calendar.getDisplayName(Calendar.MONTH,Calendar.LONG, Locale.getDefault());
+                    String buttonTag = monthName+" "+currentYear;
+                    dateButton.setText(buttonTag);
+
+                    btnMonth();
+                }, currentYear, currentMonth);
+
+        if(yearList.size()==1) builder.showMonthOnly();
+
+        int startYear = Collections.min(yearList);
+        int endYear = Collections.max(yearList);
+
+        builder .showYearOnly()
+                .setActivatedYear(currentYear)
+                .setTitle(getString(R.string.choose_year))
+                .setYearRange(startYear,endYear)
+                .build()
+                .show();
+    }
+
+    private void btnMonth(){
         MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
                 (selectedMonth, selectedYear) -> {
                     currentMonth = selectedMonth;
-                    currentYear = selectedYear;
                     getStats(currentMonth,currentYear);
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.MONTH,currentMonth);
@@ -253,33 +293,34 @@ public class InformeActivity extends AppCompatActivity {
                     dateButton.setText(buttonTag);
                 }, currentYear, currentMonth);
 
-        monthList.clear();
-        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-        monthList.sort(Collections.reverseOrder());
+        int minMonth = Collections.min(monthList);
+        int maxMonth = Collections.max(monthList);
 
-        if(yearList.size()==1) builder.showMonthOnly();
-
-        int minMonth = monthList.get(monthList.size()-1);
-        int maxMonth = monthList.get(0);
-        int startYear = yearList.get(yearList.size()-1);
-        int endYear = yearList.get(0);
-
-        builder .setActivatedMonth(currentMonth)
-                .setActivatedYear(currentYear)
+        builder .showMonthOnly()
+                .setActivatedMonth(currentMonth)
                 .setTitle(getString(R.string.choose_month))
-                .setMonthAndYearRange(minMonth, maxMonth, startYear, endYear)
-                .setOnYearChangedListener(selectedYear -> { // on year selected
-                    currentYear = selectedYear;
-                    monthList.clear();
-                    monthList.addAll(daysMap.get(currentYear).keySet());
-                    monthList.sort(Collections.reverseOrder());
-                    currentMonth = monthList.get(0);
-                    builder.setActivatedMonth(currentMonth);
-                    builder.setMonthRange(monthList.get(monthList.size()-1), currentMonth);
-                })
+                .setMonthRange(minMonth,maxMonth)
                 .build()
                 .show();
     }
+
+//    public void btnMonthYear(){
+//        Calendar cal = Calendar.getInstance();
+//
+//        int minYear = Collections.min(yearList);
+//        int minMonth = Collections.min(daysMap.get(minYear).keySet());
+//
+//        cal.set(Calendar.YEAR,minYear);
+//        cal.set(Calendar.MONTH,minMonth);
+//
+//        long minDate = cal.getTimeInMillis();
+//        long maxDate = Calendar.getInstance().getTimeInMillis();
+//
+//        MonthYearPickerDialogFragment dialogFragment = MonthYearPickerDialogFragment
+//                .getInstance(currentMonth,currentYear,minDate,maxDate,getString(R.string.choose_month));
+//
+//        dialogFragment.show(getSupportFragmentManager(),null);
+//    }
 
     private void getMonthYearLists(){
         Call<List<YearEntity>> call = mTodoService.getDaysWithData(idChild);
@@ -298,12 +339,13 @@ public class InformeActivity extends AppCompatActivity {
                         yearList.addAll(daysMap.keySet());
                         yearList.sort(Collections.reverseOrder());
 
-                        currentYear = yearList.get(0);
+                        currentYear = Collections.max(yearList);
 
                         monthList.addAll(daysMap.get(currentYear).keySet());
                         monthList.sort(Collections.reverseOrder());
 
-                        currentMonth = monthList.get(0);
+                        currentMonth = Collections.max(monthList);
+
                         Calendar calendar = Calendar.getInstance();
                         calendar.set(Calendar.MONTH,currentMonth);
                         String monthName = calendar.getDisplayName(Calendar.MONTH,Calendar.LONG, Locale.getDefault());
