@@ -76,6 +76,7 @@ public class HorarisActivity extends AppCompatActivity {
         setViews();
 
         if(TodoApp.getTutor() == 1){
+            TV_info.setVisibility(View.VISIBLE);
             setViewsTutor(true);
 
             setChipGroup();
@@ -86,8 +87,6 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void setViewsTutor(boolean b) {
-        TV_info.setVisibility(View.VISIBLE);
-
         ET_wakeMon.setClickable(b);
         ET_wakeTue.setClickable(b);
         ET_wakeWed.setClickable(b);
