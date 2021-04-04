@@ -72,7 +72,7 @@ public class HorarisMainActivity extends AppCompatActivity implements IEventDial
 
         setLayouts();
         getHoraris();
-        setButtons();
+        if(TodoApp.getTutor() == 1) setButtons();
 
     }
 
@@ -137,32 +137,35 @@ public class HorarisMainActivity extends AppCompatActivity implements IEventDial
     }
 
     private void setButtons(){
-        BT_acceptarHoraris.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Horaris horaris = new Horaris();
-                horaris.events = eventList;
 
-                if(wakeSleepList == null){
-                    wakeSleepList = new WakeSleepLists();
+        BT_acceptarHoraris.setVisibility(View.VISIBLE);
+        BT_modificarEvent.setVisibility(View.VISIBLE);
+        BT_afegirEvent.setVisibility(View.VISIBLE);
+        BT_esborrarEvent.setVisibility(View.VISIBLE);
+
+        BT_acceptarHoraris.setOnClickListener(view -> {
+            Horaris horaris = new Horaris();
+            horaris.events = eventList;
+
+            if(wakeSleepList == null){
+                wakeSleepList = new WakeSleepLists();
+            }
+
+            horaris.wakeSleepList = wakeSleepList;
+
+            Call<String> call = mTodoService.postHoraris(idChild,horaris);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    finish();
                 }
 
-                horaris.wakeSleepList = wakeSleepList;
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
 
-                Call<String> call = mTodoService.postHoraris(idChild,horaris);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        finish();
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-
-                    }
-                });
-            }
+                }
+            });
         });
 
         BT_esborrarEvent.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +237,11 @@ public class HorarisMainActivity extends AppCompatActivity implements IEventDial
         BT_modificarEvent = (Button) findViewById(R.id.BT_modificarEvent);
         BT_afegirEvent = (Button) findViewById(R.id.BT_afegirEvent);
         BT_esborrarEvent = (Button) findViewById(R.id.BT_esborrarEvent);
+
+        BT_acceptarHoraris.setVisibility(View.GONE);
+        BT_modificarEvent.setVisibility(View.GONE);
+        BT_afegirEvent.setVisibility(View.GONE);
+        BT_esborrarEvent.setVisibility(View.GONE);
 
         RV_eventList = (RecyclerView) findViewById(R.id.RV_events);
         RV_eventList.setLayoutManager(new LinearLayoutManager(this));

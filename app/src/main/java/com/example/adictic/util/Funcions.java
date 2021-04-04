@@ -1,6 +1,7 @@
 package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
@@ -14,14 +15,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Pair;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
@@ -43,6 +51,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -514,5 +523,78 @@ public class Funcions {
         }
 
         return new Pair<>(hour, minutes);
+    }
+
+    public static void canviarMesosDeServidor (Collection<GeneralUsage> generalUsages){
+        for (GeneralUsage generalUsage : generalUsages){
+            generalUsage.month -= 1;
+        }
+    }
+
+    public static void canviarMesosAServidor (Collection<GeneralUsage> generalUsages){
+        for (GeneralUsage generalUsage : generalUsages){
+            generalUsage.month += 1;
+        }
+    }
+
+    public static void canviarMesosDeServidor (List<YearEntity> yearList){
+        for (YearEntity yearEntity : yearList){
+            for (MonthEntity monthEntity : yearEntity.months){
+                monthEntity.month -= 1;
+            }
+        }
+    }
+
+    public static void closeKeyboard(View view, Activity a) {
+
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard(a);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                closeKeyboard(innerView,a);
+            }
+        }
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if(inputMethodManager.isAcceptingText()){
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(),
+                    0
+            );
+        }
+    }
+
+    public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp){
+        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
+        Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()){
+                    Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
     }
 }

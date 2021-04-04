@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -26,19 +28,26 @@ public class AdviceFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_advice, container, false);
-        ConstraintLayout cl1 = (ConstraintLayout) root.findViewById(R.id.constraint_advice);
-        ConstraintLayout cl2 = (ConstraintLayout) root.findViewById(R.id.constraint_advice_2);
-        ConstraintLayout consulta_privada = (ConstraintLayout) root.findViewById(R.id.constraint_advice_5);
-        ConstraintLayout cl6 = (ConstraintLayout) root.findViewById(R.id.constraint_advice_6);
+
+        ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
+        ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
+        ConstraintLayout CL_suport = (ConstraintLayout) root.findViewById(R.id.CL_suport);
+        ConstraintLayout CL_suportButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
+
+        Button BT_ContingutInformatiu = (Button) root.findViewById(R.id.BT_ContingutInformatiu);
+        Button BT_faqs = (Button) root.findViewById(R.id.BT_faqs);
+        Button BT_ConsultaPrivada = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
+        Button BT_oficines = (Button) root.findViewById(R.id.BT_oficines);
 
         final TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
-        long[] hasAnOpenChat = {-1}; // -1 = no connection, 0 = false, 1 = true
         Call<Long> call = mTodoService.hasAnOpenChat();
         call.enqueue(new Callback<Long>() {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
                 if (response.isSuccessful()) {
-                    hasAnOpenChat[0] = response.body();
+                    Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+                    chatIntent.putExtra("userId", response.body()); // -1 = no connection, 0 = false, 1 = true
+                    BT_ConsultaPrivada.setOnClickListener(v -> startActivity(chatIntent));
                 }
             }
 
@@ -47,29 +56,40 @@ public class AdviceFragment extends Fragment {
             }
         });
 
-        cl2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), PreguntesFrequents.class));
+        CL_info.setOnClickListener((View.OnClickListener) v -> {
+            if(CL_infoButtons.getVisibility()==View.GONE){
+                CL_infoButtons.setVisibility(View.VISIBLE);
+
+                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
+            }
+            else{
+                CL_infoButtons.setVisibility(View.GONE);
+
+                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
-        cl6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), OficinesActivity.class));
+        CL_suport.setOnClickListener((View.OnClickListener) v -> {
+            if(CL_suportButtons.getVisibility()==View.GONE){
+                CL_suportButtons.setVisibility(View.VISIBLE);
+
+                ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
+                IV_openSuport.setImageResource(R.drawable.ic_arrow_close);
+            }
+            else{
+                CL_suportButtons.setVisibility(View.GONE);
+
+                ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
+                IV_openSuport.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
-        consulta_privada.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Comprovar si té algun chat obert
-                Intent intent = new Intent(getActivity(), ChatActivity.class);
-                intent.putExtra("userId", hasAnOpenChat[0]);
-                startActivity(intent);
-            }
-        });
+        BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
+        BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
+        BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(),OficinesActivity.class)));
+
         return root;
     }
 }
