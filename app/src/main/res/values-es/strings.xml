@@ -219,4 +219,9 @@
     <string name = "go_information"> "Ir a la documentación" </string>
     <string name="adictic_splash">AdicTIC_Splash</string>
     <string name="enviar">Enviar</string>
+    <string name="tancar_sessio">Cerrar sessión</string>
+    <string name="change_language">Cambiar idioma</string>
+
+    <string name="spanish">Castellano</string>
+    <string name="catalan">Catalan</string>
 </resources>
