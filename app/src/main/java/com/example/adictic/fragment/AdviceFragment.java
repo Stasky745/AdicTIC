@@ -40,13 +40,14 @@ public class AdviceFragment extends Fragment {
         Button BT_oficines = (Button) root.findViewById(R.id.BT_oficines);
 
         final TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
-        long[] hasAnOpenChat = {-1}; // -1 = no connection, 0 = false, 1 = true
         Call<Long> call = mTodoService.hasAnOpenChat();
         call.enqueue(new Callback<Long>() {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
                 if (response.isSuccessful()) {
-                    hasAnOpenChat[0] = response.body();
+                    Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+                    chatIntent.putExtra("userId", response.body()); // -1 = no connection, 0 = false, 1 = true
+                    BT_ConsultaPrivada.setOnClickListener(v -> startActivity(chatIntent));
                 }
             }
 
@@ -87,7 +88,6 @@ public class AdviceFragment extends Fragment {
 
         BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
         BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
-        //BT_ConsultaPrivada.setOnClickListener(v -> startActivity(new Intent(getActivity(),ChatActivity.class)));
         BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(),OficinesActivity.class)));
 
         return root;
