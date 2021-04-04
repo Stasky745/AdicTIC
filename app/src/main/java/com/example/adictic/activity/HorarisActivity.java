@@ -55,6 +55,8 @@ public class HorarisActivity extends AppCompatActivity {
     TextView ET_wakeWeekday, ET_wakeWeekend;
     TextView ET_sleepWeekday, ET_sleepWeekend;
 
+    TextView TV_info;
+
     Button BT_sendHoraris;
 
     WakeSleepLists wakeSleepList;
@@ -84,6 +86,8 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void setViewsTutor(boolean b) {
+        TV_info.setVisibility(View.VISIBLE);
+
         ET_wakeMon.setClickable(b);
         ET_wakeTue.setClickable(b);
         ET_wakeWed.setClickable(b);
@@ -111,6 +115,9 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void setViews() {
+        TV_info = (TextView) findViewById(R.id.TV_tipusHorari);
+        TV_info.setVisibility(View.GONE);
+
         chipGroup = (ChipGroup) findViewById(R.id.CG_tipusHorari);
         CH_horariDiari = (Chip) findViewById(R.id.CH_diariHorari);
         CH_horariSetmana = (Chip) findViewById(R.id.CH_setmanaHorari);
