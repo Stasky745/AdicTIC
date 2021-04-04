@@ -22,12 +22,14 @@ import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
@@ -574,5 +576,25 @@ public class Funcions {
                     0
             );
         }
+    }
+
+    public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp){
+        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
+        Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()){
+                    Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
     }
 }

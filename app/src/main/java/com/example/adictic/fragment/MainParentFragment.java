@@ -371,26 +371,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        askChildForLiveApp(idChildSelected, false);
+        Funcions.askChildForLiveApp(getContext(),idChildSelected, false);
         super.finalize();
-    }
-
-    private void askChildForLiveApp(long idChild, boolean liveApp){
-        Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (!response.isSuccessful()){
-                    Toast toast = Toast.makeText(getActivity(), getString(R.string.error_liveApp), Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Toast toast = Toast.makeText(getActivity(), getString(R.string.error_liveApp), Toast.LENGTH_LONG);
-                toast.show();
-            }
-        });
     }
 }
