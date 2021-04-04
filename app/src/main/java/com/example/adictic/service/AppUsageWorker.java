@@ -41,23 +41,22 @@ public class AppUsageWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
-        //List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
-        List<GeneralUsage> gul = new ArrayList<>();
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        //List<GeneralUsage> gul = new ArrayList<>();
 
         if(!TodoApp.getLimitApps().isEmpty()) Funcions.runLimitAppsWorker(getApplicationContext(),0);
         if(TodoApp.getStartFreeUse() != 0) TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
 
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
+        Funcions.canviarMesosAServidor(gul);
+
         Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(),gul);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    ok1 = true;
-                }
-                else ok1 = false;
+                ok1 = response.isSuccessful();
             }
             @Override
             public void onFailure(Call<String> call, Throwable t) {
@@ -69,7 +68,7 @@ public class AppUsageWorker extends Worker {
         call2.enqueue(new Callback<BlockedLimitedLists>() {
             @Override
             public void onResponse(Call<BlockedLimitedLists> call2, Response<BlockedLimitedLists> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     TodoApp.setBlockedApps(response.body().blockedApps);
                     List<LimitedApps> limitList = response.body().limitApps;
                     Map<String,Long> finalMap = new HashMap<>();

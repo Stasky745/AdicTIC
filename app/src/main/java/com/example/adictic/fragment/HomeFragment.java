@@ -52,16 +52,15 @@ public class HomeFragment extends Fragment {
     private static final boolean localLOGV = false;
     private UsageStatsManager mUsageStatsManager;
     private LayoutInflater mInflater;
-    private UsageStatsAdapter mAdapter;
     private PackageManager mPm;
     private int xDays = 1;
     private AppBarConfiguration mAppBarConfiguration;
 
-    private float CORRECT_USAGE_APP = 2;
-    private float DANGEROUS_USAGE_APP = 4;
+    private final float CORRECT_USAGE_APP = 2;
+    private final float DANGEROUS_USAGE_APP = 4;
 
-    private float CORRECT_USAGE_DAY = 3;
-    private float DANGEROUS_USAGE_DAY = 6;
+    private final float CORRECT_USAGE_DAY = 3;
+    private final float DANGEROUS_USAGE_DAY = 6;
 
 
 
@@ -79,67 +78,64 @@ public class HomeFragment extends Fragment {
         final TodoApp todoApp = ((TodoApp) getActivity().getApplicationContext());
 
         Button pujarInfo = root.findViewById(R.id.Debug_PujarInfo);
-        pujarInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        pujarInfo.setOnClickListener(v -> {
 
-                List<GeneralUsage> gul = new ArrayList<>();
-                List<UsageStats> stats;
-                for (int i = 0; i < xDays; i++) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.set(Calendar.HOUR_OF_DAY, 23);
-                    cal.set(Calendar.MINUTE, 59);
-                    cal.set(Calendar.SECOND, 59);
-                    cal.add(Calendar.DAY_OF_YEAR, -i);
+            List<GeneralUsage> gul = new ArrayList<>();
+            List<UsageStats> stats;
+            for (int i = 0; i < xDays; i++) {
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.HOUR_OF_DAY, 23);
+                cal.set(Calendar.MINUTE, 59);
+                cal.set(Calendar.SECOND, 59);
+                cal.add(Calendar.DAY_OF_YEAR, -i);
 
-                    Calendar cal2 = Calendar.getInstance();
-                    cal2.add(Calendar.DAY_OF_YEAR, -i);
-                    cal2.set(Calendar.HOUR_OF_DAY, 0);
-                    cal2.set(Calendar.MINUTE, 0);
-                    cal2.set(Calendar.SECOND, 0);
+                Calendar cal2 = Calendar.getInstance();
+                cal2.add(Calendar.DAY_OF_YEAR, -i);
+                cal2.set(Calendar.HOUR_OF_DAY, 0);
+                cal2.set(Calendar.MINUTE, 0);
+                cal2.set(Calendar.SECOND, 0);
 
-                    stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                            cal2.getTimeInMillis(), cal.getTimeInMillis());
+                stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
+                        cal2.getTimeInMillis(), cal.getTimeInMillis());
 
-                    List<AppUsage> appUsages = new ArrayList<>();
-                    final int statCount = stats.size();
-                    for (int j = 0; j < statCount; j++) {
-                        final android.app.usage.UsageStats pkgStats = stats.get(j);
-                        ApplicationInfo appInfo = null;
-                        try {
-                            appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                            AppUsage appUsage = new AppUsage();
-                            appUsage.app.pkgName = pkgStats.getPackageName();
-                            appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
-                            appUsage.totalTime = pkgStats.getTotalTimeInForeground();
-                            appUsages.add(appUsage);
-                        }
+                List<AppUsage> appUsages = new ArrayList<>();
+                final int statCount = stats.size();
+                for (int j = 0; j < statCount; j++) {
+                    final UsageStats pkgStats = stats.get(j);
+                    ApplicationInfo appInfo = null;
+                    try {
+                        appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
                     }
-                    GeneralUsage gu = new GeneralUsage();
-                    gu.day = cal.get(Calendar.DAY_OF_MONTH);
-                    gu.month = cal.get(Calendar.MONTH) + 1;
-                    gu.year = cal.get(Calendar.YEAR);
-                    gu.usage = appUsages;
-                    gul.add(gu);
+                    if (pkgStats.getLastTimeUsed() >= cal2.getTimeInMillis() && pkgStats.getLastTimeUsed() <= cal.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                        AppUsage appUsage = new AppUsage();
+                        appUsage.app.pkgName = pkgStats.getPackageName();
+                        appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
+                        appUsage.totalTime = pkgStats.getTotalTimeInForeground();
+                        appUsages.add(appUsage);
+                    }
+                }
+                GeneralUsage gu = new GeneralUsage();
+                gu.day = cal.get(Calendar.DAY_OF_MONTH);
+                gu.month = cal.get(Calendar.MONTH) + 1;
+                gu.year = cal.get(Calendar.YEAR);
+                gu.usage = appUsages;
+                gul.add(gu);
+            }
+
+            Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(), gul);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful()) {
+                    }
                 }
 
-                Call<String> call = mTodoService.sendAppUsage(todoApp.getIDChild(), gul);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) {
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                }
+            });
         });
 
         mUsageStatsManager = (UsageStatsManager) getActivity().getSystemService(Context.USAGE_STATS_SERVICE);
@@ -151,7 +147,7 @@ public class HomeFragment extends Fragment {
         //typeSpinner.setOnItemSelectedListener(getContext());
 
         ListView listView = root.findViewById(R.id.pkg_list);
-        mAdapter = new UsageStatsAdapter(root);
+        UsageStatsAdapter mAdapter = new UsageStatsAdapter(root);
         listView.setAdapter(mAdapter);
 
         return root;
@@ -164,8 +160,8 @@ public class HomeFragment extends Fragment {
         private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
         private int mDisplayOrder = _DISPLAY_ORDER_USAGE_TIME;
-        private MainActivityChild.LastTimeUsedComparator mLastTimeUsedComparator = new MainActivityChild.LastTimeUsedComparator();
-        private MainActivityChild.UsageTimeComparator mUsageTimeComparator = new MainActivityChild.UsageTimeComparator();
+        private final MainActivityChild.LastTimeUsedComparator mLastTimeUsedComparator = new MainActivityChild.LastTimeUsedComparator();
+        private final MainActivityChild.UsageTimeComparator mUsageTimeComparator = new MainActivityChild.UsageTimeComparator();
         private MainActivityChild.AppNameComparator mAppLabelComparator;
         private final ArrayMap<String, String> mAppLabelMap = new ArrayMap<>();
         private final ArrayList<UsageStats> mPackageStats = new ArrayList<>();
