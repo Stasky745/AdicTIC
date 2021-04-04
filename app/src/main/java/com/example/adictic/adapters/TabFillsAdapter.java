@@ -12,6 +12,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.fragment.MainParentFragment;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
 
@@ -38,10 +39,8 @@ public class TabFillsAdapter extends FragmentStateAdapter {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
         }
         else{
-            if(lastId > -1) askChildForLiveApp(lastId,false);
-
             lastId = fills.get(position).idChild;
-            askChildForLiveApp(lastId,true);
+            if(TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(ctx,lastId, true);
 
             return new MainParentFragment(fills.get(position));
         }
@@ -59,24 +58,4 @@ public class TabFillsAdapter extends FragmentStateAdapter {
         return fills.size();
     }
 
-    private void askChildForLiveApp(long idChild, boolean liveApp){
-        TodoApi mTodoService = ((TodoApp)(ctx.getApplicationContext())).getAPI();
-
-        Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                if (!response.isSuccessful()){
-                    Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
-                toast.show();
-            }
-        });
-    }
 }
