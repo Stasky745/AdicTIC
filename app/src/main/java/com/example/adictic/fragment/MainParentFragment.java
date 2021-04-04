@@ -131,31 +131,44 @@ public class MainParentFragment extends Fragment {
         CL_Geoloc.setOnClickListener(geoloc);
 
 
-        LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
-                new IntentFilter("liveApp"));
+        if(TodoApp.getTutor() == 1) {
+            LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
+                    new IntentFilter("liveApp"));
+        }
+        else {
+            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+            currentApp.setText(getString(R.string.title_activity_splash_screen));
+            String pkgName = getActivity().getApplicationContext().getPackageName();
+            Funcions.setIconDrawable(getContext(),pkgName,IV_liveIcon);
+        }
 
         Button blockButton = (Button) root.findViewById(R.id.BT_BlockDevice);
-        blockButton.setOnClickListener(v -> {
-            Button b = v.findViewById(R.id.BT_BlockDevice);
-            Call<String> call = null;
-            if(b.getText().equals(getString(R.string.block_device))){
-                call = mTodoService.blockChild(idChildSelected);
-            }
-            else call = mTodoService.unblockChild(idChildSelected);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    if (response.isSuccessful()) {
-                    }
-                }
+        blockButton.setVisibility(View.GONE);
 
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                }
+        if(TodoApp.getTutor() == 1) {
+            blockButton.setVisibility(View.VISIBLE);
+            blockButton.setOnClickListener(v -> {
+                Button b = v.findViewById(R.id.BT_BlockDevice);
+                Call<String> call;
+                if (b.getText().equals(getString(R.string.block_device))) {
+                    call = mTodoService.blockChild(idChildSelected);
+                } else call = mTodoService.unblockChild(idChildSelected);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+                if (b.getText().equals(getString(R.string.block_device)))
+                    b.setText(getString(R.string.unblock_device));
+                else b.setText(getString(R.string.block_device));
             });
-            if(b.getText().equals(getString(R.string.block_device))) b.setText(getString(R.string.unblock_device));
-            else b.setText(getString(R.string.block_device));
-        });
+        }
 
         Button nitButton = (Button) root.findViewById(R.id.BT_nits);
         nitButton.setOnClickListener(v -> {
@@ -165,26 +178,30 @@ public class MainParentFragment extends Fragment {
         });
 
         Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
-        BT_FreeTime.setOnClickListener(v -> {
-            Call<String> call = null;
-            if(BT_FreeTime.getText().equals(getString(R.string.free_time))){
-                call = mTodoService.blockChild(idChildSelected);
-            }
-            else call = mTodoService.unblockChild(idChildSelected);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    if (response.isSuccessful()) {
+        BT_FreeTime.setVisibility(View.GONE);
+        if(TodoApp.getTutor() == 1) {
+            BT_FreeTime.setVisibility(View.VISIBLE);
+            BT_FreeTime.setOnClickListener(v -> {
+                Call<String> call = null;
+                if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
+                    call = mTodoService.blockChild(idChildSelected);
+                } else call = mTodoService.unblockChild(idChildSelected);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                }
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
+                });
+                if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
+                    BT_FreeTime.setText(getString(R.string.stop_free_time));
+                else BT_FreeTime.setText(getString(R.string.free_time));
             });
-            if(BT_FreeTime.getText().equals(getString(R.string.free_time))) BT_FreeTime.setText(getString(R.string.stop_free_time));
-            else BT_FreeTime.setText(getString(R.string.free_time));
-        });
+        }
 
         ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
         ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
@@ -308,7 +325,7 @@ public class MainParentFragment extends Fragment {
         pieChart.setDragDecelerationFrictionCoef(0.95f);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setCenterTextSize(25);
-        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.setTransparentCircleRadius(61f);
 
         pieChart.animateY(1000);
