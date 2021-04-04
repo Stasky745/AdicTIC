@@ -31,4 +31,15 @@
         <item>Oberta últim cop</item>
         <item>Alfabèticament</item>
     </string-array>
+    
+    <string-array name="languages">
+        <item>@string/catalan</item>
+        <item>@string/spanish</item>
+    </string-array>
+
+    <string-array name="language_alias">
+        <item>ca</item>
+        <item>es</item>
+    </string-array>
+
 </resources>
