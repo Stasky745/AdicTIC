@@ -43,6 +43,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -514,5 +515,25 @@ public class Funcions {
         }
 
         return new Pair<>(hour, minutes);
+    }
+
+    public static void canviarMesosDeServidor (Collection<GeneralUsage> generalUsages){
+        for (GeneralUsage generalUsage : generalUsages){
+            generalUsage.month -= 1;
+        }
+    }
+
+    public static void canviarMesosAServidor (Collection<GeneralUsage> generalUsages){
+        for (GeneralUsage generalUsage : generalUsages){
+            generalUsage.month += 1;
+        }
+    }
+
+    public static void canviarMesosDeServidor (List<YearEntity> yearList){
+        for (YearEntity yearEntity : yearList){
+            for (MonthEntity monthEntity : yearEntity.months){
+                monthEntity.month -= 1;
+            }
+        }
     }
 }

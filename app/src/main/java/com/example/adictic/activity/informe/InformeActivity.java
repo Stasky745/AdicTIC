@@ -1,7 +1,6 @@
 package com.example.adictic.activity.informe;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -24,10 +23,12 @@ import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -54,8 +55,6 @@ public class InformeActivity extends AppCompatActivity {
 
     private Map<Integer, Map<Integer,List<Integer>>> daysMap;
 
-    private long totalUsageTime, totalTime;
-
     private TextView TV_percentageUsage;
     private TextView TV_totalUsage;
     private double percentage;
@@ -72,23 +71,15 @@ public class InformeActivity extends AppCompatActivity {
         TV_percentageUsage = (TextView) findViewById(R.id.TV_usePercentage);
         TV_totalUsage = (TextView) findViewById(R.id.TV_deviceUsage);
 
-        TV_percentageUsage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String deviceTime = TV_totalUsage.getText().toString().substring(0,TV_totalUsage.getText().toString().indexOf('/')-2);
-                String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/')+2,TV_totalUsage.getText().length()-1);
-                DecimalFormat decimalFormat = new DecimalFormat("###.##");
+        TV_percentageUsage.setOnClickListener(v -> {
+            String deviceTime = TV_totalUsage.getText().toString().substring(0,TV_totalUsage.getText().toString().indexOf('/')-2);
+            String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/')+2,TV_totalUsage.getText().length()-1);
+            DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
-                AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
-                dialog.setMessage(getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
-                dialog.setButton(AlertDialog.BUTTON_POSITIVE,getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-            }
+            AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
+            dialog.setMessage(getString(R.string.percentage_info,deviceTime,totalTime,decimalFormat.format(percentage)));
+            dialog.setButton(AlertDialog.BUTTON_POSITIVE,getString(R.string.ok), (dialog1, which) -> dialog1.dismiss());
+            dialog.show();
         });
 
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -140,12 +131,7 @@ public class InformeActivity extends AppCompatActivity {
         monthList = new ArrayList<>();
 
         dateButton = (Button) findViewById (R.id.BT_monthPicker);
-        dateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnMonthYear();
-            }
-        });
+        dateButton.setOnClickListener(v -> btnMonthYear());
 
         getMonthYearLists();
     }
@@ -155,7 +141,7 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if(response.isSuccessful()){
+                if(response.isSuccessful() && response.body() != null){
                     tabsAdapter.setAge(response.body());
                 }
             }
@@ -196,15 +182,18 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void getStats(int month, int year){
-        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChild,month+"-"+year,month+"-"+year);
+        String dataInicial = (month+1) + "-" + year;
+        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChild,dataInicial,dataInicial);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
-                if (response.isSuccessful()) {
-                    tabsAdapter.setGenericAppUsage(response.body());
+                if (response.isSuccessful() && response.body() != null) {
+                    Collection<GeneralUsage> generalUsages = response.body();
+                    Funcions.canviarMesosDeServidor(generalUsages);
+                    tabsAdapter.setGenericAppUsage(generalUsages);
                     viewPager.setAdapter(tabsAdapter);
 
-                    setPercentages(response.body());
+                    setPercentages(generalUsages);
                 } else {
                     showError();
                 }
@@ -218,32 +207,31 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void setPercentages(Collection<GeneralUsage> col){
-        totalTime = col.size()*24L*60*60*1000;
-        totalUsageTime = 0;
+        long totalTime = col.size() * 24L * 60 * 60 * 1000;
+        long totalUsageTime = 0;
         for(GeneralUsage gu : col){
             totalUsageTime += gu.totalTime;
         }
 
-        tabsAdapter.setTimes(totalTime,totalUsageTime);
+        tabsAdapter.setTimes(totalTime, totalUsageTime);
         viewPager.setAdapter(tabsAdapter);
 
-        percentage = totalUsageTime*100.0f/totalTime;
+        percentage = totalUsageTime *100.0f/ totalTime;
         TV_percentageUsage.setText(getString(R.string.percentage,Math.round(percentage)));
 
         Pair<Integer,Integer> usagePair = Funcions.millisToString(totalUsageTime);
         Pair<Integer,Integer> totalTimePair = Funcions.millisToString(totalTime);
 
 
+        String first;
         if(usagePair.first == 0){
-            String first = getString(R.string.mins,usagePair.second);
-            String second = getString(R.string.hrs,totalTimePair.first);
-            TV_totalUsage.setText(getString(R.string.comp,first,second));
+            first = getString(R.string.mins, usagePair.second);
         }
         else{
-            String first = getString(R.string.hours_minutes,usagePair.first,usagePair.second);
-            String second = getString(R.string.hrs,totalTimePair.first);
-            TV_totalUsage.setText(getString(R.string.comp,first,second));
+            first = getString(R.string.hours_minutes, usagePair.first, usagePair.second);
         }
+        String second = getString(R.string.hrs,totalTimePair.first);
+        TV_totalUsage.setText(getString(R.string.comp,first,second));
     }
 
     private void showError(){
@@ -253,34 +241,41 @@ public class InformeActivity extends AppCompatActivity {
 
     public void btnMonthYear(){
         //Si no va, treu final
-        final MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
-                new MonthPickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(int selectedMonth, int selectedYear) {
-                        currentMonth = selectedMonth;
-                        currentYear = selectedYear;
-                        getStats(currentMonth+1,currentYear);
-                        dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth+1]+" "+currentYear);
-                    }
+        MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
+                (selectedMonth, selectedYear) -> {
+                    currentMonth = selectedMonth;
+                    currentYear = selectedYear;
+                    getStats(currentMonth,currentYear);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.MONTH,currentMonth);
+                    String monthName = calendar.getDisplayName(Calendar.MONTH,Calendar.LONG, Locale.getDefault());
+                    String buttonTag = monthName+" "+currentYear;
+                    dateButton.setText(buttonTag);
                 }, currentYear, currentMonth);
 
+        monthList.clear();
         monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-        Collections.sort(monthList,Collections.reverseOrder());
+        monthList.sort(Collections.reverseOrder());
 
         if(yearList.size()==1) builder.showMonthOnly();
 
+        int minMonth = monthList.get(monthList.size()-1);
+        int maxMonth = monthList.get(0);
+        int startYear = yearList.get(yearList.size()-1);
+        int endYear = yearList.get(0);
+
         builder .setActivatedMonth(currentMonth)
                 .setActivatedYear(currentYear)
-                .setTitle("Tria el mes per veure l'informe")
-                .setMonthAndYearRange(monthList.get(monthList.size()-1)-1, monthList.get(0)-1, yearList.get(yearList.size()-1), yearList.get(0))
-                .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
-                    @Override
-                    public void onYearChanged(int selectedYear) { // on year selected
-                        monthList.addAll(daysMap.get(yearList.get(selectedYear)).keySet());
-                        Collections.sort(monthList,Collections.reverseOrder());
-                        builder.setMonthRange(monthList.get(monthList.size()-2), monthList.get(0)-1);
-
-                    }
+                .setTitle(getString(R.string.choose_month))
+                .setMonthAndYearRange(minMonth, maxMonth, startYear, endYear)
+                .setOnYearChangedListener(selectedYear -> { // on year selected
+                    currentYear = selectedYear;
+                    monthList.clear();
+                    monthList.addAll(daysMap.get(currentYear).keySet());
+                    monthList.sort(Collections.reverseOrder());
+                    currentMonth = monthList.get(0);
+                    builder.setActivatedMonth(currentMonth);
+                    builder.setMonthRange(monthList.get(monthList.size()-1), currentMonth);
                 })
                 .build()
                 .show();
@@ -292,25 +287,30 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
             public void onResponse(Call<List<YearEntity>> call, Response<List<YearEntity>> response) {
-                if(response.isSuccessful()){
-                    /** Agafem les dades de response i convertim en map **/
+                if(response.isSuccessful() && response.body() != null){
+                    /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
+                    Funcions.canviarMesosDeServidor(yEntityList);
                     if(yEntityList.isEmpty()) showError();
                     else {
                         daysMap = Funcions.convertYearEntityToMap(yEntityList);
 
                         yearList.addAll(daysMap.keySet());
-                        Collections.sort(yearList, Collections.reverseOrder());
+                        yearList.sort(Collections.reverseOrder());
 
                         currentYear = yearList.get(0);
 
-                        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
-                        Collections.sort(monthList, Collections.reverseOrder());
+                        monthList.addAll(daysMap.get(currentYear).keySet());
+                        monthList.sort(Collections.reverseOrder());
 
-                        currentMonth = monthList.get(0) - 1;
-                        dateButton.setText(getResources().getStringArray(R.array.month_names)[currentMonth + 1] + " " + currentYear);
+                        currentMonth = monthList.get(0);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(Calendar.MONTH,currentMonth);
+                        String monthName = calendar.getDisplayName(Calendar.MONTH,Calendar.LONG, Locale.getDefault());
+                        String buttonTag = monthName+" "+currentYear;
+                        dateButton.setText(buttonTag);
 
-                        getStats(currentMonth + 1, currentYear);
+                        getStats(currentMonth, currentYear);
                     }
                 }
                 else{
