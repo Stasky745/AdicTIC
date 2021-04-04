@@ -1,10 +1,12 @@
 package com.example.adictic.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import androidx.preference.PreferenceManager;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
@@ -12,10 +14,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Crypt;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.example.adictic.util.LocaleHelper;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import retrofit2.Call;
@@ -94,5 +93,13 @@ public class SplashScreen extends AppCompatActivity {
                     });
 
                 });
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        String lang = sharedPreferences.getString("language","none");
+        if(lang.equals("none")) super.attachBaseContext(newBase);
+        else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 }
