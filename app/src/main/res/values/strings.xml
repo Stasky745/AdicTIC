@@ -286,6 +286,8 @@
     <string name="informacio">Informació</string>
     <string name="suport_professional">Suport Professional</string>
     <string name="choose_month">Escull el mes per veure l\'informe</string>
+    <string name="choose_year">Escull l\'any</string>
+
     <string name="tancar_sessio">Tancar sessió</string>
     <string name="change_language">Canviar idioma</string>
 
