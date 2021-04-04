@@ -95,7 +95,7 @@ public class DevicePolicyAdmin extends Activity {
                         this.finish();
                     }
                     else {
-                        this.startActivity(new Intent(this, MainActivityChild.class));
+                        this.startActivity(new Intent(this, NavActivity.class));
                         this.finish();
                     }
             }

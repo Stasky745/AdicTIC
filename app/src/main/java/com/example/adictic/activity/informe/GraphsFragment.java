@@ -167,7 +167,7 @@ public class GraphsFragment extends Fragment {
         pieChart.setDragDecelerationFrictionCoef(0.95f);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setCenterTextSize(25);
-        pieChart.setHoleColor(Color.WHITE);
+        pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.setTransparentCircleRadius(61f);
 
         pieChart.animateY(1000);

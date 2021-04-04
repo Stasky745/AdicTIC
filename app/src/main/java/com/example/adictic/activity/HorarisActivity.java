@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -70,10 +71,51 @@ public class HorarisActivity extends AppCompatActivity {
 
         idChild = getIntent().getLongExtra("idChild",-1);
 
+        setViews();
+
+        if(TodoApp.getTutor() == 1){
+            setViewsTutor(true);
+
+            setChipGroup();
+            setButton();
+        }
+
+        getHoraris();
+    }
+
+    private void setViewsTutor(boolean b) {
+        ET_wakeMon.setClickable(b);
+        ET_wakeTue.setClickable(b);
+        ET_wakeWed.setClickable(b);
+        ET_wakeThu.setClickable(b);
+        ET_wakeFri.setClickable(b);
+        ET_wakeSat.setClickable(b);
+        ET_wakeSun.setClickable(b);
+
+        ET_sleepMon.setClickable(b);
+        ET_sleepTue.setClickable(b);
+        ET_sleepWed.setClickable(b);
+        ET_sleepThu.setClickable(b);
+        ET_sleepFri.setClickable(b);
+        ET_sleepSat.setClickable(b);
+        ET_sleepSun.setClickable(b);
+
+        ET_wakeGeneric.setClickable(b);
+        ET_sleepGeneric.setClickable(b);
+
+        ET_wakeWeekday.setClickable(b);
+        ET_wakeWeekend.setClickable(b);
+
+        ET_sleepWeekday.setClickable(b);
+        ET_sleepWeekend.setClickable(b);
+    }
+
+    private void setViews() {
         chipGroup = (ChipGroup) findViewById(R.id.CG_tipusHorari);
         CH_horariDiari = (Chip) findViewById(R.id.CH_diariHorari);
         CH_horariSetmana = (Chip) findViewById(R.id.CH_setmanaHorari);
         CH_horariGeneric = (Chip) findViewById(R.id.CH_genericHorari);
+        chipGroup.setVisibility(View.GONE);
 
         SV_horariDiari = (ScrollView) findViewById(R.id.SV_horariDiari);
         CL_horariGeneric = (ConstraintLayout) findViewById(R.id.CL_horariGeneric);
@@ -104,12 +146,10 @@ public class HorarisActivity extends AppCompatActivity {
         ET_sleepWeekday = (TextView) findViewById(R.id.ET_sleepWeekday);
         ET_sleepWeekend = (TextView) findViewById(R.id.ET_sleepWeekend);
 
+        setViewsTutor(false);
+
         BT_sendHoraris = (Button) findViewById(R.id.BT_sendHoraris);
-
-        setChipGroup();
-        setButton();
-
-        getHoraris();
+        BT_sendHoraris.setVisibility(View.GONE);
     }
 
     private void getHoraris(){
@@ -227,24 +267,23 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void setChipGroup(){
-        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(ChipGroup group, int checkedId) {
-                if(checkedId == CH_horariDiari.getId()){
-                    SV_horariDiari.setVisibility(View.VISIBLE);
-                    CL_horariGeneric.setVisibility(View.GONE);
-                    CL_horariSetmana.setVisibility(View.GONE);
-                }
-                else if(checkedId == CH_horariSetmana.getId()){
-                    SV_horariDiari.setVisibility(View.GONE);
-                    CL_horariGeneric.setVisibility(View.GONE);
-                    CL_horariSetmana.setVisibility(View.VISIBLE);
-                }
-                else{
-                    SV_horariDiari.setVisibility(View.GONE);
-                    CL_horariGeneric.setVisibility(View.VISIBLE);
-                    CL_horariSetmana.setVisibility(View.GONE);
-                }
+        chipGroup.setVisibility(View.VISIBLE);
+
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if(checkedId == CH_horariDiari.getId()){
+                SV_horariDiari.setVisibility(View.VISIBLE);
+                CL_horariGeneric.setVisibility(View.GONE);
+                CL_horariSetmana.setVisibility(View.GONE);
+            }
+            else if(checkedId == CH_horariSetmana.getId()){
+                SV_horariDiari.setVisibility(View.GONE);
+                CL_horariGeneric.setVisibility(View.GONE);
+                CL_horariSetmana.setVisibility(View.VISIBLE);
+            }
+            else{
+                SV_horariDiari.setVisibility(View.GONE);
+                CL_horariGeneric.setVisibility(View.VISIBLE);
+                CL_horariSetmana.setVisibility(View.GONE);
             }
         });
         chipGroup.clearCheck();
@@ -253,32 +292,30 @@ public class HorarisActivity extends AppCompatActivity {
     }
     
     private void setButton(){
-        BT_sendHoraris.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int checkedId = chipGroup.getCheckedChipId();
+        BT_sendHoraris.setVisibility(View.VISIBLE);
+        BT_sendHoraris.setOnClickListener(v -> {
+            int checkedId = chipGroup.getCheckedChipId();
 
-                wakeSleepList = setWakeSleepLists(checkedId);
+            wakeSleepList = setWakeSleepLists(checkedId);
 
-                Horaris horaris = new Horaris();
+            Horaris horaris = new Horaris();
 
-                horaris.wakeSleepList = wakeSleepList;
+            horaris.wakeSleepList = wakeSleepList;
 
-                Call<String> call = mTodoService.postHoraris(idChild,horaris);
+            Call<String> call = mTodoService.postHoraris(idChild,horaris);
 
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()) finish();
-                        else Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-                    }
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.isSuccessful()) finish();
+                    else Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+                }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 
