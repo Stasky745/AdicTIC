@@ -226,39 +226,33 @@ public class HorarisEventFragment extends DialogFragment{
             }
         });
 
-        BT_accept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Pair<Integer,Integer> startTime = Funcions.stringToTime(ET_eventStart.getText().toString());
-                Pair<Integer,Integer> finishTime = Funcions.stringToTime(ET_eventEnd.getText().toString());
+        BT_accept.setOnClickListener(v -> {
+            Pair<Integer,Integer> startTime = Funcions.stringToTime(ET_eventStart.getText().toString());
+            Pair<Integer,Integer> finishTime = Funcions.stringToTime(ET_eventEnd.getText().toString());
 
-                if(ET_eventName.getText() == null || ET_eventName.getText().toString().equals("")){
-                    Toast.makeText(getContext(),getString(R.string.error_no_event_name),Toast.LENGTH_LONG).show();
-                }
-                else if(CG_eventDays.getCheckedChipIds().isEmpty()){
-                    Toast.makeText(getContext(),getString(R.string.error_no_event_days),Toast.LENGTH_LONG).show();
-                }
-                else if(finishTime.first < startTime.first || (finishTime.first.equals(startTime.first) && finishTime.second <= startTime.second)){
-                    Toast.makeText(getContext(),getString(R.string.error_incorrect_times),Toast.LENGTH_LONG).show();
-                }
-                else{
-                    event.name = ET_eventName.getText().toString();
-                    mCallback.onSelectedData(event);
-                    dismiss();
-                }
+            if(ET_eventName.getText() == null || ET_eventName.getText().toString().equals("")){
+                Toast.makeText(getContext(),getString(R.string.error_no_event_name),Toast.LENGTH_LONG).show();
+            }
+            else if(CG_eventDays.getCheckedChipIds().isEmpty()){
+                Toast.makeText(getContext(),getString(R.string.error_no_event_days),Toast.LENGTH_LONG).show();
+            }
+            else if(finishTime.first < startTime.first || (finishTime.first.equals(startTime.first) && finishTime.second <= startTime.second)){
+                Toast.makeText(getContext(),getString(R.string.error_incorrect_times),Toast.LENGTH_LONG).show();
+            }
+            else{
+                event.name = ET_eventName.getText().toString();
+                mCallback.onSelectedData(event);
+                dismiss();
             }
         });
 
-        BT_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                event.start = originalStart;
-                event.finish = originalFinish;
-                event.days = originalDays;
-                setDaysChecked();
-                event.name = originalTitle;
-                dismiss();
-            }
+        BT_cancel.setOnClickListener(v -> {
+            event.start = originalStart;
+            event.finish = originalFinish;
+            event.days = originalDays;
+            setDaysChecked();
+            event.name = originalTitle;
+            dismiss();
         });
 
 
