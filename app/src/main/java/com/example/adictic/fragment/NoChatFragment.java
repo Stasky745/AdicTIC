@@ -28,12 +28,7 @@ public class NoChatFragment extends Fragment {
 
         Button enviar_dubte = root.findViewById(R.id.BT_enviar_dubte);
 
-        enviar_dubte.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), EnviarDubte.class));
-            }
-        });
+        enviar_dubte.setOnClickListener(v -> startActivity(new Intent(getActivity(), EnviarDubte.class)));
 
         return root;
     }

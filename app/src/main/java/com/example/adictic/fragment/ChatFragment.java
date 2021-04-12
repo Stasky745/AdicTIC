@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -51,7 +52,8 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_chat, container, false);
+        view = inflater.inflate(R.layout.chat_layout, container, false);
+        setHasOptionsMenu(true);
         Activity activity = getActivity();
 
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
@@ -64,36 +66,35 @@ public class ChatFragment extends Fragment {
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
-        Button sendButton = (Button) view.findViewById(R.id.button_chatbox_send);
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
-                if(!chatbox.getText().toString().isEmpty()){
-                    UserMessage um = new UserMessage();
-                    um.createdAt = new Date();
-                    um.message=chatbox.getText().toString();
-                    um.senderId = myId;
-                    chatbox.setText("");
-                    Long userId = activity.getIntent().getExtras().getLong("userId");
-                    Call<String> postCall = mTodoService.sendMessageToUser(userId.toString(),um);
-                    postCall.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> postCall, Response<String> response) {
-                            if (response.isSuccessful()) {
-                                if(response.body().equals("Closed")) closeChat();
-                                else mMessageAdapter.add(um);
-                            }
+        ImageView sendButton = (ImageView) view.findViewById(R.id.IV_send);
+        sendButton.setClickable(true);
+        sendButton.setOnClickListener((View.OnClickListener) v -> {
+            EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+            if(!chatbox.getText().toString().isEmpty()){
+                UserMessage um = new UserMessage();
+                um.createdAt = new Date();
+                um.message=chatbox.getText().toString();
+                um.senderId = myId;
+                chatbox.setText("");
+                long userId = activity.getIntent().getExtras().getLong("userId");
+                Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId),um);
+                postCall.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> postCall, Response<String> response) {
+                        if (response.isSuccessful()) {
+                            if(response.body().equals("Closed")) closeChat();
+                            else mMessageAdapter.add(um);
                         }
-                        @Override
-                        public void onFailure(Call<String> postCall, Throwable t) {
-                            Toast.makeText(activity.getBaseContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
+                    }
+                    @Override
+                    public void onFailure(Call<String> postCall, Throwable t) {
+                        Toast.makeText(activity.getBaseContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
-        ConstraintLayout constraint = (ConstraintLayout) view.findViewById(R.id.chat_constraint);
+        ConstraintLayout constraint = (ConstraintLayout) view.findViewById(R.id.CL_obrirPerfil);
         constraint.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 /*Intent i = new Intent(getApplicationContext(),OtherUserProfile.class);
@@ -135,7 +136,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        active = Long.valueOf(0);
+        active = 0L;
     }
 
     private void getOtherUser(){
@@ -189,17 +190,20 @@ public class ChatFragment extends Fragment {
             public void onResponse(Call<List<UserMessage>> call, Response<List<UserMessage>> response) {
                 if(response.isSuccessful()){
                     if(!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
-                } else {
+                }
+                else {
+                    Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UserMessage>> call, Throwable t) {
+                Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             UserMessage um = new UserMessage();
             um.message = intent.getStringExtra("message");
@@ -215,7 +219,7 @@ public class ChatFragment extends Fragment {
         }
     };
 
-    private BroadcastReceiver closeChatReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver closeChatReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             closeChat();
         }
@@ -252,8 +256,9 @@ public class ChatFragment extends Fragment {
         }
 
         // Inflates the appropriate layout according to the ViewType.
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
 
             if (viewType == VIEW_TYPE_MESSAGE_SENT) {
@@ -295,7 +300,7 @@ public class ChatFragment extends Fragment {
 
             void bind(UserMessage mes) {
                 messageText.setText(mes.message);
-                messageText.setTextColor(Color.BLACK);
+
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
                 if(mes.createdAt.getHours()<10) time+="0";
@@ -319,7 +324,7 @@ public class ChatFragment extends Fragment {
 
             void bind(UserMessage message) {
                 messageText.setText(message.message);
-                messageText.setTextColor(Color.BLACK);
+
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
                 if(message.createdAt.getHours()<10) time+="0";

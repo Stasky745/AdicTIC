@@ -28,7 +28,7 @@
         <activity
             android:name=".activity.ChatActivity"
             android:label="@string/title_activity_dubte"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity
             android:name=".activity.NavActivity"
             android:label="@string/title_activity_nav" />
