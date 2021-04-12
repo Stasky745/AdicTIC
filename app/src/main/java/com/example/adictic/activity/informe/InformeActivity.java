@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -255,7 +256,7 @@ public class InformeActivity extends AppCompatActivity {
                 (selectedMonth, selectedYear) -> {
                     currentYear = selectedYear;
                     monthList.clear();
-                    monthList.addAll(daysMap.get(currentYear).keySet());
+                    monthList.addAll(Objects.requireNonNull(daysMap.get(currentYear)).keySet());
                     monthList.sort(Collections.reverseOrder());
                     currentMonth = Collections.min(monthList);
 
@@ -341,7 +342,7 @@ public class InformeActivity extends AppCompatActivity {
 
                         currentYear = Collections.max(yearList);
 
-                        monthList.addAll(daysMap.get(currentYear).keySet());
+                        monthList.addAll(Objects.requireNonNull(daysMap.get(currentYear)).keySet());
                         monthList.sort(Collections.reverseOrder());
 
                         currentMonth = Collections.max(monthList);
