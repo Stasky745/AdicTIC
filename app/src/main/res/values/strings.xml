@@ -293,4 +293,8 @@
 
     <string name="spanish">Castellà</string>
     <string name="catalan">Català</string>
+    <string name="send">Enviar</string>
+    <string name="enter_message">Escriu un missatge</string>
+    <string name="tancar_xat">Tancar xat.</string>
+    <string name="menu_permisos">Donar permisos per veure les dades.</string>
 </resources>

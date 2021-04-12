@@ -67,32 +67,29 @@ public class EnviarDubte extends Activity {
 
     private void setSendButton(){
         Button BT_enviar = (Button) findViewById(R.id.BT_enviar);
-        BT_enviar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Dubte newDubte = new Dubte();
-                newDubte.titol = TIET_titol.getText().toString();
-                newDubte.descripcio = TIET_desc.getText().toString();
-                newDubte.localitzacio = ((Localitzacio) SP_local.getSelectedItem()).id;
+        BT_enviar.setOnClickListener(v -> {
+            Dubte newDubte = new Dubte();
+            newDubte.titol = TIET_titol.getText().toString();
+            newDubte.descripcio = TIET_desc.getText().toString();
+            newDubte.localitzacio = ((Localitzacio) SP_local.getSelectedItem()).id;
 
-                Call<String> call = mTodoService.postDubte(newDubte);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()){ finish(); }
-                        else{
-                            Toast toast = Toast.makeText(mCtx, R.string.error_local, Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast toast = Toast.makeText(mCtx, R.string.error_server_read, Toast.LENGTH_SHORT);
+            Call<String> call = mTodoService.postDubte(newDubte);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.isSuccessful()){ finish(); }
+                    else{
+                        Toast toast = Toast.makeText(mCtx, R.string.error_local, Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Toast toast = Toast.makeText(mCtx, R.string.error_server_read, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         });
     }
 
