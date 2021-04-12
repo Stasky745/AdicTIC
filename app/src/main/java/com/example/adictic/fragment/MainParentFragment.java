@@ -43,12 +43,14 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -259,14 +261,15 @@ public class MainParentFragment extends Fragment {
     }
 
     private void getStats(){
-        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH),Calendar.getInstance().get(Calendar.MONTH),Calendar.getInstance().get(Calendar.YEAR));
+        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH),Calendar.getInstance().get(Calendar.MONTH)+1,Calendar.getInstance().get(Calendar.YEAR));
         Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected,dataAvui,dataAvui);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-                    makeGraph(response.body());
+                if (response.isSuccessful() && response.body() != null) {
+                    Collection<GeneralUsage> collection = response.body();
+                    Funcions.canviarMesosDeServidor(collection);
+                    makeGraph(collection);
                 } else {
                     Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
@@ -295,7 +298,22 @@ public class MainParentFragment extends Fragment {
             }
         }
 
+        setMascot(totalUsageTime);
         setPieChart(mapUsage,totalUsageTime);
+    }
+
+    private void setMascot(long totalUsageTime) {
+        ImageView IV_mascot = root.findViewById(R.id.IV_mascot);
+
+        if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<21){
+            if(totalUsageTime < TimeUnit.HOURS.toMillis(1)) IV_mascot.setImageResource(R.drawable.mascot_min);
+            else if(totalUsageTime < TimeUnit.MINUTES.toMillis(90)) IV_mascot.setImageResource(R.drawable.mascot_hora);
+            else if(totalUsageTime < TimeUnit.MINUTES.toMillis(135)) IV_mascot.setImageResource(R.drawable.mascot_molt);
+            else IV_mascot.setImageResource(R.drawable.mascot_max);
+        }
+        else{
+            IV_mascot.setImageResource(R.drawable.mascot_nit);
+        }
     }
 
     private void setPieChart(Map<String,Long> mapUsage, long totalUsageTime){
@@ -371,7 +389,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        Funcions.askChildForLiveApp(getContext(),idChildSelected, false);
+        if(TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(getContext(),idChildSelected, false);
         super.finalize();
     }
 }

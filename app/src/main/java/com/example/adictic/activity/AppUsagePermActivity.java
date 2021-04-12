@@ -2,13 +2,10 @@ package com.example.adictic.activity;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.usage.UsageStatsManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.work.OneTimeWorkRequest;
@@ -23,8 +20,6 @@ import java.util.Calendar;
 
 public class AppUsagePermActivity extends Activity {
 
-    protected static final int REQUEST_ENABLE = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,13 +27,7 @@ public class AppUsagePermActivity extends Activity {
 
         Button bt_okay = (Button)findViewById(R.id.BT_okAppUsagePerm);
 
-        bt_okay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
-                AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-            }
-        });
+        bt_okay.setOnClickListener(v -> AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
     }
 
     @Override
@@ -47,6 +36,7 @@ public class AppUsagePermActivity extends Activity {
         if(Funcions.isAppUsagePermissionOn(this)){
 
             Calendar cal = Calendar.getInstance();
+            // Agafem dades dels últims X dies per inicialitzar dades al servidor
             cal.add(Calendar.DAY_OF_YEAR,-6);
             TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
 
@@ -57,11 +47,10 @@ public class AppUsagePermActivity extends Activity {
 
             if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-                this.finish();
             } else {
                 this.startActivity(new Intent(this, NavActivity.class));
-                this.finish();
             }
+            this.finish();
         }
 
         super.onResume();
@@ -76,11 +65,10 @@ public class AppUsagePermActivity extends Activity {
                 System.out.println("DINS");
                 if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-                    this.finish();
                 } else {
                     this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
                 }
+                this.finish();
             }
         }
     }
