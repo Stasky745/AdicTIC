@@ -200,34 +200,27 @@ public class HorarisMainActivity extends AppCompatActivity implements IEventDial
             }
         });
 
-        BT_afegirEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HorarisEvents newEvent = new HorarisEvents();
-                newEvent.id = Long.parseLong("0");
-                newEvent.name = "";
-                newEvent.start = "00:00";
-                newEvent.finish = "00:00";
-                newEvent.days = new ArrayList<>();
+        BT_afegirEvent.setOnClickListener(view -> {
+            HorarisEvents newEvent = new HorarisEvents();
+            newEvent.id = Long.parseLong("0");
+            newEvent.name = "";
+            newEvent.start = "00:00";
+            newEvent.finish = "00:00";
+            newEvent.days = new ArrayList<>();
 
-                FragmentManager fm = getSupportFragmentManager();
-                HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),newEvent);
-                horarisEventFragment.show(fm,"fragment_create_event");
-            }
+            FragmentManager fm = getSupportFragmentManager();
+            HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),newEvent);
+            horarisEventFragment.show(fm,"fragment_create_event");
         });
 
-        BT_modificarEvent.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ShowToast")
-            @Override
-            public void onClick(View view) {
-                if(selectedEvent != null){
-                    FragmentManager fm = getSupportFragmentManager();
-                    HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),selectedEvent);
-                    horarisEventFragment.show(fm,"fragment_edit_event");
-                }
-                else{
-                    Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
-                }
+        BT_modificarEvent.setOnClickListener(view -> {
+            if(selectedEvent != null){
+                FragmentManager fm = getSupportFragmentManager();
+                HorarisEventFragment horarisEventFragment = HorarisEventFragment.newInstance(getString(R.string.events),selectedEvent);
+                horarisEventFragment.show(fm,"fragment_edit_event");
+            }
+            else{
+                Toast.makeText(HorarisMainActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
             }
         });
     }
