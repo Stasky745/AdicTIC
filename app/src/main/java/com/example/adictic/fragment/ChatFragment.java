@@ -53,7 +53,6 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.chat_layout, container, false);
-        setHasOptionsMenu(true);
         Activity activity = getActivity();
 
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
@@ -64,7 +63,6 @@ public class ChatFragment extends Fragment {
         mMessageAdapter = new MessageListAdapter(getContext());
         mMessageRecycler.setAdapter(mMessageAdapter);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
 
         ImageView sendButton = (ImageView) view.findViewById(R.id.IV_send);
         sendButton.setClickable(true);
