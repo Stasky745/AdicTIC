@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.adapters.ChatsAdapter;
+import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.rest.TodoApi;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -48,7 +49,6 @@ public class ChatActivity extends AppCompatActivity {
 
                 ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),_hasClosedChats, _chatObert);
                 _vpChats.setAdapter(adapter);
-
 
                 new TabLayoutMediator(_tabChat, _vpChats,
                         (tab, position) -> tab.setText(adapter.getPageTitle(position))

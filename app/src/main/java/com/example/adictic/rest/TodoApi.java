@@ -6,6 +6,7 @@ import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.ChatInfo;
+import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
@@ -148,20 +149,20 @@ public interface TodoApi {
     //Chat
     ///////////////////////////////////
 
-    @GET("/message/me/hasOpen")
-    Call<Long> hasAnOpenChat();
+    @POST("/message/acces")
+    Call<String> giveAccess(@Body Boolean access);
+
+    @GET("/message/me/info")
+    Call<ChatsMain> getChatsInfo();
+
+    @POST("/message/me/{id}/close")
+    Call<String> closeChat(@Path("id") Long idUserAdmin);
 
     @GET("/message/me/{id}")
     Call<List<UserMessage>> getMyMessagesWithUser(@Path("id") String id);
 
     @POST("/message/me/{id}")
     Call<String> sendMessageToUser(@Path("id") String id,@Body UserMessage value);
-
-    @GET("/message/me/hasClosed")
-    Call<Boolean> hasClosedChats();
-
-    @GET("/message/me/closed")
-    Call<List<ChatInfo>> getMyClosedChats();
 
     ///////////////////////////////////
 }

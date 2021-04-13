@@ -46,7 +46,6 @@ public class AdviceFragment extends Fragment {
             public void onResponse(Call<Long> call, Response<Long> response) {
                 if (response.isSuccessful()) {
                     Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
-                    chatIntent.putExtra("userId", response.body()); // -1 = no connection, 0 = false, 1 = true
                     BT_ConsultaPrivada.setOnClickListener(v -> startActivity(chatIntent));
                 }
             }
