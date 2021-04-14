@@ -1,9 +1,7 @@
-package com.example.adictic.activity;
+package com.example.adictic.activity.chat;
 
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.adapters.ChatsAdapter;
-import com.example.adictic.entity.ChatInfo;
+import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.rest.TodoApi;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -39,28 +37,26 @@ public class ChatActivity extends AppCompatActivity {
         _vpChats = (ViewPager2) findViewById(R.id.VP_chats);
         _tabChat = (TabLayout) findViewById(R.id.TABL_chats);
 
-        Call<Boolean> call = mTodoService.hasClosedChats();
-        call.enqueue(new Callback<Boolean>() {
+        Call<ChatsMain> call = mTodoService.getChatsInfo();
+        call.enqueue(new Callback<ChatsMain>() {
             @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    _hasClosedChats = response.body();
-                } else _hasClosedChats = false;
+            public void onResponse(Call<ChatsMain> call, Response<ChatsMain> response) {
+                if(response.isSuccessful()){
+                    ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),response.body());
+                    _vpChats.setAdapter(adapter);
 
-                ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),_hasClosedChats, _chatObert);
-                _vpChats.setAdapter(adapter);
+                    new TabLayoutMediator(_tabChat, _vpChats,
+                            (tab, position) -> tab.setText(adapter.getPageTitle(position))
+                    ).attach();
 
-                new TabLayoutMediator(_tabChat, _vpChats,
-                        (tab, position) -> tab.setText(adapter.getPageTitle(position))
-                ).attach();
-
-                if(adapter.getItemCount()>1){
-                    _tabChat.setVisibility(View.VISIBLE);
+                    if(adapter.getItemCount()>1){
+                        _tabChat.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
+            public void onFailure(Call<ChatsMain> call, Throwable t) {
 
             }
         });

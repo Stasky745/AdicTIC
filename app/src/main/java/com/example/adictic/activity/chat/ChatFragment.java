@@ -1,4 +1,4 @@
-package com.example.adictic.fragment;
+package com.example.adictic.activity.chat;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
@@ -43,9 +46,11 @@ public class ChatFragment extends Fragment {
     RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
     private TodoApi mTodoService;
-    static public Long active;
+    public static Long adminUserId;
+    private boolean active;
+    private boolean access;
+    private ChatInfo chatInfo;
     private Long myId;
-    public boolean closed = false;
     private View view;
 
     @Override
@@ -55,18 +60,43 @@ public class ChatFragment extends Fragment {
         view = inflater.inflate(R.layout.chat_layout, container, false);
         Activity activity = getActivity();
 
+        assert getArguments() != null;
+        access = getArguments().getBoolean("access");
+        chatInfo = getArguments().getParcelable("chat");
+        active = getArguments().getBoolean("active");
+
+        adminUserId = chatInfo.admin.idUser;
+
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
-        myId = TodoApp.getIDTutor();
-        getOtherUser();
 
-        mMessageRecycler = (RecyclerView) view.findViewById(R.id.RV_chat);
-        mMessageAdapter = new MessageListAdapter(getContext());
-        mMessageRecycler.setAdapter(mMessageAdapter);
-        mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        // Agafem la nostra id
+        if(TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
+        else myId = TodoApp.getIDChild();
 
+        setViews();
+        setRecyclerView();
+        setButtons(activity);
+        setBroadcastManagers();
+
+        return view;
+    }
+
+    private void setViews() {
+        if(!active) closeChat();
+    }
+
+    private void setBroadcastManagers() {
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(messageReceiver,
+                new IntentFilter("NewMessage"));
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(closeChatReceiver,
+                new IntentFilter("CloseChat"));
+    }
+
+    private void setButtons(Activity activity) {
         ImageView sendButton = (ImageView) view.findViewById(R.id.IV_send);
         sendButton.setClickable(true);
-        sendButton.setOnClickListener((View.OnClickListener) v -> {
+        sendButton.setOnClickListener(v -> {
             EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
             if(!chatbox.getText().toString().isEmpty()){
                 UserMessage um = new UserMessage();
@@ -74,14 +104,13 @@ public class ChatFragment extends Fragment {
                 um.message=chatbox.getText().toString();
                 um.senderId = myId;
                 chatbox.setText("");
-                long userId = activity.getIntent().getExtras().getLong("userId");
+                long userId = chatInfo.admin.idUser;
                 Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId),um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> postCall, Response<String> response) {
                         if (response.isSuccessful()) {
-                            if(response.body().equals("Closed")) closeChat();
-                            else mMessageAdapter.add(um);
+                            mMessageAdapter.add(um);
                         }
                     }
                     @Override
@@ -93,73 +122,86 @@ public class ChatFragment extends Fragment {
         });
 
         ConstraintLayout constraint = (ConstraintLayout) view.findViewById(R.id.CL_obrirPerfil);
-        constraint.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                /*Intent i = new Intent(getApplicationContext(),OtherUserProfile.class);
-                i.putExtra("userId",getIntent().getLongExtra("userId",0));
-                startActivity(i);*/
-            }
+        constraint.setOnClickListener(v -> {
+            /*Intent i = new Intent(getApplicationContext(),OtherUserProfile.class);
+            i.putExtra("userId",getIntent().getLongExtra("userId",0));
+            startActivity(i);*/
         });
 
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(messageReceiver,
-                new IntentFilter("NewMessage"));
+        setCloseButton();
+        setAccess();
+    }
 
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(closeChatReceiver,
-                new IntentFilter("CloseChat"));
+    private void setAccess() {
+        ImageView IV_acces = view.findViewById(R.id.IV_acces);
+        setAccessButtonImage(IV_acces);
+        IV_acces.setClickable(true);
+        IV_acces.setOnClickListener(view -> {
+            access = !access;
+            setAccessButtonImage(IV_acces);
+        });
+    }
 
+    private void setAccessButtonImage(ImageView IV_acces) {
+        if(!access){
+            IV_acces.setImageResource(R.drawable.ic_donar_acces);
+            DrawableCompat.setTint(
+                    DrawableCompat.wrap(IV_acces.getDrawable()),
+                    ContextCompat.getColor(getContext(),R.color.black_overlay)
+            );
+        }
+        else{
+            IV_acces.setImageResource(R.drawable.ic_treure_acces);
+            DrawableCompat.setTint(
+                    DrawableCompat.wrap(IV_acces.getDrawable()),
+                    ContextCompat.getColor(getContext(),R.color.vermell)
+            );
+        }
+    }
 
-        return view;
+    private void setCloseButton() {
+        ImageView IV_closeChat = view.findViewById(R.id.IV_closeChat);
+        IV_closeChat.setClickable(true);
+        IV_closeChat.setOnClickListener(view -> {
+          Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser);
+          call.enqueue(new Callback<String>() {
+              @Override
+              public void onResponse(Call<String> call, Response<String> response) {
+                  if(response.isSuccessful()) closeChat();
+              }
+
+              @Override
+              public void onFailure(Call<String> call, Throwable t) {
+                    Toast.makeText(getContext(),R.string.error_sending_data,Toast.LENGTH_SHORT).show();
+              }
+          });
+        });
+    }
+
+    private void setRecyclerView() {
+        mMessageRecycler = (RecyclerView) view.findViewById(R.id.RV_chat);
+        mMessageAdapter = new MessageListAdapter(getContext());
+        mMessageRecycler.setAdapter(mMessageAdapter);
+        mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void closeChat(){
-        if(!closed) {
-            EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
-            chatbox.setEnabled(false);
-            chatbox.setHint("Chat is closed!");
-            chatbox.setText("");
-            closed = true;
-        }
+        active = false;
+        EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+        chatbox.setEnabled(false);
+        chatbox.setHint("Chat is closed!");
+        chatbox.setText("");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        active = getActivity().getIntent().getExtras().getLong("userId");
         this.getMessages();
-        if(!getActivity().getIntent().getBooleanExtra("active",true)){
-            closeChat();
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        active = 0L;
-    }
-
-    private void getOtherUser(){
-        /*active = getActivity().getIntent().getExtras().getLong("userId");
-        Call<User> call = mTodoService.getUser(active.toString());
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if(response.isSuccessful()){
-                    User u = response.body();
-                    ((TextView)findViewById(R.id.chat_username)).setText(u.name);
-                    if (u.updatedImage)
-                        showImage(u,findViewById(R.id.chat_userlogo));
-                    else
-                        new MessageListActivity.DownloadImageFromInternet((ImageView)findViewById(R.id.chat_userlogo)).execute(u.image);
-                } else {
-                    Toast.makeText(getBaseContext(), "Error reading messages", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-            }
-        });*/
-
     }
 
     private void showImage(User u, ImageView iv)
@@ -182,7 +224,7 @@ public class ChatFragment extends Fragment {
 
     public void getMessages(){
         mMessageAdapter.clear();
-        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(active.toString());
+        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(chatInfo.admin.idUser.toString());
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(Call<List<UserMessage>> call, Response<List<UserMessage>> response) {
@@ -208,11 +250,10 @@ public class ChatFragment extends Fragment {
             um.createdAt= new Date();
             um.senderId = intent.getLongExtra("senderId",0);
             mMessageAdapter.add(um);
-            if(closed) {
+            if(!active) {
                 EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
                 chatbox.setEnabled(true);
                 chatbox.setHint("Enter message");
-                closed = false;
             }
         }
     };

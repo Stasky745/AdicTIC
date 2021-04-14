@@ -26,7 +26,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup,android:icon">
         <activity
-            android:name=".activity.ChatActivity"
+            android:name=".activity.chat.ChatActivity"
             android:label="@string/title_activity_dubte"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity
@@ -39,8 +39,8 @@
         <activity android:name=".activity.Register" />
         <activity android:name=".activity.NomFill" />
         <activity android:name=".activity.MainActivityChild" />
-        <activity android:name=".activity.AppUsagePermActivity" />
-        <activity android:name=".activity.AccessibilityPermActivity" />
+        <activity android:name=".activity.permisos.AppUsagePermActivity" />
+        <activity android:name=".activity.permisos.AccessibilityPermActivity" />
         <activity android:name=".activity.DayUsageActivity" />
         <activity
             android:name=".activity.SplashScreen"
@@ -72,7 +72,7 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
         </service> <!-- DEVICE ADMIN POLICIES -->
-        <activity android:name=".activity.DevicePolicyAdmin" />
+        <activity android:name=".activity.permisos.DevicePolicyAdmin" />
         <activity android:name=".activity.HorarisActivity" />
         <activity android:name=".activity.BlockAppsActivity" />
         <activity android:name=".activity.informe.InformeActivity" />
@@ -80,11 +80,11 @@
         <activity android:name=".activity.InformationActivity" />
         <activity android:name=".activity.HorarisMainActivity" />
         <activity android:name=".activity.OficinesActivity" />
-        <activity android:name=".activity.EnviarDubte" />
+        <activity android:name=".activity.chat.EnviarDubte" />
         <activity android:name=".activity.GeoLocActivity" />
 
         <receiver
-            android:name=".activity.DevicePolicyAdmin$MyDevicePolicyReceiver"
+            android:name=".activity.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"
             android:description="@string/device_admin_description"
             android:label="@string/device_admin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

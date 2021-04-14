@@ -22,7 +22,7 @@ import com.example.adictic.MyNotificationManager;
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Horaris;
-import com.example.adictic.fragment.ChatFragment;
+import com.example.adictic.activity.chat.ChatFragment;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -47,7 +48,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     TodoApi mTodoService;
 
     @Override
-    public void onNewToken(String token) {
+    public void onNewToken(@NonNull String token) {
         Log.d(TAG, "Refreshed token: " + token);
 
         // If you want to send messages to this application instance or
@@ -70,7 +71,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
     
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
@@ -78,8 +79,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Map<String,String> messageMap = remoteMessage.getData();
 
-        String title = null;
-        String body = null;
+        String title = "";
+        String body = "";
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -102,7 +103,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                          /** Accions del dispositiu fill**/
             if(messageMap.containsKey("blockDevice")){
-                if(messageMap.get("blockDevice").equals("1")){
+                if(Objects.equals(messageMap.get("blockDevice"), "1")){
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     TodoApp.setBlockedDevice(true);
                     mDPM.lockNow();
@@ -110,7 +111,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 else TodoApp.setBlockedDevice(false);
             }
             else if(messageMap.containsKey("freeUse")){
-                if(messageMap.get("freeUse").equals("1")){
+                if(Objects.equals(messageMap.get("freeUse"), "1")){
                     Funcions.startFreeUseLimitList(getApplicationContext());
 
                     title = getString(R.string.free_use_activation);
@@ -153,14 +154,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
                 call.enqueue(new Callback<Horaris>() {
                     @Override
-                    public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+                    public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                         if(response.isSuccessful()){
+                            assert response.body() != null;
                             Funcions.updateEventList(getApplicationContext(),response.body().events);
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Horaris> call, Throwable t) {
+                    public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
 
                     }
                 });
@@ -171,7 +173,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Funcions.runGeoLocWorker(getApplicationContext());
             }
 
-                    /** Accions del dispositiu pare **/
+            /**
+             * Accions del dispositiu pare
+             * **/
             else if(messageMap.containsKey("currentAppUpdate")){
                 String aux = messageMap.get("currentAppUpdate");
 
@@ -185,7 +189,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
             else if(messageMap.containsKey("chat")){
-                switch (remoteMessage.getData().get("chat")) {
+                switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
                     case "0":
                         //if the message contains data payload
                         //It is a map of custom keyvalues
@@ -209,14 +213,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         MyNotificationManager.getInstance(this).displayNotification(title, body);
                         break;
                     case "1":  //Message with Chat
-                        Long myId = Long.parseLong(remoteMessage.getData().get("myID"));
-                        Long userID = Long.parseLong(remoteMessage.getData().get("userID"));
-                        if (ChatFragment.active == userID) {
+                        Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
+                        Long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
+                        if (ChatFragment.adminUserId.equals(userID)) {
                             Intent intent = new Intent("NewMessage");
                             intent.putExtra("message", body);
                             intent.putExtra("senderId", userID);
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-
                         } else {
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                 NotificationManager mNotificationManager =
@@ -236,8 +239,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         break;
                     case "2":
-                        Long userId = Long.parseLong(remoteMessage.getData().get("userId"));
-                        if (ChatFragment.active.equals(userId)) {
+                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userId")));
+                        if (ChatFragment.adminUserId.equals(userId)) {
                             Intent intent = new Intent("CloseChat");
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         }
@@ -248,8 +251,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        if (title != null || body != null) {
-            if(body == null) body = "";
+        if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
             MyNotificationManager.getInstance(this).displayNotification(title, body);
@@ -293,10 +295,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) { }
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) { }
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
                 });
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();

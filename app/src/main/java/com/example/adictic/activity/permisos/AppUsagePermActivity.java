@@ -1,4 +1,4 @@
-package com.example.adictic.activity;
+package com.example.adictic.activity.permisos;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -13,6 +13,7 @@ import androidx.work.WorkManager;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.NavActivity;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.util.Funcions;
 

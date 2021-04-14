@@ -1,4 +1,4 @@
-package com.example.adictic.fragment;
+package com.example.adictic.activity.chat;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,6 +29,7 @@ public class ChatsClosedFragment extends Fragment {
     TodoApi mTodoService;
 
     RecyclerView mRecyclerView;
+    List<ChatInfo> chatsList;
     private ClosedChatsListAdapter mAdapter;
 
     @Override
@@ -44,6 +45,9 @@ public class ChatsClosedFragment extends Fragment {
         super.onStart();
         mTodoService = ((TodoApp) this.getActivity().getApplication()).getAPI();
 
+        assert getArguments() != null;
+        chatsList = getArguments().getParcelableArrayList("list");
+
         mRecyclerView = getView().findViewById(R.id.RV_chats_closed);
         mAdapter = new ClosedChatsListAdapter(this.getActivity().getApplication());
         mRecyclerView.setAdapter(mAdapter);
@@ -53,23 +57,23 @@ public class ChatsClosedFragment extends Fragment {
     }
 
     public void updateClosedChatsList() {
-        Call<List<ChatInfo>> call = null;
-        call = mTodoService.getMyClosedChats();
-        call.enqueue(new Callback<List<ChatInfo>>() {
-            @Override
-            public void onResponse(Call<List<ChatInfo>> call, Response<List<ChatInfo>> response) {
-                if (response.isSuccessful()) {
-                    mAdapter.clear();
-                    for (ChatInfo t : response.body()) {
-                        if(!t.chatActive) mAdapter.add(t);
-                    }
-                } else {
-                    Toast.makeText(ChatsClosedFragment.this.getContext(), "Error reading chats", Toast.LENGTH_LONG).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<List<ChatInfo>> call, Throwable t) {}
-        });
+//        Call<List<ChatInfo>> call = null;
+//        call = mTodoService.getMyClosedChats();
+//        call.enqueue(new Callback<List<ChatInfo>>() {
+//            @Override
+//            public void onResponse(Call<List<ChatInfo>> call, Response<List<ChatInfo>> response) {
+//                if (response.isSuccessful()) {
+//                    mAdapter.clear();
+//                    for (ChatInfo t : response.body()) {
+//                        if(!t.chatActive) mAdapter.add(t);
+//                    }
+//                } else {
+//                    Toast.makeText(ChatsClosedFragment.this.getContext(), "Error reading chats", Toast.LENGTH_LONG).show();
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<List<ChatInfo>> call, Throwable t) {}
+//        });
     }
 
     static class ChatInfoViewHolder extends RecyclerView.ViewHolder {
@@ -102,7 +106,7 @@ public class ChatsClosedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ChatInfoViewHolder holder, final int position) {
-            holder.name.setText(list.get(position).otherUser.name);
+            holder.name.setText(list.get(position).admin.nom);
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override

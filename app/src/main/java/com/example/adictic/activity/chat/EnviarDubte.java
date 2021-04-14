@@ -1,4 +1,4 @@
-package com.example.adictic.activity;
+package com.example.adictic.activity.chat;
 
 import android.app.Activity;
 import android.content.Context;
