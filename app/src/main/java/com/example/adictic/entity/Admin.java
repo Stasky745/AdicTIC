@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Admin implements Parcelable {
     public Long idUser;
-    public String nom;
+    public String name;
     public String professio;
-    public String descripcio;
+    public String description;
     public List<WebLink> webLinks;
     public Long idOficina;
 
@@ -19,9 +19,9 @@ public class Admin implements Parcelable {
         } else {
             idUser = in.readLong();
         }
-        nom = in.readString();
+        name = in.readString();
         professio = in.readString();
-        descripcio = in.readString();
+        description = in.readString();
         webLinks = in.createTypedArrayList(WebLink.CREATOR);
         if (in.readByte() == 0) {
             idOficina = null;
@@ -50,9 +50,9 @@ public class Admin implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeLong(idUser);
-        parcel.writeString(nom);
+        parcel.writeString(name);
         parcel.writeString(professio);
-        parcel.writeString(descripcio);
+        parcel.writeString(description);
         parcel.writeLong(idOficina);
         parcel.writeList(webLinks);
     }

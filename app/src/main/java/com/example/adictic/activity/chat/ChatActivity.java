@@ -12,6 +12,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.adapters.ChatsAdapter;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -23,15 +24,14 @@ public class ChatActivity extends AppCompatActivity {
 
     TabLayout _tabChat;
     ViewPager2 _vpChats;
-    Boolean _hasClosedChats;
-    long _chatObert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Funcions.closeKeyboard(findViewById(R.id.main_parent),this);
 
-        _chatObert = getIntent().getLongExtra("userId",-1);
+
         TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
 
         _vpChats = (ViewPager2) findViewById(R.id.VP_chats);
@@ -42,7 +42,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ChatsMain> call, Response<ChatsMain> response) {
                 if(response.isSuccessful()){
-                    ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),response.body());
+                    ChatsMain chatMain = response.body();
+                    ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),chatMain);
                     _vpChats.setAdapter(adapter);
 
                     new TabLayoutMediator(_tabChat, _vpChats,
