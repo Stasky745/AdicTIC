@@ -50,40 +50,21 @@ public class ChatsClosedFragment extends Fragment {
 
         mRecyclerView = getView().findViewById(R.id.RV_chats_closed);
         mAdapter = new ClosedChatsListAdapter(this.getActivity().getApplication());
+        mAdapter.setList(chatsList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-
-        updateClosedChatsList();
-    }
-
-    public void updateClosedChatsList() {
-//        Call<List<ChatInfo>> call = null;
-//        call = mTodoService.getMyClosedChats();
-//        call.enqueue(new Callback<List<ChatInfo>>() {
-//            @Override
-//            public void onResponse(Call<List<ChatInfo>> call, Response<List<ChatInfo>> response) {
-//                if (response.isSuccessful()) {
-//                    mAdapter.clear();
-//                    for (ChatInfo t : response.body()) {
-//                        if(!t.chatActive) mAdapter.add(t);
-//                    }
-//                } else {
-//                    Toast.makeText(ChatsClosedFragment.this.getContext(), "Error reading chats", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//            @Override
-//            public void onFailure(Call<List<ChatInfo>> call, Throwable t) {}
-//        });
     }
 
     static class ChatInfoViewHolder extends RecyclerView.ViewHolder {
         TextView name;
+        TextView message;
         View view;
 
         ChatInfoViewHolder(View itemView) {
             super(itemView);
             view = itemView;
             name = (TextView) itemView.findViewById(R.id.TV_chat_info);
+            message = (TextView) itemView.findViewById(R.id.TV_lastMessage);
         }
     }
 
@@ -106,13 +87,11 @@ public class ChatsClosedFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(ChatInfoViewHolder holder, final int position) {
-            holder.name.setText(list.get(position).admin.nom);
+            holder.name.setText(list.get(position).admin.name);
+            holder.message.setText(list.get(position).lastMessage);
 
-            holder.view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Falta fer
-                }
+            holder.view.setOnClickListener(view -> {
+                //Falta fer
             });
 
         }
@@ -139,6 +118,11 @@ public class ChatsClosedFragment extends Fragment {
             int position = list.indexOf(data);
             list.remove(position);
             notifyItemRemoved(position);
+        }
+
+        public void setList(List<ChatInfo> chats){
+            list = chats;
+            this.notifyDataSetChanged();
         }
 
         public void add(ChatInfo t) {

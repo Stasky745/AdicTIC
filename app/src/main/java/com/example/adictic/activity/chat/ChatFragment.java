@@ -1,8 +1,10 @@
 package com.example.adictic.activity.chat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
@@ -82,6 +84,8 @@ public class ChatFragment extends Fragment {
     }
 
     private void setViews() {
+        TextView TV_nomXat = view.findViewById(R.id.TV_nomXat);
+        TV_nomXat.setText(chatInfo.admin.name);
         if(!active) closeChat();
     }
 
@@ -108,13 +112,13 @@ public class ChatFragment extends Fragment {
                 Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId),um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> postCall, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> postCall, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
                             mMessageAdapter.add(um);
                         }
                     }
                     @Override
-                    public void onFailure(Call<String> postCall, Throwable t) {
+                    public void onFailure(@NonNull Call<String> postCall, @NonNull Throwable t) {
                         Toast.makeText(activity.getBaseContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -137,8 +141,58 @@ public class ChatFragment extends Fragment {
         setAccessButtonImage(IV_acces);
         IV_acces.setClickable(true);
         IV_acces.setOnClickListener(view -> {
-            access = !access;
-            setAccessButtonImage(IV_acces);
+            if (access){
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.treure_acces_titol)
+                        .setMessage(R.string.treure_acces_desc)
+                        .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
+                            Call<String> call = mTodoService.giveAccess(false);
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                                    if(response.isSuccessful()){
+                                        access = !access;
+                                        setAccessButtonImage(IV_acces);
+                                    }
+                                    else Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                    Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        })
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
+                        .show();
+            }
+            else{
+                new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.donar_acces_titol)
+                        .setMessage(R.string.donar_acces_desc)
+                        .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
+                            Call<String> call = mTodoService.giveAccess(true);
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                                    if(response.isSuccessful()){
+                                        access = !access;
+                                        setAccessButtonImage(IV_acces);
+                                    }
+                                    else Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                    Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        })
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                            dialogInterface.cancel();
+                        })
+                        .show();
+            }
         });
     }
 
@@ -162,20 +216,27 @@ public class ChatFragment extends Fragment {
     private void setCloseButton() {
         ImageView IV_closeChat = view.findViewById(R.id.IV_closeChat);
         IV_closeChat.setClickable(true);
-        IV_closeChat.setOnClickListener(view -> {
-          Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser);
-          call.enqueue(new Callback<String>() {
-              @Override
-              public void onResponse(Call<String> call, Response<String> response) {
-                  if(response.isSuccessful()) closeChat();
-              }
+        IV_closeChat.setOnClickListener(view -> new AlertDialog.Builder(getContext())
+                .setTitle(R.string.close_chat)
+                .setMessage(R.string.chat_close_desc)
+                .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
+                    Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser);
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            if(response.isSuccessful()) closeChat();
+                        }
 
-              @Override
-              public void onFailure(Call<String> call, Throwable t) {
-                    Toast.makeText(getContext(),R.string.error_sending_data,Toast.LENGTH_SHORT).show();
-              }
-          });
-        });
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            Toast.makeText(getContext(),R.string.error_sending_data,Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    dialogInterface.cancel();
+                })
+                .show());
     }
 
     private void setRecyclerView() {

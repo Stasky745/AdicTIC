@@ -271,7 +271,7 @@
     <string name="copied_address">Adreça copiada</string>
 
     <string name="title_activity_dubte">Dubte</string>
-    <string name="no_chat_dubte">No tens chat obert... Bla bla bla xDDDDDDD DDDDDDDD DDDDDD DDDDDD DDDDDDD DDDDDDD</string>
+    <string name="no_chat_dubte">"Si tens cap consulta, escriu aquí el teu dubte i se t'obrirà un xat amb un dels nostres professionals quan abans ens sigui possible."</string>
     <string name="enviar_dubte">Enviar dubte</string>
 
     <string name="crear_dbute">Crear nou dubte</string>
@@ -297,4 +297,12 @@
     <string name="enter_message">Escriu un missatge</string>
     <string name="tancar_xat">Tancar xat.</string>
     <string name="menu_permisos">Donar permisos per veure les dades.</string>
+    <string name="close_chat">Tancar Xat</string>
+    <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
+    <string name="cancel">Cancel·lar</string>
+    <string name="treure_acces_titol">Treure Accés</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="donar_acces_titol">Donar Accés</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
 </resources>

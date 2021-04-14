@@ -5,14 +5,34 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
+import com.example.adictic.TodoApp;
+import com.example.adictic.entity.Dubte;
+import com.example.adictic.entity.Localitzacio;
+import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Collection;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NoChatFragment extends Fragment {
 
+    TodoApi mTodoService;
+    TextInputEditText TIET_dubteTitol, TIET_dubteDesc;
+    ChipGroup CG_localitats;
 
     public NoChatFragment() {
         // Required empty public constructor
@@ -24,11 +44,81 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
+        mTodoService = ((TodoApp)getActivity().getApplication()).getAPI();
 
-        Button enviar_dubte = root.findViewById(R.id.BT_enviar_dubte);
+        getLocalitzacions();
 
-        enviar_dubte.setOnClickListener(v -> startActivity(new Intent(getActivity(), EnviarDubte.class)));
+        setViews(root);
+        setButton(root);
 
         return root;
+    }
+
+    private void setViews(View root) {
+        TIET_dubteTitol = root.findViewById(R.id.TIET_dubteTitol);
+        TIET_dubteDesc = root.findViewById(R.id.TIET_dubteDesc);
+        CG_localitats = root.findViewById(R.id.CG_localitats);
+    }
+
+    private void setButton(View root) {
+        Button enviar_dubte = root.findViewById(R.id.BT_enviar_dubte);
+        enviar_dubte.setOnClickListener(v -> {
+            Dubte newDubte = new Dubte();
+            newDubte.titol = TIET_dubteTitol.getText().toString();
+            newDubte.descripcio = TIET_dubteDesc.getText().toString();
+            //newDubte.localitzacio = ((Localitzacio) SP_local.getSelectedItem()).id;
+
+            Call<String> call = mTodoService.postDubte(newDubte);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.isSuccessful()){
+                        //finish();
+                    }
+                    else{
+                        Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
+        });
+    }
+
+    private void getLocalitzacions(){
+        Call<Collection<Localitzacio>> call = mTodoService.getLocalitzacions();
+        call.enqueue(new Callback<Collection<Localitzacio>>() {
+            @Override
+            public void onResponse(Call<Collection<Localitzacio>> call, Response<Collection<Localitzacio>> response) {
+                if(response.isSuccessful()) setLocalitzacions(response.body());
+                else{
+                    Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Collection<Localitzacio>> call, Throwable t) {
+                Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+
+    private void setLocalitzacions(Collection<Localitzacio> localitzacions){
+        ((List<Localitzacio>) localitzacions).add(0,new Localitzacio((long) 0, "Online"));
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        for(Localitzacio loc : localitzacions){
+            Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip,CG_localitats,false);
+            chip.setText(loc.poblacio);
+            chip.setId(loc.id.intValue());
+
+            CG_localitats.addView(chip);
+        }
     }
 }

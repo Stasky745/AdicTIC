@@ -149,7 +149,7 @@ public interface TodoApi {
     //Chat
     ///////////////////////////////////
 
-    @POST("/message/acces")
+    @POST("/message/access")
     Call<String> giveAccess(@Body Boolean access);
 
     @GET("/message/me/info")
