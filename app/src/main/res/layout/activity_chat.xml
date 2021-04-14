@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.ChatActivity" >
+    tools:context=".activity.chat.ChatActivity" >
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/VP_chats"

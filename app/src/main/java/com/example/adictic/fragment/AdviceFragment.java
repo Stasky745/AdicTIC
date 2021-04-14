@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
-import com.example.adictic.activity.ChatActivity;
+import com.example.adictic.activity.chat.ChatActivity;
 import com.example.adictic.activity.OficinesActivity;
 import com.example.adictic.activity.PreguntesFrequents;
 import com.example.adictic.rest.TodoApi;
@@ -39,23 +39,9 @@ public class AdviceFragment extends Fragment {
         Button BT_ConsultaPrivada = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
         Button BT_oficines = (Button) root.findViewById(R.id.BT_oficines);
 
-        final TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
-        Call<Long> call = mTodoService.hasAnOpenChat();
-        call.enqueue(new Callback<Long>() {
-            @Override
-            public void onResponse(Call<Long> call, Response<Long> response) {
-                if (response.isSuccessful()) {
-                    Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
-                    BT_ConsultaPrivada.setOnClickListener(v -> startActivity(chatIntent));
-                }
-            }
+        BT_ConsultaPrivada.setOnClickListener(v -> startActivity(new Intent(getActivity(),ChatActivity.class)));
 
-            @Override
-            public void onFailure(Call<Long> call, Throwable t) {
-            }
-        });
-
-        CL_info.setOnClickListener((View.OnClickListener) v -> {
+        CL_info.setOnClickListener(v -> {
             if(CL_infoButtons.getVisibility()==View.GONE){
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
@@ -70,7 +56,7 @@ public class AdviceFragment extends Fragment {
             }
         });
 
-        CL_suport.setOnClickListener((View.OnClickListener) v -> {
+        CL_suport.setOnClickListener(v -> {
             if(CL_suportButtons.getVisibility()==View.GONE){
                 CL_suportButtons.setVisibility(View.VISIBLE);
 

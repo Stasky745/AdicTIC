@@ -1,4 +1,4 @@
-package com.example.adictic.activity;
+package com.example.adictic.activity.permisos;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.Button;
 
 import com.example.adictic.R;
+import com.example.adictic.activity.NavActivity;
 import com.example.adictic.util.Funcions;
 
 public class AccessibilityPermActivity extends Activity {

@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.adictic.activity.ChatActivity;
+import com.example.adictic.activity.chat.ChatActivity;
 import com.example.adictic.activity.MainActivityChild;
 import com.example.adictic.activity.NavActivity;
 

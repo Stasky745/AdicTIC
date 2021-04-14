@@ -23,6 +23,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.permisos.AccessibilityPermActivity;
+import com.example.adictic.activity.permisos.AppUsagePermActivity;
+import com.example.adictic.activity.permisos.DevicePolicyAdmin;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.NouFillLogin;
 import com.example.adictic.entity.User;
