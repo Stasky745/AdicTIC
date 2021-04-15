@@ -17,14 +17,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.example.adictic.Constants;
-import com.example.adictic.MyNotificationManager;
 import com.example.adictic.R;
-import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Horaris;
-import com.example.adictic.activity.chat.ChatFragment;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.ui.chat.ChatFragment;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
