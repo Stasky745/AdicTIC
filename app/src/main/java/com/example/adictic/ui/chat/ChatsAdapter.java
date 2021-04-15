@@ -28,15 +28,14 @@ public class ChatsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (chatsMain.obert == null) {
-            if (position == 0){
+            if (position == 0) {
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("dubte",chatsMain.hasDubte);
+                bundle.putBoolean("dubte", chatsMain.hasDubte);
 
                 Fragment fragment = new NoChatFragment();
                 fragment.setArguments(bundle);
                 return fragment;
-            }
-            else {
+            } else {
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) chatsMain.tancats);
 
@@ -47,9 +46,9 @@ public class ChatsAdapter extends FragmentStateAdapter {
         }
         if (position == 0) {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("chat",chatsMain.obert);
-            bundle.putBoolean("access",chatsMain.hasAccess);
-            bundle.putBoolean("active",true);
+            bundle.putParcelable("chat", chatsMain.obert);
+            bundle.putBoolean("access", chatsMain.hasAccess);
+            bundle.putBoolean("active", true);
 
             Fragment fragment = new ChatFragment();
             fragment.setArguments(bundle);
@@ -67,7 +66,7 @@ public class ChatsAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        if(chatsMain.tancats.isEmpty()) return 1;
+        if (chatsMain.tancats.isEmpty()) return 1;
         else return 2;
     }
 

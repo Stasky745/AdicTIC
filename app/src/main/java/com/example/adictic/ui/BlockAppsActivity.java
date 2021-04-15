@@ -63,9 +63,9 @@ public class BlockAppsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
 
-        idChild = getIntent().getLongExtra("idChild",-1);
+        idChild = getIntent().getLongExtra("idChild", -1);
 
-        mTodoService = ((TodoApp)this.getApplication()).getAPI();
+        mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
         ET_Search = (EditText) findViewById(R.id.ET_search);
 
@@ -80,84 +80,90 @@ public class BlockAppsActivity extends AppCompatActivity {
         BT_unlock = (Button) findViewById(R.id.BT_unlock);
         BT_unlock.setVisibility(View.GONE);
 
-        if(TodoApp.getTutor() == 1) setButtons();
+        if (TodoApp.getTutor() == 1) setButtons();
         setRecyclerView();
         setSearchBar();
     }
 
-    private void setButtons(){
+    private void setButtons() {
         BT_blockNow.setVisibility(View.VISIBLE);
         BT_limitApp.setVisibility(View.VISIBLE);
         BT_unlock.setVisibility(View.VISIBLE);
 
         BT_blockNow.setOnClickListener(v -> {
-            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
-            else{
-                Call<String> call = mTodoService.blockApps(idChild,selectedApps);
+            if (selectedApps.isEmpty())
+                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
+            else {
+                Call<String> call = mTodoService.blockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()) setRecyclerView();
+                        if (response.isSuccessful()) setRecyclerView();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) { }
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
                 });
             }
         });
 
         BT_limitApp.setOnClickListener(v -> {
-            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
+            if (selectedApps.isEmpty())
+                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
             else useTimePicker();
         });
 
         BT_unlock.setOnClickListener(v -> {
-            if(selectedApps.isEmpty()) Toast.makeText(getApplicationContext(),R.string.select_apps,Toast.LENGTH_LONG).show();
-            else{
-                Call<String> call = mTodoService.unlockApps(idChild,selectedApps);
+            if (selectedApps.isEmpty())
+                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
+            else {
+                Call<String> call = mTodoService.unlockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()) setRecyclerView();
+                        if (response.isSuccessful()) setRecyclerView();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) { }
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
                 });
             }
         });
     }
 
-    private void useTimePicker(){
+    private void useTimePicker() {
         TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                final long time = (hourOfDay*60*60*1000)+(minute*60*1000);
+                final long time = (hourOfDay * 60 * 60 * 1000) + (minute * 60 * 1000);
 
                 BlockList bList = new BlockList();
                 bList.apps = selectedApps;
                 bList.time = time;
-                Call<String> call = mTodoService.limitApps(idChild,bList);
+                Call<String> call = mTodoService.limitApps(idChild, bList);
 
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()) setRecyclerView();
+                        if (response.isSuccessful()) setRecyclerView();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) { }
+                    public void onFailure(Call<String> call, Throwable t) {
+                    }
                 });
             }
         };
 
-        TimePickerDialog timePicker = new TimePickerDialog(this,R.style.datePicker,timeListener,0,0,true);
+        TimePickerDialog timePicker = new TimePickerDialog(this, R.style.datePicker, timeListener, 0, 0, true);
         timePicker.show();
     }
 
-    private void setSearchBar(){
+    private void setSearchBar() {
         ET_Search.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -179,7 +185,7 @@ public class BlockAppsActivity extends AppCompatActivity {
     private void filter(String s) {
         List<BlockAppEntity> filterList = new ArrayList<>();
 
-        for(BlockAppEntity blockedApp : blockAppList){
+        for (BlockAppEntity blockedApp : blockAppList) {
             CharSequence cat = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 cat = ApplicationInfo.getCategoryTitle(getApplicationContext(), blockedApp.appCategory);
@@ -195,18 +201,18 @@ public class BlockAppsActivity extends AppCompatActivity {
         RVadapter.filterList(filterList);
     }
 
-    private void setRecyclerView(){
+    private void setRecyclerView() {
         Call<Collection<BlockAppEntity>> call = mTodoService.getBlockApps(idChild);
 
         call.enqueue(new Callback<Collection<BlockAppEntity>>() {
             @Override
             public void onResponse(Call<Collection<BlockAppEntity>> call, Response<Collection<BlockAppEntity>> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     blockAppList = new ArrayList<>(response.body());
 
                     blockAppList.removeIf(obj -> obj.pkgName.equals(getPackageName()));
                     Collections.sort(blockAppList);
-                    RVadapter = new RV_Adapter(BlockAppsActivity.this,blockAppList);
+                    RVadapter = new RV_Adapter(BlockAppsActivity.this, blockAppList);
 
                     RV_appList.setAdapter(RVadapter);
                 }
@@ -219,15 +225,100 @@ public class BlockAppsActivity extends AppCompatActivity {
         });
     }
 
-    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
+    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
         List<BlockAppEntity> blockAppList;
         Context mContext;
         LayoutInflater mInflater;
 
-        public class MyViewHolder extends RecyclerView.ViewHolder {
-            String pkgName;
-            protected View mRootView;
+        RV_Adapter(Context context, List<BlockAppEntity> list) {
+            mContext = context;
+            blockAppList = list;
+            mInflater = LayoutInflater.from(mContext);
+        }
 
+        @NonNull
+        @Override
+        public RV_Adapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            // infalte the item Layout
+            View v = mInflater.inflate(R.layout.block_app_item, parent, false);
+
+
+            // set the view's size, margins, paddings and layout parameters
+            return new MyViewHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
+            holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
+            if (holder.itemView.isActivated())
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
+            else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+
+            final BlockAppEntity blockedApp = blockAppList.get(position);
+
+            holder.pkgName = blockedApp.pkgName;
+
+            Funcions.setIconDrawable(mContext, blockedApp.pkgName, holder.IV_appIcon);
+
+            holder.TV_appName.setText(blockedApp.appName);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                CharSequence cat = ApplicationInfo.getCategoryTitle(mContext, blockedApp.appCategory);
+                if (cat == null) {
+                    cat = getResources().getString(R.string.other);
+                }
+                holder.TV_category.setText(cat);
+            } else {
+                holder.TV_category.setVisibility(View.INVISIBLE);
+            }
+
+            if (blockedApp.appTime > 0) {
+                Pair<Integer, Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
+                holder.TV_appMaxTime.setText(getString(R.string.hours_minutes, pairTime.first, pairTime.second));
+                holder.TV_hPerDay.setVisibility(View.VISIBLE);
+                holder.IV_block.setVisibility(View.GONE);
+            } else if (blockedApp.appTime == 0) {
+                holder.TV_hPerDay.setVisibility(View.GONE);
+                holder.TV_appMaxTime.setVisibility(View.GONE);
+                holder.IV_block.setVisibility(View.VISIBLE);
+            } else {
+                holder.TV_hPerDay.setVisibility(View.GONE);
+                holder.IV_block.setVisibility(View.GONE);
+                holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
+            }
+
+            holder.mRootView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (selectedApps.contains(blockedApp.pkgName)) {
+                        selectedApps.remove(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                    } else {
+                        selectedApps.add(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return blockAppList.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        public void filterList(List<BlockAppEntity> fList) {
+            blockAppList = fList;
+            notifyDataSetChanged();
+        }
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            protected View mRootView;
+            String pkgName;
             ImageView IV_appIcon, IV_block;
 
             TextView TV_appName, TV_appMaxTime, TV_category, TV_hPerDay;
@@ -246,96 +337,6 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                 TV_hPerDay = (TextView) itemView.findViewById(R.id.TV_hPerDay);
             }
-        }
-
-        RV_Adapter(Context context, List<BlockAppEntity> list){
-            mContext = context;
-            blockAppList = list;
-            mInflater = LayoutInflater.from(mContext);
-        }
-
-
-        @NonNull
-        @Override
-        public RV_Adapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            // infalte the item Layout
-            View v = mInflater.inflate(R.layout.block_app_item, parent, false);
-
-
-            // set the view's size, margins, paddings and layout parameters
-            return new MyViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
-            holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
-            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
-            else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-
-            final BlockAppEntity blockedApp = blockAppList.get(position);
-
-            holder.pkgName = blockedApp.pkgName;
-
-            Funcions.setIconDrawable(mContext,blockedApp.pkgName,holder.IV_appIcon);
-
-            holder.TV_appName.setText(blockedApp.appName);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                CharSequence cat = ApplicationInfo.getCategoryTitle(mContext,blockedApp.appCategory);
-                if(cat == null){
-                    cat = getResources().getString(R.string.other);
-                }
-                holder.TV_category.setText(cat);
-            }
-            else{
-                holder.TV_category.setVisibility(View.INVISIBLE);
-            }
-
-            if (blockedApp.appTime>0){
-                Pair<Integer,Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
-                holder.TV_appMaxTime.setText(getString(R.string.hours_minutes,pairTime.first,pairTime.second));
-                holder.TV_hPerDay.setVisibility(View.VISIBLE);
-                holder.IV_block.setVisibility(View.GONE);
-            }
-            else if(blockedApp.appTime == 0){
-                holder.TV_hPerDay.setVisibility(View.GONE);
-                holder.TV_appMaxTime.setVisibility(View.GONE);
-                holder.IV_block.setVisibility(View.VISIBLE);
-            }
-            else{
-                holder.TV_hPerDay.setVisibility(View.GONE);
-                holder.IV_block.setVisibility(View.GONE);
-                holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
-            }
-
-            holder.mRootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(selectedApps.contains(blockedApp.pkgName)){
-                        selectedApps.remove(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                    }
-                    else{
-                        selectedApps.add(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return blockAppList.size();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return position;
-        }
-
-        public void filterList(List<BlockAppEntity> fList){
-            blockAppList = fList;
-            notifyDataSetChanged();
         }
     }
 }

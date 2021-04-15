@@ -14,7 +14,7 @@ public class HorarisEvents {
     @Override
     public boolean equals(@Nullable Object obj) {
         assert obj != null;
-        if(getClass() != obj.getClass()) return false;
+        if (getClass() != obj.getClass()) return false;
 
         HorarisEvents he = (HorarisEvents) obj;
         return id.equals(he.id);

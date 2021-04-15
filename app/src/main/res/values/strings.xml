@@ -311,4 +311,5 @@
     <string name="dubte_success">Consulta enviada correctament.</string>
     <string name="links">Enllaços</string>
     <string name="profile_pic">Foto de Perfil</string>
+    <string name="closed_chat">La conversa ha finalitzat.</string>
 </resources>

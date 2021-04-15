@@ -28,7 +28,7 @@
         <activity
             android:name=".ui.chat.ChatActivity"
             android:label="@string/title_activity_dubte"
-            android:theme="@style/AppTheme.NoActionBarBlue"/>
+            android:theme="@style/AppTheme.NoActionBarBlue" />
         <activity
             android:name=".ui.main.NavActivity"
             android:label="@string/title_activity_nav" />
@@ -38,7 +38,6 @@
             android:noHistory="true" />
         <activity android:name=".ui.inici.Register" />
         <activity android:name=".ui.inici.NomFill" />
-        <activity android:name=".ui.MainActivityChild" />
         <activity android:name=".ui.permisos.AppUsagePermActivity" />
         <activity android:name=".ui.permisos.AccessibilityPermActivity" />
         <activity android:name=".ui.DayUsageActivity" />
@@ -81,6 +80,8 @@
         <activity android:name=".ui.events.EventsActivity" />
         <activity android:name=".ui.support.OficinesActivity" />
         <activity android:name=".ui.GeoLocActivity" />
+        <activity android:name=".ui.chat.ClosedChatActivity"
+            android:theme="@style/AppTheme.NoActionBarBlue"/>
 
         <receiver
             android:name=".ui.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"

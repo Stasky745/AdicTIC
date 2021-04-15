@@ -6,6 +6,17 @@ import android.os.Parcelable;
 import java.util.List;
 
 public class AdminProfile implements Parcelable {
+    public static final Creator<AdminProfile> CREATOR = new Creator<AdminProfile>() {
+        @Override
+        public AdminProfile createFromParcel(Parcel in) {
+            return new AdminProfile(in);
+        }
+
+        @Override
+        public AdminProfile[] newArray(int size) {
+            return new AdminProfile[size];
+        }
+    };
     public Long idUser;
     public String name;
     public String professio;
@@ -29,18 +40,6 @@ public class AdminProfile implements Parcelable {
             idOficina = in.readLong();
         }
     }
-
-    public static final Creator<AdminProfile> CREATOR = new Creator<AdminProfile>() {
-        @Override
-        public AdminProfile createFromParcel(Parcel in) {
-            return new AdminProfile(in);
-        }
-
-        @Override
-        public AdminProfile[] newArray(int size) {
-            return new AdminProfile[size];
-        }
-    };
 
     @Override
     public int describeContents() {

@@ -55,16 +55,26 @@ import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
 
+    private final FillNom fillNom;
     private TodoApi mTodoService;
     private long idChildSelected = -1;
-    private final FillNom fillNom;
     private View root;
 
     private ImageView IV_liveIcon;
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
 
+            String pkgName = intent.getStringExtra("pkgName");
+
+            Funcions.setIconDrawable(getContext(), pkgName, IV_liveIcon);
+
+            currentApp.setText(intent.getStringExtra("appName"));
+        }
+    };
     private PieChart pieChart;
 
-    public MainParentFragment(FillNom fill){
+    public MainParentFragment(FillNom fill) {
         idChildSelected = fill.idChild;
         fillNom = fill;
     }
@@ -83,10 +93,10 @@ public class MainParentFragment extends Fragment {
         return root;
     }
 
-    private void setButtons(){
+    private void setButtons() {
         View.OnClickListener blockApps = v -> {
             Intent i = new Intent(getActivity(), BlockAppsActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
@@ -95,7 +105,7 @@ public class MainParentFragment extends Fragment {
 
         View.OnClickListener informe = v -> {
             Intent i = new Intent(getActivity(), InformeActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
@@ -104,7 +114,7 @@ public class MainParentFragment extends Fragment {
 
         View.OnClickListener appUsage = v -> {
             Intent i = new Intent(getActivity(), DayUsageActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
@@ -113,7 +123,7 @@ public class MainParentFragment extends Fragment {
 
         View.OnClickListener horaris = v -> {
             Intent i = new Intent(getActivity(), EventsActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
@@ -122,7 +132,7 @@ public class MainParentFragment extends Fragment {
 
         View.OnClickListener geoloc = v -> {
             Intent i = new Intent(getActivity(), GeoLocActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
@@ -130,21 +140,20 @@ public class MainParentFragment extends Fragment {
         CL_Geoloc.setOnClickListener(geoloc);
 
 
-        if(TodoApp.getTutor() == 1) {
+        if (TodoApp.getTutor() == 1) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                     new IntentFilter("liveApp"));
-        }
-        else {
+        } else {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
             currentApp.setText(getString(R.string.title_activity_splash_screen));
             String pkgName = getActivity().getApplicationContext().getPackageName();
-            Funcions.setIconDrawable(getContext(),pkgName,IV_liveIcon);
+            Funcions.setIconDrawable(getContext(), pkgName, IV_liveIcon);
         }
 
         Button blockButton = (Button) root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
-        if(TodoApp.getTutor() == 1) {
+        if (TodoApp.getTutor() == 1) {
             blockButton.setVisibility(View.VISIBLE);
             blockButton.setOnClickListener(v -> {
                 Button b = v.findViewById(R.id.BT_BlockDevice);
@@ -172,13 +181,13 @@ public class MainParentFragment extends Fragment {
         Button nitButton = (Button) root.findViewById(R.id.BT_nits);
         nitButton.setOnClickListener(v -> {
             Intent i = new Intent(getActivity(), HorarisActivity.class);
-            i.putExtra("idChild",idChildSelected);
+            i.putExtra("idChild", idChildSelected);
             startActivity(i);
         });
 
         Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
-        if(TodoApp.getTutor() == 1) {
+        if (TodoApp.getTutor() == 1) {
             BT_FreeTime.setVisibility(View.VISIBLE);
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call = null;
@@ -205,13 +214,12 @@ public class MainParentFragment extends Fragment {
         ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
         ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
         CL_info.setOnClickListener((View.OnClickListener) v -> {
-            if(CL_infoButtons.getVisibility()==View.GONE){
+            if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
                 ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
-            }
-            else{
+            } else {
                 CL_infoButtons.setVisibility(View.GONE);
 
                 ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
@@ -220,11 +228,10 @@ public class MainParentFragment extends Fragment {
         });
 
         /** Posar icona de desplegar en la posició correcta **/
-        if(CL_infoButtons.getVisibility()==View.GONE){
+        if (CL_infoButtons.getVisibility() == View.GONE) {
             ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
-        }
-        else{
+        } else {
             ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
         }
@@ -232,13 +239,12 @@ public class MainParentFragment extends Fragment {
         ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_suport);
         ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
         CL_limit.setOnClickListener((View.OnClickListener) v -> {
-            if(CL_limitButtons.getVisibility()==View.GONE){
+            if (CL_limitButtons.getVisibility() == View.GONE) {
                 CL_limitButtons.setVisibility(View.VISIBLE);
 
                 ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
                 IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
-            }
-            else{
+            } else {
                 CL_limitButtons.setVisibility(View.GONE);
 
                 ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
@@ -247,19 +253,18 @@ public class MainParentFragment extends Fragment {
         });
 
         /** Posar icona de desplegar en la posició correcta **/
-        if(CL_limitButtons.getVisibility()==View.GONE){
+        if (CL_limitButtons.getVisibility() == View.GONE) {
             ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
-        }
-        else{
+        } else {
             ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
     }
 
-    private void getStats(){
-        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH),Calendar.getInstance().get(Calendar.MONTH)+1,Calendar.getInstance().get(Calendar.YEAR));
-        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected,dataAvui,dataAvui);
+    private void getStats() {
+        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
+        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
@@ -279,51 +284,55 @@ public class MainParentFragment extends Fragment {
         });
     }
 
-    private void makeGraph(Collection<GeneralUsage> genericAppUsage){
+    private void makeGraph(Collection<GeneralUsage> genericAppUsage) {
         pieChart = (PieChart) root.findViewById(R.id.Ch_Pie);
         long totalUsageTime = 0;
 
-        Map<String,Long> mapUsage = new HashMap<>();
+        Map<String, Long> mapUsage = new HashMap<>();
 
-        for(GeneralUsage gu : genericAppUsage){
-            if(gu.totalTime > 0){
-                totalUsageTime+=gu.totalTime;
-                for(AppUsage au: gu.usage){
-                    if(mapUsage.containsKey(au.app.appName)) mapUsage.put(au.app.appName,mapUsage.get(au.app.appName)+au.totalTime);
-                    else mapUsage.put(au.app.appName,au.totalTime);
+        for (GeneralUsage gu : genericAppUsage) {
+            if (gu.totalTime > 0) {
+                totalUsageTime += gu.totalTime;
+                for (AppUsage au : gu.usage) {
+                    if (mapUsage.containsKey(au.app.appName))
+                        mapUsage.put(au.app.appName, mapUsage.get(au.app.appName) + au.totalTime);
+                    else mapUsage.put(au.app.appName, au.totalTime);
                 }
             }
         }
 
         setMascot(totalUsageTime);
-        setPieChart(mapUsage,totalUsageTime);
+        setPieChart(mapUsage, totalUsageTime);
     }
 
     private void setMascot(long totalUsageTime) {
         ImageView IV_mascot = root.findViewById(R.id.IV_mascot);
 
-        if(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)<21){
-            if(totalUsageTime < TimeUnit.HOURS.toMillis(1)) IV_mascot.setImageResource(R.drawable.mascot_min);
-            else if(totalUsageTime < TimeUnit.MINUTES.toMillis(90)) IV_mascot.setImageResource(R.drawable.mascot_hora);
-            else if(totalUsageTime < TimeUnit.MINUTES.toMillis(135)) IV_mascot.setImageResource(R.drawable.mascot_molt);
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 21) {
+            if (totalUsageTime < TimeUnit.HOURS.toMillis(1))
+                IV_mascot.setImageResource(R.drawable.mascot_min);
+            else if (totalUsageTime < TimeUnit.MINUTES.toMillis(90))
+                IV_mascot.setImageResource(R.drawable.mascot_hora);
+            else if (totalUsageTime < TimeUnit.MINUTES.toMillis(135))
+                IV_mascot.setImageResource(R.drawable.mascot_molt);
             else IV_mascot.setImageResource(R.drawable.mascot_max);
-        }
-        else{
+        } else {
             IV_mascot.setImageResource(R.drawable.mascot_nit);
         }
     }
 
-    private void setPieChart(Map<String,Long> mapUsage, long totalUsageTime){
+    private void setPieChart(Map<String, Long> mapUsage, long totalUsageTime) {
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
-        for(Map.Entry<String,Long> entry : mapUsage.entrySet()){
-            if(entry.getValue() >= totalUsageTime*0.05) yValues.add(new PieEntry(entry.getValue(),entry.getKey()));
-            else{
-                others+=entry.getValue();
+        for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {
+            if (entry.getValue() >= totalUsageTime * 0.05)
+                yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+            else {
+                others += entry.getValue();
             }
         }
 
-        yValues.add(new PieEntry(others,"Altres"));
+        yValues.add(new PieEntry(others, "Altres"));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
@@ -356,10 +365,12 @@ public class MainParentFragment extends Fragment {
                 TV_pieApp.setText(pe.getLabel());
 
 
-                Pair<Integer,Integer> appTime = Funcions.millisToString(e.getY());
+                Pair<Integer, Integer> appTime = Funcions.millisToString(e.getY());
 
-                if(appTime.first == 0) pieChart.setCenterText(getResources().getString(R.string.mins,appTime.second));
-                else pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes,appTime.first,appTime.second));
+                if (appTime.first == 0)
+                    pieChart.setCenterText(getResources().getString(R.string.mins, appTime.second));
+                else
+                    pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes, appTime.first, appTime.second));
             }
 
             @Override
@@ -372,21 +383,10 @@ public class MainParentFragment extends Fragment {
         pieChart.invalidate();
     }
 
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-
-            String pkgName = intent.getStringExtra("pkgName");
-
-            Funcions.setIconDrawable(getContext(),pkgName,IV_liveIcon);
-
-            currentApp.setText(intent.getStringExtra("appName"));
-        }
-    };
-
     @Override
     protected void finalize() throws Throwable {
-        if(TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(getContext(),idChildSelected, false);
+        if (TodoApp.getTutor() == 1)
+            Funcions.askChildForLiveApp(getContext(), idChildSelected, false);
         super.finalize();
     }
 }

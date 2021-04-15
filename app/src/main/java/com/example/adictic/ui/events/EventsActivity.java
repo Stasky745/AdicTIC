@@ -58,12 +58,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     RecyclerView RV_eventList;
 
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_general_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
 
-        idChild = getIntent().getLongExtra("idChild",-1);
+        idChild = getIntent().getLongExtra("idChild", -1);
         eventList = new ArrayList<>();
         canvis = 0;
 
@@ -72,7 +72,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
         setLayouts();
         getHoraris();
-        if(TodoApp.getTutor() == 1) setButtons();
+        if (TodoApp.getTutor() == 1) setButtons();
 
     }
 
@@ -80,44 +80,43 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == 1){
-            if(resultCode == RESULT_OK){
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
                 assert data != null;
                 wakeSleepList = data.getParcelableExtra("wakeSleepList");
 
-                if(canvis == 0) canvis = data.getIntExtra("canvis",0);
+                if (canvis == 0) canvis = data.getIntExtra("canvis", 0);
             }
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(canvis == 0){
+        if (canvis == 0) {
             super.onBackPressed();
-        }
-        else{
+        } else {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle(getString(R.string.closing_activity))
                     .setMessage(getString(R.string.exit_without_save))
                     .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> EventsActivity.super.onBackPressed())
-                    .setNegativeButton(getString(R.string.no),null)
+                    .setNegativeButton(getString(R.string.no), null)
                     .show();
         }
     }
 
-    private void getHoraris(){
+    private void getHoraris() {
         Call<Horaris> call = mTodoService.getHoraris(idChild);
 
         call.enqueue(new Callback<Horaris>() {
             @Override
             public void onResponse(Call<Horaris> call, Response<Horaris> response) {
-                if(response.isSuccessful()){
-                    if(response.body() != null){
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
                         wakeSleepList = response.body().wakeSleepList;
                         eventList = response.body().events;
 
-                        RVadapter = new RV_Adapter(EventsActivity.this,eventList);
+                        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
 
                         RV_eventList.setAdapter(RVadapter);
                     }
@@ -131,7 +130,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         });
     }
 
-    private void setButtons(){
+    private void setButtons() {
 
         BT_acceptarHoraris.setVisibility(View.VISIBLE);
         BT_modificarEvent.setVisibility(View.VISIBLE);
@@ -142,13 +141,13 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             Horaris horaris = new Horaris();
             horaris.events = eventList;
 
-            if(wakeSleepList == null){
+            if (wakeSleepList == null) {
                 wakeSleepList = new WakeSleepLists();
             }
 
             horaris.wakeSleepList = wakeSleepList;
 
-            Call<String> call = mTodoService.postHoraris(idChild,horaris);
+            Call<String> call = mTodoService.postHoraris(idChild, horaris);
 
             call.enqueue(new Callback<String>() {
                 @Override
@@ -167,30 +166,28 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             @SuppressLint("ShowToast")
             @Override
             public void onClick(View view) {
-                if(selectedEvent != null){
+                if (selectedEvent != null) {
                     new AlertDialog.Builder(EventsActivity.this)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .setTitle(getString(R.string.esborrar_event))
-                            .setMessage(getString(R.string.esborrar_event_text,selectedEvent.name))
+                            .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
                             .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     boolean trobat = false;
                                     int count = 0;
-                                    while(count < eventList.size() && !trobat){
-                                        if(eventList.get(count).name.equals(selectedEvent.name)){
+                                    while (count < eventList.size() && !trobat) {
+                                        if (eventList.get(count).name.equals(selectedEvent.name)) {
                                             trobat = true;
                                             eventList.remove(count);
-                                        }
-                                        else count++;
+                                        } else count++;
                                     }
                                 }
                             })
-                            .setNegativeButton(getString(R.string.no),null)
+                            .setNegativeButton(getString(R.string.no), null)
                             .show();
-                }
-                else{
-                    Toast.makeText(EventsActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(EventsActivity.this, getString(R.string.no_event_selected), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -204,23 +201,22 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             newEvent.days = new ArrayList<>();
 
             FragmentManager fm = getSupportFragmentManager();
-            EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events),newEvent);
-            horarisEventFragment.show(fm,"fragment_create_event");
+            EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), newEvent);
+            horarisEventFragment.show(fm, "fragment_create_event");
         });
 
         BT_modificarEvent.setOnClickListener(view -> {
-            if(selectedEvent != null){
+            if (selectedEvent != null) {
                 FragmentManager fm = getSupportFragmentManager();
-                EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events),selectedEvent);
-                horarisEventFragment.show(fm,"fragment_edit_event");
-            }
-            else{
-                Toast.makeText(EventsActivity.this,getString(R.string.no_event_selected),Toast.LENGTH_LONG).show();
+                EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), selectedEvent);
+                horarisEventFragment.show(fm, "fragment_edit_event");
+            } else {
+                Toast.makeText(EventsActivity.this, getString(R.string.no_event_selected), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void setLayouts(){
+    private void setLayouts() {
         BT_acceptarHoraris = (Button) findViewById(R.id.BT_acceptarHoraris);
         BT_modificarEvent = (Button) findViewById(R.id.BT_modificarEvent);
         BT_afegirEvent = (Button) findViewById(R.id.BT_afegirEvent);
@@ -237,11 +233,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     @Override
     public void onSelectedData(HorarisEvents newEvent) {
-        if (newEvent.id != 0){
+        if (newEvent.id != 0) {
             int i = 0;
             boolean found = false;
-            while(i < eventList.size() && !found){
-                if (eventList.get(i).id == newEvent.id){
+            while (i < eventList.size() && !found) {
+                if (eventList.get(i).id == newEvent.id) {
                     eventList.remove(i);
                     found = true;
                 }
@@ -250,36 +246,17 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         }
         eventList.add(newEvent);
 
-        RVadapter = new RV_Adapter(EventsActivity.this,eventList);
+        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
 
         RV_eventList.setAdapter(RVadapter);
     }
 
-    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
+    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
         Context mContext;
         LayoutInflater mInflater;
         List<HorarisEvents> eventAdapterList;
 
-        public class MyViewHolder extends RecyclerView.ViewHolder{
-            protected View mRootView;
-            TextView TV_eventName, TV_eventDays, TV_eventTimes;
-
-
-            MyViewHolder(@NonNull View itemView){
-                super(itemView);
-
-                mRootView = itemView;
-
-                TV_eventName = (TextView) itemView.findViewById(R.id.TV_eventName);
-                TV_eventName.setSelected(true);
-                TV_eventDays = (TextView) itemView.findViewById(R.id.TV_eventDays);
-                TV_eventDays.setSelected(true);
-                TV_eventTimes = (TextView) itemView.findViewById(R.id.TV_eventTimes);
-                TV_eventTimes.setSelected(true);
-            }
-        }
-
-        RV_Adapter(Context context, List<HorarisEvents> list){
+        RV_Adapter(Context context, List<HorarisEvents> list) {
             mContext = context;
             eventAdapterList = list;
             mInflater = LayoutInflater.from(mContext);
@@ -298,31 +275,32 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
         @Override
         public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
-            if(selectedEvent != null) holder.itemView.setActivated(selectedEvent.name.equals(eventAdapterList.get(position).name));
+            if (selectedEvent != null)
+                holder.itemView.setActivated(selectedEvent.name.equals(eventAdapterList.get(position).name));
             else holder.itemView.setActivated(false);
-            if(holder.itemView.isActivated()) holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext,R.color.background_activity));
+            if (holder.itemView.isActivated())
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
             final HorarisEvents event = eventAdapterList.get(position);
 
             holder.TV_eventName.setText(event.name);
             String eventDaysString = "";
-            for(int i : event.days){
+            for (int i : event.days) {
                 String day = new DateFormatSymbols().getWeekdays()[i];
-                String s1 = day.substring(0,1).toUpperCase();
+                String s1 = day.substring(0, 1).toUpperCase();
                 eventDaysString += s1 + day.substring(1) + " ";
             }
             holder.TV_eventDays.setText(eventDaysString);
-            String eventTimesString = event.start+"\n"+event.finish;
+            String eventTimesString = event.start + "\n" + event.finish;
             holder.TV_eventTimes.setText(eventTimesString);
 
             holder.mRootView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(selectedEvent == null || !selectedEvent.name.equals(event.name)){
+                    if (selectedEvent == null || !selectedEvent.name.equals(event.name)) {
                         selectedEvent = event;
-                    }
-                    else {
+                    } else {
                         selectedEvent = null;
                     }
                     notifyDataSetChanged();
@@ -331,9 +309,32 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         }
 
         @Override
-        public int getItemViewType(int position) { return position; }
+        public int getItemViewType(int position) {
+            return position;
+        }
 
         @Override
-        public int getItemCount() { return eventAdapterList.size(); }
+        public int getItemCount() {
+            return eventAdapterList.size();
+        }
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            protected View mRootView;
+            TextView TV_eventName, TV_eventDays, TV_eventTimes;
+
+
+            MyViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                mRootView = itemView;
+
+                TV_eventName = (TextView) itemView.findViewById(R.id.TV_eventName);
+                TV_eventName.setSelected(true);
+                TV_eventDays = (TextView) itemView.findViewById(R.id.TV_eventDays);
+                TV_eventDays.setSelected(true);
+                TV_eventTimes = (TextView) itemView.findViewById(R.id.TV_eventTimes);
+                TV_eventTimes.setSelected(true);
+            }
+        }
     }
 }

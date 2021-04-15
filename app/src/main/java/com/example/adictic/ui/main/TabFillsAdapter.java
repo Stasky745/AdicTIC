@@ -17,7 +17,7 @@ public class TabFillsAdapter extends FragmentStateAdapter {
     private final Context ctx;
     private long lastId;
 
-    public TabFillsAdapter(Fragment fa,Context context, ArrayList<FillNom> list) {
+    public TabFillsAdapter(Fragment fa, Context context, ArrayList<FillNom> list) {
         super(fa);
         fills = list;
         ctx = context;
@@ -27,22 +27,20 @@ public class TabFillsAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        if(position > fills.size()-1 || position < 0){
+        if (position > fills.size() - 1 || position < 0) {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
-        }
-        else{
+        } else {
             lastId = fills.get(position).idChild;
-            if(TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(ctx,lastId, true);
+            if (TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(ctx, lastId, true);
 
             return new MainParentFragment(fills.get(position));
         }
     }
 
     public CharSequence getPageTitle(int position) {
-        if(position > fills.size()-1 || position < 0){
+        if (position > fills.size() - 1 || position < 0) {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
-        }
-        else return fills.get(position).deviceName;
+        } else return fills.get(position).deviceName;
     }
 
     @Override

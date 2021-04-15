@@ -64,33 +64,46 @@ import retrofit2.Response;
 import static android.content.Intent.ACTION_DIAL;
 import static android.content.Intent.ACTION_VIEW;
 
-/** https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java **/
+/**
+ * https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java
+ **/
 
 public class OficinesActivity extends AppCompatActivity {
-    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-
-    private MapView map = null;
-
     private static final String TAG = OficinesActivity.class.getSimpleName();
-
-    private Spinner SP_oficines;
-
-    private Long idOficinaInicial;
-
-    private List<Oficina> oficines = new ArrayList<>();
-
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;// 10; // 10 metres
     private static final long MIN_TIME_FOR_UPDATES = 0;//1000*60; // 1 minut
-
-    private FusedLocationProviderClient fusedLocationClient;
-
-    private GeoPoint currentLocation;
+    private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     MyLocationListener locationListener;
     LocationManager locationManager;
-
     MyLocationNewOverlay myLocationOverlay;
-
     ArrayList<Marker> markers = new ArrayList<>();
+    private MapView map = null;
+    private Spinner SP_oficines;
+    private Long idOficinaInicial;
+    private List<Oficina> oficines = new ArrayList<>();
+    private FusedLocationProviderClient fusedLocationClient;
+    private GeoPoint currentLocation;
+
+    public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location) {
+        Collections.sort(markers, new Comparator<Marker>() {
+            @Override
+            public int compare(Marker marker2, Marker marker1) {
+                //
+                if (getDistanceBetweenPoints(marker1.getPosition().getLatitude(), marker1.getPosition().getLongitude(), location.getLatitude(), location.getLongitude()) > getDistanceBetweenPoints(marker2.getPosition().getLatitude(), marker2.getPosition().getLongitude(), location.getLatitude(), location.getLongitude())) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+        return markers;
+    }
+
+    public static float getDistanceBetweenPoints(double firstLatitude, double firstLongitude, double secondLatitude, double secondLongitude) {
+        float[] results = new float[1];
+        Location.distanceBetween(firstLatitude, firstLongitude, secondLatitude, secondLongitude, results);
+        return results[0];
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,13 +111,13 @@ public class OficinesActivity extends AppCompatActivity {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        idOficinaInicial = getIntent().getLongExtra("idOficina",-1);
+        idOficinaInicial = getIntent().getLongExtra("idOficina", -1);
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
-        try{
+        try {
             Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        }catch(java.lang.NullPointerException exc) {
+        } catch (java.lang.NullPointerException exc) {
             exc.printStackTrace();
         }
         //setting this before the layout is inflated is a good idea
@@ -153,7 +166,7 @@ public class OficinesActivity extends AppCompatActivity {
         });
     }
 
-    private void askPermissionsIfNecessary(){
+    private void askPermissionsIfNecessary() {
         requestPermissionsIfNecessary(new String[]{
                 // if you need to show the current location, uncomment the line below
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -184,7 +197,7 @@ public class OficinesActivity extends AppCompatActivity {
 //                Manifest.permission.WRITE_EXTERNAL_STORAGE
 //        });
 
-        if(currentLocation == null){
+        if (currentLocation == null) {
             locationListener = new MyLocationListener();
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -232,7 +245,7 @@ public class OficinesActivity extends AppCompatActivity {
 
         GeoPoint startPoint = null;
 
-        for(Oficina oficina : oficines){
+        for (Oficina oficina : oficines) {
             Marker marker = new Marker(map);
             marker.setPosition(new GeoPoint(oficina.latitude, oficina.longitude));
             marker.setTitle(oficina.name);
@@ -243,8 +256,8 @@ public class OficinesActivity extends AppCompatActivity {
             marker.setRelatedObject(oficina);
 
             marker.setOnMarkerClickListener((marker1, mapView) -> {
-                if(marker1.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
-                else{
+                if (marker1.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
+                else {
                     int pos = markers.indexOf(marker1);
                     SP_oficines.setSelection(pos);
                     marker1.showInfoWindow();
@@ -257,13 +270,13 @@ public class OficinesActivity extends AppCompatActivity {
             markers.add(marker);
             map.getOverlays().add(marker);
 
-            if(oficina.id.equals(idOficinaInicial)){
-                startPoint = new GeoPoint(oficina.latitude,oficina.longitude);
+            if (oficina.id.equals(idOficinaInicial)) {
+                startPoint = new GeoPoint(oficina.latitude, oficina.longitude);
             }
         }
 
 
-        if(startPoint == null){
+        if (startPoint == null) {
             if (currentLocation != null) {
                 markers = sortListbyDistance(markers, currentLocation);
                 startPoint = currentLocation;
@@ -272,21 +285,21 @@ public class OficinesActivity extends AppCompatActivity {
             }
         }
 
-        if(!markers.isEmpty()) startPoint = markers.get(0).getPosition();
+        if (!markers.isEmpty()) startPoint = markers.get(0).getPosition();
 
         mapController.setCenter(startPoint);
         setSpinner();
     }
 
-    public GeoPoint setInfoWindowOffset(GeoPoint gp){
-        return new GeoPoint(gp.getLatitude()+0.0025, gp.getLongitude());
+    public GeoPoint setInfoWindowOffset(GeoPoint gp) {
+        return new GeoPoint(gp.getLatitude() + 0.0025, gp.getLongitude());
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if (map!=null) {
+        if (map != null) {
             map.onResume();
         }
     }
@@ -315,7 +328,7 @@ public class OficinesActivity extends AppCompatActivity {
                 i++;
             }
 
-            if (permissionsGranted){
+            if (permissionsGranted) {
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                             @Override
@@ -327,8 +340,7 @@ public class OficinesActivity extends AppCompatActivity {
                                 setMap();
                             }
                         });
-            }
-            else {
+            } else {
                 Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
                 this.finish();
             }
@@ -349,8 +361,7 @@ public class OficinesActivity extends AppCompatActivity {
                     this,
                     permissionsToRequest.toArray(new String[0]),
                     REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
-        else {
+        } else {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
@@ -365,7 +376,7 @@ public class OficinesActivity extends AppCompatActivity {
         }
     }
 
-    private void setSpinner(){
+    private void setSpinner() {
 
         MarkerAdapter adapter =
                 new MarkerAdapter(getApplicationContext(),
@@ -381,7 +392,8 @@ public class OficinesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
 
         SP_oficines.setAdapter(adapter);
@@ -420,38 +432,16 @@ public class OficinesActivity extends AppCompatActivity {
             Marker marker = markers.get(position);
             Oficina oficina = (Oficina) marker.getRelatedObject();
 
-            View row = inflter.inflate(R.layout.oficina_spinner_item,null);
-            TextView TV_nomOficina = (TextView)row.findViewById(R.id.TV_nomOficina);
-            TextView TV_oficinaCiutat = (TextView)row.findViewById(R.id.TV_oficinaCiutat);
+            View row = inflter.inflate(R.layout.oficina_spinner_item, null);
+            TextView TV_nomOficina = (TextView) row.findViewById(R.id.TV_nomOficina);
+            TextView TV_oficinaCiutat = (TextView) row.findViewById(R.id.TV_oficinaCiutat);
 
             TV_nomOficina.setText(oficina.name);
-            String ciutat = "("+oficina.ciutat.toUpperCase()+")";
+            String ciutat = "(" + oficina.ciutat.toUpperCase() + ")";
             TV_oficinaCiutat.setText(ciutat);
 
             return row;
         }
-    }
-
-    public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location){
-        Collections.sort(markers, new Comparator<Marker>() {
-            @Override
-            public int compare(Marker marker2, Marker marker1) {
-                //
-                if(getDistanceBetweenPoints(marker1.getPosition().getLatitude(),marker1.getPosition().getLongitude(),location.getLatitude(),location.getLongitude())>getDistanceBetweenPoints(marker2.getPosition().getLatitude(),marker2.getPosition().getLongitude(),location.getLatitude(),location.getLongitude())){
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        });
-        return markers;
-    }
-
-
-    public static float getDistanceBetweenPoints(double firstLatitude, double firstLongitude, double secondLatitude, double secondLongitude) {
-        float[] results = new float[1];
-        Location.distanceBetween(firstLatitude, firstLongitude, secondLatitude, secondLongitude, results);
-        return results[0];
     }
 
     private class OficinaInfoWindow extends InfoWindow {
@@ -465,17 +455,17 @@ public class OficinesActivity extends AppCompatActivity {
         }
 
         public void onOpen(Object item) {
-            mMarkerRef = (Marker)item;
+            mMarkerRef = (Marker) item;
 
-            if (mView==null) {
+            if (mView == null) {
                 Log.w(IMapView.LOGTAG, "Error trapped, OficinaInfoWindow.open, mView is null!");
                 return;
             }
 
-            TextView TV_nomOficina = (TextView)mView.findViewById(R.id.TV_nomOficina);
-            TextView TV_descOficina = (TextView)mView.findViewById(R.id.TV_descOficina);
-            TextView TV_addressOficina = (TextView)mView.findViewById(R.id.TV_addressOficina);
-            Button BT_telfOficina = (Button)mView.findViewById(R.id.BT_telfOficina);
+            TextView TV_nomOficina = (TextView) mView.findViewById(R.id.TV_nomOficina);
+            TextView TV_descOficina = (TextView) mView.findViewById(R.id.TV_descOficina);
+            TextView TV_addressOficina = (TextView) mView.findViewById(R.id.TV_addressOficina);
+            Button BT_telfOficina = (Button) mView.findViewById(R.id.BT_telfOficina);
             TextView TV_website = (TextView) mView.findViewById(R.id.TV_webURL);
 
             TV_website.setText(oficina.website);
@@ -492,7 +482,7 @@ public class OficinesActivity extends AppCompatActivity {
             TV_addressOficina.setText(address);
             TV_addressOficina.setOnLongClickListener(v -> {
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Oficina_Address",TV_addressOficina.getText());
+                ClipData clip = ClipData.newPlainText("Oficina_Address", TV_addressOficina.getText());
                 clipboardManager.setPrimaryClip(clip);
 
                 Toast.makeText(getApplicationContext(), getString(R.string.copied_address), Toast.LENGTH_SHORT).show();
@@ -503,13 +493,14 @@ public class OficinesActivity extends AppCompatActivity {
             BT_telfOficina.setOnClickListener(v -> {
                 String telf = oficina.telf.replace("[^\\d+]", "");
                 Intent intent = new Intent(ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"+telf));
+                intent.setData(Uri.parse("tel:" + telf));
                 startActivity(intent);
             });
         }
 
         @Override
-        public void onClose() { }
+        public void onClose() {
+        }
     }
 
 

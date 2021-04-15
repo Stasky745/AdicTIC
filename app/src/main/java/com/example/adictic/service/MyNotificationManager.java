@@ -18,8 +18,8 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class MyNotificationManager {
 
-    private Context mCtx;
     private static MyNotificationManager mInstance;
+    private Context mCtx;
 
     private MyNotificationManager(Context context) {
         mCtx = context;

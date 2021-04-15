@@ -24,15 +24,23 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
         super(fm, behavior);
     }
 
-    void setChildId(long id){ childId = id; }
+    void setChildId(long id) {
+        childId = id;
+    }
 
-    void setAge(int a){ age = a; }
+    void setAge(int a) {
+        age = a;
+    }
 
-    void setGenericAppUsage(Collection<GeneralUsage> col){ genericAppUsage = col; }
+    void setGenericAppUsage(Collection<GeneralUsage> col) {
+        genericAppUsage = col;
+    }
 
-    void setTimesBlockedMap(Map<String,Long> map){ timesBlockedMap = map; }
+    void setTimesBlockedMap(Map<String, Long> map) {
+        timesBlockedMap = map;
+    }
 
-    void setTimes(long tT, long tUT){
+    void setTimes(long tT, long tUT) {
         totalTime = tT;
         totalUsageTime = tUT;
     }
@@ -40,8 +48,9 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        if(position == 0) return new GraphsFragment(childId,genericAppUsage);
-        else return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age, timesBlockedMap);
+        if (position == 0) return new GraphsFragment(childId, genericAppUsage);
+        else
+            return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age, timesBlockedMap);
     }
 
     @Override

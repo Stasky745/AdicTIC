@@ -43,25 +43,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    TodoApi mTodoService;
-
     public static final int[] GRAPH_COLORS = {
             Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
             Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
     };
-
+    public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
+    private static final List<String> blockEvents = new ArrayList<>();
     public static int CORRECT_USAGE_DAY = 3;
     public static int DANGEROUS_USAGE_DAY = 5;
     public static int CORRECT_USAGE_APP = 2;
     public static int DANGEROUS_USAGE_APP = 4;
-
     private static boolean geolocOpen = false;
-
-    public static boolean getGeoLocOpen(){ return geolocOpen; }
-    public static void setGeolocOpen(boolean b){ geolocOpen = b; }
-
-    private static long IDTutor=-1;
-    private static Integer tutor=-1;
+    private static long IDTutor = -1;
+    private static Integer tutor = -1;
     private static long IDChild = -1;
     private static int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     private static boolean freeUse = false;
@@ -71,74 +65,170 @@ public class TodoApp extends Application {
     private static String currentAppKid = null;
     private static String timeOpenedCurrentAppKid = null;
     private static List<HorarisEvents> listEvents = null;
-    public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
-
-    private static Map<String,Long> limitApps = new HashMap<>();
+    private static Map<String, Long> limitApps = new HashMap<>();
     private static List<String> blockedApps = new ArrayList<>();
-    private static final List<String> blockEvents = new ArrayList<>();
-
     private static List<GeoFill> geoFills = new ArrayList<>();
-
-    public static List<GeoFill> getGeoFills(){ return geoFills; }
-    public static void setGeoFills(List<GeoFill> list){ geoFills = list; }
-
     private static List<Oficina> oficines = new ArrayList<>();
+    private static Map<Integer, String> wakeHoraris = new HashMap<>();
+    private static Map<Integer, String> sleepHoraris = new HashMap<>();
+    TodoApi mTodoService;
 
-    public static List<Oficina> getOficines(){ return oficines; }
-    public static void setOficines(List<Oficina> list){ oficines = list; }
+    public static boolean getGeoLocOpen() {
+        return geolocOpen;
+    }
 
-    private static Map<Integer,String> wakeHoraris = new HashMap<>();
-    private static Map<Integer,String> sleepHoraris = new HashMap<>();
+    public static void setGeolocOpen(boolean b) {
+        geolocOpen = b;
+    }
 
-    public static List<HorarisEvents> getListEvents(){ return listEvents; }
-    public static void setListEvents(List<HorarisEvents> l){ listEvents = l; }
+    public static List<GeoFill> getGeoFills() {
+        return geoFills;
+    }
+
+    public static void setGeoFills(List<GeoFill> list) {
+        geoFills = list;
+    }
+
+    public static List<Oficina> getOficines() {
+        return oficines;
+    }
+
+    public static void setOficines(List<Oficina> list) {
+        oficines = list;
+    }
+
+    public static List<HorarisEvents> getListEvents() {
+        return listEvents;
+    }
+
+    public static void setListEvents(List<HorarisEvents> l) {
+        listEvents = l;
+    }
 
 
-    public static void addBlockEvent(String s){ blockEvents.add(s); }
-    public static void removeBlockEvent(String s){ blockEvents.remove(s); }
-    public static List<String> getBlockEvents(){ return blockEvents; }
+    public static void addBlockEvent(String s) {
+        blockEvents.add(s);
+    }
 
-    public static Map<Integer,String> getWakeHoraris(){ return wakeHoraris; }
-    public static void setWakeHoraris(Map<Integer,String> m){ wakeHoraris = m; }
+    public static void removeBlockEvent(String s) {
+        blockEvents.remove(s);
+    }
 
-    public static Map<Integer,String> getSleepHoraris(){ return sleepHoraris; }
-    public static void setSleepHoraris(Map<Integer,String> m){ sleepHoraris = m; }
+    public static List<String> getBlockEvents() {
+        return blockEvents;
+    }
 
-    public static void setStartFreeUse(long l){startFreeUse = l;}
-    public static long getStartFreeUse(){return startFreeUse;}
+    public static Map<Integer, String> getWakeHoraris() {
+        return wakeHoraris;
+    }
 
-    public static void setIDChild(long s){ TodoApp.IDChild = s; }
-    public static long getIDChild(){ return TodoApp.IDChild; }
+    public static void setWakeHoraris(Map<Integer, String> m) {
+        wakeHoraris = m;
+    }
 
-    public static void setIDTutor(Long l){ TodoApp.IDTutor=l; }
-    public static Long getIDTutor(){ return TodoApp.IDTutor; }
+    public static Map<Integer, String> getSleepHoraris() {
+        return sleepHoraris;
+    }
 
-    public static void setTutor(Integer i){ TodoApp.tutor=i; }
-    public static Integer getTutor(){ return TodoApp.tutor; }
+    public static void setSleepHoraris(Map<Integer, String> m) {
+        sleepHoraris = m;
+    }
 
-    public static void setDayOfYear(int i){ TodoApp.dayOfYear=i; }
-    public static int getDayOfYear(){ return TodoApp.dayOfYear; }
+    public static long getStartFreeUse() {
+        return startFreeUse;
+    }
 
-    public static void setFreeUse(boolean b){ TodoApp.freeUse=b; }
-    public static boolean getFreeUse(){ return TodoApp.freeUse; }
+    public static void setStartFreeUse(long l) {
+        startFreeUse = l;
+    }
 
-    public static void setLiveApp(boolean b){ TodoApp.liveApp=b; }
-    public static boolean getLiveApp(){ return TodoApp.liveApp; }
+    public static long getIDChild() {
+        return TodoApp.IDChild;
+    }
 
-    public static void setCurrentAppKid(String s){ TodoApp.currentAppKid = s; }
-    public static String getCurrentAppKid(){ return TodoApp.currentAppKid; }
+    public static void setIDChild(long s) {
+        TodoApp.IDChild = s;
+    }
 
-    public static void setTimeOpenedCurrentAppKid(String s){ TodoApp.timeOpenedCurrentAppKid = s; }
-    public static String getTimeOpenedCurrentAppKid(){ return TodoApp.timeOpenedCurrentAppKid; }
+    public static Long getIDTutor() {
+        return TodoApp.IDTutor;
+    }
 
-    public static void setLimitApps(Map<String,Long> m){ TodoApp.limitApps = m; }
-    public static Map<String,Long> getLimitApps(){ return TodoApp.limitApps; }
+    public static void setIDTutor(Long l) {
+        TodoApp.IDTutor = l;
+    }
 
-    public static void setBlockedDevice(boolean b){ TodoApp.blockedDevice=b; }
-    public static boolean getBlockedDevice(){ return TodoApp.blockedDevice; }
+    public static Integer getTutor() {
+        return TodoApp.tutor;
+    }
 
-    public static void setBlockedApps(List<String> l){ TodoApp.blockedApps=l; }
-    public static List<String> getBlockedApps(){ return TodoApp.blockedApps; }
+    public static void setTutor(Integer i) {
+        TodoApp.tutor = i;
+    }
+
+    public static int getDayOfYear() {
+        return TodoApp.dayOfYear;
+    }
+
+    public static void setDayOfYear(int i) {
+        TodoApp.dayOfYear = i;
+    }
+
+    public static boolean getFreeUse() {
+        return TodoApp.freeUse;
+    }
+
+    public static void setFreeUse(boolean b) {
+        TodoApp.freeUse = b;
+    }
+
+    public static boolean getLiveApp() {
+        return TodoApp.liveApp;
+    }
+
+    public static void setLiveApp(boolean b) {
+        TodoApp.liveApp = b;
+    }
+
+    public static String getCurrentAppKid() {
+        return TodoApp.currentAppKid;
+    }
+
+    public static void setCurrentAppKid(String s) {
+        TodoApp.currentAppKid = s;
+    }
+
+    public static String getTimeOpenedCurrentAppKid() {
+        return TodoApp.timeOpenedCurrentAppKid;
+    }
+
+    public static void setTimeOpenedCurrentAppKid(String s) {
+        TodoApp.timeOpenedCurrentAppKid = s;
+    }
+
+    public static Map<String, Long> getLimitApps() {
+        return TodoApp.limitApps;
+    }
+
+    public static void setLimitApps(Map<String, Long> m) {
+        TodoApp.limitApps = m;
+    }
+
+    public static boolean getBlockedDevice() {
+        return TodoApp.blockedDevice;
+    }
+
+    public static void setBlockedDevice(boolean b) {
+        TodoApp.blockedDevice = b;
+    }
+
+    public static List<String> getBlockedApps() {
+        return TodoApp.blockedApps;
+    }
+
+    public static void setBlockedApps(List<String> l) {
+        TodoApp.blockedApps = l;
+    }
 
     @Override
     public void onCreate() {
@@ -207,7 +297,7 @@ public class TodoApp extends Application {
 
         char[] password = "adictic".toCharArray();
 
-        try(InputStream is = context.getResources().openRawResource(R.raw.ssl_server)) {
+        try (InputStream is = context.getResources().openRawResource(R.raw.ssl_server)) {
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(is, password);
             return ks;

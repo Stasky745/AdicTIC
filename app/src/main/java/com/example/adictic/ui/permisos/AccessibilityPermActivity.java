@@ -20,20 +20,20 @@ public class AccessibilityPermActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.accessibility_perm_info);
 
-        Button bt_okay = (Button)findViewById(R.id.BT_okAccessibilityPerm);
+        Button bt_okay = (Button) findViewById(R.id.BT_okAccessibilityPerm);
 
-        if(Funcions.isAccessibilitySettingsOn(this)){
+        if (Funcions.isAccessibilitySettingsOn(this)) {
             this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
         }
 
-        bt_okay.setOnClickListener(v -> AccessibilityPermActivity.this.startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),0));
+        bt_okay.setOnClickListener(v -> AccessibilityPermActivity.this.startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), 0));
     }
 
     @Override
     protected void onResume() {
 
-        if(Funcions.isAccessibilitySettingsOn(this)){
+        if (Funcions.isAccessibilitySettingsOn(this)) {
             this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
         }
@@ -46,7 +46,7 @@ public class AccessibilityPermActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 0) {
-            if(Funcions.isAccessibilitySettingsOn(this)){
+            if (Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, NavActivity.class));
                 this.finish();
             }

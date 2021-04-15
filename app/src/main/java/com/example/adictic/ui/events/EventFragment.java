@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class EventFragment extends DialogFragment{
+public class EventFragment extends DialogFragment {
     private HorarisEvents event;
     private String originalStart, originalFinish, originalTitle;
     private List<Integer> originalDays;
@@ -41,34 +41,33 @@ public class EventFragment extends DialogFragment{
 
     private IEventDialog mCallback;
 
+    public EventFragment(HorarisEvents he) {
+        event = he;
+    }
+
+    public static EventFragment newInstance(String title, HorarisEvents horarisEvent) {
+        EventFragment frag = new EventFragment(horarisEvent);
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        frag.setArguments(args);
+        return frag;
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         try {
             mCallback = (IEventDialog) context;
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             Log.d("HorarisEventFragment", "L'activitat no implementa la interfície IEventDialog");
         }
-    }
-
-    public EventFragment(HorarisEvents he){
-        event = he;
-    }
-
-    public static EventFragment newInstance(String title, HorarisEvents horarisEvent){
-        EventFragment frag = new EventFragment(horarisEvent);
-        Bundle args = new Bundle();
-        args.putString("title",title);
-        frag.setArguments(args);
-        return frag;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.horaris_event,container);
+        return inflater.inflate(R.layout.horaris_event, container);
     }
 
     @Override
@@ -103,25 +102,25 @@ public class EventFragment extends DialogFragment{
 
         setButtons();
 
-        String title = getArguments().getString("title",getString(R.string.events));
+        String title = getArguments().getString("title", getString(R.string.events));
         getDialog().setTitle(title);
     }
 
-    private void setDaysChecked(){
-        if(event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
-        if(event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
-        if(event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
-        if(event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
-        if(event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
-        if(event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
-        if(event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
+    private void setDaysChecked() {
+        if (event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
+        if (event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
+        if (event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
+        if (event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
+        if (event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
+        if (event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
+        if (event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
     }
 
-    public void setButtons(){
+    public void setButtons() {
         CH_Monday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.MONDAY);
+                if (isChecked) event.days.add(Calendar.MONDAY);
                 else event.days.remove(Integer.valueOf(Calendar.MONDAY));
             }
         });
@@ -129,7 +128,7 @@ public class EventFragment extends DialogFragment{
         CH_Tuesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.TUESDAY);
+                if (isChecked) event.days.add(Calendar.TUESDAY);
                 else event.days.remove(Integer.valueOf(Calendar.TUESDAY));
             }
         });
@@ -137,7 +136,7 @@ public class EventFragment extends DialogFragment{
         CH_Wednesday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.WEDNESDAY);
+                if (isChecked) event.days.add(Calendar.WEDNESDAY);
                 else event.days.remove(Integer.valueOf(Calendar.WEDNESDAY));
             }
         });
@@ -145,7 +144,7 @@ public class EventFragment extends DialogFragment{
         CH_Thursday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.THURSDAY);
+                if (isChecked) event.days.add(Calendar.THURSDAY);
                 else event.days.remove(Integer.valueOf(Calendar.THURSDAY));
             }
         });
@@ -153,7 +152,7 @@ public class EventFragment extends DialogFragment{
         CH_Friday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.FRIDAY);
+                if (isChecked) event.days.add(Calendar.FRIDAY);
                 else event.days.remove(Integer.valueOf(Calendar.FRIDAY));
             }
         });
@@ -161,7 +160,7 @@ public class EventFragment extends DialogFragment{
         CH_Saturday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.SATURDAY);
+                if (isChecked) event.days.add(Calendar.SATURDAY);
                 else event.days.remove(Integer.valueOf(Calendar.SATURDAY));
             }
         });
@@ -169,7 +168,7 @@ public class EventFragment extends DialogFragment{
         CH_Sunday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) event.days.add(Calendar.SUNDAY);
+                if (isChecked) event.days.add(Calendar.SUNDAY);
                 else event.days.remove(Integer.valueOf(Calendar.SUNDAY));
             }
         });
@@ -177,7 +176,7 @@ public class EventFragment extends DialogFragment{
         ET_eventStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Pair<Integer,Integer> start = Funcions.stringToTime(ET_eventStart.getText().toString());
+                Pair<Integer, Integer> start = Funcions.stringToTime(ET_eventStart.getText().toString());
 
                 final TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.datePicker, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -185,13 +184,13 @@ public class EventFragment extends DialogFragment{
                         String hour;
                         String min;
 
-                        if(hourOfDay<10) hour = "0"+hourOfDay;
+                        if (hourOfDay < 10) hour = "0" + hourOfDay;
                         else hour = Integer.toString(hourOfDay);
 
-                        if(minute<10) min = "0"+minute;
+                        if (minute < 10) min = "0" + minute;
                         else min = Integer.toString(minute);
 
-                        event.start = hour+":"+min;
+                        event.start = hour + ":" + min;
                         ET_eventStart.setText(event.start);
                     }
                 }, start.first, start.second, true);
@@ -203,7 +202,7 @@ public class EventFragment extends DialogFragment{
         ET_eventEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Pair<Integer,Integer> finish = Funcions.stringToTime(ET_eventEnd.getText().toString());
+                Pair<Integer, Integer> finish = Funcions.stringToTime(ET_eventEnd.getText().toString());
 
                 final TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.datePicker, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -211,13 +210,13 @@ public class EventFragment extends DialogFragment{
                         String hour;
                         String min;
 
-                        if(hourOfDay<10) hour = "0"+hourOfDay;
+                        if (hourOfDay < 10) hour = "0" + hourOfDay;
                         else hour = Integer.toString(hourOfDay);
 
-                        if(minute<10) min = "0"+minute;
+                        if (minute < 10) min = "0" + minute;
                         else min = Integer.toString(minute);
 
-                        event.finish = hour+":"+min;
+                        event.finish = hour + ":" + min;
                         ET_eventEnd.setText(event.finish);
                     }
                 }, finish.first, finish.second, true);
@@ -227,19 +226,16 @@ public class EventFragment extends DialogFragment{
         });
 
         BT_accept.setOnClickListener(v -> {
-            Pair<Integer,Integer> startTime = Funcions.stringToTime(ET_eventStart.getText().toString());
-            Pair<Integer,Integer> finishTime = Funcions.stringToTime(ET_eventEnd.getText().toString());
+            Pair<Integer, Integer> startTime = Funcions.stringToTime(ET_eventStart.getText().toString());
+            Pair<Integer, Integer> finishTime = Funcions.stringToTime(ET_eventEnd.getText().toString());
 
-            if(ET_eventName.getText() == null || ET_eventName.getText().toString().equals("")){
-                Toast.makeText(getContext(),getString(R.string.error_no_event_name),Toast.LENGTH_LONG).show();
-            }
-            else if(CG_eventDays.getCheckedChipIds().isEmpty()){
-                Toast.makeText(getContext(),getString(R.string.error_no_event_days),Toast.LENGTH_LONG).show();
-            }
-            else if(finishTime.first < startTime.first || (finishTime.first.equals(startTime.first) && finishTime.second <= startTime.second)){
-                Toast.makeText(getContext(),getString(R.string.error_incorrect_times),Toast.LENGTH_LONG).show();
-            }
-            else{
+            if (ET_eventName.getText() == null || ET_eventName.getText().toString().equals("")) {
+                Toast.makeText(getContext(), getString(R.string.error_no_event_name), Toast.LENGTH_LONG).show();
+            } else if (CG_eventDays.getCheckedChipIds().isEmpty()) {
+                Toast.makeText(getContext(), getString(R.string.error_no_event_days), Toast.LENGTH_LONG).show();
+            } else if (finishTime.first < startTime.first || (finishTime.first.equals(startTime.first) && finishTime.second <= startTime.second)) {
+                Toast.makeText(getContext(), getString(R.string.error_incorrect_times), Toast.LENGTH_LONG).show();
+            } else {
                 event.name = ET_eventName.getText().toString();
                 mCallback.onSelectedData(event);
                 dismiss();

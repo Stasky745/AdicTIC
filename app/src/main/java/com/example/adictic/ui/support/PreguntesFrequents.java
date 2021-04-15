@@ -19,7 +19,7 @@ public class PreguntesFrequents extends AppCompatActivity {
     private Button BT_actuacio;
     private Button BT_TractamentAddiccio;
     private Button BT_riscosNovesTec;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +29,12 @@ public class PreguntesFrequents extends AppCompatActivity {
         setButtons();
     }
 
-    private void setButtons(){
+    private void setButtons() {
         BT_QueEsAddiccio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/queEsUnaAddiccioCAT.html");
                 startActivity(i);
@@ -45,7 +45,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/addiccioNovesTecnoCAT.html");
                 startActivity(i);
@@ -56,7 +56,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/causesAddiccioCAT.html");
                 startActivity(i);
@@ -67,7 +67,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/consequenciesCAT.html");
                 startActivity(i);
@@ -78,7 +78,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/prevencioCAT.html");
                 startActivity(i);
@@ -89,7 +89,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/actuarDubteCAT.html");
                 startActivity(i);
@@ -100,7 +100,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/tractamentCAT.html");
                 startActivity(i);
@@ -111,7 +111,7 @@ public class PreguntesFrequents extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Button btn = (Button) v;
-                Intent i = new Intent(PreguntesFrequents.this,InformationActivity.class);
+                Intent i = new Intent(PreguntesFrequents.this, InformationActivity.class);
                 i.putExtra("title", btn.getText().toString());
                 i.putExtra("file", "PreguntesFrequents/riscosCAT.html");
                 startActivity(i);
@@ -119,7 +119,7 @@ public class PreguntesFrequents extends AppCompatActivity {
         });
     }
 
-    private void setViews(){
+    private void setViews() {
         BT_QueEsAddiccio = (Button) findViewById(R.id.BT_QueEsAddiccio);
         BT_defNovesTec = (Button) findViewById(R.id.BT_defNovesTec);
         BT_causesAddiccio = (Button) findViewById(R.id.BT_causesAddiccio);

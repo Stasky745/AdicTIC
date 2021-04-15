@@ -23,10 +23,9 @@ import retrofit2.Response;
 public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        if(TodoApp.getTutor()==0){
+        if (TodoApp.getTutor() == 0) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
-        }
-        else{
+        } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
         }
@@ -37,7 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
 
         ListPreference language_preference = findPreference("setting_change_language");
-        String selectedLanguage = sharedPreferences.getString("language","none");
+        String selectedLanguage = sharedPreferences.getString("language", "none");
         language_preference.setValue(selectedLanguage);
         language_preference.setSummary(language_preference.getEntry());
 
@@ -55,12 +54,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
     }
 
-    private void settings_tancar_sessio(){
+    private void settings_tancar_sessio() {
         Preference tancarSessio = findPreference("setting_tancar_sessio");
         tancarSessio.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                TodoApi mTodoService = ((TodoApp)  getActivity().getApplication()).getAPI();
+                TodoApi mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
                 FirebaseMessaging.getInstance().getToken()
                         .addOnCompleteListener(task -> {
 

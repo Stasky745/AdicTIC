@@ -57,25 +57,25 @@ public class GraphsFragment extends Fragment {
     private ChipGroup chipGroup;
     private Chip CH_appName;
 
-    GraphsFragment(long id, Collection<GeneralUsage> col){
+    GraphsFragment(long id, Collection<GeneralUsage> col) {
         genericAppUsage = new ArrayList<>(col);
 
-        if(genericAppUsage.isEmpty()) currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        if (genericAppUsage.isEmpty()) currentYear = Calendar.getInstance().get(Calendar.YEAR);
         else currentYear = genericAppUsage.get(0).year;
 
         idChild = id;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState){
-        View root = inflater.inflate(R.layout.informe_layout,viewGroup,false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.informe_layout, viewGroup, false);
 
         pieChart = (PieChart) root.findViewById(R.id.Ch_Pie);
-        barChart = (BarChart) root.findViewById (R.id.Ch_Line);
-        TV_pieApp = (TextView) root.findViewById (R.id.TV_PieChart);
+        barChart = (BarChart) root.findViewById(R.id.Ch_Line);
+        TV_pieApp = (TextView) root.findViewById(R.id.TV_PieChart);
 
-        chipGroup = (ChipGroup) root.findViewById (R.id.CG_category);
-        CH_appName = (Chip) root.findViewById (R.id.CH_appName);
+        chipGroup = (ChipGroup) root.findViewById(R.id.CG_category);
+        CH_appName = (Chip) root.findViewById(R.id.CH_appName);
         chipGroup.check(CH_appName.getId());
 
         pieCategory = false;
@@ -85,8 +85,8 @@ public class GraphsFragment extends Fragment {
         return root;
     }
 
-    private void makeGraphs(){
-        Map<String,Long> mapUsage = new HashMap<>();
+    private void makeGraphs() {
+        Map<String, Long> mapUsage = new HashMap<>();
 
         chipGroup.setVisibility(View.VISIBLE);
         chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
@@ -102,10 +102,10 @@ public class GraphsFragment extends Fragment {
 
         long totalUsageTime = 0;
 
-        if(pieCategory){
-            for(GeneralUsage gu : genericAppUsage){
+        if (pieCategory) {
+            for (GeneralUsage gu : genericAppUsage) {
                 currentYear = gu.year;
-                if(gu.totalTime > 0) {
+                if (gu.totalTime > 0) {
                     totalUsageTime += gu.totalTime;
                     for (AppUsage au : gu.usage) {
                         String category = null;
@@ -119,38 +119,39 @@ public class GraphsFragment extends Fragment {
                             mapUsage.put(category, mapUsage.get(category) + au.totalTime);
                         else mapUsage.put(category, au.totalTime);
                     }
-                    barEntries.add(new BarEntry(gu.day + (gu.month * 100), gu.totalTime /(float) 3600000));
+                    barEntries.add(new BarEntry(gu.day + (gu.month * 100), gu.totalTime / (float) 3600000));
                 }
             }
-        }
-        else{
-            for(GeneralUsage gu : genericAppUsage){
-                if(gu.totalTime > 0){
-                    totalUsageTime+=gu.totalTime;
-                    for(AppUsage au: gu.usage){
-                        if(mapUsage.containsKey(au.app.appName)) mapUsage.put(au.app.appName,mapUsage.get(au.app.appName)+au.totalTime);
-                        else mapUsage.put(au.app.appName,au.totalTime);
+        } else {
+            for (GeneralUsage gu : genericAppUsage) {
+                if (gu.totalTime > 0) {
+                    totalUsageTime += gu.totalTime;
+                    for (AppUsage au : gu.usage) {
+                        if (mapUsage.containsKey(au.app.appName))
+                            mapUsage.put(au.app.appName, mapUsage.get(au.app.appName) + au.totalTime);
+                        else mapUsage.put(au.app.appName, au.totalTime);
                     }
-                    barEntries.add(new BarEntry( gu.day+(gu.month*100),gu.totalTime/(float)3600000));
+                    barEntries.add(new BarEntry(gu.day + (gu.month * 100), gu.totalTime / (float) 3600000));
                 }
             }
         }
 
         setBarChart(barEntries);
-        setPieChart(mapUsage,totalUsageTime);
+        setPieChart(mapUsage, totalUsageTime);
     }
 
-    private void setPieChart(Map<String,Long> mapUsage, long totalUsageTime){
+    private void setPieChart(Map<String, Long> mapUsage, long totalUsageTime) {
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
-        for(Map.Entry<String,Long> entry : mapUsage.entrySet()){
-            if(entry.getValue() >= totalUsageTime*0.05) yValues.add(new PieEntry(entry.getValue(),entry.getKey()));
-            else{
-                others+=entry.getValue();
+        for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {
+            if (entry.getValue() >= totalUsageTime * 0.05)
+                yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+            else {
+                others += entry.getValue();
             }
         }
 
-        yValues.add(new PieEntry(others,"Altres"));
+        yValues.add(new PieEntry(others, "Altres"));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
@@ -182,10 +183,12 @@ public class GraphsFragment extends Fragment {
                 TV_pieApp.setText(pe.getLabel());
 
 
-                Pair<Integer,Integer> appTime = Funcions.millisToString(e.getY());
+                Pair<Integer, Integer> appTime = Funcions.millisToString(e.getY());
 
-                if(appTime.first == 0) pieChart.setCenterText(getResources().getString(R.string.mins,appTime.second));
-                else pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes,appTime.first,appTime.second));
+                if (appTime.first == 0)
+                    pieChart.setCenterText(getResources().getString(R.string.mins, appTime.second));
+                else
+                    pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes, appTime.first, appTime.second));
             }
 
             @Override
@@ -197,8 +200,8 @@ public class GraphsFragment extends Fragment {
         pieChart.invalidate();
     }
 
-    private void setBarChart(List<BarEntry> entries){
-        BarDataSet barDataSet = new BarDataSet(entries,getResources().getString(R.string.daily_usage));
+    private void setBarChart(List<BarEntry> entries) {
+        BarDataSet barDataSet = new BarDataSet(entries, getResources().getString(R.string.daily_usage));
         barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
         BarData barData = new BarData(barDataSet);
@@ -233,14 +236,14 @@ public class GraphsFragment extends Fragment {
         barChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-                int day = (int)e.getX() % 100;
-                int month = (int) e.getX()/100;
+                int day = (int) e.getX() % 100;
+                int month = (int) e.getX() / 100;
 
                 Intent i = new Intent(getActivity(), DayUsageActivity.class);
-                i.putExtra("idChild",idChild);
-                i.putExtra("day",day);
-                i.putExtra("month",month-1);
-                i.putExtra("year",currentYear);
+                i.putExtra("idChild", idChild);
+                i.putExtra("day", day);
+                i.putExtra("month", month - 1);
+                i.putExtra("year", currentYear);
                 startActivity(i);
             }
 
@@ -257,21 +260,20 @@ public class GraphsFragment extends Fragment {
         //List<String> mesos = Arrays.asList(" Gen"," Feb"," Mar"," Abr"," Maig"," Jun"," Jul"," Ago"," Set"," Oct"," Nov"," Des");
 
         @Override
-        public String getFormattedValue(float value){
-            if(value > 0){
+        public String getFormattedValue(float value) {
+            if (value > 0) {
                 //int mes = (int) value/100;
-                String dia = String.valueOf((int) value%100);
+                String dia = String.valueOf((int) value % 100);
                 return dia;
-            }
-            else return "";
+            } else return "";
 
         }
     }
 
     static class MyYAxisBarFormatter extends ValueFormatter {
         @Override
-        public String getFormattedValue(float value){
-            return Math.round(value)+"h.";
+        public String getFormattedValue(float value) {
+            return Math.round(value) + "h.";
         }
     }
 }

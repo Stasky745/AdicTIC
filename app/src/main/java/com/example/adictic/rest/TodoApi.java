@@ -58,7 +58,9 @@ public interface TodoApi {
     @GET("/usage/{id}/{xDays}")
     Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
 
-    /** format {dd-mm-aaaa} o {mm-aaaa} per tot el mes**/
+    /**
+     * format {dd-mm-aaaa} o {mm-aaaa} per tot el mes
+     **/
     @GET("/usage/{id}/{dataInicial}/{dataFinal}")
     Call<Collection<GeneralUsage>> getGenericAppUsage(@Path("id") Long childId, @Path("dataInicial") String dataInicial, @Path("dataFinal") String dataFinal);
 
@@ -161,7 +163,7 @@ public interface TodoApi {
     Call<List<UserMessage>> getMyMessagesWithUser(@Path("id") String id);
 
     @POST("/message/me/{id}")
-    Call<String> sendMessageToUser(@Path("id") String id,@Body UserMessage value);
+    Call<String> sendMessageToUser(@Path("id") String id, @Body UserMessage value);
 
     ///////////////////////////////////
 
