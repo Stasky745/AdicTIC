@@ -165,4 +165,7 @@ public interface TodoApi {
     Call<String> sendMessageToUser(@Path("id") String id,@Body UserMessage value);
 
     ///////////////////////////////////
+
+    @GET("/admins/pictures/{id}")
+    Call<ResponseBody> getAdminPicture(@Path("id") Long id);
 }

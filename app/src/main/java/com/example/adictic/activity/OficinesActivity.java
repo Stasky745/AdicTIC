@@ -73,6 +73,8 @@ public class OficinesActivity extends AppCompatActivity {
 
     private Spinner SP_oficines;
 
+    private Long idOficinaInicial;
+
     private List<Oficina> oficines = new ArrayList<>();
 
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;// 10; // 10 metres
@@ -93,6 +95,8 @@ public class OficinesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        idOficinaInicial = getIntent().getLongExtra("idOficina",-1);
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
@@ -224,6 +228,8 @@ public class OficinesActivity extends AppCompatActivity {
 //        myLocationOverlay.setDrawAccuracyEnabled(true);
 //        map.getOverlays().add(myLocationOverlay);
 
+        GeoPoint startPoint = null;
+
         for(Oficina oficina : oficines){
             Marker marker = new Marker(map);
             marker.setPosition(new GeoPoint(oficina.latitude, oficina.longitude));
@@ -251,17 +257,20 @@ public class OficinesActivity extends AppCompatActivity {
 
             markers.add(marker);
             map.getOverlays().add(marker);
+
+            if(oficina.id.equals(idOficinaInicial)){
+                startPoint = new GeoPoint(oficina.latitude,oficina.longitude);
+            }
         }
 
 
-        GeoPoint startPoint;
-
-        if(currentLocation != null){
-            markers = sortListbyDistance(markers, currentLocation);
-            startPoint = currentLocation;
-        }
-        else{
-            startPoint = new GeoPoint(41.981177,2.818997); // Oficina Girona
+        if(startPoint == null){
+            if (currentLocation != null) {
+                markers = sortListbyDistance(markers, currentLocation);
+                startPoint = currentLocation;
+            } else {
+                startPoint = new GeoPoint(41.981177, 2.818997); // Oficina Girona
+            }
         }
 
         if(!markers.isEmpty()) startPoint = markers.get(0).getPosition();

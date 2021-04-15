@@ -9,7 +9,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
-import com.example.adictic.adapters.ChatsAdapter;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;

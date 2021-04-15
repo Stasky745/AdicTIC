@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.util.List;
 
-public class Admin implements Parcelable {
+public class AdminProfile implements Parcelable {
     public Long idUser;
     public String name;
     public String professio;
@@ -13,7 +13,7 @@ public class Admin implements Parcelable {
     public List<WebLink> webLinks;
     public Long idOficina;
 
-    protected Admin(Parcel in) {
+    protected AdminProfile(Parcel in) {
         if (in.readByte() == 0) {
             idUser = null;
         } else {
@@ -30,15 +30,15 @@ public class Admin implements Parcelable {
         }
     }
 
-    public static final Creator<Admin> CREATOR = new Creator<Admin>() {
+    public static final Creator<AdminProfile> CREATOR = new Creator<AdminProfile>() {
         @Override
-        public Admin createFromParcel(Parcel in) {
-            return new Admin(in);
+        public AdminProfile createFromParcel(Parcel in) {
+            return new AdminProfile(in);
         }
 
         @Override
-        public Admin[] newArray(int size) {
-            return new Admin[size];
+        public AdminProfile[] newArray(int size) {
+            return new AdminProfile[size];
         }
     };
 
