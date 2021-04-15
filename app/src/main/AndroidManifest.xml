@@ -80,7 +80,6 @@
         <activity android:name=".activity.InformationActivity" />
         <activity android:name=".activity.HorarisMainActivity" />
         <activity android:name=".activity.OficinesActivity" />
-        <activity android:name=".activity.chat.EnviarDubte" />
         <activity android:name=".activity.GeoLocActivity" />
 
         <receiver

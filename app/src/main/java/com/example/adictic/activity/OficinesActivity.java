@@ -36,6 +36,7 @@ import com.example.adictic.R;
 import com.example.adictic.TodoApp;
 import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,6 +62,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.content.Intent.ACTION_DIAL;
+import static android.content.Intent.ACTION_VIEW;
 
 /** https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java **/
 
@@ -240,19 +242,16 @@ public class OficinesActivity extends AppCompatActivity {
 
             marker.setRelatedObject(oficina);
 
-            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker, MapView mapView) {
-                    if(marker.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
-                    else{
-                        int pos = markers.indexOf(marker);
-                        SP_oficines.setSelection(pos);
-                        marker.showInfoWindow();
-                        map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
-                    }
-
-                    return true;
+            marker.setOnMarkerClickListener((marker1, mapView) -> {
+                if(marker1.isInfoWindowShown()) InfoWindow.closeAllInfoWindowsOn(map);
+                else{
+                    int pos = markers.indexOf(marker1);
+                    SP_oficines.setSelection(pos);
+                    marker1.showInfoWindow();
+                    map.getController().setCenter(setInfoWindowOffset(marker1.getPosition()));
                 }
+
+                return true;
             });
 
             markers.add(marker);
@@ -477,6 +476,11 @@ public class OficinesActivity extends AppCompatActivity {
             TextView TV_descOficina = (TextView)mView.findViewById(R.id.TV_descOficina);
             TextView TV_addressOficina = (TextView)mView.findViewById(R.id.TV_addressOficina);
             Button BT_telfOficina = (Button)mView.findViewById(R.id.BT_telfOficina);
+            TextView TV_website = (TextView) mView.findViewById(R.id.TV_webURL);
+
+            TV_website.setText(oficina.website);
+            TV_website.setClickable(true);
+            TV_website.setOnClickListener(view -> startActivity(new Intent(ACTION_VIEW, Uri.parse(Funcions.getFullURL(oficina.website)))));
 
             TV_nomOficina.setText(oficina.name);
             TV_descOficina.setText(oficina.description);

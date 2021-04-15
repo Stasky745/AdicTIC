@@ -11,6 +11,7 @@ public class Oficina {
     public String ciutat;
     public String description;
     public String telf;
+    public String website;
 
     @NonNull
     @Override

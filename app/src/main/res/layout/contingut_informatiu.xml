@@ -5,21 +5,20 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-            <Button
-                android:id="@+id/BT_QueEsAddiccio"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="24dp"
-                android:backgroundTint="@color/background_activity"
-                android:text="@string/que_es_addiccio"
-                android:textAlignment="textStart"
-                android:textColor="@color/colorPrimary"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/BT_QueEsAddiccio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:backgroundTint="@color/background_activity"
+        android:text="@string/que_es_addiccio"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/BT_defNovesTec"
@@ -29,8 +28,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/def_noves_tecn"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_QueEsAddiccio" />
@@ -43,8 +41,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/causes_addiccio"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_defNovesTec" />
@@ -57,8 +54,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/consequencies_us"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_causesAddiccio" />
@@ -71,8 +67,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/prevenir_problemes"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_consequencies_us" />
@@ -85,8 +80,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/actuacio"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_prevenir_problemes" />
@@ -99,8 +93,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/tractament_addiccio"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_actuacio" />
@@ -113,8 +106,7 @@
         android:backgroundTint="@color/background_activity"
         android:text="@string/riscos_noves_tec"
         android:textAlignment="textStart"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintStart_toStartOf="@+id/BT_QueEsAddiccio"
         app:layout_constraintTop_toBottomOf="@+id/BT_tractament_addiccio" />

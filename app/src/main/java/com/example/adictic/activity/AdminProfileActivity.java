@@ -24,6 +24,7 @@ import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AdminProfile;
 import com.example.adictic.entity.WebLink;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
 
@@ -154,7 +155,7 @@ public class AdminProfileActivity extends AppCompatActivity {
             holder.mRootView.setOnClickListener(v -> {
                 String url = webList.get(position).url;
 
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Funcions.getFullURL(url)));
                 startActivity(browserIntent);
             });
         }
