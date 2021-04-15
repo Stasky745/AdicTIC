@@ -6,4 +6,5 @@ public class ChatsMain {
     public Boolean hasAccess;
     public ChatInfo obert;
     public List<ChatInfo> tancats;
+    public Boolean hasDubte;
 }

@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.example.adictic.R;
 import com.example.adictic.TodoApp;
+import com.example.adictic.activity.AdminProfileActivity;
 import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserMessage;
@@ -125,11 +126,12 @@ public class ChatFragment extends Fragment {
             }
         });
 
-        ConstraintLayout constraint = (ConstraintLayout) view.findViewById(R.id.CL_obrirPerfil);
-        constraint.setOnClickListener(v -> {
-            /*Intent i = new Intent(getApplicationContext(),OtherUserProfile.class);
-            i.putExtra("userId",getIntent().getLongExtra("userId",0));
-            startActivity(i);*/
+        TextView TV_profileName = view.findViewById(R.id.TV_nomXat);
+        TV_profileName.setClickable(true);
+        TV_profileName.setOnClickListener(view -> {
+            Intent intent = new Intent(getActivity(), AdminProfileActivity.class);
+            intent.putExtra("adminProfile",chatInfo.admin);
+            startActivity(intent);
         });
 
         setCloseButton();

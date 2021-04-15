@@ -305,4 +305,10 @@
     <string name="donar_acces_titol">Donar Accés</string>
     <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
     <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
+    <string name="send_dubte">Enviar Consulta</string>
+    <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
+    <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>
+    <string name="dubte_success">Consulta enviada correctament.</string>
+    <string name="links">Enllaços</string>
+    <string name="profile_pic">Foto de Perfil</string>
 </resources>

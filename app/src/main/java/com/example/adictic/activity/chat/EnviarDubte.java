@@ -71,7 +71,7 @@ public class EnviarDubte extends Activity {
             Dubte newDubte = new Dubte();
             newDubte.titol = TIET_titol.getText().toString();
             newDubte.descripcio = TIET_desc.getText().toString();
-            newDubte.localitzacio = ((Localitzacio) SP_local.getSelectedItem()).id;
+            //newDubte.localitzacio = ((Localitzacio) SP_local.getSelectedItem()).id;
 
             Call<String> call = mTodoService.postDubte(newDubte);
             call.enqueue(new Callback<String>() {

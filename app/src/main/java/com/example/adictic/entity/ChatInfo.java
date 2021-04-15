@@ -4,11 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ChatInfo implements Parcelable {
-    public Admin admin;
+    public AdminProfile admin;
     public String lastMessage;
 
     protected ChatInfo(Parcel in) {
-        admin = in.readParcelable(Admin.class.getClassLoader());
+        admin = in.readParcelable(AdminProfile.class.getClassLoader());
         lastMessage = in.readString();
     }
 

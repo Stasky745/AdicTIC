@@ -1,4 +1,4 @@
-package com.example.adictic.adapters;
+package com.example.adictic.activity.chat;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -31,7 +31,14 @@ public class ChatsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (chatsMain.obert == null) {
-            if (position == 0) return new NoChatFragment();
+            if (position == 0){
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("dubte",chatsMain.hasDubte);
+
+                Fragment fragment = new NoChatFragment();
+                fragment.setArguments(bundle);
+                return fragment;
+            }
             else {
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) chatsMain.tancats);
