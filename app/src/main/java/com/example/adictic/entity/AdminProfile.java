@@ -25,20 +25,23 @@ public class AdminProfile implements Parcelable {
     public Long idOficina;
 
     protected AdminProfile(Parcel in) {
-        if (in.readByte() == 0) {
-            idUser = null;
-        } else {
-            idUser = in.readLong();
-        }
+//        if (in.readByte() == 0) {
+//            idUser = null;
+//        } else {
+//            idUser = in.readLong();
+//        }
+        idUser = in.readLong();
         name = in.readString();
         professio = in.readString();
         description = in.readString();
         webLinks = in.createTypedArrayList(WebLink.CREATOR);
-        if (in.readByte() == 0) {
-            idOficina = null;
-        } else {
-            idOficina = in.readLong();
-        }
+
+        idOficina = in.readLong();
+//        if (in.readByte() == 0) {
+//            idOficina = null;
+//        } else {
+//            idOficina = in.readLong();
+//        }
     }
 
     @Override

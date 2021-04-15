@@ -55,7 +55,6 @@ import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
 
-    private final FillNom fillNom;
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
@@ -74,9 +73,10 @@ public class MainParentFragment extends Fragment {
     };
     private PieChart pieChart;
 
+    public MainParentFragment() {    }
+
     public MainParentFragment(FillNom fill) {
         idChildSelected = fill.idChild;
-        fillNom = fill;
     }
 
     @Override
