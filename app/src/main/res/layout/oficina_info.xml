@@ -48,12 +48,25 @@
         app:layout_constraintTop_toBottomOf="@+id/TV_nomOficina"
         tools:text="Carrer Ramon Muntaner, 5, 08005, Girona" />
 
+    <TextView
+        android:id="@+id/TV_webURL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_descOficina"
+        tools:text="www.minijuegos.com" />
+
     <Button
         android:id="@+id/BT_telfOficina"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="24dp"
         android:background="@color/background_activity"
         android:paddingStart="10dp"
@@ -64,6 +77,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_descOficina"
+        app:layout_constraintTop_toBottomOf="@+id/TV_webURL"
         tools:text="972 68 68 68" />
 </androidx.constraintlayout.widget.ConstraintLayout>

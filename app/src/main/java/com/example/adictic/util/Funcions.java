@@ -597,4 +597,9 @@ public class Funcions {
             }
         });
     }
+
+    public static String getFullURL(String url){
+        if(!url.contains("https://")) return "https://"+url;
+        else return url;
+    }
 }
