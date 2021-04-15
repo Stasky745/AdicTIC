@@ -5,7 +5,6 @@ import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
-import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.FillNom;

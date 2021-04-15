@@ -15,12 +15,12 @@ import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.example.adictic.TodoApp;
-import com.example.adictic.activity.BlockActivity;
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.ui.BlockActivity;
+import com.example.adictic.util.TodoApp;
 
 import org.apache.commons.collections4.CollectionUtils;
 

@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.TodoApp;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 import java.util.Collections;

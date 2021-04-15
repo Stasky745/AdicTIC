@@ -7,12 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.TodoApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 import java.util.HashMap;
