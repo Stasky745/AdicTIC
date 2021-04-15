@@ -167,10 +167,10 @@ public class ClosedChatActivity extends AppCompatActivity {
 
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_MESSAGE_SENT:
-                    ((ChatFragment.MessageListAdapter.SentMessageHolder) holder).bind(message);
+                    ((SentMessageHolder) holder).bind(message);
                     break;
                 case VIEW_TYPE_MESSAGE_RECEIVED:
-                    ((ChatFragment.MessageListAdapter.ReceivedMessageHolder) holder).bind(message);
+                    ((ReceivedMessageHolder) holder).bind(message);
             }
         }
 
