@@ -36,20 +36,21 @@ public class LimitAppsWorker extends Worker {
 
         List<AppUsage> listCurrentUsage = (List<AppUsage>) gul.get(0).usage;
 
-        Map<String,Long> limitApps = TodoApp.getLimitApps();
+        Map<String, Long> limitApps = TodoApp.getLimitApps();
 
         long nextWorker = -1;
-        for(Map.Entry<String,Long> entry : limitApps.entrySet()){
+        for (Map.Entry<String, Long> entry : limitApps.entrySet()) {
             AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(entry.getKey()));
-            if(appUsage.totalTime >= entry.getValue()) TodoApp.getBlockedApps().add(entry.getKey());
-            else{
-                if(nextWorker == -1 || entry.getValue()-appUsage.totalTime < nextWorker){
-                    nextWorker = entry.getValue()-appUsage.totalTime;
+            if (appUsage.totalTime >= entry.getValue())
+                TodoApp.getBlockedApps().add(entry.getKey());
+            else {
+                if (nextWorker == -1 || entry.getValue() - appUsage.totalTime < nextWorker) {
+                    nextWorker = entry.getValue() - appUsage.totalTime;
                 }
             }
         }
 
-        if(nextHorari == -2) nextHorari = nextWorker+1;
+        if (nextHorari == -2) nextHorari = nextWorker + 1;
 
         Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(nextHorari, nextWorker));
 

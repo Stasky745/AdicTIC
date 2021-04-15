@@ -28,14 +28,18 @@ public class Register extends AppCompatActivity {
 
     TodoApi mTodoService;
 
+    public final static boolean isValidEmail(CharSequence target) {
+        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
 
-        Funcions.closeKeyboard(findViewById(R.id.main_parent),this);
+        Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((TodoApp)this.getApplication()).getAPI();
+        mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
         Button b_reg = Register.this.findViewById(R.id.register_button);
         // This is the listener that will be used when the user presses the "Register" button
@@ -51,16 +55,14 @@ public class Register extends AppCompatActivity {
             noValidEmail.setVisibility(GONE);
             noPwMatch.setVisibility(GONE);
 
-            if(p1.getText().toString().equals(p2.getText().toString())) {
-                if(isValidEmail(e.getText())){
+            if (p1.getText().toString().equals(p2.getText().toString())) {
+                if (isValidEmail(e.getText())) {
                     Register.this.checkCredentials(u.getText().toString(), p1.getText().toString(), e.getText().toString());
-                }
-                else{
+                } else {
                     noValidEmail.setVisibility(View.VISIBLE);
                 }
-            }
-            else{
-                if(!isValidEmail(e.getText())){
+            } else {
+                if (!isValidEmail(e.getText())) {
                     noValidEmail.setVisibility(View.VISIBLE);
                 }
                 noPwMatch.setVisibility(View.VISIBLE);
@@ -74,10 +76,6 @@ public class Register extends AppCompatActivity {
             Login.getInstance().finish();
             Register.this.finish();
         });
-    }
-
-    public final static boolean isValidEmail(CharSequence target) {
-        return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     // This method is called when the "Register" button is pressed in the Register fragment
@@ -102,6 +100,7 @@ public class Register extends AppCompatActivity {
                     toast.show();
                 }
             }
+
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);

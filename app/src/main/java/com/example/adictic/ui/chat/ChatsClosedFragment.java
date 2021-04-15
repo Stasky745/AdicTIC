@@ -1,17 +1,23 @@
 package com.example.adictic.ui.chat;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.AdminProfile;
 import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.TodoApp;
@@ -25,7 +31,6 @@ public class ChatsClosedFragment extends Fragment {
 
     RecyclerView mRecyclerView;
     List<ChatInfo> chatsList;
-    private ClosedChatsListAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -44,7 +49,7 @@ public class ChatsClosedFragment extends Fragment {
         chatsList = getArguments().getParcelableArrayList("list");
 
         mRecyclerView = getView().findViewById(R.id.RV_chats_closed);
-        mAdapter = new ClosedChatsListAdapter(this.getActivity().getApplication());
+        ClosedChatsListAdapter mAdapter = new ClosedChatsListAdapter(this.getActivity().getApplication());
         mAdapter.setList(chatsList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -63,7 +68,7 @@ public class ChatsClosedFragment extends Fragment {
         }
     }
 
-    class ClosedChatsListAdapter extends RecyclerView.Adapter<ChatInfoViewHolder> {
+    static class ClosedChatsListAdapter extends RecyclerView.Adapter<ChatInfoViewHolder> {
 
         List<ChatInfo> list = new ArrayList<>();
         Context context;
@@ -72,21 +77,25 @@ public class ChatsClosedFragment extends Fragment {
             this.context = context;
         }
 
+        @NonNull
         @Override
         public ChatInfoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_info, parent, false);
-            ChatInfoViewHolder holder = new ChatInfoViewHolder(v);
 
-            return holder;
+            return new ChatInfoViewHolder(v);
         }
 
         @Override
         public void onBindViewHolder(ChatInfoViewHolder holder, final int position) {
-            holder.name.setText(list.get(position).admin.name);
-            holder.message.setText(list.get(position).lastMessage);
+            ChatInfo chatInfo = list.get(position);
+            holder.name.setText(chatInfo.admin.name);
+            holder.message.setText(chatInfo.lastMessage);
 
             holder.view.setOnClickListener(view -> {
-                //Falta fer
+                AdminProfile adminProfile = list.get(position).admin;
+                Intent intent = new Intent(view.getContext(),ClosedChatActivity.class);
+                intent.putExtra("chat",adminProfile);
+                view.getContext().startActivity(intent);
             });
 
         }
@@ -97,7 +106,7 @@ public class ChatsClosedFragment extends Fragment {
         }
 
         @Override
-        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
 
             super.onAttachedToRecyclerView(recyclerView);
         }
@@ -115,7 +124,7 @@ public class ChatsClosedFragment extends Fragment {
             notifyItemRemoved(position);
         }
 
-        public void setList(List<ChatInfo> chats){
+        public void setList(List<ChatInfo> chats) {
             list = chats;
             this.notifyDataSetChanged();
         }

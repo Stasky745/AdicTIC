@@ -23,7 +23,7 @@ public class InformationActivity extends AppCompatActivity {
         wv.setBackgroundColor(Color.TRANSPARENT);
 
         String title = getIntent().getStringExtra("title");
-        String file = "file:///android_asset/"+getIntent().getStringExtra("file");
+        String file = "file:///android_asset/" + getIntent().getStringExtra("file");
 
         bt.setText(title);
         wv.loadUrl(file);

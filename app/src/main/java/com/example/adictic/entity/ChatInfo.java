@@ -4,14 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class ChatInfo implements Parcelable {
-    public AdminProfile admin;
-    public String lastMessage;
-
-    protected ChatInfo(Parcel in) {
-        admin = in.readParcelable(AdminProfile.class.getClassLoader());
-        lastMessage = in.readString();
-    }
-
     public static final Creator<ChatInfo> CREATOR = new Creator<ChatInfo>() {
         @Override
         public ChatInfo createFromParcel(Parcel in) {
@@ -23,6 +15,13 @@ public class ChatInfo implements Parcelable {
             return new ChatInfo[size];
         }
     };
+    public AdminProfile admin;
+    public String lastMessage;
+
+    protected ChatInfo(Parcel in) {
+        admin = in.readParcelable(AdminProfile.class.getClassLoader());
+        lastMessage = in.readString();
+    }
 
     @Override
     public int describeContents() {

@@ -54,7 +54,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         setDades();
     }
 
-    private void setDades(){
+    private void setDades() {
         TextView TV_nomPerfil = (TextView) findViewById(R.id.TV_nomPerfil);
         TV_nomPerfil.setText(adminProfile.name);
 
@@ -73,7 +73,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         Button BT_oficina = findViewById(R.id.BT_oficina);
         BT_oficina.setOnClickListener(view -> {
             Intent intent = new Intent(this, OficinesActivity.class);
-            intent.putExtra("idOficina",adminProfile.idOficina);
+            intent.putExtra("idOficina", adminProfile.idOficina);
 
             startActivity(intent);
         });
@@ -83,19 +83,19 @@ public class AdminProfileActivity extends AppCompatActivity {
         RV_profileLinks = (RecyclerView) findViewById(R.id.RV_profileLinks);
         RV_profileLinks.setLayoutManager(new LinearLayoutManager(this.getApplication()));
         webList = new ArrayList<>(adminProfile.webLinks);
-        RVadapter = new RV_Adapter(getApplicationContext(),webList);
+        RVadapter = new RV_Adapter(getApplicationContext(), webList);
 
         RV_profileLinks.setAdapter(RVadapter);
     }
 
-    private void setFoto(){
+    private void setFoto() {
         ImageView IV_profilePic = (ImageView) findViewById(R.id.IV_profilePic);
 
         Call<ResponseBody> call = todoApi.getAdminPicture(adminProfile.idUser);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
                     IV_profilePic.setImageBitmap(bmp);
                 }
@@ -108,34 +108,16 @@ public class AdminProfileActivity extends AppCompatActivity {
         });
     }
 
-    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder>{
+    public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
         ArrayList<WebLink> webList;
         Context mContext;
         LayoutInflater mInflater;
 
-        public class MyViewHolder extends RecyclerView.ViewHolder {
-            protected View mRootView;
-
-            TextView TV_webLink;
-            ImageView IV_delete, IV_edit;
-
-            MyViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                mRootView = itemView;
-
-                TV_webLink = (TextView) itemView.findViewById(R.id.TV_weblink);
-                IV_delete = mRootView.findViewById(R.id.IV_delete);
-                IV_edit = mRootView.findViewById(R.id.IV_edit);
-            }
-        }
-
-        RV_Adapter(Context context, ArrayList<WebLink> list){
+        RV_Adapter(Context context, ArrayList<WebLink> list) {
             mContext = context;
             webList = list;
             mInflater = LayoutInflater.from(mContext);
         }
-
 
         @NonNull
         @Override
@@ -169,6 +151,23 @@ public class AdminProfileActivity extends AppCompatActivity {
         @Override
         public int getItemViewType(int position) {
             return position;
+        }
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            protected View mRootView;
+
+            TextView TV_webLink;
+            ImageView IV_delete, IV_edit;
+
+            MyViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                mRootView = itemView;
+
+                TV_webLink = (TextView) itemView.findViewById(R.id.TV_weblink);
+                IV_delete = mRootView.findViewById(R.id.IV_delete);
+                IV_edit = mRootView.findViewById(R.id.IV_edit);
+            }
         }
     }
 }

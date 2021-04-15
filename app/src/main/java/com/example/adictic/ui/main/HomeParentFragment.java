@@ -40,7 +40,7 @@ public class HomeParentFragment extends Fragment {
         ViewPager2 viewPager = (ViewPager2) view.findViewById(R.id.ViewPager);
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.TabLayout);
 
-        TodoApi mTodoService = ((TodoApp)getActivity().getApplicationContext()).getAPI();
+        TodoApi mTodoService = ((TodoApp) getActivity().getApplicationContext()).getAPI();
 
         long idTutor = TodoApp.getIDTutor();
         Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
@@ -48,15 +48,15 @@ public class HomeParentFragment extends Fragment {
         call.enqueue(new Callback<Collection<FillNom>>() {
             @Override
             public void onResponse(Call<Collection<FillNom>> call, Response<Collection<FillNom>> response) {
-                if(response.isSuccessful() && response.body() != null && response.body().size() > 0){
+                if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
                     // Si és l'app fill només ensenyem el fill actual
-                    if(TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0){
+                    if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0) {
                         boolean trobat = false;
                         int i = 0;
-                        while(!trobat && i < fills.size()) {
-                            if(fills.get(i).idChild == TodoApp.getIDChild()){
+                        while (!trobat && i < fills.size()) {
+                            if (fills.get(i).idChild == TodoApp.getIDChild()) {
                                 trobat = true;
                                 FillNom fill = fills.get(i);
                                 fills.clear();
@@ -70,11 +70,10 @@ public class HomeParentFragment extends Fragment {
 
                     viewPager.setAdapter(adapter);
 
-                    new TabLayoutMediator(tabLayout,viewPager,
+                    new TabLayoutMediator(tabLayout, viewPager,
                             (tab, position) -> tab.setText(adapter.getPageTitle(position))
                     ).attach();
-                }
-                else{
+                } else {
                     TextView error = (TextView) view.findViewById(R.id.TV_noFills);
                     error.setVisibility(View.VISIBLE);
                 }

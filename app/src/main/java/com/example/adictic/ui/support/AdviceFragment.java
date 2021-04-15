@@ -31,16 +31,15 @@ public class AdviceFragment extends Fragment {
         Button BT_ConsultaPrivada = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
         Button BT_oficines = (Button) root.findViewById(R.id.BT_oficines);
 
-        BT_ConsultaPrivada.setOnClickListener(v -> startActivity(new Intent(getActivity(),ChatActivity.class)));
+        BT_ConsultaPrivada.setOnClickListener(v -> startActivity(new Intent(getActivity(), ChatActivity.class)));
 
         CL_info.setOnClickListener(v -> {
-            if(CL_infoButtons.getVisibility()==View.GONE){
+            if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
                 ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
-            }
-            else{
+            } else {
                 CL_infoButtons.setVisibility(View.GONE);
 
                 ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
@@ -49,13 +48,12 @@ public class AdviceFragment extends Fragment {
         });
 
         CL_suport.setOnClickListener(v -> {
-            if(CL_suportButtons.getVisibility()==View.GONE){
+            if (CL_suportButtons.getVisibility() == View.GONE) {
                 CL_suportButtons.setVisibility(View.VISIBLE);
 
                 ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
                 IV_openSuport.setImageResource(R.drawable.ic_arrow_close);
-            }
-            else{
+            } else {
                 CL_suportButtons.setVisibility(View.GONE);
 
                 ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
@@ -63,9 +61,9 @@ public class AdviceFragment extends Fragment {
             }
         });
 
-        BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
-        BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(),PreguntesFrequents.class)));
-        BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(),OficinesActivity.class)));
+        BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
+        BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
+        BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(), OficinesActivity.class)));
 
         return root;
     }

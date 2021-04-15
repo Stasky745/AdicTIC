@@ -55,28 +55,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
     }
 
-    public void updateLimitAppsList(Map<String,String> map){
+    public void updateLimitAppsList(Map<String, String> map) {
         map.remove("limitApp");
-        for(Map.Entry<String,String> entry : map.entrySet()){
+        for (Map.Entry<String, String> entry : map.entrySet()) {
             TodoApp.getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
         }
     }
 
-    private void updateBlockedAppsList(Map<String,String> map){
+    private void updateBlockedAppsList(Map<String, String> map) {
         map.remove("blockApp");
 
         List<String> blockList = new ArrayList<>(map.keySet());
         TodoApp.setBlockedApps(blockList);
     }
-    
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-        mTodoService = ((TodoApp)getApplicationContext()).getAPI();
+        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
-        Map<String,String> messageMap = remoteMessage.getData();
+        Map<String, String> messageMap = remoteMessage.getData();
 
         String title = "";
         String body = "";
@@ -100,41 +100,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mNotificationManager.createNotificationChannel(mChannel);
             }
 
-                         /** Accions del dispositiu fill**/
-            if(messageMap.containsKey("blockDevice")){
-                if(Objects.equals(messageMap.get("blockDevice"), "1")){
+            /** Accions del dispositiu fill**/
+            if (messageMap.containsKey("blockDevice")) {
+                if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     TodoApp.setBlockedDevice(true);
                     mDPM.lockNow();
-                }
-                else TodoApp.setBlockedDevice(false);
-            }
-            else if(messageMap.containsKey("freeUse")){
-                if(Objects.equals(messageMap.get("freeUse"), "1")){
+                } else TodoApp.setBlockedDevice(false);
+            } else if (messageMap.containsKey("freeUse")) {
+                if (Objects.equals(messageMap.get("freeUse"), "1")) {
                     Funcions.startFreeUseLimitList(getApplicationContext());
 
                     title = getString(R.string.free_use_activation);
-                }
-                else{
+                } else {
                     Funcions.updateLimitedAppsList();
                     title = getString(R.string.free_use_deactivation);
                 }
-            }
-            else if(messageMap.containsKey("limitApp")){
+            } else if (messageMap.containsKey("limitApp")) {
                 updateLimitAppsList(messageMap);
 
                 /** FER CRIDA WORKMANAGER **/
                 Funcions.runLimitAppsWorker(getApplicationContext(), 0);
 
                 title = getString(R.string.update_blocked_apps);
-            }
-            else if(messageMap.containsKey("blockApp")){
+            } else if (messageMap.containsKey("blockApp")) {
                 updateBlockedAppsList(messageMap);
-                System.out.println("Blocked: "+TodoApp.getBlockedApps());
+                System.out.println("Blocked: " + TodoApp.getBlockedApps());
 
                 title = getString(R.string.update_blocked_apps);
-            }
-            else if(messageMap.containsKey("liveApp")){
+            } else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
                 TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
 
@@ -142,21 +136,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
                 WorkManager.getInstance(this).enqueue(myWork);
 
-                Log.d(TAG, "Token liveApp: "+s);
-            }
-            else if(messageMap.containsKey("getIcon")){
+                Log.d(TAG, "Token liveApp: " + s);
+            } else if (messageMap.containsKey("getIcon")) {
                 messageMap.remove("getIcon");
                 List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
-            }
-            else if(messageMap.containsKey("horaris")){
+            } else if (messageMap.containsKey("horaris")) {
                 Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
                 call.enqueue(new Callback<Horaris>() {
                     @Override
                     public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             assert response.body() != null;
-                            Funcions.updateEventList(getApplicationContext(),response.body().events);
+                            Funcions.updateEventList(getApplicationContext(), response.body().events);
                         }
                     }
 
@@ -165,29 +157,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                     }
                 });
-                Funcions.runLimitAppsWorker(getApplicationContext(),0);
+                Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                 title = getString(R.string.horaris_notification);
-            }
-            else if(messageMap.containsKey("geolocActive")){
+            } else if (messageMap.containsKey("geolocActive")) {
                 Funcions.runGeoLocWorker(getApplicationContext());
             }
 
             /**
              * Accions del dispositiu pare
              * **/
-            else if(messageMap.containsKey("currentAppUpdate")){
+            else if (messageMap.containsKey("currentAppUpdate")) {
                 String aux = messageMap.get("currentAppUpdate");
 
                 Intent intent = new Intent("liveApp");
-                    intent.putExtra("appName",messageMap.get("appName"));
-                    intent.putExtra("pkgName",aux);
-                    intent.putExtra("time",messageMap.get("Time"));
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                intent.putExtra("appName", messageMap.get("appName"));
+                intent.putExtra("pkgName", aux);
+                intent.putExtra("time", messageMap.get("Time"));
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
-                Log.d(TAG, "Current AppUpdate: "+aux+" |Time: "+messageMap.get("time"));
+                Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
             }
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
-            else if(messageMap.containsKey("chat")){
+            else if (messageMap.containsKey("chat")) {
                 switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
                     case "0":
                         //if the message contains data payload
@@ -269,15 +260,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return bmp;
     }
 
-    private void sendIcon(List<String> list){
-        for(String s : list){
+    private void sendIcon(List<String> list) {
+        for (String s : list) {
             try {
                 PackageManager mPm = getApplicationContext().getPackageManager();
                 Drawable icon = mPm.getApplicationIcon(s);
 
                 Bitmap bitmap = getBitmapFromDrawable(icon);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();
 
                 RequestBody requestFile =
@@ -290,14 +281,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 MultipartBody.Part body =
                         MultipartBody.Part.createFormData("file", s, requestFile);
 
-                Call<String> call = mTodoService.postIcon(s,body);
+                Call<String> call = mTodoService.postIcon(s, body);
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    }
 
                     @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    }
                 });
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();

@@ -43,20 +43,23 @@ public class AppUsageWorker extends Worker {
 
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 
-        if(!TodoApp.getLimitApps().isEmpty()) Funcions.runLimitAppsWorker(getApplicationContext(),0);
-        if(TodoApp.getStartFreeUse() != 0) TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
+        if (!TodoApp.getLimitApps().isEmpty())
+            Funcions.runLimitAppsWorker(getApplicationContext(), 0);
+        if (TodoApp.getStartFreeUse() != 0)
+            TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
 
-        TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
+        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         Funcions.canviarMesosAServidor(gul);
 
-        Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(),gul);
+        Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(), gul);
 
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 ok1 = response.isSuccessful();
             }
+
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 ok1 = false;
@@ -70,15 +73,15 @@ public class AppUsageWorker extends Worker {
                 if (response.isSuccessful() && response.body() != null) {
                     TodoApp.setBlockedApps(response.body().blockedApps);
                     List<LimitedApps> limitList = response.body().limitApps;
-                    Map<String,Long> finalMap = new HashMap<>();
-                    for(LimitedApps limit : limitList){
-                        finalMap.put(limit.name,limit.time);
+                    Map<String, Long> finalMap = new HashMap<>();
+                    for (LimitedApps limit : limitList) {
+                        finalMap.put(limit.name, limit.time);
                     }
                     TodoApp.setLimitApps(finalMap);
                     ok2 = true;
-                }
-                else ok2 = false;
+                } else ok2 = false;
             }
+
             @Override
             public void onFailure(Call<BlockedLimitedLists> call2, Throwable t) {
                 ok2 = false;
@@ -87,22 +90,20 @@ public class AppUsageWorker extends Worker {
 
         // Indicate whether the task finished successfully with the Result
         long now = System.currentTimeMillis();
-        while(ok1 == null || ok2 == null){
-            if(System.currentTimeMillis() - now > 30*1000){
+        while (ok1 == null || ok2 == null) {
+            if (System.currentTimeMillis() - now > 30 * 1000) {
                 ok1 = ok2 = false;
             }
         }
-        if(ok1 && ok2){
+        if (ok1 && ok2) {
             Log.d(TAG, "Result OK");
             TodoApp.setDayOfYear(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
             timeout = 0;
             return Result.success();
-        }
-        else if(timeout<5){
+        } else if (timeout < 5) {
             Log.d(TAG, "Result RETRY");
             timeout++;
             return Result.retry();
-        }
-        else return Result.failure();
+        } else return Result.failure();
     }
 }

@@ -6,14 +6,6 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 public class WebLink implements Parcelable {
-    public String name;
-    public String url;
-
-    protected WebLink(Parcel in) {
-        name = in.readString();
-        url = in.readString();
-    }
-
     public static final Creator<WebLink> CREATOR = new Creator<WebLink>() {
         @Override
         public WebLink createFromParcel(Parcel in) {
@@ -25,6 +17,13 @@ public class WebLink implements Parcelable {
             return new WebLink[size];
         }
     };
+    public String name;
+    public String url;
+
+    protected WebLink(Parcel in) {
+        name = in.readString();
+        url = in.readString();
+    }
 
     @Override
     public boolean equals(@Nullable Object obj) {

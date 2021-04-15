@@ -20,13 +20,11 @@ import com.example.adictic.util.Funcions;
 
 public class DevicePolicyAdmin extends Activity {
 
-    private final static String LOG_TAG = "DevicePolicyAdmin";
-    private Button bt_okay;
     protected static final int REQUEST_ENABLE = 1;
-
+    private final static String LOG_TAG = "DevicePolicyAdmin";
     ComponentName mDPAdmin;
     DevicePolicyManager mDPM;
-
+    private Button bt_okay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +37,7 @@ public class DevicePolicyAdmin extends Activity {
         System.out.println("mDPM: " + mDPM);
         System.out.println("mDPAdmin: " + mDPAdmin);
 
-        bt_okay = (Button)findViewById(R.id.BT_okAdminPerm);
+        bt_okay = (Button) findViewById(R.id.BT_okAdminPerm);
 
         bt_okay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +59,7 @@ public class DevicePolicyAdmin extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        bt_okay = (Button)findViewById(R.id.BT_okAdminPerm);
+        bt_okay = (Button) findViewById(R.id.BT_okAdminPerm);
 
         bt_okay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,17 +83,15 @@ public class DevicePolicyAdmin extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            switch(requestCode){
+            switch (requestCode) {
                 case REQUEST_ENABLE:
-                    if(!Funcions.isAppUsagePermissionOn(this)){
+                    if (!Funcions.isAppUsagePermissionOn(this)) {
                         this.startActivity(new Intent(this, AppUsagePermActivity.class));
                         this.finish();
-                    }
-                    else if(!Funcions.isAccessibilitySettingsOn(this)){
+                    } else if (!Funcions.isAccessibilitySettingsOn(this)) {
                         this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                         this.finish();
-                    }
-                    else {
+                    } else {
                         this.startActivity(new Intent(this, NavActivity.class));
                         this.finish();
                     }

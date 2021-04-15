@@ -26,16 +26,16 @@ public class StartBlockEventWorker extends Worker {
         String name = getInputData().getString("name");
         HorarisEvents event = Funcions.getEventFromList(name);
         String eventEnd = event.finish;
-        Pair<Integer,Integer> timeFinish = Funcions.stringToTime(eventEnd);
+        Pair<Integer, Integer> timeFinish = Funcions.stringToTime(eventEnd);
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY,timeFinish.first);
-        cal.set(Calendar.MINUTE,timeFinish.second);
+        cal.set(Calendar.HOUR_OF_DAY, timeFinish.first);
+        cal.set(Calendar.MINUTE, timeFinish.second);
 
         long delay = cal.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
 
         TodoApp.addBlockEvent(name);
 
-        Funcions.runFinishBlockEventWorker(getApplicationContext(),name,delay);
+        Funcions.runFinishBlockEventWorker(getApplicationContext(), name, delay);
 
         return Result.success();
     }

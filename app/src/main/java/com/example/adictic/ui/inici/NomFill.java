@@ -53,50 +53,21 @@ public class NomFill extends AppCompatActivity {
 
     Button BT_birthday;
     String birthday;
-
-    private class MyAdapter extends BaseAdapter{
-        private final List<FillNom> llista;
-        LayoutInflater inflter;
-
-        MyAdapter(List<FillNom> list){
-            llista = list;
-            inflter = (LayoutInflater.from(NomFill.this));
-        }
-
+    private final DatePickerDialog.OnDateSetListener birthdayListener = new DatePickerDialog.OnDateSetListener() {
         @Override
-        public int getCount() {
-            return llista.size();
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            birthday = year + "/" + (month + 1) + "/" + dayOfMonth;
+
+            BT_birthday.setText(getString(R.string.date_format, dayOfMonth, getResources().getStringArray(R.array.month_names)[month + 1], year));
         }
-
-        @Override
-        public FillNom getItem(int position) {
-            return llista.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @SuppressLint({"ViewHolder", "InflateParams"})
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = inflter.inflate(R.layout.nom_fill_item,null);
-
-            TextView nom = convertView.findViewById(R.id.TV_nomFill);
-            oldColors = nom.getTextColors();
-            nom.setText(llista.get(position).deviceName);
-
-            return convertView;
-        }
-    }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nom_fill);
 
-        mTodoService = ((TodoApp)this.getApplication()).getAPI();
+        mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
         BT_birthday = findViewById(R.id.BT_birthday);
 
@@ -112,10 +83,9 @@ public class NomFill extends AppCompatActivity {
         final List<FillNom> llista = usuari.llista;
 
         TextView tv = findViewById(R.id.TV_fillsActuals);
-        if(llista.isEmpty()){
+        if (llista.isEmpty()) {
             tv.setVisibility(GONE);
-        }
-        else{
+        } else {
             tv.setVisibility(VISIBLE);
         }
 
@@ -134,15 +104,14 @@ public class NomFill extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                for(int i = 0; i < llista.size(); i++){
+                for (int i = 0; i < llista.size(); i++) {
                     View v = listView.getChildAt(i);
                     TextView tv = v.findViewById(R.id.TV_nomFill);
 
-                    if(tv.getText().toString().equals(s.toString())){
+                    if (tv.getText().toString().equals(s.toString())) {
                         tv.setTypeface(null, Typeface.BOLD);
                         tv.setTextColor(getColor(R.color.colorPrimary));
-                    }
-                    else{
+                    } else {
                         tv.setTypeface(null, Typeface.NORMAL);
                         tv.setTextColor(oldColors);
                     }
@@ -157,14 +126,14 @@ public class NomFill extends AppCompatActivity {
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Object o = listView.getItemAtPosition(position);
-            FillNom fill = (FillNom)o;
+            FillNom fill = (FillNom) o;
             String[] bday = fill.birthday.split("/");
 
             int year = Integer.parseInt(bday[0]);
             int month = Integer.parseInt(bday[1]);
             int day = Integer.parseInt(bday[2]);
 
-            BT_birthday.setText(getString(R.string.date_format,day,getResources().getStringArray(R.array.month_names)[month],year));
+            BT_birthday.setText(getString(R.string.date_format, day, getResources().getStringArray(R.array.month_names)[month], year));
 
             tv_nom.setText(fill.deviceName);
         });
@@ -179,23 +148,22 @@ public class NomFill extends AppCompatActivity {
             TV_errorNoBday.setVisibility(GONE);
             TV_errorNoName.setVisibility(GONE);
 
-            if(tv_nom.getText().toString().equals("")){
+            if (tv_nom.getText().toString().equals("")) {
                 TV_errorNoName.setVisibility(VISIBLE);
-            }
-            else{
+            } else {
                 long id = 0;
                 boolean existeix = false;
                 int i = 0;
 
-                while(!existeix && i < llista.size()){
-                    if(tv_nom.getText().toString().equals(llista.get(i).deviceName)){
-                        id=llista.get(i).idChild;
-                        existeix=true;
+                while (!existeix && i < llista.size()) {
+                    if (tv_nom.getText().toString().equals(llista.get(i).deviceName)) {
+                        id = llista.get(i).idChild;
+                        existeix = true;
                     }
                     i++;
                 }
 
-                if(existeix) { /* Canviar token d'un fill que existeix **/
+                if (existeix) { /* Canviar token d'un fill que existeix **/
                     final VellFillLogin fillVell = new VellFillLogin();
                     fillVell.deviceName = tv_nom.getText().toString();
                     fillVell.idChild = id;
@@ -208,19 +176,16 @@ public class NomFill extends AppCompatActivity {
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) {
                                 TodoApp.setIDChild(fillVell.idChild);
-                                if(!Funcions.isAdminPermissionsOn(NomFill.this)){
+                                if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                     NomFill.this.finish();
-                                }
-                                else if(!Funcions.isAppUsagePermissionOn(NomFill.this)){
+                                } else if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                     NomFill.this.finish();
-                                }
-                                else if(!Funcions.isAccessibilitySettingsOn(NomFill.this)){
+                                } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
                                     NomFill.this.finish();
-                                }
-                                else{
+                                } else {
                                     NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
                                     NomFill.this.finish();
                                 }
@@ -236,13 +201,11 @@ public class NomFill extends AppCompatActivity {
                             toast.show();
                         }
                     });
-                }
-                else { /* Crear un fill nou **/
+                } else { /* Crear un fill nou **/
 
-                    if(birthday == null){
+                    if (birthday == null) {
                         TV_errorNoBday.setVisibility(VISIBLE);
-                    }
-                    else {
+                    } else {
                         NouFillLogin fillNou = new NouFillLogin();
                         fillNou.deviceName = tv_nom.getText().toString();
                         fillNou.token = Crypt.getAES(token);
@@ -286,26 +249,54 @@ public class NomFill extends AppCompatActivity {
         });
     }
 
-    private void setBirthdayButton(){
+    private void setBirthdayButton() {
         BT_birthday.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
             int year = cal.get(Calendar.YEAR);
             int month = cal.get(Calendar.MONTH);
             int day = cal.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePicker = new DatePickerDialog(NomFill.this,R.style.datePicker,birthdayListener,year,month,day);
+            DatePickerDialog datePicker = new DatePickerDialog(NomFill.this, R.style.datePicker, birthdayListener, year, month, day);
             datePicker.getDatePicker().setMaxDate(cal.getTimeInMillis());
 
             datePicker.show();
         });
     }
 
-    private final DatePickerDialog.OnDateSetListener birthdayListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            birthday = year+"/"+(month+1)+"/"+dayOfMonth;
+    private class MyAdapter extends BaseAdapter {
+        private final List<FillNom> llista;
+        LayoutInflater inflter;
 
-            BT_birthday.setText(getString(R.string.date_format,dayOfMonth,getResources().getStringArray(R.array.month_names)[month+1],year));
+        MyAdapter(List<FillNom> list) {
+            llista = list;
+            inflter = (LayoutInflater.from(NomFill.this));
         }
-    };
+
+        @Override
+        public int getCount() {
+            return llista.size();
+        }
+
+        @Override
+        public FillNom getItem(int position) {
+            return llista.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @SuppressLint({"ViewHolder", "InflateParams"})
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            convertView = inflter.inflate(R.layout.nom_fill_item, null);
+
+            TextView nom = convertView.findViewById(R.id.TV_nomFill);
+            oldColors = nom.getTextColors();
+            nom.setText(llista.get(position).deviceName);
+
+            return convertView;
+        }
+    }
 }

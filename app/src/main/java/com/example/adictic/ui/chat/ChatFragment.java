@@ -42,15 +42,35 @@ import retrofit2.Response;
 
 public class ChatFragment extends Fragment {
 
+    public static Long adminUserId;
     RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
     private TodoApi mTodoService;
-    public static Long adminUserId;
     private boolean active;
     private boolean access;
     private ChatInfo chatInfo;
     private Long myId;
     private View view;
+
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            UserMessage um = new UserMessage();
+            um.message = intent.getStringExtra("message");
+            um.createdAt = new Date();
+            um.senderId = intent.getLongExtra("senderId", 0);
+            mMessageAdapter.add(um);
+            if (!active) {
+                EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+                chatbox.setEnabled(true);
+                chatbox.setHint("Enter message");
+            }
+        }
+    };
+    private final BroadcastReceiver closeChatReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            closeChat();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +89,7 @@ public class ChatFragment extends Fragment {
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
-        if(TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
+        if (TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
         else myId = TodoApp.getIDChild();
 
         setViews();
@@ -83,7 +103,7 @@ public class ChatFragment extends Fragment {
     private void setViews() {
         TextView TV_nomXat = view.findViewById(R.id.TV_nomXat);
         TV_nomXat.setText(chatInfo.admin.name);
-        if(!active) closeChat();
+        if (!active) closeChat();
     }
 
     private void setBroadcastManagers() {
@@ -99,14 +119,14 @@ public class ChatFragment extends Fragment {
         sendButton.setClickable(true);
         sendButton.setOnClickListener(v -> {
             EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
-            if(!chatbox.getText().toString().isEmpty()){
+            if (!chatbox.getText().toString().isEmpty()) {
                 UserMessage um = new UserMessage();
                 um.createdAt = new Date();
-                um.message=chatbox.getText().toString();
+                um.message = chatbox.getText().toString();
                 um.senderId = myId;
                 chatbox.setText("");
                 long userId = chatInfo.admin.idUser;
-                Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId),um);
+                Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId), um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> postCall, @NonNull Response<String> response) {
@@ -114,6 +134,7 @@ public class ChatFragment extends Fragment {
                             mMessageAdapter.add(um);
                         }
                     }
+
                     @Override
                     public void onFailure(@NonNull Call<String> postCall, @NonNull Throwable t) {
                         Toast.makeText(activity.getBaseContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
@@ -126,7 +147,7 @@ public class ChatFragment extends Fragment {
         TV_profileName.setClickable(true);
         TV_profileName.setOnClickListener(view -> {
             Intent intent = new Intent(getActivity(), AdminProfileActivity.class);
-            intent.putExtra("adminProfile",chatInfo.admin);
+            intent.putExtra("adminProfile", chatInfo.admin);
             startActivity(intent);
         });
 
@@ -139,7 +160,7 @@ public class ChatFragment extends Fragment {
         setAccessButtonImage(IV_acces);
         IV_acces.setClickable(true);
         IV_acces.setOnClickListener(view -> {
-            if (access){
+            if (access) {
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.treure_acces_titol)
                         .setMessage(R.string.treure_acces_desc)
@@ -148,11 +169,11 @@ public class ChatFragment extends Fragment {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                    if(response.isSuccessful()){
+                                    if (response.isSuccessful()) {
                                         access = !access;
                                         setAccessButtonImage(IV_acces);
-                                    }
-                                    else Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                    } else
+                                        Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
@@ -163,8 +184,7 @@ public class ChatFragment extends Fragment {
                         })
                         .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                         .show();
-            }
-            else{
+            } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.donar_acces_titol)
                         .setMessage(R.string.donar_acces_desc)
@@ -173,11 +193,11 @@ public class ChatFragment extends Fragment {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                    if(response.isSuccessful()){
+                                    if (response.isSuccessful()) {
                                         access = !access;
                                         setAccessButtonImage(IV_acces);
-                                    }
-                                    else Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                                    } else
+                                        Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
@@ -195,18 +215,17 @@ public class ChatFragment extends Fragment {
     }
 
     private void setAccessButtonImage(ImageView IV_acces) {
-        if(!access){
+        if (!access) {
             IV_acces.setImageResource(R.drawable.ic_donar_acces);
             DrawableCompat.setTint(
                     DrawableCompat.wrap(IV_acces.getDrawable()),
-                    ContextCompat.getColor(getContext(),R.color.black_overlay)
+                    ContextCompat.getColor(getContext(), R.color.black_overlay)
             );
-        }
-        else{
+        } else {
             IV_acces.setImageResource(R.drawable.ic_treure_acces);
             DrawableCompat.setTint(
                     DrawableCompat.wrap(IV_acces.getDrawable()),
-                    ContextCompat.getColor(getContext(),R.color.vermell)
+                    ContextCompat.getColor(getContext(), R.color.vermell)
             );
         }
     }
@@ -222,12 +241,12 @@ public class ChatFragment extends Fragment {
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
-                            if(response.isSuccessful()) closeChat();
+                            if (response.isSuccessful()) closeChat();
                         }
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-                            Toast.makeText(getContext(),R.string.error_sending_data,Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                         }
                     });
                 })
@@ -244,11 +263,11 @@ public class ChatFragment extends Fragment {
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    private void closeChat(){
+    private void closeChat() {
         active = false;
         EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
         chatbox.setEnabled(false);
-        chatbox.setHint("Chat is closed!");
+        chatbox.setHint(R.string.closed_chat);
         chatbox.setText("");
     }
 
@@ -263,34 +282,15 @@ public class ChatFragment extends Fragment {
         super.onPause();
     }
 
-    private void showImage(User u, ImageView iv)
-    {
-        /*Call<ResponseBody> call = mTodoService.getImage(u.image);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if(response.isSuccessful()){
-                    Bitmap bi = BitmapFactory.decodeStream(response.body().byteStream());
-                    iv.setImageBitmap(bi);
-                } else {
-                    Toast.makeText(getBaseContext(), "Error downloading profile image", Toast.LENGTH_LONG).show();
-                }
-            }
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {}
-        });*/
-    }
-
-    public void getMessages(){
+    public void getMessages() {
         mMessageAdapter.clear();
         Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(chatInfo.admin.idUser.toString());
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(Call<List<UserMessage>> call, Response<List<UserMessage>> response) {
-                if(response.isSuccessful()){
-                    if(!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
-                }
-                else {
+                if (response.isSuccessful()) {
+                    if (!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
+                } else {
                     Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -301,27 +301,6 @@ public class ChatFragment extends Fragment {
             }
         });
     }
-
-    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            UserMessage um = new UserMessage();
-            um.message = intent.getStringExtra("message");
-            um.createdAt= new Date();
-            um.senderId = intent.getLongExtra("senderId",0);
-            mMessageAdapter.add(um);
-            if(!active) {
-                EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
-                chatbox.setEnabled(true);
-                chatbox.setHint("Enter message");
-            }
-        }
-    };
-
-    private final BroadcastReceiver closeChatReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            closeChat();
-        }
-    };
 
     public class MessageListAdapter extends Adapter {
         private static final int VIEW_TYPE_MESSAGE_SENT = 1;
@@ -386,7 +365,35 @@ public class ChatFragment extends Fragment {
             }
         }
 
-        private class SentMessageHolder extends RecyclerView.ViewHolder {
+        // Remove a RecyclerView item containing the Data object
+        public void remove(UserMessage userMessage) {
+            int position = 0;
+            while (mMessageList.get(position) != userMessage) {
+                position++;
+            }
+            mMessageList.remove(position);
+            notifyItemRemoved(position);
+        }
+
+        public void add(UserMessage t) {
+            mMessageList.add(t);
+            this.notifyItemInserted(mMessageList.size() - 1);
+            mMessageRecycler.smoothScrollToPosition(mMessageList.size() - 1);
+        }
+
+        public void clear() {
+            int size = mMessageList.size();
+            mMessageList.clear();
+            this.notifyItemRangeRemoved(0, size);
+        }
+
+        public void addAll(List<UserMessage> messages) {
+            mMessageList = messages;
+            this.notifyItemRangeInserted(0, messages.size());
+            mMessageRecycler.smoothScrollToPosition(mMessageList.size() - 1);
+        }
+
+        class SentMessageHolder extends RecyclerView.ViewHolder {
             TextView messageText, timeText;
 
             SentMessageHolder(View itemView) {
@@ -401,15 +408,15 @@ public class ChatFragment extends Fragment {
 
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if(mes.createdAt.getHours()<10) time+="0";
-                time+=mes.createdAt.getHours()+":";
-                if(mes.createdAt.getMinutes()<10) time+="0";
-                time+=mes.createdAt.getMinutes();
+                if (mes.createdAt.getHours() < 10) time += "0";
+                time += mes.createdAt.getHours() + ":";
+                if (mes.createdAt.getMinutes() < 10) time += "0";
+                time += mes.createdAt.getMinutes();
                 timeText.setText(time);
             }
         }
 
-        private class ReceivedMessageHolder extends RecyclerView.ViewHolder {
+        class ReceivedMessageHolder extends RecyclerView.ViewHolder {
             TextView messageText, timeText, nameText;
             ImageView profileImage;
 
@@ -425,40 +432,12 @@ public class ChatFragment extends Fragment {
 
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if(message.createdAt.getHours()<10) time+="0";
-                time+=message.createdAt.getHours()+":";
-                if(message.createdAt.getMinutes()<10) time+="0";
-                time+=message.createdAt.getMinutes();
+                if (message.createdAt.getHours() < 10) time += "0";
+                time += message.createdAt.getHours() + ":";
+                if (message.createdAt.getMinutes() < 10) time += "0";
+                time += message.createdAt.getMinutes();
                 timeText.setText(time);
             }
-        }
-
-        // Remove a RecyclerView item containing the Data object
-        public void remove(UserMessage userMessage) {
-            int position = 0;
-            while(mMessageList.get(position) != userMessage){
-                position++;
-            }
-            mMessageList.remove(position);
-            notifyItemRemoved(position);
-        }
-
-        public void add(UserMessage t) {
-            mMessageList.add(t);
-            this.notifyItemInserted(mMessageList.size() - 1);
-            mMessageRecycler.smoothScrollToPosition(mMessageList.size()-1);
-        }
-
-        public void clear() {
-            int size = mMessageList.size();
-            mMessageList.clear();
-            this.notifyItemRangeRemoved(0, size);
-        }
-
-        public void addAll(List<UserMessage> messages){
-            mMessageList = messages;
-            this.notifyItemRangeInserted(0,messages.size());
-            mMessageRecycler.smoothScrollToPosition(mMessageList.size()-1);
         }
     }
 }

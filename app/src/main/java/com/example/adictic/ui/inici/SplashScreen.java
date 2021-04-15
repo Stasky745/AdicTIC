@@ -53,34 +53,35 @@ public class SplashScreen extends AppCompatActivity {
                         public void onResponse(Call<User> call, Response<User> response) {
 
                             if (response.isSuccessful()) {
-                                 if(TodoApp.getTutor() == 1) SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                                 else if(TodoApp.getTutor() == 0 && TodoApp.getIDChild() >= 0) SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                                 else {
-                                     User usuari = response.body();
-                                     TodoApp.setTutor(usuari.tutor);
-                                     TodoApp.setIDTutor(usuari.id);
-                                     if(usuari.tutor==0 && !usuari.llista.isEmpty()) {
-                                         TodoApp.setIDChild(usuari.llista.get(0).idChild);
-                                         SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                                         SplashScreen.this.finish();
-                                     }
-                                     else if(usuari.tutor==0){
-                                         Bundle extras = new Bundle();
+                                if (TodoApp.getTutor() == 1)
+                                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                else if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() >= 0)
+                                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                else {
+                                    User usuari = response.body();
+                                    TodoApp.setTutor(usuari.tutor);
+                                    TodoApp.setIDTutor(usuari.id);
+                                    if (usuari.tutor == 0 && !usuari.llista.isEmpty()) {
+                                        TodoApp.setIDChild(usuari.llista.get(0).idChild);
+                                        SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                        SplashScreen.this.finish();
+                                    } else if (usuari.tutor == 0) {
+                                        Bundle extras = new Bundle();
 
-                                         extras.putSerializable("user", usuari);
-                                         extras.putString("token", token);
-                                         extras.putLong("id", usuari.id);
+                                        extras.putSerializable("user", usuari);
+                                        extras.putString("token", token);
+                                        extras.putLong("id", usuari.id);
 
-                                         Intent i = new Intent(SplashScreen.this, NomFill.class);
-                                         i.putExtras(extras);
+                                        Intent i = new Intent(SplashScreen.this, NomFill.class);
+                                        i.putExtras(extras);
 
-                                         SplashScreen.this.startActivity(i);
-                                         SplashScreen.this.finish();
-                                     } else {
-                                         SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                                         SplashScreen.this.finish();
-                                     }
-                                 }
+                                        SplashScreen.this.startActivity(i);
+                                        SplashScreen.this.finish();
+                                    } else {
+                                        SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                        SplashScreen.this.finish();
+                                    }
+                                }
                             } else {
                                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                             }
@@ -99,8 +100,8 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase);
-        String lang = sharedPreferences.getString("language","none");
-        if(lang.equals("none")) super.attachBaseContext(newBase);
+        String lang = sharedPreferences.getString("language", "none");
+        if (lang.equals("none")) super.attachBaseContext(newBase);
         else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 }

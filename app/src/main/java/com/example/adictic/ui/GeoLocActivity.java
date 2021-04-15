@@ -38,17 +38,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class GeoLocActivity extends AppCompatActivity {
-    private TodoApi mTodoService;
-
-    private MapView map = null;
-
-    private long idChild;
-
-    private Spinner SP_fills;
-
-    private List<GeoFill> fills = new ArrayList<>();
-
     ArrayList<Marker> markers = new ArrayList<>();
+    private TodoApi mTodoService;
+    private MapView map = null;
+    private long idChild;
+    private Spinner SP_fills;
+    private List<GeoFill> fills = new ArrayList<>();
     private int posicio = 0;
 
     @Override
@@ -73,9 +68,9 @@ public class GeoLocActivity extends AppCompatActivity {
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
-        try{
+        try {
             Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-        }catch(java.lang.NullPointerException exc) {
+        } catch (java.lang.NullPointerException exc) {
             exc.printStackTrace();
         }
         //setting this before the layout is inflated is a good idea
@@ -87,7 +82,7 @@ public class GeoLocActivity extends AppCompatActivity {
 
         //Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
-        idChild = getIntent().getLongExtra("idChild",0);
+        idChild = getIntent().getLongExtra("idChild", 0);
 
         setContentView(R.layout.oficines_layout);
         SP_fills = findViewById(R.id.SP_listOficines);
@@ -100,7 +95,7 @@ public class GeoLocActivity extends AppCompatActivity {
         demanarLocFills();
     }
 
-    public void demanarLocFills(){
+    public void demanarLocFills() {
         // Actualitzem la llista de fills
         Call<List<GeoFill>> call = mTodoService.getGeoLoc();
         call.enqueue(new Callback<List<GeoFill>>() {
@@ -109,11 +104,11 @@ public class GeoLocActivity extends AppCompatActivity {
                 if (response.isSuccessful() && !response.body().isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
 
-                    if(TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0){
+                    if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0) {
                         boolean trobat = false;
                         int i = 0;
-                        while (!trobat && i < fills.size()){
-                            if(fills.get(i).id == TodoApp.getIDChild()){
+                        while (!trobat && i < fills.size()) {
+                            if (fills.get(i).id == TodoApp.getIDChild()) {
                                 trobat = true;
                                 GeoFill fill = fills.get(i);
                                 fills.clear();
@@ -129,7 +124,7 @@ public class GeoLocActivity extends AppCompatActivity {
                 } else {
                     fills = TodoApp.getGeoFills();
                     Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                    if(!fills.isEmpty()) setMap();
+                    if (!fills.isEmpty()) setMap();
                 }
             }
 
@@ -137,21 +132,21 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onFailure(Call<List<GeoFill>> call, Throwable t) {
                 fills = TodoApp.getGeoFills();
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                if(!fills.isEmpty()) setMap();
+                if (!fills.isEmpty()) setMap();
             }
         });
     }
 
     @SuppressLint("MissingPermission")
-    private void setMap(){
+    private void setMap() {
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
         mapController.setZoom(17.0);
 
         int i = 0;
-        for(GeoFill fill : fills){
-            if(fill != null) {
+        for (GeoFill fill : fills) {
+            if (fill != null) {
                 Marker marker = new Marker(map);
                 if (fill.latitud != null && fill.longitud != null)
                     marker.setPosition(new GeoPoint(fill.latitud, fill.longitud));
@@ -182,19 +177,18 @@ public class GeoLocActivity extends AppCompatActivity {
 
         GeoPoint startPoint;
 
-        if(!fills.isEmpty()){
-            startPoint = new GeoPoint(fills.get(0).latitud,fills.get(0).longitud);
-        }
-        else{
-            startPoint = new GeoPoint(41.981177,2.818997); // Oficina Girona
+        if (!fills.isEmpty()) {
+            startPoint = new GeoPoint(fills.get(0).latitud, fills.get(0).longitud);
+        } else {
+            startPoint = new GeoPoint(41.981177, 2.818997); // Oficina Girona
         }
 
         mapController.setCenter(startPoint);
         setSpinner();
     }
 
-    private void setSpinner(){
-        SpinAdapter adapter = new SpinAdapter(getApplicationContext(),android.R.layout.simple_spinner_item,markers);
+    private void setSpinner() {
+        SpinAdapter adapter = new SpinAdapter(getApplicationContext(), android.R.layout.simple_spinner_item, markers);
 
         SP_fills.setAdapter(adapter);
 
@@ -210,16 +204,18 @@ public class GeoLocActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
         });
     }
 
-    public GeoPoint setInfoWindowOffset(GeoPoint gp){
-        return new GeoPoint(gp.getLatitude()+0.0025, gp.getLongitude());
+    public GeoPoint setInfoWindowOffset(GeoPoint gp) {
+        return new GeoPoint(gp.getLatitude() + 0.0025, gp.getLongitude());
     }
 
-    private class SpinAdapter extends ArrayAdapter<Marker>{
+    private class SpinAdapter extends ArrayAdapter<Marker> {
         ArrayList<Marker> markers;
+
         public SpinAdapter(@NonNull Context context, int resource, @NonNull List<Marker> objects) {
             super(context, resource, objects);
             markers = new ArrayList<>(objects);
@@ -239,7 +235,7 @@ public class GeoLocActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            TextView label = (TextView) super.getView(position,convertView,parent);
+            TextView label = (TextView) super.getView(position, convertView, parent);
             label.setTextColor(getColor(R.color.colorPrimary));
             GeoFill marker = (GeoFill) markers.get(position).getRelatedObject();
             label.setText(marker.nom);

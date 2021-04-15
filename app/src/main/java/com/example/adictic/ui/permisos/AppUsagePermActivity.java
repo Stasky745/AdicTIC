@@ -26,7 +26,7 @@ public class AppUsagePermActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_usage_perm_info);
 
-        Button bt_okay = (Button)findViewById(R.id.BT_okAppUsagePerm);
+        Button bt_okay = (Button) findViewById(R.id.BT_okAppUsagePerm);
 
         bt_okay.setOnClickListener(v -> AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
     }
@@ -34,11 +34,11 @@ public class AppUsagePermActivity extends Activity {
     @Override
     protected void onResume() {
 
-        if(Funcions.isAppUsagePermissionOn(this)){
+        if (Funcions.isAppUsagePermissionOn(this)) {
 
             Calendar cal = Calendar.getInstance();
             // Agafem dades dels últims X dies per inicialitzar dades al servidor
-            cal.add(Calendar.DAY_OF_YEAR,-6);
+            cal.add(Calendar.DAY_OF_YEAR, -6);
             TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
 
             OneTimeWorkRequest myWork =
@@ -62,7 +62,7 @@ public class AppUsagePermActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if(Funcions.isAppUsagePermissionOn(this)){
+            if (Funcions.isAppUsagePermissionOn(this)) {
                 System.out.println("DINS");
                 if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));

@@ -45,7 +45,7 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
-        mTodoService = ((TodoApp)getActivity().getApplication()).getAPI();
+        mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
         getArguments().getBoolean("dubte");
@@ -72,7 +72,7 @@ public class NoChatFragment extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                     .setTitle(R.string.send_dubte);
 
-            if(hasDubte) builder.setMessage(R.string.dubte_overwrite);
+            if (hasDubte) builder.setMessage(R.string.dubte_overwrite);
             else builder.setMessage(R.string.dubte_send);
 
             builder.setPositiveButton(R.string.accept, (dialogInterface, i) -> {
@@ -81,16 +81,16 @@ public class NoChatFragment extends Fragment {
                 newDubte.descripcio = TIET_dubteDesc.getText().toString();
                 newDubte.localitzacio = new ArrayList<>();
 
-                for(Integer idInt : CG_localitats.getCheckedChipIds()) newDubte.localitzacio.add(Long.valueOf(idInt));
+                for (Integer idInt : CG_localitats.getCheckedChipIds())
+                    newDubte.localitzacio.add(Long.valueOf(idInt));
 
                 Call<String> call = mTodoService.postDubte(newDubte);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        if(response.isSuccessful()){
+                        if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_SHORT).show();
-                        }
-                        else{
+                        } else {
                             Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                             toast.show();
                         }
@@ -108,13 +108,13 @@ public class NoChatFragment extends Fragment {
         });
     }
 
-    private void getLocalitzacions(){
+    private void getLocalitzacions() {
         Call<Collection<Localitzacio>> call = mTodoService.getLocalitzacions();
         call.enqueue(new Callback<Collection<Localitzacio>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<Localitzacio>> call, @NonNull Response<Collection<Localitzacio>> response) {
-                if(response.isSuccessful()) setLocalitzacions(response.body());
-                else{
+                if (response.isSuccessful()) setLocalitzacions(response.body());
+                else {
                     Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                     toast.show();
                 }
@@ -128,15 +128,15 @@ public class NoChatFragment extends Fragment {
         });
     }
 
-    private void setLocalitzacions(Collection<Localitzacio> localitzacions){
-        ((List<Localitzacio>) localitzacions).add(0,new Localitzacio((long) 0, "Online"));
+    private void setLocalitzacions(Collection<Localitzacio> localitzacions) {
+        ((List<Localitzacio>) localitzacions).add(0, new Localitzacio((long) 0, "Online"));
         // Create an ArrayAdapter using the string array and a default spinner layout
-        for(Localitzacio loc : localitzacions){
-            Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip,CG_localitats,false);
+        for (Localitzacio loc : localitzacions) {
+            Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip, CG_localitats, false);
             chip.setText(loc.poblacio);
             chip.setId(loc.id.intValue());
 
-            if(chip.getId() == 0) chip.setSelected(true);
+            if (chip.getId() == 0) chip.setSelected(true);
 
             CG_localitats.addView(chip);
         }

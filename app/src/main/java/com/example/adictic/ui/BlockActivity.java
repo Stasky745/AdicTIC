@@ -16,14 +16,12 @@ public class BlockActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_layout);
 
-        ActivityManager manager =  (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+        ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
 
         List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
         manager.killBackgroundProcesses("com.android.chrome");
-        for (ActivityManager.RunningAppProcessInfo process : listOfProcesses)
-        {
-            if (process.processName.contains("com.android.chrome"))
-            {
+        for (ActivityManager.RunningAppProcessInfo process : listOfProcesses) {
+            if (process.processName.contains("com.android.chrome")) {
                 android.os.Process.killProcess(process.pid);
                 android.os.Process.sendSignal(process.pid, android.os.Process.SIGNAL_KILL);
                 manager.killBackgroundProcesses(process.processName);

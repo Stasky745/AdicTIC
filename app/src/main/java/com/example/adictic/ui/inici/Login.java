@@ -31,10 +31,13 @@ import retrofit2.Response;
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
 
-    TodoApi mTodoService;
-    static Login login;
-
     public static final String TAG = "Login";
+    static Login login;
+    TodoApi mTodoService;
+
+    public static Login getInstance() {
+        return login;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,9 +45,9 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        Funcions.closeKeyboard(findViewById(R.id.main_parent),this);
+        Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((TodoApp)this.getApplication()).getAPI();
+        mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
         Button b_log = findViewById(R.id.login_button);
         TextView b_reg = findViewById(R.id.TV_register);
@@ -54,18 +57,17 @@ public class Login extends AppCompatActivity {
             final EditText p = Login.this.findViewById(R.id.login_password);
             final RadioButton tutor = findViewById(R.id.RB_tutor);
             final RadioButton tutelat = findViewById(R.id.RB_tutelat);
-            final TextView noTypeDevice = (TextView)findViewById(R.id.TV_noTypeDevice);
+            final TextView noTypeDevice = (TextView) findViewById(R.id.TV_noTypeDevice);
 
-            if(u.getText().length() == 0){
+            if (u.getText().length() == 0) {
                 u.setHint(getString(R.string.error_noUsername));
                 u.setHintTextColor(Color.parseColor("#fc8279"));
                 p.setHint(getString(R.string.hint_password));
                 p.setHintTextColor(Color.parseColor("#808080"));
-            }
-            else{
+            } else {
                 u.setHint(getString(R.string.hint_username));
                 u.setHintTextColor(Color.parseColor("#808080"));
-                if(p.getText().length()==0){
+                if (p.getText().length() == 0) {
                     p.setHint(getString(R.string.error_password));
                     p.setHintTextColor(Color.parseColor("#fc8279"));
                 } else {
@@ -91,15 +93,13 @@ public class Login extends AppCompatActivity {
                         // Log and toast
                         Log.d(TAG, token);
 
-                        if(tutor.isChecked()) {
+                        if (tutor.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),1, token);
-                        }
-                        else if(tutelat.isChecked()){
+                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 1, token);
+                        } else if (tutelat.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(),0, token);
-                        }
-                        else{
+                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 0, token);
+                        } else {
                             noTypeDevice.setVisibility(View.VISIBLE);
                         }
                     });
@@ -126,7 +126,7 @@ public class Login extends AppCompatActivity {
                     User usuari = response.body();
                     TodoApp.setTutor(usuari.tutor);
                     TodoApp.setIDTutor(usuari.id);
-                    if(usuari.tutor == 0){
+                    if (usuari.tutor == 0) {
                         Bundle extras = new Bundle();
 
                         extras.putSerializable("user", usuari);
@@ -138,8 +138,7 @@ public class Login extends AppCompatActivity {
 
                         Login.this.startActivity(i);
                         Login.this.finish();
-                    }
-                    else{
+                    } else {
                         Login.this.startActivity(new Intent(Login.this, NavActivity.class));
                         Login.this.finish();
                     }
@@ -155,10 +154,6 @@ public class Login extends AppCompatActivity {
                 toast.show();
             }
         });
-    }
-
-    public static Login getInstance(){
-        return login;
     }
 
 }

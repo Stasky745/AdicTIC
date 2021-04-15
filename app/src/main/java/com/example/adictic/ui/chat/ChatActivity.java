@@ -28,10 +28,10 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        Funcions.closeKeyboard(findViewById(R.id.main_parent),this);
+        Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
 
-        TodoApi mTodoService = ((TodoApp)getApplicationContext()).getAPI();
+        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         _vpChats = (ViewPager2) findViewById(R.id.VP_chats);
         _tabChat = (TabLayout) findViewById(R.id.TABL_chats);
@@ -40,16 +40,16 @@ public class ChatActivity extends AppCompatActivity {
         call.enqueue(new Callback<ChatsMain>() {
             @Override
             public void onResponse(Call<ChatsMain> call, Response<ChatsMain> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     ChatsMain chatMain = response.body();
-                    ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(),chatMain);
+                    ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(), chatMain);
                     _vpChats.setAdapter(adapter);
 
                     new TabLayoutMediator(_tabChat, _vpChats,
                             (tab, position) -> tab.setText(adapter.getPageTitle(position))
                     ).attach();
 
-                    if(adapter.getItemCount()>1){
+                    if (adapter.getItemCount() > 1) {
                         _tabChat.setVisibility(View.VISIBLE);
                     }
                 }
