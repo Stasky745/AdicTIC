@@ -50,6 +50,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
     List<AppChange> uninstalledApps;
     List<AppChange> installedApps;
 
+    String lastActivity;
+    String lastPackage;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -172,8 +175,28 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
 
+            KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
+            if(myKM.isDeviceLocked()){
+                String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                LiveApp liveApp = new LiveApp();
+                liveApp.pkgName = lastPackage;
+                liveApp.appName = lastActivity;
+                liveApp.time = time;
+
+                if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
+                    Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(TodoApp.getIDChild(), liveApp);
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+
+                        @Override
+                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+                    });
+                }
+            }
+
+            // Bloquegem dispositiu si està bloquejat o té un event en marxa
             if (TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()) {
-                KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -189,8 +212,18 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
                 if (isActivity) {
-                    Log.i("CurrentActivity", componentName.flattenToShortString());
-                    Log.i("CurrentPackage", componentName.getPackageName());
+                    if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
+                        ApplicationInfo appInfo;
+                        try {
+                            appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
+                            lastActivity = appInfo.loadLabel(getPackageManager()).toString();
+                        } catch (PackageManager.NameNotFoundException e) {
+                            lastActivity = componentName.getPackageName();
+                        }
+                        lastPackage = componentName.getPackageName();
+                        Log.i("CurrentActivity", componentName.flattenToShortString());
+                        Log.i("CurrentPackage", componentName.getPackageName());
+                    }
 
                     String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
@@ -213,16 +246,20 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             " " + TodoApp.getIDChild());
                     if (TodoApp.getLiveApp() && TodoApp.getIDChild() != -1) {
                         LiveApp liveApp = new LiveApp();
-                        liveApp.pkgName = componentName.getPackageName();
-                        ApplicationInfo appInfo;
-                        try {
-                            appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                            liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
-                        } catch (PackageManager.NameNotFoundException e) {
-                            liveApp.appName = componentName.getPackageName();
-                        }
+                        liveApp.pkgName = lastPackage;
+                        liveApp.appName = lastActivity;
                         liveApp.time = time;
-                        if (!TodoApp.blackListLiveApp.contains(componentName.getPackageName())) {
+
+//                        ApplicationInfo appInfo;
+//                        try {
+//                            appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
+//                            liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
+//                        } catch (PackageManager.NameNotFoundException e) {
+//                            liveApp.appName = componentName.getPackageName();
+//                        }
+
+                        //mirar si component.getpackagename() funciona si ho fem amb lastPackage
+                        if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
                             Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
                             call.enqueue(new Callback<String>() {
                                 @Override
