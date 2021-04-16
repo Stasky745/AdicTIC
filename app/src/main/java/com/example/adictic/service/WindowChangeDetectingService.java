@@ -15,12 +15,12 @@ import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.example.adictic.TodoApp;
-import com.example.adictic.activity.BlockActivity;
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.ui.BlockActivity;
+import com.example.adictic.util.TodoApp;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -38,6 +38,7 @@ import retrofit2.Response;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
+    private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
     TodoApi mTodoService;
     PackageManager mPm;
     List<AppInfo> lastListApps;
@@ -46,20 +47,18 @@ public class WindowChangeDetectingService extends AccessibilityService {
     List<AppChange> uninstalledApps;
     List<AppChange> installedApps;
 
-    private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
-
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
 
-        mTodoService = ((TodoApp)getApplicationContext()).getAPI();
+        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         uninstalledApps = new ArrayList<>();
         installedApps = new ArrayList<>();
         dayUpdatedInstalledApps = Calendar.getInstance();
-        dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR,-1);
+        dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR, -1);
         lastTryUpdate = Calendar.getInstance();
-        lastTryUpdate.add(Calendar.DAY_OF_YEAR,-1);
+        lastTryUpdate.add(Calendar.DAY_OF_YEAR, -1);
 
         //Configure these here for compatibility with API 13 and below.
         AccessibilityServiceInfo config = new AccessibilityServiceInfo();
@@ -68,29 +67,29 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mPm = getPackageManager();
         lastListApps = new ArrayList<>();
-        if(TodoApp.getIDChild() != -1) checkInstalledApps();
+        if (TodoApp.getIDChild() != -1) checkInstalledApps();
 
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
     }
 
-    private List<AppInfo> getLaunchableApps(){
+    private List<AppInfo> getLaunchableApps() {
         Intent main = new Intent(Intent.ACTION_MAIN);
         main.addCategory(Intent.CATEGORY_LAUNCHER);
 
         List<AppInfo> res = new ArrayList<>();
 
-        List<ResolveInfo> list = mPm.queryIntentActivities(main,0);
+        List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
 
         //List<String> launcherApps = getLauncherApps();
 
         List<String> duplicatesList = new ArrayList<>();
 
-        for(ResolveInfo ri : list){
+        for (ResolveInfo ri : list) {
             ApplicationInfo ai = ri.activityInfo.applicationInfo;
             // if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
-            if(!duplicatesList.contains(ai.packageName)) {
+            if (!duplicatesList.contains(ai.packageName)) {
                 duplicatesList.add(ai.packageName);
                 AppInfo appInfo = new AppInfo();
                 appInfo.appName = mPm.getApplicationLabel(ai).toString();
@@ -117,34 +116,34 @@ public class WindowChangeDetectingService extends AccessibilityService {
 //        return res;
 //    }
 
-    private void setChangedAppLists(List<AppInfo> listNewPkgs, Calendar today){
-        Collection<AppInfo> differentApps = CollectionUtils.disjunction(listNewPkgs,lastListApps);
+    private void setChangedAppLists(List<AppInfo> listNewPkgs, Calendar today) {
+        Collection<AppInfo> differentApps = CollectionUtils.disjunction(listNewPkgs, lastListApps);
 
-        for(AppInfo ai : differentApps){
+        for (AppInfo ai : differentApps) {
             AppChange ac = new AppChange();
             ac.pkgName = ai.pkgName;
-            ac.day = today.get(Calendar.YEAR)+"/"+(today.get(Calendar.MONTH)+1)+"/"+today.get(Calendar.DAY_OF_MONTH);
+            ac.day = today.get(Calendar.YEAR) + "/" + (today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH);
 
-            if(listNewPkgs.contains(ai)) installedApps.add(ac);
+            if (listNewPkgs.contains(ai)) installedApps.add(ac);
             else uninstalledApps.add(ac);
         }
     }
 
-    private void checkInstalledApps(){
+    private void checkInstalledApps() {
         final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
         Calendar today = Calendar.getInstance();
-        if(!CollectionUtils.isEqualCollection(listInstalledPkgs,lastListApps) || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
+        if (!CollectionUtils.isEqualCollection(listInstalledPkgs, lastListApps) || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
             setChangedAppLists(listInstalledPkgs, today);
 
             lastTryUpdate = Calendar.getInstance();
 
-            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(),listInstalledPkgs);
+            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(), listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    if(response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         lastListApps = listInstalledPkgs;
                         dayUpdatedInstalledApps = Calendar.getInstance();
 
@@ -154,7 +153,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) { }
+                public void onFailure(Call<String> call, Throwable t) {
+                }
             });
         }
     }
@@ -165,13 +165,13 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
-            if(TodoApp.getIDChild() != -1) checkInstalledApps();
+            if (TodoApp.getIDChild() != -1) checkInstalledApps();
 
             //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
 
-            if(TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()){
+            if (TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()) {
                 KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                if(!myKM.isDeviceLocked()){
+                if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
                     mDPM.lockNow();
@@ -185,31 +185,34 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
-                if (isActivity){
+                if (isActivity) {
                     Log.i("CurrentActivity", componentName.flattenToShortString());
                     Log.i("CurrentPackage", componentName.getPackageName());
 
                     String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
-                    if (TodoApp.getStartFreeUse()!=1 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
+                    if (TodoApp.getStartFreeUse() != 1 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
 
-                        Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(),componentName.getPackageName());
+                        Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(), componentName.getPackageName());
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
-                                if (response.isSuccessful()) { }
+                                if (response.isSuccessful()) {
+                                }
                             }
+
                             @Override
-                            public void onFailure(Call<String> call, Throwable t) { }
+                            public void onFailure(Call<String> call, Throwable t) {
+                            }
                         });
 
                         Intent lockIntent = new Intent(this, BlockActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
-                    Log.i("LiveApp", TodoApp.getLiveApp()+
-                            " "+TodoApp.getIDChild());
-                    if(TodoApp.getLiveApp() && TodoApp.getIDChild() != -1){
+                    Log.i("LiveApp", TodoApp.getLiveApp() +
+                            " " + TodoApp.getIDChild());
+                    if (TodoApp.getLiveApp() && TodoApp.getIDChild() != -1) {
                         LiveApp liveApp = new LiveApp();
                         liveApp.pkgName = componentName.getPackageName();
                         ApplicationInfo appInfo = null;
@@ -220,16 +223,18 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             liveApp.appName = componentName.getPackageName();
                         }
                         liveApp.time = time;
-                        if(!TodoApp.blackListLiveApp.contains(componentName.getPackageName())){
+                        if (!TodoApp.blackListLiveApp.contains(componentName.getPackageName())) {
                             Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
-                                    if (response.isSuccessful()) { }
+                                    if (response.isSuccessful()) {
+                                    }
                                 }
 
                                 @Override
-                                public void onFailure(Call<String> call, Throwable t) { }
+                                public void onFailure(Call<String> call, Throwable t) {
+                                }
                             });
                         }
                     }
@@ -247,5 +252,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     @Override
-    public void onInterrupt() {}
+    public void onInterrupt() {
+    }
 }

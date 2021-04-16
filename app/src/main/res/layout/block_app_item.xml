@@ -26,6 +26,7 @@
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/guideline28"

@@ -164,7 +164,7 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="@color/background_activity"
         android:text="@string/accept"
-        android:textColor="@color/colorPrimary"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -176,7 +176,7 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="@color/background_activity"
         android:text="@android:string/cancel"
-        android:textColor="@color/colorPrimary"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

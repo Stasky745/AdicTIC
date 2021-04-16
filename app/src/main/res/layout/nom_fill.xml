@@ -107,7 +107,7 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="@color/background_activity"
         android:text="@string/birthday"
-        android:textColor="@color/colorPrimary"
+        android:textAllCaps="false"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/BT_fillNou"
         app:layout_constraintEnd_toEndOf="parent"
