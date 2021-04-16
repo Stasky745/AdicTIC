@@ -31,6 +31,8 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
 import com.example.adictic.util.TodoApp;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -400,12 +402,13 @@ public class ChatFragment extends Fragment {
             void bind(UserMessage mes) {
                 messageText.setText(mes.message);
 
+                DateTime dateTime = new DateTime(mes.createdAt);
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if (mes.createdAt.getHours() < 10) time += "0";
-                time += mes.createdAt.getHours() + ":";
-                if (mes.createdAt.getMinutes() < 10) time += "0";
-                time += mes.createdAt.getMinutes();
+                if (dateTime.getHourOfDay() < 10) time += "0";
+                time += dateTime.getHourOfDay() + ":";
+                if (dateTime.getMinuteOfDay() < 10) time += "0";
+                time += dateTime.getMinuteOfDay();
                 timeText.setText(time);
             }
         }
@@ -424,12 +427,13 @@ public class ChatFragment extends Fragment {
             void bind(UserMessage message) {
                 messageText.setText(message.message);
 
+                DateTime dateTime = new DateTime(message.createdAt);
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if (message.createdAt.getHours() < 10) time += "0";
-                time += message.createdAt.getHours() + ":";
-                if (message.createdAt.getMinutes() < 10) time += "0";
-                time += message.createdAt.getMinutes();
+                if (dateTime.getHourOfDay() < 10) time += "0";
+                time += dateTime.getHourOfDay() + ":";
+                if (dateTime.getMinuteOfDay() < 10) time += "0";
+                time += dateTime.getMinuteOfDay();
                 timeText.setText(time);
             }
         }
