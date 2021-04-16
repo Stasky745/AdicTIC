@@ -24,6 +24,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.DayUsageActivity;
@@ -87,10 +88,32 @@ public class MainParentFragment extends Fragment {
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
+        setLastLiveApp();
+
         setButtons();
         getStats();
 
         return root;
+    }
+
+    private void setLastLiveApp(){
+        Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
+        call.enqueue(new Callback<LiveApp>() {
+            @Override
+            public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    LiveApp liveApp = response.body();
+                    Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
+
+                    TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+                    String liveAppText = liveApp.appName + "\n" + liveApp.time;
+                    currentApp.setText(liveAppText);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) { }
+        });
     }
 
     private void setButtons() {
@@ -138,7 +161,6 @@ public class MainParentFragment extends Fragment {
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         CL_Geoloc.setOnClickListener(geoloc);
-
 
         if (TodoApp.getTutor() == 1) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,

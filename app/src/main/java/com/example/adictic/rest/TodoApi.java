@@ -169,4 +169,10 @@ public interface TodoApi {
 
     @GET("/admins/pictures/{id}")
     Call<ResponseBody> getAdminPicture(@Path("id") Long id);
+
+    @GET("/usage/{idChild}/lastAppUsed")
+    Call<LiveApp> getLastAppUsed(@Path("idChild") Long idChild);
+
+    @POST("/usage/{idChild}/lastAppUsed")
+    Call<String> postLastAppUsed(@Path("idChild") Long idChild, @Body LiveApp liveApp);
 }
