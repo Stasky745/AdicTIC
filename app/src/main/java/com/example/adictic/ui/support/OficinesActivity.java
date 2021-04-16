@@ -274,11 +274,14 @@ public class OficinesActivity extends AppCompatActivity {
 
         if (startPoint == null) {
             if (currentLocation != null) {
-                markers = sortListbyDistance(markers, currentLocation);
+                sortListbyDistance(markers, currentLocation);
                 startPoint = currentLocation;
             } else {
                 startPoint = new GeoPoint(41.981177, 2.818997); // Oficina Girona
             }
+        }
+        else{
+            sortListbyDistance(markers, startPoint);
         }
 
         if (!markers.isEmpty()) startPoint = markers.get(0).getPosition();
