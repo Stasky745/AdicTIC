@@ -2,6 +2,7 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -14,6 +15,8 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
+
+import androidx.annotation.NonNull;
 
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
@@ -80,7 +83,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         List<AppInfo> res = new ArrayList<>();
 
-        List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
+        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
 
         //List<String> launcherApps = getLauncherApps();
 
@@ -142,7 +145,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     if (response.isSuccessful()) {
                         lastListApps = listInstalledPkgs;
                         dayUpdatedInstalledApps = Calendar.getInstance();
@@ -153,7 +156,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 }
             });
         }
@@ -196,14 +199,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(), componentName.getPackageName());
                         call.enqueue(new Callback<String>() {
                             @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                if (response.isSuccessful()) {
-                                }
-                            }
+                            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
 
                             @Override
-                            public void onFailure(Call<String> call, Throwable t) {
-                            }
+                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
                         });
 
                         Intent lockIntent = new Intent(this, BlockActivity.class);
@@ -215,7 +214,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     if (TodoApp.getLiveApp() && TodoApp.getIDChild() != -1) {
                         LiveApp liveApp = new LiveApp();
                         liveApp.pkgName = componentName.getPackageName();
-                        ApplicationInfo appInfo = null;
+                        ApplicationInfo appInfo;
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
                             liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
@@ -227,14 +226,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
                             call.enqueue(new Callback<String>() {
                                 @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    if (response.isSuccessful()) {
-                                    }
-                                }
+                                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
 
                                 @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                }
+                                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
                             });
                         }
                     }

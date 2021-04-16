@@ -16,7 +16,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,19 +48,19 @@ public class AdminProfileActivity extends AppCompatActivity {
         setContentView(R.layout.admin_profile);
 
         todoApi = ((TodoApp) this.getApplication()).getAPI();
-        adminProfile = (AdminProfile) getIntent().getExtras().getParcelable("adminProfile");
+        adminProfile = getIntent().getExtras().getParcelable("adminProfile");
 
         setDades();
     }
 
     private void setDades() {
-        TextView TV_nomPerfil = (TextView) findViewById(R.id.TV_nomPerfil);
+        TextView TV_nomPerfil = findViewById(R.id.TV_nomPerfil);
         TV_nomPerfil.setText(adminProfile.name);
 
-        TextView TV_desc = (TextView) findViewById(R.id.TV_desc);
+        TextView TV_desc = findViewById(R.id.TV_desc);
         TV_desc.setText(adminProfile.description);
 
-        TextView TV_professio = (TextView) findViewById(R.id.TV_professio);
+        TextView TV_professio = findViewById(R.id.TV_professio);
         TV_professio.setText(adminProfile.professio);
 
         setFoto();
@@ -80,7 +79,7 @@ public class AdminProfileActivity extends AppCompatActivity {
     }
 
     private void setRecyclerView() {
-        RV_profileLinks = (RecyclerView) findViewById(R.id.RV_profileLinks);
+        RV_profileLinks = findViewById(R.id.RV_profileLinks);
         RV_profileLinks.setLayoutManager(new LinearLayoutManager(this.getApplication()));
         RVadapter = new RV_Adapter(getApplicationContext(), new ArrayList<>(adminProfile.webLinks));
 
@@ -88,7 +87,7 @@ public class AdminProfileActivity extends AppCompatActivity {
     }
 
     private void setFoto() {
-        ImageView IV_profilePic = (ImageView) findViewById(R.id.IV_profilePic);
+        ImageView IV_profilePic = findViewById(R.id.IV_profilePic);
 
         Call<ResponseBody> call = todoApi.getAdminPicture(adminProfile.idAdmin);
         call.enqueue(new Callback<ResponseBody>() {
@@ -163,7 +162,7 @@ public class AdminProfileActivity extends AppCompatActivity {
 
                 mRootView = itemView;
 
-                TV_webLink = (TextView) itemView.findViewById(R.id.TV_weblink);
+                TV_webLink = itemView.findViewById(R.id.TV_weblink);
                 IV_delete = mRootView.findViewById(R.id.IV_delete);
                 IV_edit = mRootView.findViewById(R.id.IV_edit);
             }

@@ -116,7 +116,7 @@
     <string name="initial_date">"Data inicial:"</string>
     <string name="final_date">"Data final:"</string>
 
-    <string name="date_format">"%d %s %d"</string>
+    <string name="date_format">"%d  %s  %d"</string>
 
     <string name="daily_usage">"Ús diari del dispositiu"</string>
     <string name="device_usage">"Ús total del dispositiu:"</string>

@@ -2,16 +2,15 @@ package com.example.adictic.ui;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -109,47 +108,47 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void setViews() {
-        TV_info = (TextView) findViewById(R.id.TV_tipusHorari);
+        TV_info = findViewById(R.id.TV_tipusHorari);
         TV_info.setVisibility(View.GONE);
 
-        chipGroup = (ChipGroup) findViewById(R.id.CG_tipusHorari);
-        CH_horariDiari = (Chip) findViewById(R.id.CH_diariHorari);
-        CH_horariSetmana = (Chip) findViewById(R.id.CH_setmanaHorari);
-        CH_horariGeneric = (Chip) findViewById(R.id.CH_genericHorari);
+        chipGroup = findViewById(R.id.CG_tipusHorari);
+        CH_horariDiari = findViewById(R.id.CH_diariHorari);
+        CH_horariSetmana = findViewById(R.id.CH_setmanaHorari);
+        CH_horariGeneric = findViewById(R.id.CH_genericHorari);
         chipGroup.setVisibility(View.GONE);
 
-        SV_horariDiari = (ScrollView) findViewById(R.id.SV_horariDiari);
-        CL_horariGeneric = (ConstraintLayout) findViewById(R.id.CL_horariGeneric);
-        CL_horariSetmana = (ConstraintLayout) findViewById(R.id.CL_horariSetmana);
+        SV_horariDiari = findViewById(R.id.SV_horariDiari);
+        CL_horariGeneric = findViewById(R.id.CL_horariGeneric);
+        CL_horariSetmana = findViewById(R.id.CL_horariSetmana);
 
-        ET_wakeMon = (TextView) findViewById(R.id.ET_wakeMon);
-        ET_wakeTue = (TextView) findViewById(R.id.ET_wakeTue);
-        ET_wakeWed = (TextView) findViewById(R.id.ET_wakeWed);
-        ET_wakeThu = (TextView) findViewById(R.id.ET_wakeThu);
-        ET_wakeFri = (TextView) findViewById(R.id.ET_wakeFri);
-        ET_wakeSat = (TextView) findViewById(R.id.ET_wakeSat);
-        ET_wakeSun = (TextView) findViewById(R.id.ET_wakeSun);
+        ET_wakeMon = findViewById(R.id.ET_wakeMon);
+        ET_wakeTue = findViewById(R.id.ET_wakeTue);
+        ET_wakeWed = findViewById(R.id.ET_wakeWed);
+        ET_wakeThu = findViewById(R.id.ET_wakeThu);
+        ET_wakeFri = findViewById(R.id.ET_wakeFri);
+        ET_wakeSat = findViewById(R.id.ET_wakeSat);
+        ET_wakeSun = findViewById(R.id.ET_wakeSun);
 
-        ET_sleepMon = (TextView) findViewById(R.id.ET_sleepMon);
-        ET_sleepTue = (TextView) findViewById(R.id.ET_sleepTue);
-        ET_sleepWed = (TextView) findViewById(R.id.ET_sleepWed);
-        ET_sleepThu = (TextView) findViewById(R.id.ET_sleepThu);
-        ET_sleepFri = (TextView) findViewById(R.id.ET_sleepFri);
-        ET_sleepSat = (TextView) findViewById(R.id.ET_sleepSat);
-        ET_sleepSun = (TextView) findViewById(R.id.ET_sleepSun);
+        ET_sleepMon = findViewById(R.id.ET_sleepMon);
+        ET_sleepTue = findViewById(R.id.ET_sleepTue);
+        ET_sleepWed = findViewById(R.id.ET_sleepWed);
+        ET_sleepThu = findViewById(R.id.ET_sleepThu);
+        ET_sleepFri = findViewById(R.id.ET_sleepFri);
+        ET_sleepSat = findViewById(R.id.ET_sleepSat);
+        ET_sleepSun = findViewById(R.id.ET_sleepSun);
 
-        ET_wakeGeneric = (TextView) findViewById(R.id.ET_wakeGeneric);
-        ET_sleepGeneric = (TextView) findViewById(R.id.ET_sleepGeneric);
+        ET_wakeGeneric = findViewById(R.id.ET_wakeGeneric);
+        ET_sleepGeneric = findViewById(R.id.ET_sleepGeneric);
 
-        ET_wakeWeekday = (TextView) findViewById(R.id.ET_wakeWeekday);
-        ET_wakeWeekend = (TextView) findViewById(R.id.ET_wakeWeekend);
+        ET_wakeWeekday = findViewById(R.id.ET_wakeWeekday);
+        ET_wakeWeekend = findViewById(R.id.ET_wakeWeekend);
 
-        ET_sleepWeekday = (TextView) findViewById(R.id.ET_sleepWeekday);
-        ET_sleepWeekend = (TextView) findViewById(R.id.ET_sleepWeekend);
+        ET_sleepWeekday = findViewById(R.id.ET_sleepWeekday);
+        ET_sleepWeekend = findViewById(R.id.ET_sleepWeekend);
 
         setViewsTutor(false);
 
-        BT_sendHoraris = (Button) findViewById(R.id.BT_sendHoraris);
+        BT_sendHoraris = findViewById(R.id.BT_sendHoraris);
         BT_sendHoraris.setVisibility(View.GONE);
     }
 
@@ -158,7 +157,7 @@ public class HorarisActivity extends AppCompatActivity {
 
         call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         wakeSleepList = response.body().wakeSleepList;
@@ -169,7 +168,7 @@ public class HorarisActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Horaris> call, Throwable t) {
+            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
                 Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
@@ -186,13 +185,10 @@ public class HorarisActivity extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle(getString(R.string.closing_activity))
                     .setMessage(getString(R.string.exit_without_save))
-                    .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent returnIntent = new Intent();
-                            setResult(RESULT_CANCELED, returnIntent);
-                            HorarisActivity.super.onBackPressed();
-                        }
+                    .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
+                        Intent returnIntent = new Intent();
+                        setResult(RESULT_CANCELED, returnIntent);
+                        HorarisActivity.super.onBackPressed();
                     })
                     .setNegativeButton(getString(R.string.no), null)
                     .show();
@@ -251,13 +247,11 @@ public class HorarisActivity extends AppCompatActivity {
             minute = Integer.parseInt(time[1]);
         }
 
-        TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                if (!et.getText().equals(hourOfDay + ":" + minute)) {
-                    et.setText(hourOfDay + ":" + minute);
-                    canvis = 1;
-                }
+        TimePickerDialog.OnTimeSetListener timeListener = (view, hourOfDay, minute1) -> {
+            String time = hourOfDay + ":" + minute1;
+            if (!et.getText().equals(time)) {
+                et.setText(time);
+                canvis = 1;
             }
         };
 
@@ -303,14 +297,14 @@ public class HorarisActivity extends AppCompatActivity {
 
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     if (response.isSuccessful()) finish();
                     else
                         Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
                 }
             });

@@ -4,6 +4,7 @@ package com.example.adictic.ui.chat;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -33,13 +34,13 @@ public class ChatActivity extends AppCompatActivity {
 
         TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
-        _vpChats = (ViewPager2) findViewById(R.id.VP_chats);
-        _tabChat = (TabLayout) findViewById(R.id.TABL_chats);
+        _vpChats = findViewById(R.id.VP_chats);
+        _tabChat = findViewById(R.id.TABL_chats);
 
         Call<ChatsMain> call = mTodoService.getChatsInfo();
         call.enqueue(new Callback<ChatsMain>() {
             @Override
-            public void onResponse(Call<ChatsMain> call, Response<ChatsMain> response) {
+            public void onResponse(@NonNull Call<ChatsMain> call, @NonNull Response<ChatsMain> response) {
                 if (response.isSuccessful()) {
                     ChatsMain chatMain = response.body();
                     ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(), chatMain);
@@ -56,7 +57,7 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ChatsMain> call, Throwable t) {
+            public void onFailure(@NonNull Call<ChatsMain> call, @NonNull Throwable t) {
 
             }
         });

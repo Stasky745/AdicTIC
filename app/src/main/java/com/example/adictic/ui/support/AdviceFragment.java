@@ -21,15 +21,15 @@ public class AdviceFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_advice, container, false);
 
-        ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
-        ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
-        ConstraintLayout CL_suport = (ConstraintLayout) root.findViewById(R.id.CL_suport);
-        ConstraintLayout CL_suportButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
+        ConstraintLayout CL_info = root.findViewById(R.id.CL_info);
+        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_infoButtons);
+        ConstraintLayout CL_suport = root.findViewById(R.id.CL_suport);
+        ConstraintLayout CL_suportButtons = root.findViewById(R.id.CL_suportButtons);
 
-        Button BT_ContingutInformatiu = (Button) root.findViewById(R.id.BT_ContingutInformatiu);
-        Button BT_faqs = (Button) root.findViewById(R.id.BT_faqs);
-        Button BT_ConsultaPrivada = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
-        Button BT_oficines = (Button) root.findViewById(R.id.BT_oficines);
+        Button BT_ContingutInformatiu = root.findViewById(R.id.BT_ContingutInformatiu);
+        Button BT_faqs = root.findViewById(R.id.BT_faqs);
+        Button BT_ConsultaPrivada = root.findViewById(R.id.BT_ConsultaPrivada);
+        Button BT_oficines = root.findViewById(R.id.BT_oficines);
 
         BT_ConsultaPrivada.setOnClickListener(v -> startActivity(new Intent(getActivity(), ChatActivity.class)));
 
@@ -37,12 +37,12 @@ public class AdviceFragment extends Fragment {
             if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_infoButtons.setVisibility(View.GONE);
 
-                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
             }
         });
@@ -51,12 +51,12 @@ public class AdviceFragment extends Fragment {
             if (CL_suportButtons.getVisibility() == View.GONE) {
                 CL_suportButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openSuport = root.findViewById(R.id.IV_openSuport);
                 IV_openSuport.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_suportButtons.setVisibility(View.GONE);
 
-                ImageView IV_openSuport = (ImageView) root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openSuport = root.findViewById(R.id.IV_openSuport);
                 IV_openSuport.setImageResource(R.drawable.ic_arrow_open);
             }
         });

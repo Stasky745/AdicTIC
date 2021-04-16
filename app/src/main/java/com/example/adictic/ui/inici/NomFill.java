@@ -216,7 +216,7 @@ public class NomFill extends AppCompatActivity {
                         call.enqueue(new Callback<Long>() {
                             @Override
                             public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
-                                if (response.isSuccessful()) {
+                                if (response.isSuccessful() && response.body() != null) {
                                     TodoApp.setIDChild(response.body());
                                     if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
