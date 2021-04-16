@@ -56,12 +56,12 @@ public class AppUsageWorker extends Worker {
 
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 ok1 = response.isSuccessful();
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 ok1 = false;
             }
         });
@@ -69,7 +69,7 @@ public class AppUsageWorker extends Worker {
         Call<BlockedLimitedLists> call2 = mTodoService.getBlockedLimitedLists(TodoApp.getIDChild());
         call2.enqueue(new Callback<BlockedLimitedLists>() {
             @Override
-            public void onResponse(Call<BlockedLimitedLists> call2, Response<BlockedLimitedLists> response) {
+            public void onResponse(@NonNull Call<BlockedLimitedLists> call2, @NonNull Response<BlockedLimitedLists> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     TodoApp.setBlockedApps(response.body().blockedApps);
                     List<LimitedApps> limitList = response.body().limitApps;
@@ -83,7 +83,7 @@ public class AppUsageWorker extends Worker {
             }
 
             @Override
-            public void onFailure(Call<BlockedLimitedLists> call2, Throwable t) {
+            public void onFailure(@NonNull Call<BlockedLimitedLists> call2, @NonNull Throwable t) {
                 ok2 = false;
             }
         });

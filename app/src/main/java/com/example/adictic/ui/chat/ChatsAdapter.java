@@ -28,40 +28,37 @@ public class ChatsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (chatsMain.obert == null) {
+            Bundle bundle = new Bundle();
+            Fragment fragment;
             if (position == 0) {
-                Bundle bundle = new Bundle();
                 bundle.putBoolean("dubte", chatsMain.hasDubte);
 
-                Fragment fragment = new NoChatFragment();
-                fragment.setArguments(bundle);
-                return fragment;
+                fragment = new NoChatFragment();
             } else {
-                Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) chatsMain.tancats);
 
-                Fragment fragment = new ChatsClosedFragment();
-                fragment.setArguments(bundle);
-                return fragment;
+                fragment = new ChatsClosedFragment();
             }
+            fragment.setArguments(bundle);
+            return fragment;
         }
+
+        Bundle bundle = new Bundle();
+        Fragment fragment;
         if (position == 0) {
-            Bundle bundle = new Bundle();
             bundle.putParcelable("chat", chatsMain.obert);
             bundle.putBoolean("access", chatsMain.hasAccess);
             bundle.putBoolean("active", true);
 
-            Fragment fragment = new ChatFragment();
-            fragment.setArguments(bundle);
+            fragment = new ChatFragment();
 
-            return fragment;
         } else {
-            Bundle bundle = new Bundle();
             bundle.putParcelableArrayList("list", (ArrayList<? extends Parcelable>) chatsMain.tancats);
 
-            Fragment fragment = new ChatsClosedFragment();
-            fragment.setArguments(bundle);
-            return fragment;
+            fragment = new ChatsClosedFragment();
         }
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override

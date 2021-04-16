@@ -47,10 +47,10 @@ public class GraphsFragment extends Fragment {
     private PieChart pieChart;
     private TextView TV_pieApp;
     private BarChart barChart;
-    private Long idChild;
+    private final Long idChild;
     private boolean pieCategory;
 
-    private List<GeneralUsage> genericAppUsage;
+    private final List<GeneralUsage> genericAppUsage;
 
     private int currentYear;
 
@@ -70,12 +70,12 @@ public class GraphsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.informe_layout, viewGroup, false);
 
-        pieChart = (PieChart) root.findViewById(R.id.Ch_Pie);
-        barChart = (BarChart) root.findViewById(R.id.Ch_Line);
-        TV_pieApp = (TextView) root.findViewById(R.id.TV_PieChart);
+        pieChart = root.findViewById(R.id.Ch_Pie);
+        barChart = root.findViewById(R.id.Ch_Line);
+        TV_pieApp = root.findViewById(R.id.TV_PieChart);
 
-        chipGroup = (ChipGroup) root.findViewById(R.id.CG_category);
-        CH_appName = (Chip) root.findViewById(R.id.CH_appName);
+        chipGroup = root.findViewById(R.id.CG_category);
+        CH_appName = root.findViewById(R.id.CH_appName);
         chipGroup.check(CH_appName.getId());
 
         pieCategory = false;
@@ -89,12 +89,9 @@ public class GraphsFragment extends Fragment {
         Map<String, Long> mapUsage = new HashMap<>();
 
         chipGroup.setVisibility(View.VISIBLE);
-        chipGroup.setOnCheckedChangeListener(new ChipGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(ChipGroup group, int checkedId) {
-                pieCategory = checkedId != CH_appName.getId();
-                makeGraphs();
-            }
+        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            pieCategory = checkedId != CH_appName.getId();
+            makeGraphs();
         });
         chipGroup.setSelectionRequired(true);
 
@@ -112,7 +109,7 @@ public class GraphsFragment extends Fragment {
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                             if (au.app.category == -1) category = getString(R.string.other);
                             else
-                                category = ApplicationInfo.getCategoryTitle(getActivity().getApplicationContext(), au.app.category).toString();
+                                category = ApplicationInfo.getCategoryTitle(requireActivity().getApplicationContext(), au.app.category).toString();
                         }
 
                         if (mapUsage.containsKey(category))
@@ -263,8 +260,7 @@ public class GraphsFragment extends Fragment {
         public String getFormattedValue(float value) {
             if (value > 0) {
                 //int mes = (int) value/100;
-                String dia = String.valueOf((int) value % 100);
-                return dia;
+                return String.valueOf((int) value % 100);
             } else return "";
 
         }

@@ -2,7 +2,6 @@ package com.example.adictic.ui.support;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 
@@ -17,8 +16,8 @@ public class InformationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.information_layout);
 
-        Button bt = (Button) findViewById(R.id.BT_title);
-        WebView wv = (WebView) findViewById(R.id.WV_content);
+        Button bt = findViewById(R.id.BT_title);
+        WebView wv = findViewById(R.id.WV_content);
 
         wv.setBackgroundColor(Color.TRANSPARENT);
 
@@ -28,11 +27,6 @@ public class InformationActivity extends AppCompatActivity {
         bt.setText(title);
         wv.loadUrl(file);
 
-        bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        bt.setOnClickListener(v -> finish());
     }
 }

@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -67,9 +68,9 @@ public class InformeActivity extends AppCompatActivity {
 
         idChild = getIntent().getLongExtra("idChild", -1);
 
-        TV_error = (TextView) findViewById(R.id.TV_error);
-        TV_percentageUsage = (TextView) findViewById(R.id.TV_usePercentage);
-        TV_totalUsage = (TextView) findViewById(R.id.TV_deviceUsage);
+        TV_error = findViewById(R.id.TV_error);
+        TV_percentageUsage = findViewById(R.id.TV_usePercentage);
+        TV_totalUsage = findViewById(R.id.TV_deviceUsage);
 
         TV_percentageUsage.setOnClickListener(v -> {
             String deviceTime = TV_totalUsage.getText().toString().substring(0, TV_totalUsage.getText().toString().indexOf('/') - 2);
@@ -82,10 +83,10 @@ public class InformeActivity extends AppCompatActivity {
             dialog.show();
         });
 
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        final TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        viewPager = (ViewPager) findViewById(R.id.VP_viewPager);
+        viewPager = findViewById(R.id.VP_viewPager);
         tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         tabsAdapter.setChildId(idChild);
 
@@ -130,7 +131,7 @@ public class InformeActivity extends AppCompatActivity {
         yearList = new ArrayList<>();
         monthList = new ArrayList<>();
 
-        dateButton = (Button) findViewById(R.id.BT_monthPicker);
+        dateButton = findViewById(R.id.BT_monthPicker);
         dateButton.setOnClickListener(v -> {
             if (yearList.size() == 1) {
                 currentYear = yearList.get(0);
@@ -147,14 +148,14 @@ public class InformeActivity extends AppCompatActivity {
         Call<Integer> call = mTodoService.getAge(idChild);
         call.enqueue(new Callback<Integer>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     tabsAdapter.setAge(response.body());
                 }
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable t) {
+            public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
 
             }
         });
@@ -164,13 +165,13 @@ public class InformeActivity extends AppCompatActivity {
         Call<List<AppTimesAccessed>> call = mTodoService.getAccessBlocked(idChild);
         call.enqueue(new Callback<List<AppTimesAccessed>>() {
             @Override
-            public void onResponse(Call<List<AppTimesAccessed>> call, Response<List<AppTimesAccessed>> response) {
+            public void onResponse(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Response<List<AppTimesAccessed>> response) {
                 if (response.isSuccessful() && response.body() != null)
                     setTimesBlockedMap(new ArrayList<>(response.body()));
             }
 
             @Override
-            public void onFailure(Call<List<AppTimesAccessed>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Throwable t) {
 
             }
         });
@@ -194,7 +195,7 @@ public class InformeActivity extends AppCompatActivity {
         Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChild, dataInicial, dataInicial);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
-            public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
+            public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
@@ -208,7 +209,7 @@ public class InformeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
+            public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
                 showError();
             }
         });
@@ -221,7 +222,7 @@ public class InformeActivity extends AppCompatActivity {
             totalUsageTime += gu.totalTime;
         }
 
-        tabsAdapter.setTimes(totalTime, totalUsageTime);
+        tabsAdapter.setTimes(totalUsageTime);
         viewPager.setAdapter(tabsAdapter);
 
         percentage = totalUsageTime * 100.0f / totalTime;
@@ -323,7 +324,7 @@ public class InformeActivity extends AppCompatActivity {
 
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
-            public void onResponse(Call<List<YearEntity>> call, Response<List<YearEntity>> response) {
+            public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
@@ -356,7 +357,7 @@ public class InformeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<YearEntity>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<YearEntity>> call, @NonNull Throwable t) {
                 showError();
             }
         });
