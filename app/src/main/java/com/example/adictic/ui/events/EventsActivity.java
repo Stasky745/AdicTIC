@@ -1,9 +1,7 @@
 package com.example.adictic.ui.events;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -110,7 +108,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
         call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         wakeSleepList = response.body().wakeSleepList;
@@ -124,7 +122,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             }
 
             @Override
-            public void onFailure(Call<Horaris> call, Throwable t) {
+            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
 
             }
         });
@@ -151,44 +149,37 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<String> call, Response<String> response) {
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     finish();
                 }
 
                 @Override
-                public void onFailure(Call<String> call, Throwable t) {
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
 
                 }
             });
         });
 
-        BT_esborrarEvent.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("ShowToast")
-            @Override
-            public void onClick(View view) {
-                if (selectedEvent != null) {
-                    new AlertDialog.Builder(EventsActivity.this)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-                            .setTitle(getString(R.string.esborrar_event))
-                            .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
-                            .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    boolean trobat = false;
-                                    int count = 0;
-                                    while (count < eventList.size() && !trobat) {
-                                        if (eventList.get(count).name.equals(selectedEvent.name)) {
-                                            trobat = true;
-                                            eventList.remove(count);
-                                        } else count++;
-                                    }
-                                }
-                            })
-                            .setNegativeButton(getString(R.string.no), null)
-                            .show();
-                } else {
-                    Toast.makeText(EventsActivity.this, getString(R.string.no_event_selected), Toast.LENGTH_LONG).show();
-                }
+        BT_esborrarEvent.setOnClickListener(view -> {
+            if (selectedEvent != null) {
+                new AlertDialog.Builder(EventsActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getString(R.string.esborrar_event))
+                        .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
+                        .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
+                            boolean trobat = false;
+                            int count = 0;
+                            while (count < eventList.size() && !trobat) {
+                                if (eventList.get(count).name.equals(selectedEvent.name)) {
+                                    trobat = true;
+                                    eventList.remove(count);
+                                } else count++;
+                            }
+                        })
+                        .setNegativeButton(getString(R.string.no), null)
+                        .show();
+            } else {
+                Toast.makeText(EventsActivity.this, getString(R.string.no_event_selected), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -217,17 +208,17 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     private void setLayouts() {
-        BT_acceptarHoraris = (Button) findViewById(R.id.BT_acceptarHoraris);
-        BT_modificarEvent = (Button) findViewById(R.id.BT_modificarEvent);
-        BT_afegirEvent = (Button) findViewById(R.id.BT_afegirEvent);
-        BT_esborrarEvent = (Button) findViewById(R.id.BT_esborrarEvent);
+        BT_acceptarHoraris = findViewById(R.id.BT_acceptarHoraris);
+        BT_modificarEvent = findViewById(R.id.BT_modificarEvent);
+        BT_afegirEvent = findViewById(R.id.BT_afegirEvent);
+        BT_esborrarEvent = findViewById(R.id.BT_esborrarEvent);
 
         BT_acceptarHoraris.setVisibility(View.GONE);
         BT_modificarEvent.setVisibility(View.GONE);
         BT_afegirEvent.setVisibility(View.GONE);
         BT_esborrarEvent.setVisibility(View.GONE);
 
-        RV_eventList = (RecyclerView) findViewById(R.id.RV_events);
+        RV_eventList = findViewById(R.id.RV_events);
         RV_eventList.setLayoutManager(new LinearLayoutManager(this));
     }
 
@@ -237,7 +228,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             int i = 0;
             boolean found = false;
             while (i < eventList.size() && !found) {
-                if (eventList.get(i).id == newEvent.id) {
+                if (eventList.get(i).id.equals(newEvent.id)) {
                     eventList.remove(i);
                     found = true;
                 }
@@ -285,26 +276,24 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             final HorarisEvents event = eventAdapterList.get(position);
 
             holder.TV_eventName.setText(event.name);
-            String eventDaysString = "";
+            StringBuilder eventDaysString = new StringBuilder();
             for (int i : event.days) {
                 String day = new DateFormatSymbols().getWeekdays()[i];
                 String s1 = day.substring(0, 1).toUpperCase();
-                eventDaysString += s1 + day.substring(1) + " ";
+                //eventDaysString += s1 + day.substring(1) + " ";
+                eventDaysString.append(s1).append(day.substring(1)).append(" ");
             }
-            holder.TV_eventDays.setText(eventDaysString);
+            holder.TV_eventDays.setText(eventDaysString.toString());
             String eventTimesString = event.start + "\n" + event.finish;
             holder.TV_eventTimes.setText(eventTimesString);
 
-            holder.mRootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (selectedEvent == null || !selectedEvent.name.equals(event.name)) {
-                        selectedEvent = event;
-                    } else {
-                        selectedEvent = null;
-                    }
-                    notifyDataSetChanged();
+            holder.mRootView.setOnClickListener(view -> {
+                if (selectedEvent == null || !selectedEvent.name.equals(event.name)) {
+                    selectedEvent = event;
+                } else {
+                    selectedEvent = null;
                 }
+                notifyDataSetChanged();
             });
         }
 
@@ -328,11 +317,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
                 mRootView = itemView;
 
-                TV_eventName = (TextView) itemView.findViewById(R.id.TV_eventName);
+                TV_eventName = itemView.findViewById(R.id.TV_eventName);
                 TV_eventName.setSelected(true);
-                TV_eventDays = (TextView) itemView.findViewById(R.id.TV_eventDays);
+                TV_eventDays = itemView.findViewById(R.id.TV_eventDays);
                 TV_eventDays.setSelected(true);
-                TV_eventTimes = (TextView) itemView.findViewById(R.id.TV_eventTimes);
+                TV_eventTimes = itemView.findViewById(R.id.TV_eventTimes);
                 TV_eventTimes.setSelected(true);
             }
         }

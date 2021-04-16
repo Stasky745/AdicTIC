@@ -68,9 +68,9 @@ public class InformeActivity extends AppCompatActivity {
 
         idChild = getIntent().getLongExtra("idChild", -1);
 
-        TV_error = (TextView) findViewById(R.id.TV_error);
-        TV_percentageUsage = (TextView) findViewById(R.id.TV_usePercentage);
-        TV_totalUsage = (TextView) findViewById(R.id.TV_deviceUsage);
+        TV_error = findViewById(R.id.TV_error);
+        TV_percentageUsage = findViewById(R.id.TV_usePercentage);
+        TV_totalUsage = findViewById(R.id.TV_deviceUsage);
 
         TV_percentageUsage.setOnClickListener(v -> {
             String deviceTime = TV_totalUsage.getText().toString().substring(0, TV_totalUsage.getText().toString().indexOf('/') - 2);
@@ -83,10 +83,10 @@ public class InformeActivity extends AppCompatActivity {
             dialog.show();
         });
 
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        final TabLayout tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        viewPager = (ViewPager) findViewById(R.id.VP_viewPager);
+        viewPager = findViewById(R.id.VP_viewPager);
         tabsAdapter = new TabsAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         tabsAdapter.setChildId(idChild);
 
@@ -131,7 +131,7 @@ public class InformeActivity extends AppCompatActivity {
         yearList = new ArrayList<>();
         monthList = new ArrayList<>();
 
-        dateButton = (Button) findViewById(R.id.BT_monthPicker);
+        dateButton = findViewById(R.id.BT_monthPicker);
         dateButton.setOnClickListener(v -> {
             if (yearList.size() == 1) {
                 currentYear = yearList.get(0);
