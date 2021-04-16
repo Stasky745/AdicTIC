@@ -82,6 +82,7 @@
         <activity android:name=".ui.GeoLocActivity" />
         <activity android:name=".ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
+        <activity android:name=".ui.AdminProfileActivity" />
 
         <receiver
             android:name=".ui.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"

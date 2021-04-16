@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,7 +39,6 @@ public class AdminProfileActivity extends AppCompatActivity {
     AdminProfile adminProfile;
     TodoApi todoApi;
 
-    ArrayList<WebLink> webList;
     RV_Adapter RVadapter;
     RecyclerView RV_profileLinks;
 
@@ -49,7 +49,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         setContentView(R.layout.admin_profile);
 
         todoApi = ((TodoApp) this.getApplication()).getAPI();
-        adminProfile = (AdminProfile) getIntent().getExtras().get("adminProfile");
+        adminProfile = (AdminProfile) getIntent().getExtras().getParcelable("adminProfile");
 
         setDades();
     }
@@ -82,8 +82,7 @@ public class AdminProfileActivity extends AppCompatActivity {
     private void setRecyclerView() {
         RV_profileLinks = (RecyclerView) findViewById(R.id.RV_profileLinks);
         RV_profileLinks.setLayoutManager(new LinearLayoutManager(this.getApplication()));
-        webList = new ArrayList<>(adminProfile.webLinks);
-        RVadapter = new RV_Adapter(getApplicationContext(), webList);
+        RVadapter = new RV_Adapter(getApplicationContext(), new ArrayList<>(adminProfile.webLinks));
 
         RV_profileLinks.setAdapter(RVadapter);
     }
@@ -91,10 +90,10 @@ public class AdminProfileActivity extends AppCompatActivity {
     private void setFoto() {
         ImageView IV_profilePic = (ImageView) findViewById(R.id.IV_profilePic);
 
-        Call<ResponseBody> call = todoApi.getAdminPicture(adminProfile.idUser);
+        Call<ResponseBody> call = todoApi.getAdminPicture(adminProfile.idAdmin);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
                     IV_profilePic.setImageBitmap(bmp);
@@ -102,7 +101,7 @@ public class AdminProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
 
             }
         });
