@@ -30,7 +30,6 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
-import com.example.adictic.TodoApp;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
@@ -297,69 +296,67 @@ public class Funcions {
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static HorarisEvents getEventFromList(String name){
+    public static HorarisEvents getEventFromList(String name) {
         boolean trobat = false;
         int i = 0;
         List<HorarisEvents> listEvents = TodoApp.getListEvents();
         HorarisEvents event = null;
-        while(!trobat && i<listEvents.size()){
+        while (!trobat && i < listEvents.size()) {
             event = listEvents.get(i);
-            if(event.name.equals(name)) trobat=true;
+            if (event.name.equals(name)) trobat = true;
         }
         return event;
     }
 
-     public static void updateEventList(Context mContext, List<HorarisEvents> newEvents){
+    public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
         List<HorarisEvents> currentEvents = TodoApp.getListEvents();
 
-        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents,currentEvents));
+        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
 
         WorkManager workManager = WorkManager.getInstance(mContext);
 
-        for(HorarisEvents event : disjunctionEvents){
+        for (HorarisEvents event : disjunctionEvents) {
             int index = newEvents.indexOf(event);
 
             // Event s'ha esborrat
-            if(index == -1){
+            if (index == -1) {
                 workManager.cancelUniqueWork(event.name);
             }
             // És un nou event
-            else if(event.exactSame(newEvents.get(index))){
+            else if (event.exactSame(newEvents.get(index))) {
                 long now = Calendar.getInstance().getTimeInMillis();
 
-                Pair<Integer,Integer> startEvent = stringToTime(event.start);
-                Pair<Integer,Integer> finishEvent = stringToTime(event.finish);
+                Pair<Integer, Integer> startEvent = stringToTime(event.start);
+                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
 
                 Calendar start = Calendar.getInstance();
-                start.set(Calendar.HOUR_OF_DAY,startEvent.first);
-                start.set(Calendar.MINUTE,startEvent.second);
+                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
+                start.set(Calendar.MINUTE, startEvent.second);
 
                 Calendar finish = Calendar.getInstance();
-                finish.set(Calendar.HOUR_OF_DAY,finishEvent.first);
-                finish.set(Calendar.MINUTE,finishEvent.second);
+                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
+                finish.set(Calendar.MINUTE, finishEvent.second);
 
-                if(now < start.getTimeInMillis()){
-                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
-                }
-                else if(now < finish.getTimeInMillis()){
-                    runFinishBlockEventWorker(mContext,event.name,finish.getTimeInMillis()-now);
-                }
-                else{
-                    start.add(Calendar.DATE,1);
-                    runStartBlockEventWorker(mContext,event.name,start.getTimeInMillis()-now);
+                if (now < start.getTimeInMillis()) {
+                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
+                } else if (now < finish.getTimeInMillis()) {
+                    runFinishBlockEventWorker(mContext, event.name, finish.getTimeInMillis() - now);
+                } else {
+                    start.add(Calendar.DATE, 1);
+                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
                 }
             }
         }
         TodoApp.setListEvents(newEvents);
     }
 
-    public static void runStartBlockEventWorker(Context mContext, String name, long delay){
+    public static void runStartBlockEventWorker(Context mContext, String name, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name",name);
+        data.putString("name", name);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
-                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .setInputData(data.build())
                         .build();
 
@@ -367,13 +364,13 @@ public class Funcions {
                 .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static void runFinishBlockEventWorker(Context mContext, String name, long delay){
+    public static void runFinishBlockEventWorker(Context mContext, String name, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name",name);
+        data.putString("name", name);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
-                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .setInputData(data.build())
                         .build();
 
@@ -381,7 +378,9 @@ public class Funcions {
                 .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    /** pre: si fTime = -1, agafa valors del dia actual inacabat **/
+    /**
+     * pre: si fTime = -1, agafa valors del dia actual inacabat
+     **/
     public static List<GeneralUsage> getGeneralUsages(Context mContext, int iTime, int fTime) {
         List<GeneralUsage> gul = new ArrayList<>();
 
@@ -402,7 +401,7 @@ public class Funcions {
             gu.usage = appUsages;
 
             gu.totalTime = Long.parseLong("0");
-            for(AppUsage au : appUsages){
+            for (AppUsage au : appUsages) {
                 gu.totalTime += au.totalTime;
             }
 
@@ -435,7 +434,7 @@ public class Funcions {
         return gul;
     }
 
-    private static List<AppUsage> getAppUsages(Context mContext, Calendar initialTime, Calendar finalTime){
+    private static List<AppUsage> getAppUsages(Context mContext, Calendar initialTime, Calendar finalTime) {
         UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext.getSystemService(Context.USAGE_STATS_SERVICE);
         PackageManager mPm = mContext.getPackageManager();
 
@@ -452,12 +451,12 @@ public class Funcions {
             } catch (PackageManager.NameNotFoundException e) {
                 //e.printStackTrace();
             }
-            if (appInfo!=null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            if (appInfo != null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
                 AppInfo app = new AppInfo();
                 appUsage.app = app;
 
-                if(Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
+                if (Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
                 appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
                 appUsage.app.pkgName = pkgStats.getPackageName();
                 appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
@@ -469,54 +468,53 @@ public class Funcions {
         return appUsages;
     }
 
-    public static void updateLimitedAppsList(){
+    public static void updateLimitedAppsList() {
         long millisToAdd = Calendar.getInstance().getTimeInMillis() - TodoApp.getStartFreeUse();
-        Map<String,Long> newMap = new HashMap<>();
-        for(Map.Entry<String,Long> entry : TodoApp.getLimitApps().entrySet()){
-            newMap.put(entry.getKey(),entry.getValue()+millisToAdd);
+        Map<String, Long> newMap = new HashMap<>();
+        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
+            newMap.put(entry.getKey(), entry.getValue() + millisToAdd);
         }
 
         TodoApp.setStartFreeUse(0);
         TodoApp.setLimitApps(newMap);
     }
 
-    public static void startFreeUseLimitList(Context mContext){
-        List<GeneralUsage> gul = getGeneralUsages(mContext,0,-1);
+    public static void startFreeUseLimitList(Context mContext) {
+        List<GeneralUsage> gul = getGeneralUsages(mContext, 0, -1);
         GeneralUsage gu = gul.get(0);
 
-        List<AppUsage> appUsages = (List<AppUsage>)gu.usage;
+        List<AppUsage> appUsages = (List<AppUsage>) gu.usage;
 
-        Map<String,Long> newMap = new HashMap<>();
+        Map<String, Long> newMap = new HashMap<>();
 
-        for(Map.Entry<String,Long> entry : TodoApp.getLimitApps().entrySet()){
+        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
             AppUsage appUsage = appUsages.get(appUsages.indexOf(entry.getKey()));
 
-            newMap.put(entry.getKey(),entry.getValue()-appUsage.totalTime);
+            newMap.put(entry.getKey(), entry.getValue() - appUsage.totalTime);
         }
 
         TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
         TodoApp.setLimitApps(newMap);
     }
 
-    /** Retorna -1 als dos valors si no és un string acceptable **/
-    public static Pair<Integer,Integer> stringToTime(String s){
-        Integer hour, minutes;
+    /**
+     * Retorna -1 als dos valors si no és un string acceptable
+     **/
+    public static Pair<Integer, Integer> stringToTime(String s) {
+        int hour, minutes;
         String[] hora = s.split(":");
 
-        if(hora.length != 2){
+        if (hora.length != 2) {
             hour = -1;
             minutes = -1;
-        }
-        else{
-            if (Integer.parseInt(hora[0]) < 0 || Integer.parseInt(hora[0]) > 23){
+        } else {
+            if (Integer.parseInt(hora[0]) < 0 || Integer.parseInt(hora[0]) > 23) {
                 hour = -1;
                 minutes = -1;
-            }
-            else if(Integer.parseInt(hora[1]) < 0 || Integer.parseInt(hora[1]) > 59){
+            } else if (Integer.parseInt(hora[1]) < 0 || Integer.parseInt(hora[1]) > 59) {
                 hour = -1;
                 minutes = -1;
-            }
-            else{
+            } else {
                 hour = Integer.parseInt(hora[0]);
                 minutes = Integer.parseInt(hora[1]);
             }
@@ -525,28 +523,27 @@ public class Funcions {
         return new Pair<>(hour, minutes);
     }
 
-    public static void canviarMesosDeServidor (Collection<GeneralUsage> generalUsages){
-        for (GeneralUsage generalUsage : generalUsages){
+    public static void canviarMesosDeServidor(Collection<GeneralUsage> generalUsages) {
+        for (GeneralUsage generalUsage : generalUsages) {
             generalUsage.month -= 1;
         }
     }
 
-    public static void canviarMesosAServidor (Collection<GeneralUsage> generalUsages){
-        for (GeneralUsage generalUsage : generalUsages){
+    public static void canviarMesosAServidor(Collection<GeneralUsage> generalUsages) {
+        for (GeneralUsage generalUsage : generalUsages) {
             generalUsage.month += 1;
         }
     }
 
-    public static void canviarMesosDeServidor (List<YearEntity> yearList){
-        for (YearEntity yearEntity : yearList){
-            for (MonthEntity monthEntity : yearEntity.months){
+    public static void canviarMesosDeServidor(List<YearEntity> yearList) {
+        for (YearEntity yearEntity : yearList) {
+            for (MonthEntity monthEntity : yearEntity.months) {
                 monthEntity.month -= 1;
             }
         }
     }
 
     public static void closeKeyboard(View view, Activity a) {
-
         // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
             view.setOnTouchListener(new View.OnTouchListener() {
@@ -561,7 +558,7 @@ public class Funcions {
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
                 View innerView = ((ViewGroup) view).getChildAt(i);
-                closeKeyboard(innerView,a);
+                closeKeyboard(innerView, a);
             }
         }
     }
@@ -570,7 +567,7 @@ public class Funcions {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(
                         Activity.INPUT_METHOD_SERVICE);
-        if(inputMethodManager.isAcceptingText()){
+        if (inputMethodManager.isAcceptingText()) {
             inputMethodManager.hideSoftInputFromWindow(
                     activity.getCurrentFocus().getWindowToken(),
                     0
@@ -578,13 +575,13 @@ public class Funcions {
         }
     }
 
-    public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp){
+    public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp) {
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
         Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if (!response.isSuccessful()){
+                if (!response.isSuccessful()) {
                     Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                     toast.show();
                 }
@@ -596,5 +593,10 @@ public class Funcions {
                 toast.show();
             }
         });
+    }
+
+    public static String getFullURL(String url) {
+        if (!url.contains("https://")) return "https://" + url;
+        else return url;
     }
 }

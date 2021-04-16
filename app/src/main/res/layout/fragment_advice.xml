@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.AdviceFragment">
+    tools:context=".ui.support.AdviceFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -162,9 +162,9 @@
                 android:id="@+id/CL_suportButtons"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@id/CL_suport"
                 app:layout_constraintEnd_toEndOf="@id/CL_suport"
-                app:layout_constraintStart_toStartOf="@id/CL_suport">
+                app:layout_constraintStart_toStartOf="@id/CL_suport"
+                app:layout_constraintTop_toBottomOf="@id/CL_suport">
 
                 <Button
                     android:id="@+id/BT_ConsultaPrivada"

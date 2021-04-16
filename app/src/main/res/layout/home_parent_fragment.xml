@@ -13,7 +13,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TabLayout"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/TabLayout"
@@ -23,8 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tabGravity="fill"
-        app:tabMode="fixed">
-    </com.google.android.material.tabs.TabLayout>
+        app:tabMode="fixed"></com.google.android.material.tabs.TabLayout>
 
     <TextView
         android:id="@+id/TV_noFills"
