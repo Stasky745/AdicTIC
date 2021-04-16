@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
@@ -50,7 +51,7 @@ public class SplashScreen extends AppCompatActivity {
                     Call<User> call = todoApi.checkWithToken(Crypt.getAES(token));
                     call.enqueue(new Callback<User>() {
                         @Override
-                        public void onResponse(Call<User> call, Response<User> response) {
+                        public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
 
                             if (response.isSuccessful()) {
                                 if (TodoApp.getTutor() == 1)
@@ -59,6 +60,8 @@ public class SplashScreen extends AppCompatActivity {
                                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                                 else {
                                     User usuari = response.body();
+                                    assert usuari != null;
+
                                     TodoApp.setTutor(usuari.tutor);
                                     TodoApp.setIDTutor(usuari.id);
                                     if (usuari.tutor == 0 && !usuari.llista.isEmpty()) {
@@ -88,7 +91,7 @@ public class SplashScreen extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<User> call, Throwable t) {
+                        public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                             Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                             toast.show();
                         }

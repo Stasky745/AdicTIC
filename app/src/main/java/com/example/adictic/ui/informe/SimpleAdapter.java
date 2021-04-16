@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
@@ -17,14 +18,14 @@ import java.util.List;
 import java.util.Map;
 
 public class SimpleAdapter extends RecyclerView.Adapter<SimpleAdapter.MyViewHolder> {
-    private Map<String, Long> mDataset;
+    private final Map<String, Long> mDataset;
 
-    private Context context;
+    private final Context context;
 
     /**
      * Si tipus = 0 s'imprimeix el long del map; tipus = 1 es passa a "x hores y minuts"
      **/
-    private int tipus;
+    private final int tipus;
 
     public SimpleAdapter(Map<String, Long> map, int t, Context ctx) {
         mDataset = map;
@@ -32,13 +33,13 @@ public class SimpleAdapter extends RecyclerView.Adapter<SimpleAdapter.MyViewHold
         context = ctx;
     }
 
+    @NonNull
     @Override
     public SimpleAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.simple_rv_item, parent, false);
 
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
+        return new MyViewHolder(v);
     }
 
     @Override

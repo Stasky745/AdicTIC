@@ -11,6 +11,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
@@ -31,7 +32,6 @@ import retrofit2.Response;
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
 
-    public static final String TAG = "Login";
     static Login login;
     TodoApi mTodoService;
 
@@ -52,12 +52,12 @@ public class Login extends AppCompatActivity {
         Button b_log = findViewById(R.id.login_button);
         TextView b_reg = findViewById(R.id.TV_register);
         // This is the listener that will be used when the user presses the "Login" button
-        b_log.setOnClickListener((View.OnClickListener) v -> {
+        b_log.setOnClickListener(v -> {
             final EditText u = Login.this.findViewById(R.id.login_username);
             final EditText p = Login.this.findViewById(R.id.login_password);
             final RadioButton tutor = findViewById(R.id.RB_tutor);
             final RadioButton tutelat = findViewById(R.id.RB_tutelat);
-            final TextView noTypeDevice = (TextView) findViewById(R.id.TV_noTypeDevice);
+            final TextView noTypeDevice = findViewById(R.id.TV_noTypeDevice);
 
             if (u.getText().length() == 0) {
                 u.setHint(getString(R.string.error_noUsername));
@@ -120,10 +120,12 @@ public class Login extends AppCompatActivity {
 
         call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
+            public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful()) {
 
                     User usuari = response.body();
+                    assert usuari != null;
+
                     TodoApp.setTutor(usuari.tutor);
                     TodoApp.setIDTutor(usuari.id);
                     if (usuari.tutor == 0) {
@@ -137,11 +139,10 @@ public class Login extends AppCompatActivity {
                         i.putExtras(extras);
 
                         Login.this.startActivity(i);
-                        Login.this.finish();
                     } else {
                         Login.this.startActivity(new Intent(Login.this, NavActivity.class));
-                        Login.this.finish();
                     }
+                    Login.this.finish();
                 } else {
                     Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
                     toast.show();
@@ -149,7 +150,7 @@ public class Login extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                 Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                 toast.show();
             }

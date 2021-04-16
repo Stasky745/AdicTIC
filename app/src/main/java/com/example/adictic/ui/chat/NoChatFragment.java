@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +46,7 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
-        mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
+        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
         getArguments().getBoolean("dubte");
@@ -77,8 +78,8 @@ public class NoChatFragment extends Fragment {
 
             builder.setPositiveButton(R.string.accept, (dialogInterface, i) -> {
                 Dubte newDubte = new Dubte();
-                newDubte.titol = TIET_dubteTitol.getText().toString();
-                newDubte.descripcio = TIET_dubteDesc.getText().toString();
+                newDubte.titol = Objects.requireNonNull(TIET_dubteTitol.getText()).toString();
+                newDubte.descripcio = Objects.requireNonNull(TIET_dubteDesc.getText()).toString();
                 newDubte.localitzacio = new ArrayList<>();
 
                 for (Integer idInt : CG_localitats.getCheckedChipIds())
@@ -87,7 +88,7 @@ public class NoChatFragment extends Fragment {
                 Call<String> call = mTodoService.postDubte(newDubte);
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_SHORT).show();
                         } else {
@@ -97,7 +98,7 @@ public class NoChatFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                         Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
                         toast.show();
                     }
@@ -113,7 +114,7 @@ public class NoChatFragment extends Fragment {
         call.enqueue(new Callback<Collection<Localitzacio>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<Localitzacio>> call, @NonNull Response<Collection<Localitzacio>> response) {
-                if (response.isSuccessful()) setLocalitzacions(response.body());
+                if (response.isSuccessful() && response.body() != null) setLocalitzacions(response.body());
                 else {
                     Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                     toast.show();

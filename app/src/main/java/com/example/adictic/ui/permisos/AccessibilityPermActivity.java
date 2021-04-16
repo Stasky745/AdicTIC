@@ -13,14 +13,13 @@ import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 
 public class AccessibilityPermActivity extends Activity {
-    protected static final int REQUEST_ENABLE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.accessibility_perm_info);
 
-        Button bt_okay = (Button) findViewById(R.id.BT_okAccessibilityPerm);
+        Button bt_okay = findViewById(R.id.BT_okAccessibilityPerm);
 
         if (Funcions.isAccessibilitySettingsOn(this)) {
             this.startActivity(new Intent(this, NavActivity.class));

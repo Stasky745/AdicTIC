@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
@@ -112,23 +113,23 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         listView = findViewById(R.id.pkg_list);
 
-        SP_sort = (Spinner) findViewById(R.id.typeSpinner);
+        SP_sort = findViewById(R.id.typeSpinner);
 
         SP_sort.setOnItemSelectedListener(this);
 
-        CH_singleDate = (Chip) findViewById(R.id.CH_singleDate);
-        CH_rangeDates = (Chip) findViewById(R.id.CH_rangeDates);
+        CH_singleDate = findViewById(R.id.CH_singleDate);
+        CH_rangeDates = findViewById(R.id.CH_rangeDates);
 
-        TV_initialDate = (TextView) findViewById(R.id.TV_initialDate);
-        TV_finalDate = (TextView) findViewById(R.id.TV_finalDate);
+        TV_initialDate = findViewById(R.id.TV_initialDate);
+        TV_finalDate = findViewById(R.id.TV_finalDate);
 
-        TV_error = (TextView) findViewById(R.id.TV_emptyList);
+        TV_error = findViewById(R.id.TV_emptyList);
         TV_error.setVisibility(View.GONE);
 
-        BT_initialDate = (Button) findViewById(R.id.BT_initialDate);
-        BT_finalDate = (Button) findViewById(R.id.BT_finalDate);
+        BT_initialDate = findViewById(R.id.BT_initialDate);
+        BT_finalDate = findViewById(R.id.BT_finalDate);
 
-        chipGroup = (ChipGroup) findViewById(R.id.CG_dateChips);
+        chipGroup = findViewById(R.id.CG_dateChips);
 
 
         daysMap = new HashMap<>();
@@ -188,7 +189,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
-            public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
+            public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
@@ -199,7 +200,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             }
 
             @Override
-            public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
+            public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
                 showError();
             }
         });
@@ -297,7 +298,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
-            public void onResponse(Call<List<YearEntity>> call, Response<List<YearEntity>> response) {
+            public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
@@ -320,7 +321,7 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             }
 
             @Override
-            public void onFailure(Call<List<YearEntity>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<YearEntity>> call, @NonNull Throwable t) {
                 showError();
             }
         });
@@ -429,18 +430,17 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             long elapsedMinutes = totalTime / minutesInMilli;
             totalTime = totalTime % minutesInMilli;
 
+            String text;
             if (elapsedDays == 0) {
                 if (elapsedHours == 0) {
-                    String text = elapsedMinutes + getString(R.string.minutes);
-                    TV_totalUse.setText(text);
+                    text = elapsedMinutes + getString(R.string.minutes);
                 } else {
-                    String text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
-                    TV_totalUse.setText(text);
+                    text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
                 }
             } else {
-                String text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
-                TV_totalUse.setText(text);
+               text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
             }
+            TV_totalUse.setText(text);
 
             // Sort list
             mAppLabelComparator = new AppNameComparator();
@@ -514,15 +514,17 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 long elapsedMinutes = totalTime / minutesInMilli;
                 totalTime = totalTime % minutesInMilli;
 
+                String time;
                 if (elapsedDays == 0) {
                     if (elapsedHours == 0) {
-                        holder.usageTime.setText(elapsedMinutes + getString(R.string.minutes_tag));
+                        time = elapsedMinutes + getString(R.string.minutes_tag);
                     } else {
-                        holder.usageTime.setText(elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag));
+                        time = elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag);
                     }
                 } else {
-                    holder.usageTime.setText(elapsedDays + getString(R.string.days_tag) + elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag));
+                    time = elapsedDays + getString(R.string.days_tag) + elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag);
                 }
+                holder.usageTime.setText(time);
 
 //                holder.usageTime.setText(
 //                        DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
