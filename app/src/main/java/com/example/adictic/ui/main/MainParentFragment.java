@@ -66,7 +66,7 @@ public class MainParentFragment extends Fragment {
 
             String pkgName = intent.getStringExtra("pkgName");
 
-            Funcions.setIconDrawable(getContext(), pkgName, IV_liveIcon);
+            Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
 
             currentApp.setText(intent.getStringExtra("appName"));
         }
@@ -83,9 +83,9 @@ public class MainParentFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.main_parent, container, false);
-        mTodoService = ((TodoApp) getActivity().getApplication()).getAPI();
+        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
-        IV_liveIcon = (ImageView) root.findViewById(R.id.IV_CurrentApp);
+        IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         setButtons();
         getStats();
@@ -100,7 +100,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        Button BT_BlockApps = (Button) root.findViewById(R.id.BT_ConsultaPrivada);
+        Button BT_BlockApps = root.findViewById(R.id.BT_ConsultaPrivada);
         BT_BlockApps.setOnClickListener(blockApps);
 
         View.OnClickListener informe = v -> {
@@ -109,7 +109,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        Button BT_Informe = (Button) root.findViewById(R.id.BT_ContingutInformatiu);
+        Button BT_Informe = root.findViewById(R.id.BT_ContingutInformatiu);
         BT_Informe.setOnClickListener(informe);
 
         View.OnClickListener appUsage = v -> {
@@ -118,7 +118,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        Button BT_appUse = (Button) root.findViewById(R.id.BT_faqs);
+        Button BT_appUse = root.findViewById(R.id.BT_faqs);
         BT_appUse.setOnClickListener(appUsage);
 
         View.OnClickListener horaris = v -> {
@@ -127,7 +127,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        Button BT_horaris = (Button) root.findViewById(R.id.BT_oficines);
+        Button BT_horaris = root.findViewById(R.id.BT_oficines);
         BT_horaris.setOnClickListener(horaris);
 
         View.OnClickListener geoloc = v -> {
@@ -136,7 +136,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        ConstraintLayout CL_Geoloc = (ConstraintLayout) root.findViewById(R.id.CL_geoloc);
+        ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         CL_Geoloc.setOnClickListener(geoloc);
 
 
@@ -146,11 +146,11 @@ public class MainParentFragment extends Fragment {
         } else {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
             currentApp.setText(getString(R.string.title_activity_splash_screen));
-            String pkgName = getActivity().getApplicationContext().getPackageName();
-            Funcions.setIconDrawable(getContext(), pkgName, IV_liveIcon);
+            String pkgName = requireActivity().getApplicationContext().getPackageName();
+            Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
         }
 
-        Button blockButton = (Button) root.findViewById(R.id.BT_BlockDevice);
+        Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
         if (TodoApp.getTutor() == 1) {
@@ -163,101 +163,105 @@ public class MainParentFragment extends Fragment {
                 } else call = mTodoService.unblockChild(idChildSelected);
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
+                            if (b.getText().equals(getString(R.string.block_device)))
+                                b.setText(getString(R.string.unblock_device));
+                            else b.setText(getString(R.string.block_device));
                         }
+                        else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
                 });
-                if (b.getText().equals(getString(R.string.block_device)))
-                    b.setText(getString(R.string.unblock_device));
-                else b.setText(getString(R.string.block_device));
             });
         }
 
-        Button nitButton = (Button) root.findViewById(R.id.BT_nits);
+        Button nitButton = root.findViewById(R.id.BT_nits);
         nitButton.setOnClickListener(v -> {
             Intent i = new Intent(getActivity(), HorarisActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         });
 
-        Button BT_FreeTime = (Button) root.findViewById(R.id.BT_FreeTime);
+        Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
         if (TodoApp.getTutor() == 1) {
             BT_FreeTime.setVisibility(View.VISIBLE);
             BT_FreeTime.setOnClickListener(v -> {
-                Call<String> call = null;
+                Call<String> call;
                 if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
                     call = mTodoService.blockChild(idChildSelected);
                 } else call = mTodoService.unblockChild(idChildSelected);
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
+                            if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
+                                BT_FreeTime.setText(getString(R.string.stop_free_time));
+                            else BT_FreeTime.setText(getString(R.string.free_time));
                         }
+                        else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
                 });
-                if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
-                    BT_FreeTime.setText(getString(R.string.stop_free_time));
-                else BT_FreeTime.setText(getString(R.string.free_time));
             });
         }
 
-        ConstraintLayout CL_info = (ConstraintLayout) root.findViewById(R.id.CL_info);
-        ConstraintLayout CL_infoButtons = (ConstraintLayout) root.findViewById(R.id.CL_infoButtons);
-        CL_info.setOnClickListener((View.OnClickListener) v -> {
+        ConstraintLayout CL_info = root.findViewById(R.id.CL_info);
+        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_infoButtons);
+        CL_info.setOnClickListener(v -> {
             if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_infoButtons.setVisibility(View.GONE);
 
-                ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
-        /** Posar icona de desplegar en la posició correcta **/
+        /* Posar icona de desplegar en la posició correcta **/
         if (CL_infoButtons.getVisibility() == View.GONE) {
-            ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+            ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
         } else {
-            ImageView IV_openInfo = (ImageView) root.findViewById(R.id.IV_openInfo);
+            ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
         }
 
-        ConstraintLayout CL_limit = (ConstraintLayout) root.findViewById(R.id.CL_suport);
-        ConstraintLayout CL_limitButtons = (ConstraintLayout) root.findViewById(R.id.CL_suportButtons);
-        CL_limit.setOnClickListener((View.OnClickListener) v -> {
+        ConstraintLayout CL_limit = root.findViewById(R.id.CL_suport);
+        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_suportButtons);
+        CL_limit.setOnClickListener(v -> {
             if (CL_limitButtons.getVisibility() == View.GONE) {
                 CL_limitButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
                 IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_limitButtons.setVisibility(View.GONE);
 
-                ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
                 IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
-        /** Posar icona de desplegar en la posició correcta **/
+        /* Posar icona de desplegar en la posició correcta **/
         if (CL_limitButtons.getVisibility() == View.GONE) {
-            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+            ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
         } else {
-            ImageView IV_openLimit = (ImageView) root.findViewById(R.id.IV_openSuport);
+            ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
     }
@@ -267,25 +271,25 @@ public class MainParentFragment extends Fragment {
         Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
-            public void onResponse(Call<Collection<GeneralUsage>> call, Response<Collection<GeneralUsage>> response) {
+            public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> collection = response.body();
                     Funcions.canviarMesosDeServidor(collection);
                     makeGraph(collection);
                 } else {
-                    Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<Collection<GeneralUsage>> call, Throwable t) {
-                Toast.makeText(getActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+                Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void makeGraph(Collection<GeneralUsage> genericAppUsage) {
-        pieChart = (PieChart) root.findViewById(R.id.Ch_Pie);
+        pieChart = root.findViewById(R.id.Ch_Pie);
         long totalUsageTime = 0;
 
         Map<String, Long> mapUsage = new HashMap<>();
@@ -361,7 +365,7 @@ public class MainParentFragment extends Fragment {
             public void onValueSelected(Entry e, Highlight h) {
                 final PieEntry pe = (PieEntry) e;
 
-                TextView TV_pieApp = (TextView) root.findViewById(R.id.TV_PieApp);
+                TextView TV_pieApp = root.findViewById(R.id.TV_PieApp);
                 TV_pieApp.setText(pe.getLabel());
 
 
@@ -375,7 +379,7 @@ public class MainParentFragment extends Fragment {
 
             @Override
             public void onNothingSelected() {
-                TextView TV_pieApp = (TextView) root.findViewById(R.id.TV_PieApp);
+                TextView TV_pieApp = root.findViewById(R.id.TV_PieApp);
                 TV_pieApp.setText(getResources().getString(R.string.press_pie_chart));
                 pieChart.setCenterText("");
             }
@@ -386,7 +390,7 @@ public class MainParentFragment extends Fragment {
     @Override
     protected void finalize() throws Throwable {
         if (TodoApp.getTutor() == 1)
-            Funcions.askChildForLiveApp(getContext(), idChildSelected, false);
+            Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
         super.finalize();
     }
 }

@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -67,17 +66,17 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
-        ET_Search = (EditText) findViewById(R.id.ET_search);
+        ET_Search = findViewById(R.id.ET_search);
 
         selectedApps = new ArrayList<>();
-        RV_appList = (RecyclerView) findViewById(R.id.RV_Apps);
+        RV_appList = findViewById(R.id.RV_Apps);
         RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
-        BT_blockNow = (Button) findViewById(R.id.BT_blockNow);
+        BT_blockNow = findViewById(R.id.BT_blockNow);
         BT_blockNow.setVisibility(View.GONE);
-        BT_limitApp = (Button) findViewById(R.id.BT_limitUse);
+        BT_limitApp = findViewById(R.id.BT_limitUse);
         BT_limitApp.setVisibility(View.GONE);
-        BT_unlock = (Button) findViewById(R.id.BT_unlock);
+        BT_unlock = findViewById(R.id.BT_unlock);
         BT_unlock.setVisibility(View.GONE);
 
         if (TodoApp.getTutor() == 1) setButtons();
@@ -98,12 +97,12 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) setRecyclerView();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     }
                 });
             }
@@ -123,12 +122,12 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) setRecyclerView();
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     }
                 });
             }
@@ -136,27 +135,24 @@ public class BlockAppsActivity extends AppCompatActivity {
     }
 
     private void useTimePicker() {
-        TimePickerDialog.OnTimeSetListener timeListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                final long time = (hourOfDay * 60 * 60 * 1000) + (minute * 60 * 1000);
+        TimePickerDialog.OnTimeSetListener timeListener = (view, hourOfDay, minute) -> {
+            final long time = (hourOfDay * 60 * 60 * 1000) + (minute * 60 * 1000);
 
-                BlockList bList = new BlockList();
-                bList.apps = selectedApps;
-                bList.time = time;
-                Call<String> call = mTodoService.limitApps(idChild, bList);
+            BlockList bList = new BlockList();
+            bList.apps = selectedApps;
+            bList.time = time;
+            Call<String> call = mTodoService.limitApps(idChild, bList);
 
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()) setRecyclerView();
-                    }
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    if (response.isSuccessful()) setRecyclerView();
+                }
 
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                    }
-                });
-            }
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                }
+            });
         };
 
         TimePickerDialog timePicker = new TimePickerDialog(this, R.style.datePicker, timeListener, 0, 0, true);
@@ -206,7 +202,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         call.enqueue(new Callback<Collection<BlockAppEntity>>() {
             @Override
-            public void onResponse(Call<Collection<BlockAppEntity>> call, Response<Collection<BlockAppEntity>> response) {
+            public void onResponse(@NonNull Call<Collection<BlockAppEntity>> call, @NonNull Response<Collection<BlockAppEntity>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     blockAppList = new ArrayList<>(response.body());
 
@@ -219,7 +215,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Collection<BlockAppEntity>> call, Throwable t) {
+            public void onFailure(@NonNull Call<Collection<BlockAppEntity>> call, @NonNull Throwable t) {
 
             }
         });
@@ -287,16 +283,13 @@ public class BlockAppsActivity extends AppCompatActivity {
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
 
-            holder.mRootView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (selectedApps.contains(blockedApp.pkgName)) {
-                        selectedApps.remove(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                    } else {
-                        selectedApps.add(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
-                    }
+            holder.mRootView.setOnClickListener(v -> {
+                if (selectedApps.contains(blockedApp.pkgName)) {
+                    selectedApps.remove(blockedApp.pkgName);
+                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                } else {
+                    selectedApps.add(blockedApp.pkgName);
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
                 }
             });
         }
@@ -328,14 +321,14 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                 mRootView = itemView;
 
-                IV_appIcon = (ImageView) itemView.findViewById(R.id.IV_appIcon);
-                IV_block = (ImageView) itemView.findViewById(R.id.IV_block);
+                IV_appIcon = itemView.findViewById(R.id.IV_appIcon);
+                IV_block = itemView.findViewById(R.id.IV_block);
 
-                TV_appName = (TextView) itemView.findViewById(R.id.TV_appName);
-                TV_appMaxTime = (TextView) itemView.findViewById(R.id.TV_appMaxTime);
-                TV_category = (TextView) itemView.findViewById(R.id.TV_Category);
+                TV_appName = itemView.findViewById(R.id.TV_appName);
+                TV_appMaxTime = itemView.findViewById(R.id.TV_appMaxTime);
+                TV_category = itemView.findViewById(R.id.TV_Category);
 
-                TV_hPerDay = (TextView) itemView.findViewById(R.id.TV_hPerDay);
+                TV_hPerDay = itemView.findViewById(R.id.TV_hPerDay);
             }
         }
     }

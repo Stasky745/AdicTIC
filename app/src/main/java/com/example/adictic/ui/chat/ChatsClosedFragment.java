@@ -1,6 +1,5 @@
 package com.example.adictic.ui.chat;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -43,13 +40,13 @@ public class ChatsClosedFragment extends Fragment {
     public void onStart() {
 
         super.onStart();
-        mTodoService = ((TodoApp) this.getActivity().getApplication()).getAPI();
+        mTodoService = ((TodoApp) this.requireActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
         chatsList = getArguments().getParcelableArrayList("list");
 
-        mRecyclerView = getView().findViewById(R.id.RV_chats_closed);
-        ClosedChatsListAdapter mAdapter = new ClosedChatsListAdapter(this.getActivity().getApplication());
+        mRecyclerView = requireView().findViewById(R.id.RV_chats_closed);
+        ClosedChatsListAdapter mAdapter = new ClosedChatsListAdapter(this.requireActivity().getApplication());
         mAdapter.setList(chatsList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -63,8 +60,8 @@ public class ChatsClosedFragment extends Fragment {
         ChatInfoViewHolder(View itemView) {
             super(itemView);
             view = itemView;
-            name = (TextView) itemView.findViewById(R.id.TV_chat_info);
-            message = (TextView) itemView.findViewById(R.id.TV_lastMessage);
+            name = itemView.findViewById(R.id.TV_chat_info);
+            message = itemView.findViewById(R.id.TV_lastMessage);
         }
     }
 
@@ -109,12 +106,6 @@ public class ChatsClosedFragment extends Fragment {
         public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
 
             super.onAttachedToRecyclerView(recyclerView);
-        }
-
-        // Insert a new item to the RecyclerView
-        public void insert(int position, ChatInfo data) {
-            list.add(position, data);
-            notifyItemInserted(position);
         }
 
         // Remove a RecyclerView item containing the Data object

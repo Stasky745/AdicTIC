@@ -26,7 +26,7 @@ public class AppUsagePermActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_usage_perm_info);
 
-        Button bt_okay = (Button) findViewById(R.id.BT_okAppUsagePerm);
+        Button bt_okay = findViewById(R.id.BT_okAppUsagePerm);
 
         bt_okay.setOnClickListener(v -> AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
     }

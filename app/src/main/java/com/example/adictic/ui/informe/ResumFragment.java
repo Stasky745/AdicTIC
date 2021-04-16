@@ -102,7 +102,7 @@ public class ResumFragment extends Fragment {
 
     private void setAccessTries(View root) {
         if (intentsAcces.isEmpty()) {
-            TextView TV_label = (TextView) root.findViewById(R.id.TV_clickedBlockedAppsLabel);
+            TextView TV_label = root.findViewById(R.id.TV_clickedBlockedAppsLabel);
             TV_label.setVisibility(View.GONE);
             RV_clickedBlockedApps.setVisibility(View.GONE);
             TV_clickedBlockedApps.setText(getString(R.string.intents_acces_buit));
@@ -115,7 +115,7 @@ public class ResumFragment extends Fragment {
     private void setUseApps(View root) {
         if (tempsApps.isEmpty()) {
             TV_appUsageInfo.setText(getString(R.string.us_apps_buit));
-            TextView TV_appUsageLabel = (TextView) root.findViewById(R.id.TV_overuseAppsLabel);
+            TextView TV_appUsageLabel = root.findViewById(R.id.TV_overuseAppsLabel);
             TV_appUsageLabel.setVisibility(View.GONE);
             RV_abusedApps.setVisibility(View.GONE);
         } else {
@@ -200,10 +200,10 @@ public class ResumFragment extends Fragment {
     }
 
     private void setViews(View root) {
-        TV_intro = (TextView) root.findViewById(R.id.TV_intro);
-        TV_appUsageInfo = (TextView) root.findViewById(R.id.TV_appUsageInfo);
-        TV_clickedBlockedApps = (TextView) root.findViewById(R.id.TV_clickedBlockedAppsInfo);
-        TV_resum = (TextView) root.findViewById(R.id.TV_resum);
+        TV_intro = root.findViewById(R.id.TV_intro);
+        TV_appUsageInfo = root.findViewById(R.id.TV_appUsageInfo);
+        TV_clickedBlockedApps = root.findViewById(R.id.TV_clickedBlockedAppsInfo);
+        TV_resum = root.findViewById(R.id.TV_resum);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             TV_intro.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
             TV_appUsageInfo.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
@@ -211,19 +211,19 @@ public class ResumFragment extends Fragment {
             TV_resum.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
         }
 
-        BT_appsUsage = (Button) root.findViewById(R.id.BT_appsUsage);
-        BT_clickedBlockedApps = (Button) root.findViewById(R.id.BT_clickedBlockedApps);
-        BT_resum = (Button) root.findViewById(R.id.BT_resum);
-        BT_informacio = (Button) root.findViewById(R.id.BT_informacio);
+        BT_appsUsage = root.findViewById(R.id.BT_appsUsage);
+        BT_clickedBlockedApps = root.findViewById(R.id.BT_clickedBlockedApps);
+        BT_resum = root.findViewById(R.id.BT_resum);
+        BT_informacio = root.findViewById(R.id.BT_informacio);
 
         setButtons();
 
-        CL_appsUsage = (ConstraintLayout) root.findViewById(R.id.CL_appsUsage);
-        CL_clickedBlockedApps = (ConstraintLayout) root.findViewById(R.id.CL_clickedBlockedApps);
-        CL_resum = (ConstraintLayout) root.findViewById(R.id.CL_resum);
+        CL_appsUsage = root.findViewById(R.id.CL_appsUsage);
+        CL_clickedBlockedApps = root.findViewById(R.id.CL_clickedBlockedApps);
+        CL_resum = root.findViewById(R.id.CL_resum);
 
-        RV_abusedApps = (RecyclerView) root.findViewById(R.id.RV_abusedApps);
-        RV_clickedBlockedApps = (RecyclerView) root.findViewById(R.id.RV_clickedBlockedApps);
+        RV_abusedApps = root.findViewById(R.id.RV_abusedApps);
+        RV_clickedBlockedApps = root.findViewById(R.id.RV_clickedBlockedApps);
 
     }
 }
