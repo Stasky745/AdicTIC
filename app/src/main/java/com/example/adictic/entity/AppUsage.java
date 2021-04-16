@@ -10,7 +10,7 @@ public class AppUsage {
     @Override
     public boolean equals(@Nullable Object obj) {
         AppUsage au = (AppUsage) obj;
-        if(au == null || getClass() != obj.getClass()) return false;
+        if (au == null || getClass() != obj.getClass()) return false;
         return app.pkgName.equals(au.app.pkgName);
     }
 }

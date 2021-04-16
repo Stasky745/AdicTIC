@@ -7,9 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.TodoApp;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -33,25 +33,26 @@ public class FinishBlockEventWorker extends Worker {
         int dayJump;
 
         /* Si el següent dia és a la propera setmana **/
-        if(currentDay == listDays.get(listDays.size()-1)) dayJump = 7 - (currentDay - listDays.get(0));
-        /* Si el següent dia és de la mateixa setmana **/
-        else{
-            int nextDay = listDays.get(listDays.indexOf(currentDay)+1);
+        if (currentDay == listDays.get(listDays.size() - 1))
+            dayJump = 7 - (currentDay - listDays.get(0));
+            /* Si el següent dia és de la mateixa setmana **/
+        else {
+            int nextDay = listDays.get(listDays.indexOf(currentDay) + 1);
             dayJump = nextDay - currentDay;
         }
 
         String eventStart = event.start;
-        Pair<Integer,Integer> timeStart = Funcions.stringToTime(eventStart);
+        Pair<Integer, Integer> timeStart = Funcions.stringToTime(eventStart);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE,dayJump);
-        cal.set(Calendar.HOUR_OF_DAY,timeStart.first);
-        cal.set(Calendar.MINUTE,timeStart.second);
+        cal.add(Calendar.DATE, dayJump);
+        cal.set(Calendar.HOUR_OF_DAY, timeStart.first);
+        cal.set(Calendar.MINUTE, timeStart.second);
 
         long delay = cal.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
 
         TodoApp.removeBlockEvent(name);
 
-        Funcions.runStartBlockEventWorker(getApplicationContext(),name,delay);
+        Funcions.runStartBlockEventWorker(getApplicationContext(), name, delay);
 
         return Result.success();
     }

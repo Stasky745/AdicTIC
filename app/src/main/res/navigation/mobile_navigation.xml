@@ -5,45 +5,16 @@
     app:startDestination="@+id/nav_mainParent">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.example.adictic.fragment.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home">
-
-        <action
-            android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
-    </fragment>
-    <fragment
-        android:id="@+id/nav_home_second"
-        android:name="com.example.adictic.ui.home.HomeSecondFragment"
-        android:label="@string/home_second"
-        tools:layout="@layout/fragment_home_second">
-        <action
-            android:id="@+id/action_HomeSecondFragment_to_HomeFragment"
-            app:destination="@id/nav_home" />
-
-        <argument
-            android:name="myArg"
-            app:argType="string" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_advice"
-        android:name="com.example.adictic.fragment.AdviceFragment"
+        android:name="com.example.adictic.ui.support.AdviceFragment"
         android:label="@string/menu_advice"
         tools:layout="@layout/fragment_advice" />
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.example.adictic.fragment.SettingsFragment"
+        android:name="com.example.adictic.ui.main.SettingsFragment"
         android:label="@string/menu_settings" />
     <fragment
-        android:id="@+id/nav_help"
-        android:name="com.example.adictic.fragment.HomeFragment"
-        android:label="@string/menu_help"
-        tools:layout="@layout/fragment_home" />
-    <fragment
         android:id="@+id/nav_mainParent"
-        android:name="com.example.adictic.fragment.HomeParentFragment"
+        android:name="com.example.adictic.ui.main.HomeParentFragment"
         android:label="@string/menu_home" />
 </navigation>
