@@ -247,5 +247,25 @@
 
     <string name="spanish">Castellà</string>
     <string name="catalan">Català</string>
+    <string name="send">Enviar</string>
+    <string name="enter_message">Escriu un missatge</string>
+    <string name="tancar_xat">Tancar xat.</string>
+    <string name="menu_permisos">Donar permisos per veure les dades.</string>
+    <string name="close_chat">Tancar Xat</string>
+    <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
+    <string name="cancel">Cancel·lar</string>
+    <string name="treure_acces_titol">Treure Accés</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="donar_acces_titol">Donar Accés</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
+    <string name="send_dubte">Enviar Consulta</string>
+    <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
+    <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>
+    <string name="dubte_success">Consulta enviada correctament.</string>
+    <string name="links">Enllaços</string>
+    <string name="profile_pic">Foto de Perfil</string>
+    <string name="closed_chat">La conversa ha finalitzat.</string>
+    <string name="veure_oficina">Veure l\'oficina en el mapa</string>
 
 </resources>

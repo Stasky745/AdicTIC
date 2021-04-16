@@ -8,8 +8,8 @@ public class BlockAppEntity implements Comparable<BlockAppEntity> {
 
     @Override
     public int compareTo(BlockAppEntity e) {
-        if(this.appTime >= 0 && e.appTime < 0) return -1;
-        else if(this.appTime < 0 && e.appTime >= 0) return 1;
+        if (this.appTime >= 0 && e.appTime < 0) return -1;
+        else if (this.appTime < 0 && e.appTime >= 0) return 1;
         else return this.appName.compareTo(e.appName);
     }
 }

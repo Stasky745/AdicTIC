@@ -4,6 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class TimeDay implements Parcelable {
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<TimeDay> CREATOR = new Parcelable.Creator<TimeDay>() {
+        @Override
+        public TimeDay createFromParcel(Parcel in) {
+            return new TimeDay(in);
+        }
+
+        @Override
+        public TimeDay[] newArray(int size) {
+            return new TimeDay[size];
+        }
+    };
     public String monday;
     public String tuesday;
     public String wednesday;
@@ -12,7 +24,7 @@ public class TimeDay implements Parcelable {
     public String saturday;
     public String sunday;
 
-    public TimeDay(){
+    public TimeDay() {
         monday = "";
         tuesday = "";
         wednesday = "";
@@ -20,16 +32,6 @@ public class TimeDay implements Parcelable {
         friday = "";
         saturday = "";
         sunday = "";
-    }
-
-    public boolean isEmpty(){
-        if(!monday.equals("")) return false;
-        else if(!tuesday.equals("")) return false;
-        else if(!wednesday.equals("")) return false;
-        else if(!thursday.equals("")) return false;
-        else if(!friday.equals("")) return false;
-        else if(!saturday.equals("")) return false;
-        else return sunday.equals("");
     }
 
     protected TimeDay(Parcel in) {
@@ -40,6 +42,16 @@ public class TimeDay implements Parcelable {
         friday = in.readString();
         saturday = in.readString();
         sunday = in.readString();
+    }
+
+    public boolean isEmpty() {
+        if (!monday.equals("")) return false;
+        else if (!tuesday.equals("")) return false;
+        else if (!wednesday.equals("")) return false;
+        else if (!thursday.equals("")) return false;
+        else if (!friday.equals("")) return false;
+        else if (!saturday.equals("")) return false;
+        else return sunday.equals("");
     }
 
     @Override
@@ -57,17 +69,4 @@ public class TimeDay implements Parcelable {
         dest.writeString(saturday);
         dest.writeString(sunday);
     }
-
-    @SuppressWarnings("unused")
-    public static final Parcelable.Creator<TimeDay> CREATOR = new Parcelable.Creator<TimeDay>() {
-        @Override
-        public TimeDay createFromParcel(Parcel in) {
-            return new TimeDay(in);
-        }
-
-        @Override
-        public TimeDay[] newArray(int size) {
-            return new TimeDay[size];
-        }
-    };
 }
