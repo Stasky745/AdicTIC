@@ -16,7 +16,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
     private Collection<GeneralUsage> genericAppUsage;
     private Map<String, Long> timesBlockedMap;
 
-    private long totalTime, totalUsageTime;
+    private long totalUsageTime;
 
     private int age;
 
@@ -40,8 +40,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
         timesBlockedMap = map;
     }
 
-    void setTimes(long tT, long tUT) {
-        totalTime = tT;
+    void setTimes(long tUT) {
         totalUsageTime = tUT;
     }
 
@@ -50,7 +49,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if (position == 0) return new GraphsFragment(childId, genericAppUsage);
         else
-            return new ResumFragment(genericAppUsage, totalTime, totalUsageTime, age, timesBlockedMap);
+            return new ResumFragment(genericAppUsage, totalUsageTime, age, timesBlockedMap);
     }
 
     @Override
