@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,7 +18,6 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -35,7 +36,7 @@ public class GeoLocWorker extends Worker {
     private final FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
-
+    float accuracy = 0;
 
     public GeoLocWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -55,13 +56,10 @@ public class GeoLocWorker extends Worker {
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener((Activity) mContext, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            currentLocation = new GeoPoint(location);
-                        }
+                .addOnSuccessListener((Activity) mContext, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        currentLocation = new GeoPoint(location);
                     }
                 });
 
@@ -69,7 +67,13 @@ public class GeoLocWorker extends Worker {
             enviarLoc();
             return Result.success();
         } else if (isNetworkEnabled) {
-            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, null);
+            MyLocationListener myLocationListener = new MyLocationListener();
+
+            float oldAccuracy = 100;
+            while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
+
+            locationManager.removeUpdates(myLocationListener);
 
             Log.d(TAG, "Network Enabled");
 
@@ -81,7 +85,13 @@ public class GeoLocWorker extends Worker {
             enviarLoc();
             return Result.success();
         } else if (isGPSEnabled) {
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, null);
+            MyLocationListener myLocationListener = new MyLocationListener();
+
+            float oldAccuracy = 100;
+            while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
+
+            locationManager.removeUpdates(myLocationListener);
 
             Log.d(TAG, "GPS Enabled");
 
@@ -107,13 +117,31 @@ public class GeoLocWorker extends Worker {
         retrofit2.Call<String> call = mTodoService.postCurrentLocation(TodoApp.getIDChild(), fill);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
             }
         });
 
+    }
+
+    class MyLocationListener implements LocationListener {
+
+        public void onLocationChanged(Location location) {
+            accuracy = location.getAccuracy();
+            currentLocation = new GeoPoint(location);
+            //displayMyCurrentLocationOverlay();
+        }
+
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
     }
 }

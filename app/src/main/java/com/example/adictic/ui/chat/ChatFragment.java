@@ -26,11 +26,12 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.ChatInfo;
-import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
 import com.example.adictic.util.TodoApp;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class ChatFragment extends Fragment {
             um.senderId = intent.getLongExtra("senderId", 0);
             mMessageAdapter.add(um);
             if (!active) {
-                EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+                EditText chatbox = view.findViewById(R.id.edittext_chatbox);
                 chatbox.setEnabled(true);
                 chatbox.setHint("Enter message");
             }
@@ -86,6 +87,7 @@ public class ChatFragment extends Fragment {
 
         adminUserId = chatInfo.admin.idUser;
 
+        assert activity != null;
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
@@ -107,18 +109,18 @@ public class ChatFragment extends Fragment {
     }
 
     private void setBroadcastManagers() {
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(messageReceiver,
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(messageReceiver,
                 new IntentFilter("NewMessage"));
 
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver(closeChatReceiver,
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(closeChatReceiver,
                 new IntentFilter("CloseChat"));
     }
 
     private void setButtons(Activity activity) {
-        ImageView sendButton = (ImageView) view.findViewById(R.id.IV_send);
+        ImageView sendButton = view.findViewById(R.id.IV_send);
         sendButton.setClickable(true);
         sendButton.setOnClickListener(v -> {
-            EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+            EditText chatbox = view.findViewById(R.id.edittext_chatbox);
             if (!chatbox.getText().toString().isEmpty()) {
                 UserMessage um = new UserMessage();
                 um.createdAt = new Date();
@@ -206,9 +208,7 @@ public class ChatFragment extends Fragment {
                                 }
                             });
                         })
-                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                            dialogInterface.cancel();
-                        })
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
                         .show();
             }
         });
@@ -219,13 +219,13 @@ public class ChatFragment extends Fragment {
             IV_acces.setImageResource(R.drawable.ic_donar_acces);
             DrawableCompat.setTint(
                     DrawableCompat.wrap(IV_acces.getDrawable()),
-                    ContextCompat.getColor(getContext(), R.color.black_overlay)
+                    ContextCompat.getColor(requireContext(), R.color.black_overlay)
             );
         } else {
             IV_acces.setImageResource(R.drawable.ic_treure_acces);
             DrawableCompat.setTint(
                     DrawableCompat.wrap(IV_acces.getDrawable()),
-                    ContextCompat.getColor(getContext(), R.color.vermell)
+                    ContextCompat.getColor(requireContext(), R.color.vermell)
             );
         }
     }
@@ -240,32 +240,30 @@ public class ChatFragment extends Fragment {
                     Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser);
                     call.enqueue(new Callback<String>() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
+                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) closeChat();
                         }
 
                         @Override
-                        public void onFailure(Call<String> call, Throwable t) {
+                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                             Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                         }
                     });
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
-                    dialogInterface.cancel();
-                })
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.cancel())
                 .show());
     }
 
     private void setRecyclerView() {
-        mMessageRecycler = (RecyclerView) view.findViewById(R.id.RV_chat);
-        mMessageAdapter = new MessageListAdapter(getContext());
+        mMessageRecycler = view.findViewById(R.id.RV_chat);
+        mMessageAdapter = new MessageListAdapter();
         mMessageRecycler.setAdapter(mMessageAdapter);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void closeChat() {
         active = false;
-        EditText chatbox = (EditText) view.findViewById(R.id.edittext_chatbox);
+        EditText chatbox = view.findViewById(R.id.edittext_chatbox);
         chatbox.setEnabled(false);
         chatbox.setHint(R.string.closed_chat);
         chatbox.setText("");
@@ -287,8 +285,8 @@ public class ChatFragment extends Fragment {
         Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(chatInfo.admin.idUser.toString());
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
-            public void onResponse(Call<List<UserMessage>> call, Response<List<UserMessage>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
                 } else {
                     Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
@@ -296,7 +294,7 @@ public class ChatFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<UserMessage>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<UserMessage>> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });
@@ -306,11 +304,9 @@ public class ChatFragment extends Fragment {
         private static final int VIEW_TYPE_MESSAGE_SENT = 1;
         private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
 
-        private Context mContext;
         private List<UserMessage> mMessageList = new ArrayList<>();
 
-        public MessageListAdapter(Context context) {
-            mContext = context;
+        public MessageListAdapter() {
         }
 
         @Override
@@ -321,7 +317,7 @@ public class ChatFragment extends Fragment {
         // Determines the appropriate ViewType according to the sender of the message.
         @Override
         public int getItemViewType(int position) {
-            UserMessage message = (UserMessage) mMessageList.get(position);
+            UserMessage message = mMessageList.get(position);
 
             if (message.senderId.equals(myId)) {
                 // If the current user is the sender of the message
@@ -354,7 +350,7 @@ public class ChatFragment extends Fragment {
         // Passes the message object to a ViewHolder so that the contents can be bound to UI.
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            UserMessage message = (UserMessage) mMessageList.get(position);
+            UserMessage message = mMessageList.get(position);
 
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_MESSAGE_SENT:
@@ -399,43 +395,45 @@ public class ChatFragment extends Fragment {
             SentMessageHolder(View itemView) {
                 super(itemView);
 
-                messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-                timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+                messageText = itemView.findViewById(R.id.text_message_body);
+                timeText = itemView.findViewById(R.id.text_message_time);
             }
 
             void bind(UserMessage mes) {
                 messageText.setText(mes.message);
 
+                DateTime dateTime = new DateTime(mes.createdAt);
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if (mes.createdAt.getHours() < 10) time += "0";
-                time += mes.createdAt.getHours() + ":";
-                if (mes.createdAt.getMinutes() < 10) time += "0";
-                time += mes.createdAt.getMinutes();
+                if (dateTime.getHourOfDay() < 10) time += "0";
+                time += dateTime.getHourOfDay() + ":";
+                if (dateTime.getMinuteOfDay() < 10) time += "0";
+                time += dateTime.getMinuteOfDay();
                 timeText.setText(time);
             }
         }
 
         class ReceivedMessageHolder extends RecyclerView.ViewHolder {
-            TextView messageText, timeText, nameText;
-            ImageView profileImage;
+            TextView messageText;
+            TextView timeText;
 
             ReceivedMessageHolder(View itemView) {
                 super(itemView);
 
-                messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-                timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+                messageText = itemView.findViewById(R.id.text_message_body);
+                timeText = itemView.findViewById(R.id.text_message_time);
             }
 
             void bind(UserMessage message) {
                 messageText.setText(message.message);
 
+                DateTime dateTime = new DateTime(message.createdAt);
                 // Format the stored timestamp into a readable String using method.
                 String time = "";
-                if (message.createdAt.getHours() < 10) time += "0";
-                time += message.createdAt.getHours() + ":";
-                if (message.createdAt.getMinutes() < 10) time += "0";
-                time += message.createdAt.getMinutes();
+                if (dateTime.getHourOfDay() < 10) time += "0";
+                time += dateTime.getHourOfDay() + ":";
+                if (dateTime.getMinuteOfDay() < 10) time += "0";
+                time += dateTime.getMinuteOfDay();
                 timeText.setText(time);
             }
         }

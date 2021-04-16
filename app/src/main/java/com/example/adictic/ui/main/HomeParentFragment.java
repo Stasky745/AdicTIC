@@ -37,17 +37,17 @@ public class HomeParentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
 
-        ViewPager2 viewPager = (ViewPager2) view.findViewById(R.id.ViewPager);
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.TabLayout);
+        ViewPager2 viewPager = view.findViewById(R.id.ViewPager);
+        TabLayout tabLayout = view.findViewById(R.id.TabLayout);
 
-        TodoApi mTodoService = ((TodoApp) getActivity().getApplicationContext()).getAPI();
+        TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
         long idTutor = TodoApp.getIDTutor();
         Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
 
         call.enqueue(new Callback<Collection<FillNom>>() {
             @Override
-            public void onResponse(Call<Collection<FillNom>> call, Response<Collection<FillNom>> response) {
+            public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
@@ -74,14 +74,14 @@ public class HomeParentFragment extends Fragment {
                             (tab, position) -> tab.setText(adapter.getPageTitle(position))
                     ).attach();
                 } else {
-                    TextView error = (TextView) view.findViewById(R.id.TV_noFills);
+                    TextView error = view.findViewById(R.id.TV_noFills);
                     error.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
-            public void onFailure(Call<Collection<FillNom>> call, Throwable t) {
-                TextView error = (TextView) view.findViewById(R.id.TV_noFills);
+            public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
+                TextView error = view.findViewById(R.id.TV_noFills);
                 error.setVisibility(View.VISIBLE);
             }
         });

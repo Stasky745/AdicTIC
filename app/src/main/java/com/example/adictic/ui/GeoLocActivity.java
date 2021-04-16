@@ -32,6 +32,7 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,7 +88,7 @@ public class GeoLocActivity extends AppCompatActivity {
         setContentView(R.layout.oficines_layout);
         SP_fills = findViewById(R.id.SP_listOficines);
 
-        map = (MapView) findViewById(R.id.MV_map);
+        map = findViewById(R.id.MV_map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
         mTodoService = ((TodoApp) getApplication()).getAPI();
@@ -100,8 +101,8 @@ public class GeoLocActivity extends AppCompatActivity {
         Call<List<GeoFill>> call = mTodoService.getGeoLoc();
         call.enqueue(new Callback<List<GeoFill>>() {
             @Override
-            public void onResponse(Call<List<GeoFill>> call, Response<List<GeoFill>> response) {
-                if (response.isSuccessful() && !response.body().isEmpty() && response.body().get(0) != null) {
+            public void onResponse(@NonNull Call<List<GeoFill>> call, @NonNull Response<List<GeoFill>> response) {
+                if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
 
                     if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0) {
@@ -129,7 +130,7 @@ public class GeoLocActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<GeoFill>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<GeoFill>> call, @NonNull Throwable t) {
                 fills = TodoApp.getGeoFills();
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 if (!fills.isEmpty()) setMap();
@@ -244,7 +245,7 @@ public class GeoLocActivity extends AppCompatActivity {
 
         @Override
         public View getDropDownView(int position, View convertView,
-                                    ViewGroup parent) {
+                                    @NonNull ViewGroup parent) {
             TextView label = (TextView) super.getDropDownView(position, convertView, parent);
             GeoFill marker = (GeoFill) markers.get(position).getRelatedObject();
             label.setText(marker.nom);

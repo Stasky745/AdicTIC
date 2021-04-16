@@ -1,10 +1,7 @@
 package com.example.adictic.ui.chat;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.AdminProfile;
-import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
 import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,7 +47,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         if (TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
         else myId = TodoApp.getIDChild();
 
-        adminProfile = (AdminProfile) getIntent().getExtras().getParcelable("chat");
+        adminProfile = getIntent().getExtras().getParcelable("chat");
         setViews();
         setRecyclerView();
         getMessages();
@@ -66,7 +61,7 @@ public class ClosedChatActivity extends AppCompatActivity {
     }
 
     private void setButtons() {
-        ImageView sendButton = (ImageView) findViewById(R.id.IV_send);
+        ImageView sendButton = findViewById(R.id.IV_send);
         sendButton.setVisibility(View.GONE);
 
         TextView TV_profileName = findViewById(R.id.TV_nomXat);
@@ -84,14 +79,14 @@ public class ClosedChatActivity extends AppCompatActivity {
     }
 
     private void setRecyclerView() {
-        mMessageRecycler = (RecyclerView) findViewById(R.id.RV_chat);
+        mMessageRecycler = findViewById(R.id.RV_chat);
         mMessageAdapter = new MessageListAdapter();
         mMessageRecycler.setAdapter(mMessageAdapter);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
     private void closeChat() {
-        EditText chatbox = (EditText) findViewById(R.id.edittext_chatbox);
+        EditText chatbox = findViewById(R.id.edittext_chatbox);
         chatbox.setEnabled(false);
         chatbox.setHint(R.string.closed_chat);
         chatbox.setText("");
@@ -102,8 +97,8 @@ public class ClosedChatActivity extends AppCompatActivity {
         Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(adminProfile.idUser.toString());
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
-            public void onResponse(Call<List<UserMessage>> call, Response<List<UserMessage>> response) {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
+                if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
@@ -111,7 +106,7 @@ public class ClosedChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<UserMessage>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<UserMessage>> call, @NonNull Throwable t) {
                 Toast.makeText(getApplicationContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });
@@ -131,7 +126,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         // Determines the appropriate ViewType according to the sender of the message.
         @Override
         public int getItemViewType(int position) {
-            UserMessage message = (UserMessage) mMessageList.get(position);
+            UserMessage message = mMessageList.get(position);
 
             if (message.senderId.equals(myId)) {
                 // If the current user is the sender of the message
@@ -164,7 +159,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         // Passes the message object to a ViewHolder so that the contents can be bound to UI.
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            UserMessage message = (UserMessage) mMessageList.get(position);
+            UserMessage message = mMessageList.get(position);
 
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_MESSAGE_SENT:
@@ -209,8 +204,8 @@ public class ClosedChatActivity extends AppCompatActivity {
             SentMessageHolder(View itemView) {
                 super(itemView);
 
-                messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-                timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+                messageText = itemView.findViewById(R.id.text_message_body);
+                timeText = itemView.findViewById(R.id.text_message_time);
             }
 
             void bind(UserMessage mes) {
@@ -233,8 +228,8 @@ public class ClosedChatActivity extends AppCompatActivity {
             ReceivedMessageHolder(View itemView) {
                 super(itemView);
 
-                messageText = (TextView) itemView.findViewById(R.id.text_message_body);
-                timeText = (TextView) itemView.findViewById(R.id.text_message_time);
+                messageText = itemView.findViewById(R.id.text_message_body);
+                timeText = itemView.findViewById(R.id.text_message_time);
             }
 
             void bind(UserMessage message) {

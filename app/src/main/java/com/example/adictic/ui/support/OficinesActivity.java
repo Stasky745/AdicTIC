@@ -39,7 +39,6 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.api.IMapView;
@@ -50,11 +49,8 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -75,7 +71,6 @@ public class OficinesActivity extends AppCompatActivity {
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     MyLocationListener locationListener;
     LocationManager locationManager;
-    MyLocationNewOverlay myLocationOverlay;
     ArrayList<Marker> markers = new ArrayList<>();
     private MapView map = null;
     private Spinner SP_oficines;
@@ -83,17 +78,15 @@ public class OficinesActivity extends AppCompatActivity {
     private List<Oficina> oficines = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation;
+    float accuracy;
 
     public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location) {
-        Collections.sort(markers, new Comparator<Marker>() {
-            @Override
-            public int compare(Marker marker2, Marker marker1) {
-                //
-                if (getDistanceBetweenPoints(marker1.getPosition().getLatitude(), marker1.getPosition().getLongitude(), location.getLatitude(), location.getLongitude()) > getDistanceBetweenPoints(marker2.getPosition().getLatitude(), marker2.getPosition().getLongitude(), location.getLatitude(), location.getLongitude())) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+        markers.sort((marker2, marker1) -> {
+            //
+            if (getDistanceBetweenPoints(marker1.getPosition().getLatitude(), marker1.getPosition().getLongitude(), location.getLatitude(), location.getLongitude()) > getDistanceBetweenPoints(marker2.getPosition().getLatitude(), marker2.getPosition().getLongitude(), location.getLatitude(), location.getLongitude())) {
+                return -1;
+            } else {
+                return 1;
             }
         });
         return markers;
@@ -108,6 +101,7 @@ public class OficinesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.oficines_layout);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -129,10 +123,9 @@ public class OficinesActivity extends AppCompatActivity {
 
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
-        setContentView(R.layout.oficines_layout);
         SP_oficines = findViewById(R.id.SP_listOficines);
 
-        map = (MapView) findViewById(R.id.MV_map);
+        map = findViewById(R.id.MV_map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
         TodoApi mTodoService = ((TodoApp) getApplication()).getAPI();
@@ -141,23 +134,22 @@ public class OficinesActivity extends AppCompatActivity {
         Call<List<Oficina>> call = mTodoService.getOficines();
         call.enqueue(new Callback<List<Oficina>>() {
             @Override
-            public void onResponse(Call<List<Oficina>> call, Response<List<Oficina>> response) {
+            public void onResponse(@NonNull Call<List<Oficina>> call, @NonNull Response<List<Oficina>> response) {
                 if (response.isSuccessful()) {
                     oficines = response.body();
                     TodoApp.setOficines(oficines);
 //                    setMap();
-                    askPermissionsIfNecessary();
 
                 } else {
                     Toast.makeText(OficinesActivity.this, getString(R.string.error_getOffices), Toast.LENGTH_SHORT).show();
                     oficines = TodoApp.getOficines();
 //                    setMap();
-                    askPermissionsIfNecessary();
                 }
+                askPermissionsIfNecessary();
             }
 
             @Override
-            public void onFailure(Call<List<Oficina>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Oficina>> call, @NonNull Throwable t) {
                 Toast.makeText(OficinesActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 oficines = TodoApp.getOficines();
 //                setMap();
@@ -205,11 +197,13 @@ public class OficinesActivity extends AppCompatActivity {
             boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (isNetworkEnabled) {
-//            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER,null);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        MIN_TIME_FOR_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                        locationListener);
+                MyLocationListener myLocationListener = new MyLocationListener();
+
+                float oldAccuracy = 100;
+                while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
+
+                locationManager.removeUpdates(myLocationListener);
 
                 Log.d(TAG, "Network Enabled");
 
@@ -218,11 +212,13 @@ public class OficinesActivity extends AppCompatActivity {
                     currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                 }
             } else if (isGPSEnabled) {
-//            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER,null);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                        MIN_TIME_FOR_UPDATES,
-                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                        locationListener);
+                MyLocationListener myLocationListener = new MyLocationListener();
+
+                float oldAccuracy = 100;
+                while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
+
+                locationManager.removeUpdates(myLocationListener);
 
                 Log.d(TAG, "GPS Enabled");
 
@@ -278,11 +274,14 @@ public class OficinesActivity extends AppCompatActivity {
 
         if (startPoint == null) {
             if (currentLocation != null) {
-                markers = sortListbyDistance(markers, currentLocation);
+                sortListbyDistance(markers, currentLocation);
                 startPoint = currentLocation;
             } else {
                 startPoint = new GeoPoint(41.981177, 2.818997); // Oficina Girona
             }
+        }
+        else{
+            sortListbyDistance(markers, startPoint);
         }
 
         if (!markers.isEmpty()) startPoint = markers.get(0).getPosition();
@@ -315,7 +314,7 @@ public class OficinesActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             boolean permissionsGranted = true;
             int i = 0;
@@ -330,15 +329,12 @@ public class OficinesActivity extends AppCompatActivity {
 
             if (permissionsGranted) {
                 fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                // Got last known location. In some rare situations this can be null.
-                                if (location != null) {
-                                    currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                                }
-                                setMap();
+                        .addOnSuccessListener(this, location -> {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                             }
+                            setMap();
                         });
             } else {
                 Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
@@ -363,15 +359,12 @@ public class OficinesActivity extends AppCompatActivity {
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         } else {
             fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                            }
-                            setMap();
+                    .addOnSuccessListener(this, location -> {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                         }
+                        setMap();
                     });
         }
     }
@@ -432,9 +425,9 @@ public class OficinesActivity extends AppCompatActivity {
             Marker marker = markers.get(position);
             Oficina oficina = (Oficina) marker.getRelatedObject();
 
-            View row = inflter.inflate(R.layout.oficina_spinner_item, null);
-            TextView TV_nomOficina = (TextView) row.findViewById(R.id.TV_nomOficina);
-            TextView TV_oficinaCiutat = (TextView) row.findViewById(R.id.TV_oficinaCiutat);
+            @SuppressLint({"ViewHolder", "InflateParams"}) View row = inflter.inflate(R.layout.oficina_spinner_item, null);
+            TextView TV_nomOficina = row.findViewById(R.id.TV_nomOficina);
+            TextView TV_oficinaCiutat = row.findViewById(R.id.TV_oficinaCiutat);
 
             TV_nomOficina.setText(oficina.name);
             String ciutat = "(" + oficina.ciutat.toUpperCase() + ")";
@@ -462,11 +455,11 @@ public class OficinesActivity extends AppCompatActivity {
                 return;
             }
 
-            TextView TV_nomOficina = (TextView) mView.findViewById(R.id.TV_nomOficina);
-            TextView TV_descOficina = (TextView) mView.findViewById(R.id.TV_descOficina);
-            TextView TV_addressOficina = (TextView) mView.findViewById(R.id.TV_addressOficina);
-            Button BT_telfOficina = (Button) mView.findViewById(R.id.BT_telfOficina);
-            TextView TV_website = (TextView) mView.findViewById(R.id.TV_webURL);
+            TextView TV_nomOficina = mView.findViewById(R.id.TV_nomOficina);
+            TextView TV_descOficina = mView.findViewById(R.id.TV_descOficina);
+            TextView TV_addressOficina = mView.findViewById(R.id.TV_addressOficina);
+            Button BT_telfOficina = mView.findViewById(R.id.BT_telfOficina);
+            TextView TV_website = mView.findViewById(R.id.TV_webURL);
 
             TV_website.setText(oficina.website);
             TV_website.setClickable(true);
@@ -507,6 +500,7 @@ public class OficinesActivity extends AppCompatActivity {
     class MyLocationListener implements LocationListener {
 
         public void onLocationChanged(Location location) {
+            accuracy = location.getAccuracy();
             currentLocation = new GeoPoint(location);
             //displayMyCurrentLocationOverlay();
         }
