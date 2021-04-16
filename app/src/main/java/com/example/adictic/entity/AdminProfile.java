@@ -7,28 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AdminProfile implements Parcelable {
-    public static final Creator<AdminProfile> CREATOR = new Creator<AdminProfile>() {
-        @Override
-        public AdminProfile createFromParcel(Parcel in) {
-            return new AdminProfile(in);
-        }
-
-        @Override
-        public AdminProfile[] newArray(int size) {
-            return new AdminProfile[size];
-        }
-    };
     public Long idUser;
     public Long idAdmin;
     public String name;
     public String professio;
     public String description;
     public List<WebLink> webLinks;
-    public Long idOficina;
+    public Oficina oficina;
 
     protected AdminProfile(Parcel in) {
-        idUser = in.readLong();
-        idAdmin = in.readLong();
+        if (in.readByte() == 0) {
+            idUser = null;
+        } else {
+            idUser = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            idAdmin = null;
+        } else {
+            idAdmin = in.readLong();
+        }
         name = in.readString();
         professio = in.readString();
         description = in.readString();
@@ -40,7 +37,34 @@ public class AdminProfile implements Parcelable {
             webLinks.add(in.readParcelable(WebLink.class.getClassLoader()));
         }
 
-        idOficina = in.readLong();
+        oficina = in.readParcelable(Oficina.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (idUser == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(idUser);
+        }
+        if (idAdmin == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(idAdmin);
+        }
+        dest.writeString(name);
+        dest.writeString(professio);
+        dest.writeString(description);
+
+        //Escriure WebLinks
+        dest.writeInt(webLinks.size());
+        for (int j = 0; j < webLinks.size(); j++){
+            dest.writeParcelable(webLinks.get(j),flags);
+        }
+
+        dest.writeParcelable(oficina, flags);
     }
 
     @Override
@@ -48,20 +72,15 @@ public class AdminProfile implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(idUser);
-        parcel.writeLong(idAdmin);
-        parcel.writeString(name);
-        parcel.writeString(professio);
-        parcel.writeString(description);
-
-        //Escriure WebLinks
-        parcel.writeInt(webLinks.size());
-        for (int j = 0; j < webLinks.size(); j++){
-            parcel.writeParcelable(webLinks.get(j),i);
+    public static final Creator<AdminProfile> CREATOR = new Creator<AdminProfile>() {
+        @Override
+        public AdminProfile createFromParcel(Parcel in) {
+            return new AdminProfile(in);
         }
 
-        parcel.writeLong(idOficina);
-    }
+        @Override
+        public AdminProfile[] newArray(int size) {
+            return new AdminProfile[size];
+        }
+    };
 }

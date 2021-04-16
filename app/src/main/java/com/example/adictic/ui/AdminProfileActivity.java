@@ -72,7 +72,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         Button BT_oficina = findViewById(R.id.BT_oficina);
         BT_oficina.setOnClickListener(view -> {
             Intent intent = new Intent(this, OficinesActivity.class);
-            intent.putExtra("idOficina", adminProfile.idOficina);
+            intent.putExtra("idOficina", adminProfile.oficina.id);
 
             startActivity(intent);
         });
