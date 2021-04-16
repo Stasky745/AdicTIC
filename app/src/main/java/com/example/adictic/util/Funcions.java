@@ -501,7 +501,7 @@ public class Funcions {
      * Retorna -1 als dos valors si no és un string acceptable
      **/
     public static Pair<Integer, Integer> stringToTime(String s) {
-        Integer hour, minutes;
+        int hour, minutes;
         String[] hora = s.split(":");
 
         if (hora.length != 2) {
@@ -544,7 +544,6 @@ public class Funcions {
     }
 
     public static void closeKeyboard(View view, Activity a) {
-
         // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
             view.setOnTouchListener(new View.OnTouchListener() {

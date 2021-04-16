@@ -3,6 +3,7 @@ package com.example.adictic.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdminProfile implements Parcelable {
@@ -18,6 +19,7 @@ public class AdminProfile implements Parcelable {
         }
     };
     public Long idUser;
+    public Long idAdmin;
     public String name;
     public String professio;
     public String description;
@@ -25,23 +27,20 @@ public class AdminProfile implements Parcelable {
     public Long idOficina;
 
     protected AdminProfile(Parcel in) {
-//        if (in.readByte() == 0) {
-//            idUser = null;
-//        } else {
-//            idUser = in.readLong();
-//        }
         idUser = in.readLong();
+        idAdmin = in.readLong();
         name = in.readString();
         professio = in.readString();
         description = in.readString();
-        webLinks = in.createTypedArrayList(WebLink.CREATOR);
+
+        //Llegir Weblinks
+        webLinks = new ArrayList<>();
+        int linkSize = in.readInt();
+        for (int i = 0; i < linkSize; i++){
+            webLinks.add(in.readParcelable(WebLink.class.getClassLoader()));
+        }
 
         idOficina = in.readLong();
-//        if (in.readByte() == 0) {
-//            idOficina = null;
-//        } else {
-//            idOficina = in.readLong();
-//        }
     }
 
     @Override
@@ -52,10 +51,17 @@ public class AdminProfile implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeLong(idUser);
+        parcel.writeLong(idAdmin);
         parcel.writeString(name);
         parcel.writeString(professio);
         parcel.writeString(description);
+
+        //Escriure WebLinks
+        parcel.writeInt(webLinks.size());
+        for (int j = 0; j < webLinks.size(); j++){
+            parcel.writeParcelable(webLinks.get(j),i);
+        }
+
         parcel.writeLong(idOficina);
-        parcel.writeList(webLinks);
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +72,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         TextView TV_profileName = findViewById(R.id.TV_nomXat);
         TV_profileName.setClickable(true);
         TV_profileName.setOnClickListener(view -> {
-            Intent intent = new Intent(this, AdminProfileActivity.class);
+            Intent intent = new Intent(ClosedChatActivity.this, AdminProfileActivity.class);
             intent.putExtra("adminProfile", adminProfile);
             startActivity(intent);
         });
