@@ -122,7 +122,7 @@
     <string name="device_usage"> "Uso total del dispositivo:" </string>
     <string name="press_pie_chart"> "Pulsa en la gráfica para saber más información." </string>
 
-    <string name="hours_minutes"> "%d h.%de m." </string>
+    <string name="hours_minutes"> "%d h. %d m." </string>
     <string name="hrs"> "%d h." </string>
     <string name="hours_endl_minutes"> "%d h. \n%d min." </string>
     <string name="mins"> "%d min." </string>

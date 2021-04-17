@@ -270,15 +270,12 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if (blockedApp.appTime > 0) {
                 Pair<Integer, Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
-                holder.TV_appMaxTime.setText(getString(R.string.hours_minutes, pairTime.first, pairTime.second));
-                holder.TV_hPerDay.setVisibility(View.VISIBLE);
+                holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
                 holder.IV_block.setVisibility(View.GONE);
             } else if (blockedApp.appTime == 0) {
-                holder.TV_hPerDay.setVisibility(View.GONE);
                 holder.TV_appMaxTime.setVisibility(View.GONE);
                 holder.IV_block.setVisibility(View.VISIBLE);
             } else {
-                holder.TV_hPerDay.setVisibility(View.GONE);
                 holder.IV_block.setVisibility(View.GONE);
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
@@ -314,7 +311,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             String pkgName;
             ImageView IV_appIcon, IV_block;
 
-            TextView TV_appName, TV_appMaxTime, TV_category, TV_hPerDay;
+            TextView TV_appName, TV_appMaxTime, TV_category;
 
             MyViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -327,8 +324,6 @@ public class BlockAppsActivity extends AppCompatActivity {
                 TV_appName = itemView.findViewById(R.id.TV_appName);
                 TV_appMaxTime = itemView.findViewById(R.id.TV_appMaxTime);
                 TV_category = itemView.findViewById(R.id.TV_Category);
-
-                TV_hPerDay = itemView.findViewById(R.id.TV_hPerDay);
             }
         }
     }
