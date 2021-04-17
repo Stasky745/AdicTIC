@@ -22,7 +22,7 @@ import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.BlockActivity;
+import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.TodoApp;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -238,7 +238,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
                         });
 
-                        Intent lockIntent = new Intent(this, BlockActivity.class);
+                        Intent lockIntent = new Intent(this, BlockScreenActivity.class);
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
