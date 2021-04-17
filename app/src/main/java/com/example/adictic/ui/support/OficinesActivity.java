@@ -66,8 +66,6 @@ import static android.content.Intent.ACTION_VIEW;
 
 public class OficinesActivity extends AppCompatActivity {
     private static final String TAG = OficinesActivity.class.getSimpleName();
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;// 10; // 10 metres
-    private static final long MIN_TIME_FOR_UPDATES = 0;//1000*60; // 1 minut
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     MyLocationListener locationListener;
     LocationManager locationManager;
@@ -80,7 +78,7 @@ public class OficinesActivity extends AppCompatActivity {
     private GeoPoint currentLocation;
     float accuracy;
 
-    public static ArrayList<Marker> sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location) {
+    public static void sortListbyDistance(ArrayList<Marker> markers, final GeoPoint location) {
         markers.sort((marker2, marker1) -> {
             //
             if (getDistanceBetweenPoints(marker1.getPosition().getLatitude(), marker1.getPosition().getLongitude(), location.getLatitude(), location.getLongitude()) > getDistanceBetweenPoints(marker2.getPosition().getLatitude(), marker2.getPosition().getLongitude(), location.getLatitude(), location.getLongitude())) {
@@ -89,7 +87,6 @@ public class OficinesActivity extends AppCompatActivity {
                 return 1;
             }
         });
-        return markers;
     }
 
     public static float getDistanceBetweenPoints(double firstLatitude, double firstLongitude, double secondLatitude, double secondLongitude) {
