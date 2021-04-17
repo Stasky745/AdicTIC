@@ -34,7 +34,7 @@
             android:label="@string/title_activity_nav" />
         <activity android:name=".ui.inici.Login" />
         <activity
-            android:name=".ui.BlockActivity"
+            android:name=".ui.BlockScreenActivity"
             android:noHistory="true" />
         <activity android:name=".ui.inici.Register" />
         <activity android:name=".ui.inici.NomFill" />

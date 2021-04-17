@@ -297,7 +297,11 @@ public class MainParentFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> collection = response.body();
                     Funcions.canviarMesosDeServidor(collection);
-                    makeGraph(collection);
+                    if(collection.isEmpty()){
+                        root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
+                        root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+                    }
+                    else makeGraph(collection);
                 } else {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
@@ -358,6 +362,8 @@ public class MainParentFragment extends Fragment {
             }
         }
 
+        Pair<Integer, Integer> totalTime = Funcions.millisToString(totalUsageTime);
+
         yValues.add(new PieEntry(others, "Altres"));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
@@ -375,6 +381,12 @@ public class MainParentFragment extends Fragment {
         pieChart.setDragDecelerationFrictionCoef(0.95f);
         pieChart.setDrawHoleEnabled(true);
         pieChart.setCenterTextSize(25);
+
+        if (totalTime.first == 0)
+            pieChart.setCenterText(getResources().getString(R.string.mins, totalTime.second));
+        else
+            pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes, totalTime.first, totalTime.second));
+
         pieChart.setHoleColor(Color.TRANSPARENT);
         pieChart.setTransparentCircleRadius(61f);
 
@@ -402,8 +414,12 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onNothingSelected() {
                 TextView TV_pieApp = root.findViewById(R.id.TV_PieApp);
+
                 TV_pieApp.setText(getResources().getString(R.string.press_pie_chart));
-                pieChart.setCenterText("");
+                if (totalTime.first == 0)
+                    pieChart.setCenterText(getResources().getString(R.string.mins, totalTime.second));
+                else
+                    pieChart.setCenterText(getResources().getString(R.string.hours_endl_minutes, totalTime.first, totalTime.second));
             }
         });
         pieChart.invalidate();
