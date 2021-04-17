@@ -10,7 +10,7 @@ import com.example.adictic.R;
 
 import java.util.List;
 
-public class BlockActivity extends Activity {
+public class BlockScreenActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +36,7 @@ public class BlockActivity extends Activity {
             startHomescreen.addCategory(Intent.CATEGORY_HOME);
             startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(startHomescreen);
-            BlockActivity.this.finish();
+            BlockScreenActivity.this.finish();
         });
     }
 }
