@@ -23,6 +23,10 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
 import com.example.adictic.util.TodoApp;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -235,12 +239,17 @@ public class ClosedChatActivity extends AppCompatActivity {
             void bind(UserMessage message) {
                 messageText.setText(message.message);
 
+                DateTime dateTime = new DateTime(message.createdAt);
                 // Format the stored timestamp into a readable String using method.
-                String time = "";
-                if (message.createdAt.getHours() < 10) time += "0";
-                time += message.createdAt.getHours() + ":";
-                if (message.createdAt.getMinutes() < 10) time += "0";
-                time += message.createdAt.getMinutes();
+                String time;
+                DateTimeFormatter fmt;
+                if(dateTime.getDayOfYear() == DateTime.now().getDayOfYear()) {
+                    fmt = DateTimeFormat.forPattern("HH:mm");
+                }
+                else{
+                    fmt = DateTimeFormat.forPattern("dd/MM");
+                }
+                time = dateTime.toString(fmt);
                 timeText.setText(time);
             }
         }

@@ -32,6 +32,8 @@ import com.example.adictic.ui.AdminProfileActivity;
 import com.example.adictic.util.TodoApp;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -429,11 +431,15 @@ public class ChatFragment extends Fragment {
 
                 DateTime dateTime = new DateTime(message.createdAt);
                 // Format the stored timestamp into a readable String using method.
-                String time = "";
-                if (dateTime.getHourOfDay() < 10) time += "0";
-                time += dateTime.getHourOfDay() + ":";
-                if (dateTime.getMinuteOfDay() < 10) time += "0";
-                time += dateTime.getMinuteOfDay();
+                String time;
+                DateTimeFormatter fmt;
+                if(dateTime.getDayOfYear() == DateTime.now().getDayOfYear()) {
+                    fmt = DateTimeFormat.forPattern("HH:mm");
+                }
+                else{
+                    fmt = DateTimeFormat.forPattern("dd/MM");
+                }
+                time = dateTime.toString(fmt);
                 timeText.setText(time);
             }
         }

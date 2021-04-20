@@ -49,7 +49,7 @@ public class NoChatFragment extends Fragment {
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
-        getArguments().getBoolean("dubte");
+        hasDubte = getArguments().getBoolean("dubte");
 
         getLocalitzacions();
 
