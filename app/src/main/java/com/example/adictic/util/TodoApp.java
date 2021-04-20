@@ -43,16 +43,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    public static final int[] GRAPH_COLORS = {
-            Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
-            Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
-    };
     public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     private static final List<String> blockEvents = new ArrayList<>();
-    public static int CORRECT_USAGE_DAY = 3;
-    public static int DANGEROUS_USAGE_DAY = 5;
-    public static int CORRECT_USAGE_APP = 2;
-    public static int DANGEROUS_USAGE_APP = 4;
     private static boolean geolocOpen = false;
     private static long IDTutor = -1;
     private static Integer tutor = -1;
