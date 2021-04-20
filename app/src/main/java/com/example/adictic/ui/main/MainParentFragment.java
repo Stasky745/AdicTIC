@@ -33,6 +33,7 @@ import com.example.adictic.ui.GeoLocActivity;
 import com.example.adictic.ui.HorarisActivity;
 import com.example.adictic.ui.events.EventsActivity;
 import com.example.adictic.ui.informe.InformeActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.github.mikephil.charting.charts.PieChart;
@@ -390,7 +391,7 @@ public class MainParentFragment extends Fragment {
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setSelectionShift(5f);
-        pieDataSet.setColors(TodoApp.GRAPH_COLORS);
+        pieDataSet.setColors(Constants.GRAPH_COLORS);
 
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter());

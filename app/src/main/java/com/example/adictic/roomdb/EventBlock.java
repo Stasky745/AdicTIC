@@ -20,6 +20,8 @@ public class EventBlock {
     public int startEvent;
     public int endEvent;
 
+    public boolean activeNow;
+
     public boolean monday;
     public boolean tuesday;
     public boolean wednesday;

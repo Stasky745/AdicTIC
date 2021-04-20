@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -11,6 +12,9 @@ import java.util.List;
 public interface EventBlockDAO {
     @Query("SELECT * FROM EventBlock")
     List<EventBlock> getAll();
+
+    @Query("SELECT * FROM EventBlock WHERE activeNow")
+    List<EventBlock> getActiveEvents();
 
     @Query("SELECT * FROM EventBlock WHERE monday")
     List<EventBlock> getMonday();
@@ -26,6 +30,9 @@ public interface EventBlockDAO {
     List<EventBlock> getSaturday();
     @Query("SELECT * FROM EventBlock WHERE sunday")
     List<EventBlock> getSunday();
+
+    @Update
+    void update(EventBlock eventBlock);
 
     @Delete
     void delete(EventBlock eventBlock);
