@@ -117,7 +117,7 @@ public class MainParentFragment extends Fragment {
                     TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
 
 
-                    DateTime hora = new DateTime(Long.parseLong(liveApp.time));
+                    DateTime hora = new DateTime(liveApp.time);
                     String liveAppText;
                     DateTimeFormatter fmt;
                     if(hora.getDayOfYear() == DateTime.now().getDayOfYear()) {
