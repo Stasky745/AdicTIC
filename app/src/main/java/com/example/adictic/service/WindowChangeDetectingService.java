@@ -177,11 +177,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()){
-                String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
                 LiveApp liveApp = new LiveApp();
                 liveApp.pkgName = lastPackage;
                 liveApp.appName = lastActivity;
-                liveApp.time = time;
+                liveApp.time = Calendar.getInstance().getTimeInMillis();
 
                 if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
                     Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(TodoApp.getIDChild(), liveApp);
@@ -225,7 +225,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         Log.i("CurrentPackage", componentName.getPackageName());
                     }
 
-                    String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                    //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
                     if (TodoApp.getStartFreeUse() != 1 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
 
@@ -248,7 +248,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         LiveApp liveApp = new LiveApp();
                         liveApp.pkgName = lastPackage;
                         liveApp.appName = lastActivity;
-                        liveApp.time = time;
+                        liveApp.time = Calendar.getInstance().getTimeInMillis();
 
 //                        ApplicationInfo appInfo;
 //                        try {
