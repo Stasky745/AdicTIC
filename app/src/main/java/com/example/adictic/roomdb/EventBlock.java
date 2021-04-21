@@ -2,13 +2,14 @@ package com.example.adictic.roomdb;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import org.joda.time.DateTime;
 
 import java.util.Date;
 
-@Entity
+@Entity(indices = {@Index(value = {"nom_event"}, unique = true)})
 public class EventBlock {
     @PrimaryKey
     public long id;

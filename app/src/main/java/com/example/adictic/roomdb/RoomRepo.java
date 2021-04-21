@@ -75,6 +75,10 @@ public class RoomRepo {
         return roomDB.eventBlockDAO().getActiveEvents();
     }
 
+    public EventBlock getEventFromList(String name){
+        return roomDB.eventBlockDAO().getEventFromList(name);
+    }
+
     public List<EventBlock> getMondayEvents(){
         return roomDB.eventBlockDAO().getMonday();
     }

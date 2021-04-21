@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import retrofit2.Response;
 public class WindowChangeDetectingService extends AccessibilityService {
 
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
+    private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     TodoApi mTodoService;
     PackageManager mPm;
     List<AppInfo> lastListApps;
@@ -183,7 +185,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 liveApp.appName = lastActivity;
                 liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-                if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
+                if (!blackListLiveApp.contains(lastPackage)) {
                     Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(TodoApp.getIDChild(), liveApp);
                     call.enqueue(new Callback<String>() {
                         @Override
@@ -212,7 +214,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
                 if (isActivity) {
-                    if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
+                    if (!blackListLiveApp.contains(lastPackage)) {
                         ApplicationInfo appInfo;
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
@@ -259,7 +261,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 //                        }
 
                         //mirar si component.getpackagename() funciona si ho fem amb lastPackage
-                        if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
+                        if (!blackListLiveApp.contains(lastPackage)) {
                             Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
                             call.enqueue(new Callback<String>() {
                                 @Override

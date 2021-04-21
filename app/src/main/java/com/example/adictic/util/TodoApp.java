@@ -43,7 +43,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     private static final List<String> blockEvents = new ArrayList<>();
     private static boolean geolocOpen = false;
     private static long IDTutor = -1;
