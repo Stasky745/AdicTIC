@@ -40,6 +40,7 @@ import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
@@ -296,17 +297,18 @@ public class Funcions {
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static HorarisEvents getEventFromList(String name) {
-        boolean trobat = false;
-        int i = 0;
-        List<HorarisEvents> listEvents = TodoApp.getListEvents();
-        HorarisEvents event = null;
-        while (!trobat && i < listEvents.size()) {
-            event = listEvents.get(i);
-            if (event.name.equals(name)) trobat = true;
-        }
-        return event;
-    }
+//    public static HorarisEvents getEventFromList(String name) {
+//        RoomRepo roomRepo = new RoomRepo()
+//        boolean trobat = false;
+//        int i = 0;
+//        List<HorarisEvents> listEvents = TodoApp.getListEvents();
+//        HorarisEvents event = null;
+//        while (!trobat && i < listEvents.size()) {
+//            event = listEvents.get(i);
+//            if (event.name.equals(name)) trobat = true;
+//        }
+//        return event;
+//    }
 
     public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
         List<HorarisEvents> currentEvents = TodoApp.getListEvents();
