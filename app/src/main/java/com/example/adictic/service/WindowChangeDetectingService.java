@@ -22,6 +22,7 @@ import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.TodoApp;
 
@@ -171,6 +172,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
+            RoomRepo roomRepo = new RoomRepo(getApplicationContext());
+
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
             if (TodoApp.getIDChild() != -1) checkInstalledApps();
@@ -198,7 +201,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            if (TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()) {
+            if (TodoApp.getBlockedDevice() || roomRepo.getAllActiveEvents().isEmpty()) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;

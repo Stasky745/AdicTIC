@@ -40,6 +40,8 @@ import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.EventBlock;
+import com.example.adictic.roomdb.HorarisNit;
 import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
@@ -48,6 +50,7 @@ import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,6 +68,12 @@ import retrofit2.Response;
 public class Funcions {
 
     private static void setHoraris(WakeSleepLists list) {
+        //per cada dia (Sunday = 1) -> (Saturday = 7)
+        for(int i = 1; i <= 7; i++){
+            HorarisNit horarisNit = new HorarisNit();
+            horarisNit.idDia = i;
+        }
+
         TimeDay sleep = list.sleep;
         TimeDay wake = list.wake;
 
@@ -310,46 +319,91 @@ public class Funcions {
 //        return event;
 //    }
 
-    public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
-        List<HorarisEvents> currentEvents = TodoApp.getListEvents();
+    private static List<EventBlock> horarisEvents2EventBlock(List<HorarisEvents> horarisEvents){
+        List<EventBlock> res = new ArrayList<>();
+        
+        for(HorarisEvents event : horarisEvents){
+            EventBlock eventBlock = new EventBlock();
 
-        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
+            eventBlock.id = event.id;
+            eventBlock.name = event.name;
+
+            Pair<Integer,Integer> startTime = stringToTime(event.start);
+            DateTime dateTimeStart = new DateTime()
+                    .withHourOfDay(startTime.first)
+                    .withMinuteOfHour(startTime.second);
+            eventBlock.startEvent = dateTimeStart.getMillisOfDay();
+            Pair<Integer,Integer> endTime = stringToTime(event.start);
+            DateTime dateTimeFinish = new DateTime()
+                    .withHourOfDay(endTime.first)
+                    .withMinuteOfHour(endTime.second);
+            eventBlock.endEvent = dateTimeFinish.getMillisOfDay();
+
+            int millisNow = DateTime.now().getMillisOfDay();
+            eventBlock.activeNow = millisNow >= eventBlock.startEvent && millisNow < eventBlock.endEvent;
+
+            eventBlock.monday = event.days.contains(Calendar.MONDAY);
+            eventBlock.tuesday = event.days.contains(Calendar.TUESDAY);
+            eventBlock.wednesday = event.days.contains(Calendar.WEDNESDAY);
+            eventBlock.thursday = event.days.contains(Calendar.THURSDAY);
+            eventBlock.friday = event.days.contains(Calendar.FRIDAY);
+            eventBlock.saturday = event.days.contains(Calendar.SATURDAY);
+            eventBlock.sunday = event.days.contains(Calendar.SUNDAY);
+
+            res.add(eventBlock);
+        }
+
+        return res;
+    }
+    
+    public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
+        RoomRepo roomRepo = new RoomRepo(mContext);
+
+        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
+        
+        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
+        List<EventBlock> currentEvents = roomRepo.getAllEventBlocks();
+
+        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(eventBlockList, currentEvents));
 
         WorkManager workManager = WorkManager.getInstance(mContext);
 
-        for (HorarisEvents event : disjunctionEvents) {
-            int index = newEvents.indexOf(event);
+        for (EventBlock event : disjunctionEvents) {
+            int index = eventBlockList.indexOf(event);
 
             // Event s'ha esborrat
             if (index == -1) {
                 workManager.cancelUniqueWork(event.name);
+                roomRepo.deleteEventBlock(event);
             }
             // És un nou event
-            else if (event.exactSame(newEvents.get(index))) {
-                long now = Calendar.getInstance().getTimeInMillis();
+            else if (event.exactSame(eventBlockList.get(index))) {
+//                Pair<Integer, Integer> startEvent = stringToTime(event.start);
+//                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
+//
+//                Calendar start = Calendar.getInstance();
+//                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
+//                start.set(Calendar.MINUTE, startEvent.second);
+//
+//                Calendar finish = Calendar.getInstance();
+//                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
+//                finish.set(Calendar.MINUTE, finishEvent.second);
 
-                Pair<Integer, Integer> startEvent = stringToTime(event.start);
-                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
+                long now = DateTime.now().getMillisOfDay();
 
-                Calendar start = Calendar.getInstance();
-                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
-                start.set(Calendar.MINUTE, startEvent.second);
-
-                Calendar finish = Calendar.getInstance();
-                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
-                finish.set(Calendar.MINUTE, finishEvent.second);
-
-                if (now < start.getTimeInMillis()) {
-                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
-                } else if (now < finish.getTimeInMillis()) {
-                    runFinishBlockEventWorker(mContext, event.name, finish.getTimeInMillis() - now);
-                } else {
-                    start.add(Calendar.DATE, 1);
-                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
+                if (now < event.startEvent) {
+                    runStartBlockEventWorker(mContext, event.name, event.startEvent - now);
+                } else if (now < event.endEvent) {
+                    runFinishBlockEventWorker(mContext, event.name, event.endEvent - now);
                 }
+//                } else {
+//                    start.add(Calendar.DATE, 1);
+//                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
+//                }
+
+                roomRepo.insertEventBlock(event);
             }
         }
-        TodoApp.setListEvents(newEvents);
     }
 
     public static void runStartBlockEventWorker(Context mContext, String name, long delay) {
