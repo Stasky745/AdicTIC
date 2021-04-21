@@ -1,5 +1,6 @@
 package com.example.adictic.roomdb;
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
@@ -30,4 +31,30 @@ public class EventBlock {
     public boolean friday;
     public boolean saturday;
     public boolean sunday;
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+//        return super.equals(obj);
+
+        if(obj instanceof EventBlock){
+            EventBlock object = (EventBlock) obj;
+            return this.id == object.id;
+        }
+        else return false;
+    }
+
+    public boolean exactSame(EventBlock object){
+        return this.id == object.id &&
+                this.monday == object.monday &&
+                this.tuesday == object.tuesday &&
+                this.wednesday == object.wednesday &&
+                this.thursday == object.thursday &&
+                this.friday == object.friday &&
+                this.saturday == object.saturday &&
+                this.sunday == object.sunday &&
+                this.activeNow == object.activeNow &&
+                this.name.equals(object.name) &&
+                this.startEvent == object.startEvent &&
+                this.endEvent == object.endEvent;
+    }
 }

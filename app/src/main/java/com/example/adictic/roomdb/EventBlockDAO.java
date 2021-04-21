@@ -3,6 +3,7 @@ package com.example.adictic.roomdb;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -40,6 +41,7 @@ public interface EventBlockDAO {
     @Delete
     void delete(EventBlock eventBlock);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(EventBlock eventBlock);
+
 }
