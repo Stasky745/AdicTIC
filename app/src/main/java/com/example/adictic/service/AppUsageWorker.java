@@ -1,6 +1,7 @@
 package com.example.adictic.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,9 @@ import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
+import com.example.adictic.roomdb.RoomDB;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -18,6 +22,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,6 +32,8 @@ public class AppUsageWorker extends Worker {
     Boolean ok1 = null;
     Boolean ok2 = null;
     int timeout = 0;
+
+    SharedPreferences sharedPreferences;
 
     public AppUsageWorker(
             @NonNull Context context,
@@ -41,18 +48,17 @@ public class AppUsageWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
 
-        if (!TodoApp.getLimitApps().isEmpty())
-            Funcions.runLimitAppsWorker(getApplicationContext(), 0);
-        if (TodoApp.getStartFreeUse() != 0)
-            TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 
         TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         Funcions.canviarMesosAServidor(gul);
 
-        Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(), gul);
+        Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -66,24 +72,26 @@ public class AppUsageWorker extends Worker {
             }
         });
 
-        Call<BlockedLimitedLists> call2 = mTodoService.getBlockedLimitedLists(TodoApp.getIDChild());
+        Call<BlockedLimitedLists> call2 = mTodoService.getBlockedLimitedLists(sharedPreferences.getLong("idUser",-1));
         call2.enqueue(new Callback<BlockedLimitedLists>() {
             @Override
             public void onResponse(@NonNull Call<BlockedLimitedLists> call2, @NonNull Response<BlockedLimitedLists> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    TodoApp.setBlockedApps(response.body().blockedApps);
-                    List<LimitedApps> limitList = response.body().limitApps;
-                    Map<String, Long> finalMap = new HashMap<>();
-                    for (LimitedApps limit : limitList) {
-                        finalMap.put(limit.name, limit.time);
-                    }
-                    TodoApp.setLimitApps(finalMap);
+                    Funcions.updateDB_BlockedApps(getApplicationContext(),response.body());
+                    if(!roomRepo.getAllBlockedApps().isEmpty())
+                        Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                     ok2 = true;
-                } else ok2 = false;
+                } else {
+                    if(!roomRepo.getAllBlockedApps().isEmpty())
+                        Funcions.runLimitAppsWorker(getApplicationContext(), 0);
+                    ok2 = false;
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<BlockedLimitedLists> call2, @NonNull Throwable t) {
+                if(!roomRepo.getAllBlockedApps().isEmpty())
+                    Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                 ok2 = false;
             }
         });
@@ -97,7 +105,7 @@ public class AppUsageWorker extends Worker {
         }
         if (ok1 && ok2) {
             Log.d(TAG, "Result OK");
-            TodoApp.setDayOfYear(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+            sharedPreferences.edit().putInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
             timeout = 0;
             return Result.success();
         } else if (timeout < 5) {

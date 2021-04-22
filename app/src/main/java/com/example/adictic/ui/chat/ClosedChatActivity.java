@@ -1,6 +1,7 @@
 package com.example.adictic.ui.chat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.example.adictic.entity.AdminProfile;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import org.joda.time.DateTime;
@@ -36,6 +38,7 @@ import retrofit2.Response;
 
 public class ClosedChatActivity extends AppCompatActivity {
     AdminProfile adminProfile;
+    private SharedPreferences sharedPreferences;
     TodoApi mTodoService;
     RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
@@ -46,10 +49,10 @@ public class ClosedChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Agafem la nostra id
-        if (TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
-        else myId = TodoApp.getIDChild();
+        sharedPreferences.getLong("userId",-1);
 
         adminProfile = getIntent().getExtras().getParcelable("chat");
         setViews();

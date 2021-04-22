@@ -1,6 +1,7 @@
 package com.example.adictic.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.roomdb.BlockedApp;
+import com.example.adictic.roomdb.FreeUseApp;
 import com.example.adictic.roomdb.HorarisNit;
 import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.util.Funcions;
@@ -28,6 +30,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LimitAppsWorker extends Worker {
+    int TOTAL_MILLIS_IN_DAY = 86400000;
+    private SharedPreferences sharedPreferences;
+
     public LimitAppsWorker(
             @NonNull Context context,
             @NonNull WorkerParameters workerParams) {
@@ -41,11 +46,14 @@ public class LimitAppsWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
 
         RoomRepo roomRepo = new RoomRepo(getApplicationContext());
 
-        List<BlockedApp> blockedApps = roomRepo.getAllBlockedApps();
+        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
+        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
 
         //checkHoraris();
 
@@ -54,14 +62,17 @@ public class LimitAppsWorker extends Worker {
         long delayNextLimit = Long.MAX_VALUE;
 
         for(BlockedApp app : blockedApps){
-
             AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
-            if(app.timeLimit > -1 && !app.blockedNow &&
-                    appUsage.totalTime >= app.timeLimit){
+
+            // tenim en compte el temps que l'app ha estat utilitzada durant FreeUse
+            long freeUseUsage = 0;
+            if(freeUseApps.contains(app.pkgName))
+                freeUseUsage = freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageEnd - freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageStart;
+            if(appUsage.totalTime >= app.timeLimit + freeUseUsage){
                 app.blockedNow = true;
                 roomRepo.updateBlockApp(app);
             }
-            else if(app.timeLimit > -1 && !app.blockedNow){
+            else{
                 long timeLeft = app.timeLimit - appUsage.totalTime;
                 if(timeLeft < delayNextLimit) delayNextLimit = timeLeft;
             }
@@ -80,6 +91,7 @@ public class LimitAppsWorker extends Worker {
             calendar.add(Calendar.DAY_OF_WEEK,1);
             HorarisNit dema = horarisNits.get(horarisNits.indexOf(calendar.get(Calendar.DAY_OF_WEEK)));
 
+            delayNit = (TOTAL_MILLIS_IN_DAY - now) + dema.despertar;
         }
 
         Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(delayNextLimit, delayNit));
@@ -91,7 +103,7 @@ public class LimitAppsWorker extends Worker {
 
         TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
-        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+        Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
 
         call.enqueue(new Callback<Horaris>() {
             @Override

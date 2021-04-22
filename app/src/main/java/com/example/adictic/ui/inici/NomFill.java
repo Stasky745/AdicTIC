@@ -3,6 +3,7 @@ package com.example.adictic.ui.inici;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
     TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     ColorStateList oldColors;
 
@@ -66,6 +68,8 @@ public class NomFill extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nom_fill);
+
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
@@ -175,7 +179,7 @@ public class NomFill extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) {
-                                TodoApp.setIDChild(fillVell.idChild);
+                                sharedPreferences.edit().putLong("idUser",fillVell.idChild).apply();
                                 if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                     NomFill.this.finish();
@@ -217,7 +221,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
                                 if (response.isSuccessful() && response.body() != null) {
-                                    TodoApp.setIDChild(response.body());
+                                    sharedPreferences.edit().putLong("idUser",response.body()).apply();
                                     if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
