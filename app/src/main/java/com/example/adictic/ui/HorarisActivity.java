@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,6 +36,8 @@ import retrofit2.Response;
 
 public class HorarisActivity extends AppCompatActivity {
 
+    private SharedPreferences sharedPreferences;
+
     static ChipGroup chipGroup;
     static Chip CH_horariGeneric;
     static Chip CH_horariDiari;
@@ -64,6 +67,7 @@ public class HorarisActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         canvis = 0;
 
@@ -71,7 +75,7 @@ public class HorarisActivity extends AppCompatActivity {
 
         setViews();
 
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             TV_info.setVisibility(View.VISIBLE);
             setViewsTutor(true);
 
@@ -212,7 +216,7 @@ public class HorarisActivity extends AppCompatActivity {
         }
 
         for (HorarisNit horarisNit : horarisNits){
-            if(TodoApp.getTutor() == 0){
+            if(!sharedPreferences.getBoolean("isTutor",false)){
                 RoomRepo roomRepo = new RoomRepo(getApplicationContext());
                 roomRepo.insertHorarisNit(horarisNit);
             }

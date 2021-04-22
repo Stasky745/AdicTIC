@@ -1,10 +1,17 @@
 package com.example.adictic.roomdb;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import androidx.room.Room;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class RoomRepo {
     private final RoomDB roomDB;
@@ -19,9 +26,18 @@ public class RoomRepo {
      * Funcions per Entity BlockedApp
      */
 
-    public List<BlockedApp> getAllBlockedApps(){
-        return roomDB.blockedAppDAO().getAll();
+    public List<BlockedApp> getAllBlockedApps() {
+        try {
+            Callable<List<BlockedApp>> callable = () -> roomDB.blockedAppDAO().getAll();
+
+            Future<List<BlockedApp>> future = Executors.newSingleThreadExecutor().submit(callable);
+            return future.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
     }
+    public List<BlockedApp> getAllNotBlockedApps() { return roomDB.blockedAppDAO().getAllNotBlocked(); }
 
     public BlockedApp findBlockedAppByPkg(String pkg){
         return roomDB.blockedAppDAO().findByPkgName(pkg);
@@ -31,12 +47,44 @@ public class RoomRepo {
         roomDB.blockedAppDAO().update(blockedApp);
     }
 
-    public void deleteBlockApp(BlockedApp blockedApp){
-        roomDB.blockedAppDAO().delete(blockedApp);
+    public void deleteBlockApp(BlockedApp blockedApp){ roomDB.blockedAppDAO().delete(blockedApp); }
+    public int deleteAllBlockApps(){
+        try {
+            Callable<Integer> callable = () -> roomDB.blockedAppDAO().deleteAll();
+
+            Future<Integer> future = Executors.newSingleThreadExecutor().submit(callable);
+            return future.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public void insertBlockApp(BlockedApp blockedApp){
         roomDB.blockedAppDAO().insert(blockedApp);
+    }
+
+    /**
+     * Funcions per Entity FreeUseApp
+     */
+
+    public List<FreeUseApp> getAllFreeUseApps(){
+        return roomDB.freeUseAppDAO().getAll();
+    }
+
+    public FreeUseApp findFreeUseAppByPkg(String pkg){
+        return roomDB.freeUseAppDAO().findByPkgName(pkg);
+    }
+
+    public void updateFreeUseApp(FreeUseApp freeUseApp){
+        roomDB.freeUseAppDAO().update(freeUseApp);
+    }
+
+    public void deleteFreeUseApp(FreeUseApp freeUseApp){ roomDB.freeUseAppDAO().delete(freeUseApp); }
+    public void deleteAllFreeUseApps(){ roomDB.freeUseAppDAO().deleteAll(); }
+
+    public void insertFreeUseApp(FreeUseApp freeUseApp){
+        roomDB.freeUseAppDAO().insert(freeUseApp);
     }
 
     /**
@@ -72,7 +120,15 @@ public class RoomRepo {
     }
 
     public List<EventBlock> getAllActiveEvents(){
-        return roomDB.eventBlockDAO().getActiveEvents();
+        Callable<List<EventBlock>> callable = () -> roomDB.eventBlockDAO().getActiveEvents();
+
+        Future<List<EventBlock>> future = Executors.newSingleThreadExecutor().submit(callable);
+        try {
+            return future.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
     }
 
     public EventBlock getEventFromList(String name){

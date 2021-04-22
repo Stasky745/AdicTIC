@@ -8,12 +8,16 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +29,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -33,15 +39,19 @@ import androidx.work.WorkManager;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
+import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
 import com.example.adictic.roomdb.EventBlock;
+import com.example.adictic.roomdb.FreeUseApp;
 import com.example.adictic.roomdb.HorarisNit;
 import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.service.FinishBlockEventWorker;
@@ -49,6 +59,7 @@ import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.ui.inici.Login;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -65,6 +76,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.example.adictic.util.Constants.KEY_SIZE;
 
 public class Funcions {
 
@@ -157,9 +170,11 @@ public class Funcions {
 
     public static void checkHoraris(Context ctx) {
 
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
-        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+        Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
 
         call.enqueue(new Callback<Horaris>() {
             @Override
@@ -283,6 +298,26 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
+        RoomRepo roomRepo = new RoomRepo(ctx);
+        roomRepo.deleteAllBlockApps();
+
+        for(String pkgName : body.blockedApps){
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = pkgName;
+            blockedApp.blockedNow = true;
+            blockedApp.timeLimit = -1;
+            roomRepo.insertBlockApp(blockedApp);
+        }
+        for(LimitedApps limitedApp : body.limitApps){
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = limitedApp.name;
+            blockedApp.blockedNow = false;
+            blockedApp.timeLimit = limitedApp.time;
+            roomRepo.insertBlockApp(blockedApp);
+        }
     }
 
 //    public static HorarisEvents getEventFromList(String name) {
@@ -503,33 +538,52 @@ public class Funcions {
         return appUsages;
     }
 
-    public static void updateLimitedAppsList() {
-        long millisToAdd = Calendar.getInstance().getTimeInMillis() - TodoApp.getStartFreeUse();
-        Map<String, Long> newMap = new HashMap<>();
-        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
-            newMap.put(entry.getKey(), entry.getValue() + millisToAdd);
-        }
+    public static void updateLimitedAppsList(Context mContext) {
+        // Desactivem el "freeUse"
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        sharedPreferences.edit().putBoolean("freeUse",false).apply();
 
-        TodoApp.setStartFreeUse(0);
-        TodoApp.setLimitApps(newMap);
+        // Agafem les dades d'ús d'avui
+        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
+        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
+
+        // Agafem totes les FreeUseApps
+        RoomRepo roomRepo = new RoomRepo(mContext);
+        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+
+        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
+        for(FreeUseApp app : freeUseApps){
+            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+            app.millisUsageEnd = au.totalTime;
+
+            roomRepo.updateFreeUseApp(app);
+        }
     }
 
     public static void startFreeUseLimitList(Context mContext) {
-        List<GeneralUsage> gul = getGeneralUsages(mContext, 0, -1);
-        GeneralUsage gu = gul.get(0);
+        // Activem el "freeUse"
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        sharedPreferences.edit().putBoolean("freeUse",true).apply();
 
-        List<AppUsage> appUsages = (List<AppUsage>) gu.usage;
+        // Agafem les dades d'ús d'avui
+        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
+        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
-        Map<String, Long> newMap = new HashMap<>();
+        // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
+        RoomRepo roomRepo = new RoomRepo(mContext);
+        roomRepo.deleteAllFreeUseApps();
+        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
 
-        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
-            AppUsage appUsage = appUsages.get(appUsages.indexOf(entry.getKey()));
+        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
+        for(BlockedApp app : blockedApps){
+            FreeUseApp freeUseApp = new FreeUseApp();
+            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+            freeUseApp.pkgName = app.pkgName;
+            freeUseApp.millisUsageStart = au.totalTime;
+            freeUseApp.millisUsageEnd = -1;
 
-            newMap.put(entry.getKey(), entry.getValue() - appUsage.totalTime);
+            roomRepo.insertFreeUseApp(freeUseApp);
         }
-
-        TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
-        TodoApp.setLimitApps(newMap);
     }
 
     /**
@@ -633,5 +687,43 @@ public class Funcions {
     public static String getFullURL(String url) {
         if (!url.contains("https://")) return "https://" + url;
         else return url;
+    }
+
+    /**
+     * SHARED PREFERENCES
+     */
+
+    private static MasterKey getMasterKey(Context mCtx) {
+        try {
+            KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
+                    Constants.MASTER_KEY_ALIAS,
+                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(KEY_SIZE)
+                    .build();
+
+            return new MasterKey.Builder(mCtx)
+                    .setKeyGenParameterSpec(spec)
+                    .build();
+        } catch (Exception e) {
+            Log.e(mCtx.getClass().getSimpleName(), "Error on getting master key", e);
+        }
+        return null;
+    }
+
+    public static SharedPreferences getEncryptedSharedPreferences(Context mCtx) {
+        try {
+            return EncryptedSharedPreferences.create(
+                    mCtx,
+                    "values",
+                    getMasterKey(mCtx), // calling the method above for creating MasterKey
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (Exception e) {
+            Log.e(mCtx.getClass().getSimpleName(), "Error on getting encrypted shared preferences", e);
+        }
+        return null;
     }
 }

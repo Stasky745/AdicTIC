@@ -213,14 +213,6 @@ public class TodoApp extends Application {
         TodoApp.blockedDevice = b;
     }
 
-    public static List<String> getBlockedApps() {
-        return TodoApp.blockedApps;
-    }
-
-    public static void setBlockedApps(List<String> l) {
-        TodoApp.blockedApps = l;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();

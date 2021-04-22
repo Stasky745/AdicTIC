@@ -3,6 +3,7 @@ package com.example.adictic.ui.events;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.roomdb.EventBlock;
+import com.example.adictic.roomdb.HorarisNit;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -47,8 +49,8 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     RV_Adapter RVadapter;
 
-    WakeSleepLists wakeSleepList;
     List<EventBlock> eventList;
+    List<HorarisNit> horarisNits;
 
     Button BT_acceptarHoraris;
     Button BT_modificarEvent;
@@ -62,6 +64,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_general_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         idChild = getIntent().getLongExtra("idChild", -1);
         eventList = new ArrayList<>();
@@ -72,7 +75,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
         setLayouts();
         getHoraris();
-        if (TodoApp.getTutor() == 1) setButtons();
+        if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
 
     }
 
@@ -83,7 +86,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 assert data != null;
-                wakeSleepList = data.getParcelableExtra("wakeSleepList");
+                horarisNits = data.getParcelableExtra("wakeSleepList");
 
                 if (canvis == 0) canvis = data.getIntExtra("canvis", 0);
             }
@@ -113,7 +116,6 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        wakeSleepList = response.body().wakeSleepList;
                         eventList = response.body().events;
 
                         RVadapter = new RV_Adapter(EventsActivity.this, eventList);
@@ -141,11 +143,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             Horaris horaris = new Horaris();
             horaris.events = eventList;
 
-            if (wakeSleepList == null) {
-                wakeSleepList = new WakeSleepLists();
-            }
-
-            horaris.wakeSleepList = wakeSleepList;
+            horaris.horarisNits = horarisNits;
 
             Call<String> call = mTodoService.postHoraris(idChild, horaris);
 

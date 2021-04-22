@@ -1,5 +1,6 @@
 package com.example.adictic.ui.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.SplashScreen;
 import com.example.adictic.util.Crypt;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -22,9 +24,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
+    private SharedPreferences sharedPreferences;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        if (TodoApp.getTutor() == 0) {
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        if (!sharedPreferences.getBoolean("isTutor",false)) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);

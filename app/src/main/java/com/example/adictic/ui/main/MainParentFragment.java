@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -69,6 +70,7 @@ public class MainParentFragment extends Fragment {
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
+    private SharedPreferences sharedPreferences;
 
     private ImageView IV_liveIcon;
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -96,9 +98,11 @@ public class MainParentFragment extends Fragment {
         root = inflater.inflate(R.layout.main_parent, container, false);
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
-        setLastLiveApp();
+        if(sharedPreferences.getBoolean("isTutor",false)) setLastLiveApp();
 
         setButtons();
         getStats();
@@ -184,7 +188,7 @@ public class MainParentFragment extends Fragment {
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         CL_Geoloc.setOnClickListener(geoloc);
 
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                     new IntentFilter("liveApp"));
         } else {
@@ -197,21 +201,20 @@ public class MainParentFragment extends Fragment {
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             blockButton.setVisibility(View.VISIBLE);
             blockButton.setOnClickListener(v -> {
-                Button b = v.findViewById(R.id.BT_BlockDevice);
                 Call<String> call;
-                if (b.getText().equals(getString(R.string.block_device))) {
+                if (blockButton.getText().equals(getString(R.string.block_device))) {
                     call = mTodoService.blockChild(idChildSelected);
                 } else call = mTodoService.unblockChild(idChildSelected);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
-                            if (b.getText().equals(getString(R.string.block_device)))
-                                b.setText(getString(R.string.unblock_device));
-                            else b.setText(getString(R.string.block_device));
+                            if (blockButton.getText().equals(getString(R.string.block_device)))
+                                blockButton.setText(getString(R.string.unblock_device));
+                            else blockButton.setText(getString(R.string.block_device));
                         }
                         else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
@@ -233,7 +236,7 @@ public class MainParentFragment extends Fragment {
 
         Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call;
@@ -449,7 +452,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        if (TodoApp.getTutor() == 1)
+        if (sharedPreferences.getBoolean("isTutor",false))
             Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
         super.finalize();
     }
