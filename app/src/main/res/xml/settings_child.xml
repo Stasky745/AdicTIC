@@ -7,4 +7,20 @@
         app:key="setting_change_language"
         app:title="@string/change_language" />
 
+    <PreferenceCategory
+        app:title="Debug">
+
+        <Preference
+            app:key="setting_tancar_sessio"
+            app:title="@string/tancar_sessio" />
+
+        <Preference
+            app:key="setting_pujar_informe"
+            app:title="Pujar informe" />
+
+        <Preference
+            app:key="setting_pujar_installed_apps"
+            app:title="Pujar installed apps" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
