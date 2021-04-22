@@ -10,27 +10,67 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.SplashScreen;
 import com.example.adictic.util.Crypt;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.Calendar;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
+
+    private TodoApi mTodoService;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
         if (TodoApp.getTutor() == 0) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
+            /**DEBUG **/
+            settings_tancar_sessio();
+            settings_pujar_informe();
+            // **/
+
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
         }
         settings_change_language();
+    }
+
+    private void settings_pujar_informe() {
+        Preference pujar_informe = findPreference("setting_pujar_informe");
+
+        assert pujar_informe != null;
+        pujar_informe.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+
+                Funcions.canviarMesosAServidor(gul);
+
+                Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(), gul);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {}
+
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {}
+                });
+                return true;
+            }
+        });
+
     }
 
     private void settings_change_language() {
@@ -59,7 +99,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         assert tancarSessio != null;
         tancarSessio.setOnPreferenceClickListener(preference -> {
-            TodoApi mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(task -> {
 
