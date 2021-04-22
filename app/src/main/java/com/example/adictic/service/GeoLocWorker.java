@@ -3,6 +3,7 @@ package com.example.adictic.service;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,6 +16,7 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -33,6 +35,7 @@ public class GeoLocWorker extends Worker {
 
     private static final String TAG = GeoLocWorker.class.getSimpleName();
     private final Context mContext;
+    private SharedPreferences sharedPreferences;
     private final FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
@@ -49,6 +52,8 @@ public class GeoLocWorker extends Worker {
     @Override
     public Result doWork() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
 
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -114,7 +119,7 @@ public class GeoLocWorker extends Worker {
         SimpleDateFormat dateFormat = new SimpleDateFormat(CURRENT_TIME_FORMAT, Locale.getDefault());
         fill.hora = dateFormat.format(Calendar.getInstance().getTime());
 
-        retrofit2.Call<String> call = mTodoService.postCurrentLocation(TodoApp.getIDChild(), fill);
+        retrofit2.Call<String> call = mTodoService.postCurrentLocation(sharedPreferences.getLong("idUser",-1), fill);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {

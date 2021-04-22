@@ -8,6 +8,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -22,7 +23,10 @@ import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.ui.BlockScreenActivity;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,9 +35,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -42,7 +48,9 @@ import retrofit2.Response;
 public class WindowChangeDetectingService extends AccessibilityService {
 
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
+    private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     TodoApi mTodoService;
+    SharedPreferences sharedPreferences;
     PackageManager mPm;
     List<AppInfo> lastListApps;
     Calendar dayUpdatedInstalledApps;
@@ -59,6 +67,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
         uninstalledApps = new ArrayList<>();
         installedApps = new ArrayList<>();
         dayUpdatedInstalledApps = Calendar.getInstance();
@@ -73,7 +83,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         mPm = getPackageManager();
         lastListApps = new ArrayList<>();
-        if (TodoApp.getIDChild() != -1) checkInstalledApps();
+        if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
 
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
@@ -144,7 +154,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             lastTryUpdate = Calendar.getInstance();
 
-            Call<String> call = mTodoService.postInstalledApps(TodoApp.getIDChild(), listInstalledPkgs);
+            Call<String> call = mTodoService.postInstalledApps(sharedPreferences.getLong("idUser",-1), listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
                 @Override
@@ -167,14 +177,16 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        boolean freeUseEnabled = sharedPreferences.getBoolean("freeUse",false);
+        if (!freeUseEnabled && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+
+            RoomRepo roomRepo = new RoomRepo(getApplicationContext());
 
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
-            if (TodoApp.getIDChild() != -1) checkInstalledApps();
+            if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
 
-            //checkInstalledApps(); /** Borrar després, aquí per fer proves **/
-
+            // Enviem l'última app oberta a la mare
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()){
                 //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
@@ -183,8 +195,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 liveApp.appName = lastActivity;
                 liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-                if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
-                    Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(TodoApp.getIDChild(), liveApp);
+                if (!blackListLiveApp.contains(lastPackage)) {
+                    Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong("idUser",-1), liveApp);
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
@@ -196,7 +208,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            if (TodoApp.getBlockedDevice() || !TodoApp.getBlockEvents().isEmpty()) {
+            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false);
+            if (estaBloquejat || !roomRepo.getAllActiveEvents().isEmpty()) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -212,8 +225,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
                 if (isActivity) {
-                    if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
-                        ApplicationInfo appInfo;
+                    ApplicationInfo appInfo = null;
+                    if (!blackListLiveApp.contains(componentName.getPackageName())) {
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
                             lastActivity = appInfo.loadLabel(getPackageManager()).toString();
@@ -227,9 +240,15 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                     //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
 
-                    if (TodoApp.getStartFreeUse() != 1 && TodoApp.getBlockedApps().contains(componentName.getPackageName())) {
+                    boolean isBlocked = false;
 
-                        Call<String> call = mTodoService.callBlockedApp(TodoApp.getIDChild(), componentName.getPackageName());
+                    if(roomRepo.getAllBlockedApps().contains(componentName.getPackageName())){
+                        BlockedApp blockedApp = roomRepo.findBlockedAppByPkg(componentName.getPackageName());
+                        isBlocked = blockedApp.blockedNow;
+                    }
+
+                    if (isBlocked) {
+                        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong("idUser",-1), componentName.getPackageName());
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
@@ -242,12 +261,19 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         this.startActivity(lockIntent);
                     }
-                    Log.i("LiveApp", TodoApp.getLiveApp() +
-                            " " + TodoApp.getIDChild());
-                    if (TodoApp.getLiveApp() && TodoApp.getIDChild() != -1) {
+
+                    Log.i("LiveApp", sharedPreferences.getBoolean("liveApp",false) +
+                            " " + sharedPreferences.getLong("idUser",-1));
+
+                    if (sharedPreferences.getBoolean("liveApp",false)) {
                         LiveApp liveApp = new LiveApp();
-                        liveApp.pkgName = lastPackage;
-                        liveApp.appName = lastActivity;
+                        liveApp.pkgName = componentName.getPackageName();
+
+                        if(appInfo == null)
+                            liveApp.appName = componentName.getPackageName();
+                        else
+                            liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
+
                         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
 //                        ApplicationInfo appInfo;
@@ -259,8 +285,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 //                        }
 
                         //mirar si component.getpackagename() funciona si ho fem amb lastPackage
-                        if (!TodoApp.blackListLiveApp.contains(lastPackage)) {
-                            Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(TodoApp.getIDChild(), liveApp);
+                        if (!blackListLiveApp.contains(componentName.getPackageName())) {
+                            Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong("idUser",-1), liveApp);
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }

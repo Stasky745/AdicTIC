@@ -257,7 +257,7 @@
     <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
 
     <string name="estadistiques">"Informació i Estadístiques"</string>
-    <string name="adictic_splash">AdicTIC_Splash</string>
+    <string name="adictic_splash" translatable="false">AdicTIC_Splash</string>
     <string name="settings">Configuració</string>
     <string name="titol">Títol</string>
     <string name="desc">Descripció</string>
@@ -275,8 +275,8 @@
     <string name="enviar_dubte">Enviar dubte</string>
 
     <string name="crear_dbute">Crear nou dubte</string>
-    <string name="chats_tancats">Chats tancats</string>
-    <string name="chat_obert">Chat obert</string>
+    <string name="chats_tancats">Xats tancats</string>
+    <string name="chat_obert">Xat obert</string>
 
     <string name="limit">Límits</string>
     <string name="dades_del_dispositiu">Dades del dispositiu</string>
@@ -301,10 +301,10 @@
     <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
     <string name="cancel">Cancel·lar</string>
     <string name="treure_acces_titol">Treure Accés</string>
-    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per tornar a donar accés només caldrà tornar apretar aquest botó.</string>
     <string name="donar_acces_titol">Donar Accés</string>
-    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
-    <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">En quina localitat t\'agradaria que fos el professional que t\'atendrà?</string>
     <string name="send_dubte">Enviar Consulta</string>
     <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
     <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>

@@ -8,12 +8,16 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +28,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -32,21 +39,30 @@ import androidx.work.WorkManager;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
+import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.TimeDay;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
+import com.example.adictic.roomdb.EventBlock;
+import com.example.adictic.roomdb.FreeUseApp;
+import com.example.adictic.roomdb.HorarisNit;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.ui.inici.Login;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,33 +77,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.adictic.util.Constants.KEY_SIZE;
+
 public class Funcions {
 
-    private static void setHoraris(WakeSleepLists list) {
-        TimeDay sleep = list.sleep;
-        TimeDay wake = list.wake;
-
-        Map<Integer, String> sleepMap = new HashMap<>();
-        Map<Integer, String> wakeMap = new HashMap<>();
-
-        sleepMap.put(Calendar.MONDAY, sleep.monday);
-        sleepMap.put(Calendar.TUESDAY, sleep.tuesday);
-        sleepMap.put(Calendar.WEDNESDAY, sleep.wednesday);
-        sleepMap.put(Calendar.THURSDAY, sleep.thursday);
-        sleepMap.put(Calendar.FRIDAY, sleep.friday);
-        sleepMap.put(Calendar.SATURDAY, sleep.saturday);
-        sleepMap.put(Calendar.SUNDAY, sleep.sunday);
-
-        wakeMap.put(Calendar.MONDAY, wake.monday);
-        wakeMap.put(Calendar.TUESDAY, wake.tuesday);
-        wakeMap.put(Calendar.WEDNESDAY, wake.wednesday);
-        wakeMap.put(Calendar.THURSDAY, wake.thursday);
-        wakeMap.put(Calendar.FRIDAY, wake.friday);
-        wakeMap.put(Calendar.SATURDAY, wake.saturday);
-        wakeMap.put(Calendar.SUNDAY, wake.sunday);
-
-        TodoApp.setWakeHoraris(wakeMap);
-        TodoApp.setSleepHoraris(sleepMap);
+    private static void setHoraris(Context ctx, List<HorarisNit> list) {
+        //per cada dia (Sunday = 1) -> (Saturday = 7)
+        for(HorarisNit horarisNit : list){
+            RoomRepo roomRepo = new RoomRepo(ctx.getApplicationContext());
+            roomRepo.insertHorarisNit(horarisNit);
+        }
     }
 
     private static long getHorariInMillis() {
@@ -169,37 +168,27 @@ public class Funcions {
         });
     }
 
-    public static long checkHoraris(Context ctx) {
+    public static void checkHoraris(Context ctx) {
+
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
 
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
-        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
-
-        final long[] res = {-1};
+        Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
 
         call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    setHoraris(response.body().wakeSleepList);
-                    res[0] = getHorariInMillis();
-                } else if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
-                    res[0] = getHorariInMillis();
-                else res[0] = -2;
+                    setHoraris(ctx, response.body().horarisNits);
+                }
             }
 
             @Override
-            public void onFailure(Call<Horaris> call, Throwable t) {
-                if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
-                    res[0] = getHorariInMillis();
-                else res[0] = -2;
+            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
+
             }
         });
-
-        while (res[0] == -1) {
-        }
-
-        return res[0];
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
@@ -244,6 +233,21 @@ public class Funcions {
 
         Pair<Integer, Integer> res = new Pair<>(hores, Math.round(minuts));
         return res;
+    }
+
+    public static int string2MillisOfDay(String time){
+        String[] time2 = time.split(":");
+        DateTime dateTime = new DateTime()
+                .withHourOfDay(Integer.parseInt(time2[0]))
+                .withMinuteOfHour(Integer.parseInt(time2[1]));
+        return dateTime.getMillisOfDay();
+    }
+
+    public static String millisOfDay2String(int millis){
+        DateTime dateTime = new DateTime()
+                .withMillisOfDay(millis);
+
+        return dateTime.getHourOfDay() + ":" + dateTime.getMinuteOfHour();
     }
 
     // To check if Admin Permissions are on
@@ -296,58 +300,124 @@ public class Funcions {
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static HorarisEvents getEventFromList(String name) {
-        boolean trobat = false;
-        int i = 0;
-        List<HorarisEvents> listEvents = TodoApp.getListEvents();
-        HorarisEvents event = null;
-        while (!trobat && i < listEvents.size()) {
-            event = listEvents.get(i);
-            if (event.name.equals(name)) trobat = true;
+    public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
+        RoomRepo roomRepo = new RoomRepo(ctx);
+        roomRepo.deleteAllBlockApps();
+
+        for(String pkgName : body.blockedApps){
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = pkgName;
+            blockedApp.blockedNow = true;
+            blockedApp.timeLimit = -1;
+            roomRepo.insertBlockApp(blockedApp);
         }
-        return event;
+        for(LimitedApps limitedApp : body.limitApps){
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = limitedApp.name;
+            blockedApp.blockedNow = false;
+            blockedApp.timeLimit = limitedApp.time;
+            roomRepo.insertBlockApp(blockedApp);
+        }
     }
 
-    public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
-        List<HorarisEvents> currentEvents = TodoApp.getListEvents();
+//    public static HorarisEvents getEventFromList(String name) {
+//        RoomRepo roomRepo = new RoomRepo()
+//        boolean trobat = false;
+//        int i = 0;
+//        List<HorarisEvents> listEvents = TodoApp.getListEvents();
+//        HorarisEvents event = null;
+//        while (!trobat && i < listEvents.size()) {
+//            event = listEvents.get(i);
+//            if (event.name.equals(name)) trobat = true;
+//        }
+//        return event;
+//    }
 
-        List<HorarisEvents> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
+    private static List<EventBlock> horarisEvents2EventBlock(List<HorarisEvents> horarisEvents){
+        List<EventBlock> res = new ArrayList<>();
+        
+        for(HorarisEvents event : horarisEvents){
+            EventBlock eventBlock = new EventBlock();
+
+            eventBlock.id = event.id;
+            eventBlock.name = event.name;
+
+            Pair<Integer,Integer> startTime = stringToTime(event.start);
+            DateTime dateTimeStart = new DateTime()
+                    .withHourOfDay(startTime.first)
+                    .withMinuteOfHour(startTime.second);
+            eventBlock.startEvent = dateTimeStart.getMillisOfDay();
+            Pair<Integer,Integer> endTime = stringToTime(event.start);
+            DateTime dateTimeFinish = new DateTime()
+                    .withHourOfDay(endTime.first)
+                    .withMinuteOfHour(endTime.second);
+            eventBlock.endEvent = dateTimeFinish.getMillisOfDay();
+
+            int millisNow = DateTime.now().getMillisOfDay();
+            eventBlock.activeNow = millisNow >= eventBlock.startEvent && millisNow < eventBlock.endEvent;
+
+            eventBlock.monday = event.days.contains(Calendar.MONDAY);
+            eventBlock.tuesday = event.days.contains(Calendar.TUESDAY);
+            eventBlock.wednesday = event.days.contains(Calendar.WEDNESDAY);
+            eventBlock.thursday = event.days.contains(Calendar.THURSDAY);
+            eventBlock.friday = event.days.contains(Calendar.FRIDAY);
+            eventBlock.saturday = event.days.contains(Calendar.SATURDAY);
+            eventBlock.sunday = event.days.contains(Calendar.SUNDAY);
+
+            res.add(eventBlock);
+        }
+
+        return res;
+    }
+    
+    public static void updateEventList(Context mContext, List<EventBlock> newEvents) {
+        RoomRepo roomRepo = new RoomRepo(mContext);
+
+//        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
+//
+//        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
+        List<EventBlock> currentEvents = roomRepo.getAllEventBlocks();
+
+        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
 
         WorkManager workManager = WorkManager.getInstance(mContext);
 
-        for (HorarisEvents event : disjunctionEvents) {
+        for (EventBlock event : disjunctionEvents) {
             int index = newEvents.indexOf(event);
 
             // Event s'ha esborrat
             if (index == -1) {
                 workManager.cancelUniqueWork(event.name);
+                roomRepo.deleteEventBlock(event);
             }
             // És un nou event
             else if (event.exactSame(newEvents.get(index))) {
-                long now = Calendar.getInstance().getTimeInMillis();
+//                Pair<Integer, Integer> startEvent = stringToTime(event.start);
+//                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
+//
+//                Calendar start = Calendar.getInstance();
+//                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
+//                start.set(Calendar.MINUTE, startEvent.second);
+//
+//                Calendar finish = Calendar.getInstance();
+//                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
+//                finish.set(Calendar.MINUTE, finishEvent.second);
 
-                Pair<Integer, Integer> startEvent = stringToTime(event.start);
-                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
+                long now = DateTime.now().getMillisOfDay();
 
-                Calendar start = Calendar.getInstance();
-                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
-                start.set(Calendar.MINUTE, startEvent.second);
-
-                Calendar finish = Calendar.getInstance();
-                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
-                finish.set(Calendar.MINUTE, finishEvent.second);
-
-                if (now < start.getTimeInMillis()) {
-                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
-                } else if (now < finish.getTimeInMillis()) {
-                    runFinishBlockEventWorker(mContext, event.name, finish.getTimeInMillis() - now);
-                } else {
-                    start.add(Calendar.DATE, 1);
-                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
+                if (now < event.startEvent) {
+                    runStartBlockEventWorker(mContext, event.name, event.startEvent - now);
+                } else if (now < event.endEvent) {
+                    runFinishBlockEventWorker(mContext, event.name, event.endEvent - now);
                 }
+//                } else {
+//                    start.add(Calendar.DATE, 1);
+//                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
+//                }
+
+                roomRepo.insertEventBlock(event);
             }
         }
-        TodoApp.setListEvents(newEvents);
     }
 
     public static void runStartBlockEventWorker(Context mContext, String name, long delay) {
@@ -468,33 +538,52 @@ public class Funcions {
         return appUsages;
     }
 
-    public static void updateLimitedAppsList() {
-        long millisToAdd = Calendar.getInstance().getTimeInMillis() - TodoApp.getStartFreeUse();
-        Map<String, Long> newMap = new HashMap<>();
-        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
-            newMap.put(entry.getKey(), entry.getValue() + millisToAdd);
-        }
+    public static void updateLimitedAppsList(Context mContext) {
+        // Desactivem el "freeUse"
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        sharedPreferences.edit().putBoolean("freeUse",false).apply();
 
-        TodoApp.setStartFreeUse(0);
-        TodoApp.setLimitApps(newMap);
+        // Agafem les dades d'ús d'avui
+        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
+        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
+
+        // Agafem totes les FreeUseApps
+        RoomRepo roomRepo = new RoomRepo(mContext);
+        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+
+        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
+        for(FreeUseApp app : freeUseApps){
+            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+            app.millisUsageEnd = au.totalTime;
+
+            roomRepo.updateFreeUseApp(app);
+        }
     }
 
     public static void startFreeUseLimitList(Context mContext) {
-        List<GeneralUsage> gul = getGeneralUsages(mContext, 0, -1);
-        GeneralUsage gu = gul.get(0);
+        // Activem el "freeUse"
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        sharedPreferences.edit().putBoolean("freeUse",true).apply();
 
-        List<AppUsage> appUsages = (List<AppUsage>) gu.usage;
+        // Agafem les dades d'ús d'avui
+        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
+        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
-        Map<String, Long> newMap = new HashMap<>();
+        // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
+        RoomRepo roomRepo = new RoomRepo(mContext);
+        roomRepo.deleteAllFreeUseApps();
+        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
 
-        for (Map.Entry<String, Long> entry : TodoApp.getLimitApps().entrySet()) {
-            AppUsage appUsage = appUsages.get(appUsages.indexOf(entry.getKey()));
+        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
+        for(BlockedApp app : blockedApps){
+            FreeUseApp freeUseApp = new FreeUseApp();
+            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+            freeUseApp.pkgName = app.pkgName;
+            freeUseApp.millisUsageStart = au.totalTime;
+            freeUseApp.millisUsageEnd = -1;
 
-            newMap.put(entry.getKey(), entry.getValue() - appUsage.totalTime);
+            roomRepo.insertFreeUseApp(freeUseApp);
         }
-
-        TodoApp.setStartFreeUse(Calendar.getInstance().getTimeInMillis());
-        TodoApp.setLimitApps(newMap);
     }
 
     /**
@@ -598,5 +687,43 @@ public class Funcions {
     public static String getFullURL(String url) {
         if (!url.contains("https://")) return "https://" + url;
         else return url;
+    }
+
+    /**
+     * SHARED PREFERENCES
+     */
+
+    private static MasterKey getMasterKey(Context mCtx) {
+        try {
+            KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
+                    Constants.MASTER_KEY_ALIAS,
+                    KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                    .setKeySize(KEY_SIZE)
+                    .build();
+
+            return new MasterKey.Builder(mCtx)
+                    .setKeyGenParameterSpec(spec)
+                    .build();
+        } catch (Exception e) {
+            Log.e(mCtx.getClass().getSimpleName(), "Error on getting master key", e);
+        }
+        return null;
+    }
+
+    public static SharedPreferences getEncryptedSharedPreferences(Context mCtx) {
+        try {
+            return EncryptedSharedPreferences.create(
+                    mCtx,
+                    "values",
+                    getMasterKey(mCtx), // calling the method above for creating MasterKey
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (Exception e) {
+            Log.e(mCtx.getClass().getSimpleName(), "Error on getting encrypted shared preferences", e);
+        }
+        return null;
     }
 }
