@@ -8,8 +8,10 @@ import androidx.room.PrimaryKey;
 public class BlockedApp {
     @NonNull
     @PrimaryKey
-    public String pkgName;
+    public String pkgName="";
 
     // -1 si bloqueig permanent
     public long timeLimit;
+
+    public boolean blockedNow;
 }

@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -67,37 +68,12 @@ import retrofit2.Response;
 
 public class Funcions {
 
-    private static void setHoraris(WakeSleepLists list) {
+    private static void setHoraris(Context ctx, List<HorarisNit> list) {
         //per cada dia (Sunday = 1) -> (Saturday = 7)
-        for(int i = 1; i <= 7; i++){
-            HorarisNit horarisNit = new HorarisNit();
-            horarisNit.idDia = i;
+        for(HorarisNit horarisNit : list){
+            RoomRepo roomRepo = new RoomRepo(ctx.getApplicationContext());
+            roomRepo.insertHorarisNit(horarisNit);
         }
-
-        TimeDay sleep = list.sleep;
-        TimeDay wake = list.wake;
-
-        Map<Integer, String> sleepMap = new HashMap<>();
-        Map<Integer, String> wakeMap = new HashMap<>();
-
-        sleepMap.put(Calendar.MONDAY, sleep.monday);
-        sleepMap.put(Calendar.TUESDAY, sleep.tuesday);
-        sleepMap.put(Calendar.WEDNESDAY, sleep.wednesday);
-        sleepMap.put(Calendar.THURSDAY, sleep.thursday);
-        sleepMap.put(Calendar.FRIDAY, sleep.friday);
-        sleepMap.put(Calendar.SATURDAY, sleep.saturday);
-        sleepMap.put(Calendar.SUNDAY, sleep.sunday);
-
-        wakeMap.put(Calendar.MONDAY, wake.monday);
-        wakeMap.put(Calendar.TUESDAY, wake.tuesday);
-        wakeMap.put(Calendar.WEDNESDAY, wake.wednesday);
-        wakeMap.put(Calendar.THURSDAY, wake.thursday);
-        wakeMap.put(Calendar.FRIDAY, wake.friday);
-        wakeMap.put(Calendar.SATURDAY, wake.saturday);
-        wakeMap.put(Calendar.SUNDAY, wake.sunday);
-
-        TodoApp.setWakeHoraris(wakeMap);
-        TodoApp.setSleepHoraris(sleepMap);
     }
 
     private static long getHorariInMillis() {
@@ -179,37 +155,25 @@ public class Funcions {
         });
     }
 
-    public static long checkHoraris(Context ctx) {
+    public static void checkHoraris(Context ctx) {
 
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
         Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
 
-        final long[] res = {-1};
-
         call.enqueue(new Callback<Horaris>() {
             @Override
-            public void onResponse(Call<Horaris> call, Response<Horaris> response) {
+            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    setHoraris(response.body().wakeSleepList);
-                    res[0] = getHorariInMillis();
-                } else if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
-                    res[0] = getHorariInMillis();
-                else res[0] = -2;
+                    setHoraris(ctx, response.body().horarisNits);
+                }
             }
 
             @Override
-            public void onFailure(Call<Horaris> call, Throwable t) {
-                if (!TodoApp.getSleepHoraris().isEmpty() && !TodoApp.getWakeHoraris().isEmpty())
-                    res[0] = getHorariInMillis();
-                else res[0] = -2;
+            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
+
             }
         });
-
-        while (res[0] == -1) {
-        }
-
-        return res[0];
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
@@ -254,6 +218,21 @@ public class Funcions {
 
         Pair<Integer, Integer> res = new Pair<>(hores, Math.round(minuts));
         return res;
+    }
+
+    public static int string2MillisOfDay(String time){
+        String[] time2 = time.split(":");
+        DateTime dateTime = new DateTime()
+                .withHourOfDay(Integer.parseInt(time2[0]))
+                .withMinuteOfHour(Integer.parseInt(time2[1]));
+        return dateTime.getMillisOfDay();
+    }
+
+    public static String millisOfDay2String(int millis){
+        DateTime dateTime = new DateTime()
+                .withMillisOfDay(millis);
+
+        return dateTime.getHourOfDay() + ":" + dateTime.getMinuteOfHour();
     }
 
     // To check if Admin Permissions are on
@@ -356,20 +335,20 @@ public class Funcions {
         return res;
     }
     
-    public static void updateEventList(Context mContext, List<HorarisEvents> newEvents) {
+    public static void updateEventList(Context mContext, List<EventBlock> newEvents) {
         RoomRepo roomRepo = new RoomRepo(mContext);
 
-        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
-        
-        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
+//        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
+//
+//        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
         List<EventBlock> currentEvents = roomRepo.getAllEventBlocks();
 
-        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(eventBlockList, currentEvents));
+        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
 
         WorkManager workManager = WorkManager.getInstance(mContext);
 
         for (EventBlock event : disjunctionEvents) {
-            int index = eventBlockList.indexOf(event);
+            int index = newEvents.indexOf(event);
 
             // Event s'ha esborrat
             if (index == -1) {
@@ -377,7 +356,7 @@ public class Funcions {
                 roomRepo.deleteEventBlock(event);
             }
             // És un nou event
-            else if (event.exactSame(eventBlockList.get(index))) {
+            else if (event.exactSame(newEvents.get(index))) {
 //                Pair<Integer, Integer> startEvent = stringToTime(event.start);
 //                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
 //
