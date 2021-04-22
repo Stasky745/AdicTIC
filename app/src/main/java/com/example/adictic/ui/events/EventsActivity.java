@@ -25,6 +25,8 @@ import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.EventBlock;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import java.text.DateFormatSymbols;
@@ -41,12 +43,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     int canvis;
 
-    HorarisEvents selectedEvent;
+    EventBlock selectedEvent;
 
     RV_Adapter RVadapter;
 
     WakeSleepLists wakeSleepList;
-    List<HorarisEvents> eventList;
+    List<EventBlock> eventList;
 
     Button BT_acceptarHoraris;
     Button BT_modificarEvent;
@@ -184,12 +186,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         });
 
         BT_afegirEvent.setOnClickListener(view -> {
-            HorarisEvents newEvent = new HorarisEvents();
-            newEvent.id = Long.parseLong("0");
-            newEvent.name = "";
-            newEvent.start = "00:00";
-            newEvent.finish = "00:00";
-            newEvent.days = new ArrayList<>();
+            EventBlock newEvent = new EventBlock();
 
             FragmentManager fm = getSupportFragmentManager();
             EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), newEvent);
@@ -223,12 +220,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     @Override
-    public void onSelectedData(HorarisEvents newEvent) {
+    public void onSelectedData(EventBlock newEvent) {
         if (newEvent.id != 0) {
             int i = 0;
             boolean found = false;
             while (i < eventList.size() && !found) {
-                if (eventList.get(i).id.equals(newEvent.id)) {
+                if (eventList.get(i).id == (newEvent.id)) {
                     eventList.remove(i);
                     found = true;
                 }
@@ -245,9 +242,9 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
         Context mContext;
         LayoutInflater mInflater;
-        List<HorarisEvents> eventAdapterList;
+        List<EventBlock> eventAdapterList;
 
-        RV_Adapter(Context context, List<HorarisEvents> list) {
+        RV_Adapter(Context context, List<EventBlock> list) {
             mContext = context;
             eventAdapterList = list;
             mInflater = LayoutInflater.from(mContext);
@@ -273,18 +270,27 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
-            final HorarisEvents event = eventAdapterList.get(position);
+            final EventBlock event = eventAdapterList.get(position);
 
             holder.TV_eventName.setText(event.name);
             StringBuilder eventDaysString = new StringBuilder();
-            for (int i : event.days) {
-                String day = new DateFormatSymbols().getWeekdays()[i];
-                String s1 = day.substring(0, 1).toUpperCase();
-                //eventDaysString += s1 + day.substring(1) + " ";
-                eventDaysString.append(s1).append(day.substring(1)).append(" ");
-            }
+
+            if(event.monday) eventDaysString.append(getString(R.string.monday)).append(" ");
+            if(event.tuesday) eventDaysString.append(getString(R.string.tuesday)).append(" ");
+            if(event.wednesday) eventDaysString.append(getString(R.string.wednesday)).append(" ");
+            if(event.thursday) eventDaysString.append(getString(R.string.thursday)).append(" ");
+            if(event.friday) eventDaysString.append(getString(R.string.friday)).append(" ");
+            if(event.saturday) eventDaysString.append(getString(R.string.saturday)).append(" ");
+            if(event.sunday) eventDaysString.append(getString(R.string.sunday)).append(" ");
+//            for (int i : event.days) {
+//                String day = new DateFormatSymbols().getWeekdays()[i];
+//                String s1 = day.substring(0, 1).toUpperCase();
+//                //eventDaysString += s1 + day.substring(1) + " ";
+//                eventDaysString.append(s1).append(day.substring(1)).append(" ");
+//            }
             holder.TV_eventDays.setText(eventDaysString.toString());
-            String eventTimesString = event.start + "\n" + event.finish;
+            String eventTimesString = Funcions.millisOfDay2String(event.startEvent)
+                    + "\n" + Funcions.millisOfDay2String(event.endEvent);
             holder.TV_eventTimes.setText(eventTimesString);
 
             holder.mRootView.setOnClickListener(view -> {

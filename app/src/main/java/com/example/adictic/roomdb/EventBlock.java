@@ -57,4 +57,19 @@ public class EventBlock {
                 this.startEvent == object.startEvent &&
                 this.endEvent == object.endEvent;
     }
+
+    public EventBlock(){
+        id = 0;
+        name = "";
+        startEvent = 0;
+        endEvent = 0;
+
+        monday = false;
+        tuesday = false;
+        wednesday = false;
+        thursday = false;
+        friday = false;
+        saturday = false;
+        sunday = false;
+    }
 }

@@ -9,12 +9,23 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
+import com.example.adictic.entity.Horaris;
+import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
+import com.example.adictic.roomdb.HorarisNit;
+import com.example.adictic.roomdb.RoomRepo;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
+
+import org.joda.time.DateTime;
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LimitAppsWorker extends Worker {
     public LimitAppsWorker(
@@ -32,28 +43,76 @@ public class LimitAppsWorker extends Worker {
 
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
 
-        long nextHorari = Funcions.checkHoraris(getApplicationContext()) - Calendar.getInstance().getTimeInMillis();
+        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
+
+        List<BlockedApp> blockedApps = roomRepo.getAllBlockedApps();
+
+        //checkHoraris();
 
         List<AppUsage> listCurrentUsage = (List<AppUsage>) gul.get(0).usage;
 
-        Map<String, Long> limitApps = TodoApp.getLimitApps();
+        long delayNextLimit = Long.MAX_VALUE;
 
-        long nextWorker = -1;
-        for (Map.Entry<String, Long> entry : limitApps.entrySet()) {
-            AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(entry.getKey()));
-            if (appUsage.totalTime >= entry.getValue())
-                TodoApp.getBlockedApps().add(entry.getKey());
-            else {
-                if (nextWorker == -1 || entry.getValue() - appUsage.totalTime < nextWorker) {
-                    nextWorker = entry.getValue() - appUsage.totalTime;
-                }
+        for(BlockedApp app : blockedApps){
+
+            AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
+            if(app.timeLimit > -1 && !app.blockedNow &&
+                    appUsage.totalTime >= app.timeLimit){
+                app.blockedNow = true;
+                roomRepo.updateBlockApp(app);
+            }
+            else if(app.timeLimit > -1 && !app.blockedNow){
+                long timeLeft = app.timeLimit - appUsage.totalTime;
+                if(timeLeft < delayNextLimit) delayNextLimit = timeLeft;
             }
         }
 
-        if (nextHorari == -2) nextHorari = nextWorker + 1;
+        DateTime dateTime = new DateTime();
+        int now = dateTime.getMillisOfDay();
 
-        Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(nextHorari, nextWorker));
+        List<HorarisNit> horarisNits = roomRepo.getAllHorarisNit();
+        HorarisNit avui = horarisNits.get(horarisNits.indexOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+        long delayNit;
+
+        if(avui.dormir > now) delayNit = avui.dormir - now;
+        else{
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.DAY_OF_WEEK,1);
+            HorarisNit dema = horarisNits.get(horarisNits.indexOf(calendar.get(Calendar.DAY_OF_WEEK)));
+
+        }
+
+        Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(delayNextLimit, delayNit));
 
         return Result.success();
+    }
+
+    private void checkHoraris() {
+
+        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+
+        Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+
+        call.enqueue(new Callback<Horaris>() {
+            @Override
+            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    setHoraris(response.body().horarisNits);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
+
+            }
+        });
+    }
+
+    private void setHoraris(List<HorarisNit> list) {
+        //per cada dia (Sunday = 1) -> (Saturday = 7)
+        for(HorarisNit horarisNit : list){
+            RoomRepo roomRepo = new RoomRepo(getApplicationContext());
+            roomRepo.insertHorarisNit(horarisNit);
+        }
     }
 }

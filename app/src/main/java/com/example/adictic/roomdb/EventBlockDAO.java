@@ -17,6 +17,9 @@ public interface EventBlockDAO {
     @Query("SELECT * FROM EventBlock WHERE nom_event LIKE :nom")
     EventBlock getEventFromList(String nom);
 
+    @Query("SELECT * FROM EventBlock WHERE id LIKE :id")
+    EventBlock getEventFromListWithID(Long id);
+
     @Query("SELECT * FROM EventBlock WHERE activeNow")
     List<EventBlock> getActiveEvents();
 
