@@ -2,6 +2,7 @@ package com.example.adictic.ui;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Build;
@@ -42,6 +43,7 @@ import retrofit2.Response;
 
 public class BlockAppsActivity extends AppCompatActivity {
     TodoApi mTodoService;
+    SharedPreferences sharedPreferences;
 
     Long idChild;
     List<BlockAppEntity> blockAppList;
@@ -62,6 +64,8 @@ public class BlockAppsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
 
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
         idChild = getIntent().getLongExtra("idChild", -1);
 
         mTodoService = ((TodoApp) this.getApplication()).getAPI();
@@ -79,7 +83,7 @@ public class BlockAppsActivity extends AppCompatActivity {
         BT_unlock = findViewById(R.id.BT_unlock);
         BT_unlock.setVisibility(View.GONE);
 
-        if (TodoApp.getTutor() == 1) setButtons();
+        if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
         setRecyclerView();
         setSearchBar();
     }

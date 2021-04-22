@@ -27,6 +27,7 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
@@ -409,9 +410,9 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
 
             // Set colours according to total time spent
-            if (totalTime <= xDays * TodoApp.CORRECT_USAGE_DAY)
+            if (totalTime <= xDays * Constants.CORRECT_USAGE_DAY)
                 TV_totalUse.setTextColor(Color.GREEN);
-            else if (totalTime > xDays * TodoApp.DANGEROUS_USAGE_DAY)
+            else if (totalTime > xDays * Constants.DANGEROUS_USAGE_DAY)
                 TV_totalUse.setTextColor(Color.RED);
             else TV_totalUse.setTextColor(Color.rgb(255, 128, 64));
 
@@ -530,9 +531,9 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 //                        DateUtils.formatElapsedTime(pkgStats.getTotalTimeInForeground() / 1000));
                 double usageTimeInt = pkgStats.totalTime / (double) 3600000;
 
-                if (usageTimeInt <= xDays * TodoApp.CORRECT_USAGE_APP)
+                if (usageTimeInt <= xDays * Constants.CORRECT_USAGE_APP)
                     holder.usageTime.setTextColor(Color.GREEN);
-                else if (usageTimeInt > xDays * TodoApp.DANGEROUS_USAGE_APP)
+                else if (usageTimeInt > xDays * Constants.DANGEROUS_USAGE_APP)
                     holder.usageTime.setTextColor(Color.RED);
                 else holder.usageTime.setTextColor(Color.rgb(255, 128, 64));
                 //holder.icon.setImageDrawable(mIcons.get(pkgStats.getPackageName()));

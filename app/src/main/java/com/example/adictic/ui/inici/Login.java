@@ -1,8 +1,11 @@
 package com.example.adictic.ui.inici;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,27 +16,36 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
+import static com.example.adictic.util.Constants.KEY_SIZE;
+
 // This is the Login fragment where the user enters the username and password and
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
-
     static Login login;
     TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     public static Login getInstance() {
         return login;
@@ -44,6 +56,7 @@ public class Login extends AppCompatActivity {
         login = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(Login.this);
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
@@ -109,6 +122,8 @@ public class Login extends AppCompatActivity {
         b_reg.setOnClickListener(v -> Login.this.startActivity(new Intent(Login.this, Register.class)));
     }
 
+
+
     // This method is called when the "Login" button is pressed in the Login fragment
     public void checkCredentials(String username, String password, final Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
@@ -122,12 +137,18 @@ public class Login extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful()) {
-
                     User usuari = response.body();
                     assert usuari != null;
 
-                    TodoApp.setTutor(usuari.tutor);
-                    TodoApp.setIDTutor(usuari.id);
+                    if (usuari.tutor == 1) {
+                        sharedPreferences.edit().putBoolean("isTutor", true).apply();
+                        sharedPreferences.edit().putLong("idUser",usuari.id).apply();
+                    }
+                    else {
+                        sharedPreferences.edit().putBoolean("isTutor", false).apply();
+                        sharedPreferences.edit().putLong("idTutor", usuari.id).apply();
+                    }
+
                     if (usuari.tutor == 0) {
                         Bundle extras = new Bundle();
 
