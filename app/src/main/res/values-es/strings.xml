@@ -301,4 +301,8 @@
     <string name="emailAlreadyExists">El correo electrónico ya existe</string>
     <string name="userDoesntExists">El usuario no existe</string>
     <string name="passwordDoesntMatch">La contraseña no coincide con este usuario</string>
+    <string name="change_theme">Cambiar tema</string>
+    <string name="theme_light">Tema claro</string>
+    <string name="theme_dark">Tema oscuro</string>
+    <string name="theme_default">Tema por defecto</string>
 </resources>
