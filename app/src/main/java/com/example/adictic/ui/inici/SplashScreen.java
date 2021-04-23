@@ -35,6 +35,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences.edit().putBoolean("debug",getIntent().getBooleanExtra("debug",false)).apply();
         setContentView(R.layout.activity_splash_screen);
 
     }
@@ -113,7 +114,7 @@ public class SplashScreen extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(newBase);
         String selectedTheme = sharedPreferences.getString("theme", "follow_system");
         switch(selectedTheme){
             case "no":
