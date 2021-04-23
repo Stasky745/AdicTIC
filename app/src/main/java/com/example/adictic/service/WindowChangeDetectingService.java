@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
+import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
@@ -70,6 +71,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
+        fetchDades();
+
         uninstalledApps = new ArrayList<>();
         installedApps = new ArrayList<>();
         dayUpdatedInstalledApps = Calendar.getInstance();
@@ -78,7 +81,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         lastTryUpdate.add(Calendar.DAY_OF_YEAR, -1);
 
         //Configure these here for compatibility with API 13 and below.
-        AccessibilityServiceInfo config = new AccessibilityServiceInfo();
+        AccessibilityServiceInfo config = getServiceInfo();
+
         config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
 
@@ -89,6 +93,25 @@ public class WindowChangeDetectingService extends AccessibilityService {
         config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
 
         setServiceInfo(config);
+    }
+
+    private void fetchDades() {
+        Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(sharedPreferences.getLong("userId",-1));
+        call.enqueue(new Callback<BlockedLimitedLists>() {
+            @Override
+            public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    Funcions.updateDB_BlockedApps(getApplicationContext(),response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
+
+            }
+        });
+
+        Funcions.checkHoraris(getApplicationContext());
     }
 
     private List<AppInfo> getLaunchableApps() {
@@ -150,7 +173,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
         final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
         Calendar today = Calendar.getInstance();
-        if (!CollectionUtils.isEqualCollection(listInstalledPkgs, lastListApps) || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR) && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
+        if (!CollectionUtils.isEqualCollection(listInstalledPkgs, lastListApps)
+                || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR)
+                            && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
             setChangedAppLists(listInstalledPkgs, today);
 
             lastTryUpdate = Calendar.getInstance();
@@ -178,9 +203,25 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        actualitzarLlistes();
-        boolean freeUseEnabled = sharedPreferences.getBoolean("freeUse",false);
-        if (!freeUseEnabled && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+
+            // DEBUG
+
+            if(blockedApps == null)
+                System.out.println("BLOCKED APPS IS NULL");
+            else
+                System.out.println("BLOCKED APPS SIZE = " + blockedApps.size());
+
+            if(eventBlocks == null)
+                System.out.println("EVENT BLOCKS IS NULL");
+            else
+                System.out.println("EVENT BLOCKS SIZE = " + eventBlocks.size());
+
+            // DEBUG
+
+            if(sharedPreferences.getBoolean("freeUse",false)) return;
+
+            actualitzarLlistes();
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
             if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
@@ -302,20 +343,31 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     private void actualitzarLlistes() {
         // creem llistes buides si no estan inicialitzades
-        if(eventBlocks == null)
+        boolean primerCop = false;
+        if(eventBlocks == null) {
             eventBlocks = new ArrayList<>();
+            primerCop = true;
+        }
 
-        if(blockedApps == null)
+        if(blockedApps == null) {
             blockedApps = new ArrayList<>();
+            primerCop = true;
+        }
 
         // Actualitzem la llista de EventBlock
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false))
+        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false)) {
             eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
+            if(eventBlocks == null)
+                eventBlocks = new ArrayList<>();
+        }
 
         // Actualitzem la llista de BlockedApps amb només les apps bloquejades ara mateix
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false)){
+        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false)){
             List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,true);
-            blockedApps = llista.stream()
+            if(llista == null)
+                blockedApps = new ArrayList<>();
+            else
+                blockedApps = llista.stream()
                     .filter(blockedApp -> blockedApp.blockedNow)
                     .collect(Collectors.toList());
         }

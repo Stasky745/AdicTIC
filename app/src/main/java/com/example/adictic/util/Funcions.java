@@ -33,8 +33,10 @@ import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
@@ -52,6 +54,7 @@ import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.EventBlock;
 import com.example.adictic.entity.FreeUseApp;
 import com.example.adictic.entity.HorarisNit;
+import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
@@ -184,7 +187,10 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    write2File(ctx,response.body().horarisNits);
+                    if(response.body().horarisNits != null)
+                        write2File(ctx,response.body().horarisNits);
+                    if(response.body().events != null)
+                        write2File(ctx,response.body().events);
                 }
             }
 
@@ -705,8 +711,15 @@ public class Funcions {
     private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
         File file = new File(mCtx.getFilesDir(),fileName);
 
-        if(write && file.exists())
-            file.delete();
+        try {
+            if(write && file.exists())
+                file.delete();
+            else if(!write && !file.exists())
+                file.createNewFile();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try {
             return new EncryptedFile.Builder(
@@ -791,6 +804,23 @@ public class Funcions {
 
         // Retornem si el fitxer està buit
         return file.length() == 0;
+    }
+
+    public static void startAppUsageWorker(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        Calendar cal = Calendar.getInstance();
+        // Agafem dades dels últims X dies per inicialitzar dades al servidor
+        cal.add(Calendar.DAY_OF_YEAR, -6);
+        sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
+
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
+                        .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("pujarAppInfo",
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        myWork);
     }
 
     private static Type getListType(String filename) {
