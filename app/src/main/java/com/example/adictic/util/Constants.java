@@ -6,6 +6,8 @@ import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE
 import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 public class Constants {
+    public static final long HOUR_IN_MILLIS = 3600000;
+
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
