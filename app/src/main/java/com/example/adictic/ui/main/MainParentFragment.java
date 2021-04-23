@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.security.crypto.EncryptedFile;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
@@ -28,6 +29,7 @@ import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.roomdb.BlockedApp;
 import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.DayUsageActivity;
 import com.example.adictic.ui.GeoLocActivity;
@@ -46,17 +48,29 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.common.net.HttpHeaders;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -107,7 +121,32 @@ public class MainParentFragment extends Fragment {
         setButtons();
         getStats();
 
+        provaFile();
+
         return root;
+    }
+
+    private void provaFile(){
+        BlockedApp blockedApp = new BlockedApp();
+        blockedApp.blockedNow = true;
+        blockedApp.timeLimit = 3546542357L;
+        blockedApp.pkgName = "pkg.adictic.org";
+
+        BlockedApp blockedApp1 = new BlockedApp();
+        blockedApp1.blockedNow = false;
+        blockedApp1.timeLimit = -1;
+        blockedApp1.pkgName = "caca.de.vaca";
+
+        List<BlockedApp> llista = new ArrayList<>();
+        llista.add(blockedApp);
+        llista.add(blockedApp1);
+
+        boolean funcionaWrite = Funcions.write2File(getActivity(), llista);
+
+        List<BlockedApp> res = Funcions.readFromFile(getActivity(),Constants.FILE_BLOCKED_APPS);
+        if(res != null && !res.isEmpty())
+            System.out.println("Yayyyy!");
+
     }
 
     private void setLastLiveApp(){
