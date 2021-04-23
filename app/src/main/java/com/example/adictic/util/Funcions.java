@@ -1,6 +1,7 @@
 package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
@@ -17,10 +18,8 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
-import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
@@ -47,8 +46,6 @@ import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
-import com.example.adictic.entity.TimeDay;
-import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.roomdb.BlockedApp;
@@ -61,7 +58,6 @@ import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
-import com.example.adictic.ui.inici.Login;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -80,7 +76,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +151,7 @@ public class Funcions {
     }
 
     public static String date2String(int dia, int mes, int any) {
-        String data = "";
+        String data;
         if (dia < 10) data = "0" + dia + "-";
         else data = dia + "-";
         if (mes < 10) data += "0" + mes + "-";
@@ -172,7 +167,7 @@ public class Funcions {
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
                     d.setImageBitmap(bmp);
@@ -180,7 +175,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
 
             }
         });
@@ -211,7 +206,7 @@ public class Funcions {
 
     // To check if app has PACKAGE_USAGE_STATS enabled
     public static boolean isAppUsagePermissionOn(Context mContext) {
-        boolean granted = false;
+        boolean granted;
         AppOpsManager appOps = (AppOpsManager) mContext
                 .getSystemService(Context.APP_OPS_SERVICE);
         int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
@@ -249,8 +244,7 @@ public class Funcions {
             minuts -= 60;
         }
 
-        Pair<Integer, Integer> res = new Pair<>(hores, Math.round(minuts));
-        return res;
+        return new Pair<>(hores, Math.round(minuts));
     }
 
     public static int string2MillisOfDay(String time){
@@ -275,7 +269,7 @@ public class Funcions {
 
         if (mActiveAdmins == null) return false;
 
-        Boolean found = false;
+        boolean found = false;
         int i = 0;
         while (!found && i < mActiveAdmins.size()) {
             if (mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName()))
@@ -541,8 +535,7 @@ public class Funcions {
             }
             if (appInfo != null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
-                AppInfo app = new AppInfo();
-                appUsage.app = app;
+                appUsage.app = new AppInfo();
 
                 if (Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
                 appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
@@ -650,14 +643,13 @@ public class Funcions {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public static void closeKeyboard(View view, Activity a) {
         // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    hideSoftKeyboard(a);
-                    return false;
-                }
+            view.setOnTouchListener((v, event) -> {
+                hideSoftKeyboard(a);
+                return false;
             });
         }
 
@@ -687,7 +679,7 @@ public class Funcions {
         Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (!response.isSuccessful()) {
                     Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                     toast.show();
@@ -695,7 +687,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -768,7 +760,7 @@ public class Funcions {
         if(!list.isEmpty()){
             // Agafem el JSON de la llista i inicialitzem EncryptedFile
             String json = new Gson().toJson(list);
-            EncryptedFile encryptedFile = null;
+            EncryptedFile encryptedFile;
 
             // Mirem a quin fitxer escriure
             encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
@@ -843,6 +835,12 @@ public class Funcions {
         return null;
     }
 
+    /**
+     * Actualitzar els valors a SharedPrefs per si hi ha hagut canvis en els fitxers
+     * @param mCtx El Context de l'activitat
+     * @param object Per saber quin valor tocar
+     * @param bool El valor a donar
+     */
     private static void updateSharedPrefsChange(Context mCtx, Object object, boolean bool) {
         // Mirem a quin sharedPrefs escriure
         if(object instanceof BlockedApp)
@@ -855,6 +853,12 @@ public class Funcions {
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
     }
 
+    /**
+     * Retorna el fitxer adient
+     * @param mCtx Context de l'activitat
+     * @param object Per saber quin fitxer agafar
+     * @return El fitxer o "null" si han passat un objecte dolent
+     */
     private static EncryptedFile inicialitzarFitxer(Context mCtx, Object object){
         // Mirem a quin fitxer escriure
         if(object instanceof BlockedApp)
