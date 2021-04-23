@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.security.keystore.KeyGenParameterSpec;
-import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,29 +14,22 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.security.crypto.EncryptedSharedPreferences;
-import androidx.security.crypto.MasterKey;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
-import static com.example.adictic.util.Constants.KEY_SIZE;
 
 // This is the Login fragment where the user enters the username and password and
 // then a RESTResponder_RF is called to check the authentication
@@ -165,8 +156,29 @@ public class Login extends AppCompatActivity {
                     }
                     Login.this.finish();
                 } else {
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
-                    toast.show();
+                    TextView usernameInvalid = Login.this.findViewById(R.id.TV_login_usernameInvalid);
+                    TextView passwordInvalid = Login.this.findViewById(R.id.TV_login_passwordError);
+                    usernameInvalid.setVisibility(View.INVISIBLE);
+                    passwordInvalid.setVisibility(View.INVISIBLE);
+                    try {
+                        JSONObject obj = new JSONObject(response.errorBody().string());
+                        switch (obj.getString("message").trim()) {
+                            case "User does not exists":
+                                usernameInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            case "Password does not match":
+                                passwordInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            default:
+                                Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
+                                toast.show();
+                                System.err.println("Error desconegut HTTP en Login: "+obj.getString("message"));
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

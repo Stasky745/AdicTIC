@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -9,11 +10,11 @@
         android:id="@+id/TV_noUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="@string/no_user"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
-        app:layout_constraintEnd_toStartOf="@+id/TV_register"
-        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+        app:layout_constraintEnd_toStartOf="@+id/TV_register" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline3"
@@ -26,14 +27,14 @@
         android:id="@+id/TV_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
         android:text="@string/register"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/guideline5"
-        app:layout_constraintStart_toEndOf="@+id/TV_noUser" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <RadioGroup
         android:id="@+id/RG_Tipus"
@@ -96,28 +97,52 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.54" />
+        app:layout_constraintGuide_percent="0.56" />
+
+    <TextView
+        android:id="@+id/TV_login_usernameInvalid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userDoesntExists"
+        android:textColor="@color/error"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintStart_toStartOf="@+id/CL_login_nomUsuari" />
+
+    <TextView
+        android:id="@+id/TV_login_passwordError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/passwordDoesntMatch"
+        android:textColor="@color/error"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/CL_login_password"
+        app:layout_constraintTop_toBottomOf="@+id/CL_login_nomUsuari" />
 
     <TextView
         android:id="@+id/TV_noTypeDevice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="2dp"
         android:text="@string/error_noTipus"
-        android:textColor="#F44336"
-        android:visibility="gone"
+        android:textColor="@color/error"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/RG_Tipus"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
-        app:layout_constraintStart_toStartOf="@+id/CL_login_password" />
+        app:layout_constraintStart_toStartOf="@+id/CL_login_password"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_login_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:background="@color/background_activity"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/guideline12"
-        app:layout_constraintTop_toBottomOf="@+id/CL_login_nomUsuari">
+        app:layout_constraintTop_toBottomOf="@+id/TV_login_passwordError">
 
         <EditText
             android:id="@+id/login_password"
@@ -165,7 +190,7 @@
             app:layout_constraintEnd_toStartOf="@+id/IV_login_username"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <ImageView
             android:id="@+id/IV_login_username"
@@ -194,6 +219,7 @@
         app:layout_constraintGuide_percent="0.86" />
 
     <TextView
+        android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -206,7 +232,7 @@
     <ImageView
         android:layout_width="182dp"
         android:layout_height="165dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintBottom_toTopOf="@+id/TV_login_usernameInvalid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
