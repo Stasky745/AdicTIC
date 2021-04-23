@@ -83,6 +83,7 @@
         <activity android:name=".ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity android:name=".ui.AdminProfileActivity" />
+        <activity android:name=".ui.main.ChangePasswordActivity" />
 
         <receiver
             android:name=".ui.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"

@@ -3,8 +3,15 @@ package com.example.adictic.ui.main;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -22,6 +29,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 public class SettingsFragment extends PreferenceFragmentCompat {
     private SharedPreferences sharedPreferences;
 
@@ -33,6 +42,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
+            settings_change_password();
         }
         settings_change_language();
     }
@@ -90,6 +100,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         });
 
                     });
+            return true;
+        });
+    }
+
+    private void settings_change_password(){
+        Preference change_password = findPreference("setting_change_password");
+
+        assert change_password != null;
+        change_password.setOnPreferenceClickListener(preference -> {
+            requireActivity().startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
             return true;
         });
     }
