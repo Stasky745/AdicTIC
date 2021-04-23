@@ -2,7 +2,6 @@ package com.example.adictic.util;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Color;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.GeoFill;
@@ -24,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
