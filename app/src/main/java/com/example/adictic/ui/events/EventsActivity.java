@@ -23,15 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.Horaris;
-import com.example.adictic.entity.HorarisEvents;
-import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.HorarisNit;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 

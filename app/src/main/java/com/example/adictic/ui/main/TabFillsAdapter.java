@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.preference.internal.PreferenceImageView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
 
