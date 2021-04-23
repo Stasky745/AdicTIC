@@ -1,10 +1,10 @@
 package com.example.adictic.ui.main;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -33,6 +33,7 @@ import com.example.adictic.ui.GeoLocActivity;
 import com.example.adictic.ui.HorarisActivity;
 import com.example.adictic.ui.events.EventsActivity;
 import com.example.adictic.ui.informe.InformeActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.github.mikephil.charting.charts.PieChart;
@@ -43,20 +44,16 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.google.common.net.HttpHeaders;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -68,6 +65,7 @@ public class MainParentFragment extends Fragment {
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
+    private SharedPreferences sharedPreferences;
 
     private ImageView IV_liveIcon;
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -95,9 +93,11 @@ public class MainParentFragment extends Fragment {
         root = inflater.inflate(R.layout.main_parent, container, false);
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
-        setLastLiveApp();
+        if(sharedPreferences.getBoolean("isTutor",false)) setLastLiveApp();
 
         setButtons();
         getStats();
@@ -183,7 +183,7 @@ public class MainParentFragment extends Fragment {
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         CL_Geoloc.setOnClickListener(geoloc);
 
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                     new IntentFilter("liveApp"));
         } else {
@@ -196,21 +196,20 @@ public class MainParentFragment extends Fragment {
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             blockButton.setVisibility(View.VISIBLE);
             blockButton.setOnClickListener(v -> {
-                Button b = v.findViewById(R.id.BT_BlockDevice);
                 Call<String> call;
-                if (b.getText().equals(getString(R.string.block_device))) {
+                if (blockButton.getText().equals(getString(R.string.block_device))) {
                     call = mTodoService.blockChild(idChildSelected);
                 } else call = mTodoService.unblockChild(idChildSelected);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
-                            if (b.getText().equals(getString(R.string.block_device)))
-                                b.setText(getString(R.string.unblock_device));
-                            else b.setText(getString(R.string.block_device));
+                            if (blockButton.getText().equals(getString(R.string.block_device)))
+                                blockButton.setText(getString(R.string.unblock_device));
+                            else blockButton.setText(getString(R.string.block_device));
                         }
                         else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
@@ -232,7 +231,7 @@ public class MainParentFragment extends Fragment {
 
         Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
-        if (TodoApp.getTutor() == 1) {
+        if (sharedPreferences.getBoolean("isTutor",false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call;
@@ -390,7 +389,7 @@ public class MainParentFragment extends Fragment {
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setSelectionShift(5f);
-        pieDataSet.setColors(TodoApp.GRAPH_COLORS);
+        pieDataSet.setColors(Constants.GRAPH_COLORS);
 
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter());
@@ -448,7 +447,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        if (TodoApp.getTutor() == 1)
+        if (sharedPreferences.getBoolean("isTutor",false))
             Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
         super.finalize();
     }

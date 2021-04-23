@@ -3,6 +3,7 @@ package com.example.adictic.ui.permisos;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -15,16 +16,18 @@ import com.example.adictic.R;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 
 public class AppUsagePermActivity extends Activity {
+    SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_usage_perm_info);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         Button bt_okay = findViewById(R.id.BT_okAppUsagePerm);
 
@@ -39,7 +42,7 @@ public class AppUsagePermActivity extends Activity {
             Calendar cal = Calendar.getInstance();
             // Agafem dades dels últims X dies per inicialitzar dades al servidor
             cal.add(Calendar.DAY_OF_YEAR, -6);
-            TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
+            sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
 
             OneTimeWorkRequest myWork =
                     new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();

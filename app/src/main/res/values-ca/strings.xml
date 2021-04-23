@@ -46,7 +46,7 @@
     <string name="hint_email">Correu electrònic</string>
     <string name="no_user">No tens usuari? </string>
     <string name="have_account">Ja tens compte? </string>
-    <string name="register">Registra\'t</string>
+    <string name="register">Registra\'t </string>
     <string name="go_login">Inicia sessió</string>
     <string name="tipus">Aquest dispositiu és de:</string>
 
@@ -89,12 +89,13 @@
     <string name="menu_help">Ajuda</string>
 
     <string name="free_time">"Temps lliure"</string>
+    <string name="stop_free_time">"Aturar temps lliure"</string>
     <string name="block_device">"Bloquejar dispositiu"</string>
     <string name="disconnected">"Desconnectat"</string>
-    <string name="informe">"Informe"</string>
+    <string name="informe">Informe</string>
     <string name="horaris">"Horaris"</string>
-    <string name="app_usage">"Ús d'aplicacions"</string>
-    <string name="block_apps">"Bloqueig d'aplicacions"</string>
+    <string name="app_usage">Ús d\'aplicacions</string>
+    <string name="block_apps">Bloqueig d\'aplicacions</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contingut informatiu</string>
@@ -104,7 +105,7 @@
     <string name="advice_privateConsult">Consulta privada</string>
     <string name="advice_OurCenters">Els nostres centres</string>
 
-    <string name="forgetPassword"><u>Has oblidat la contrasenya?</u></string>
+    <string name="forgetPassword"><u>Has oblidat la contrasenya? </u></string>
 
     <string name="logout">Tancar Sessió</string>
 
@@ -115,7 +116,7 @@
     <string name="initial_date">"Data inicial:"</string>
     <string name="final_date">"Data final:"</string>
 
-    <string name="date_format">"%d %s %d"</string>
+    <string name="date_format">"%d  %s  %d"</string>
 
     <string name="daily_usage">"Ús diari del dispositiu"</string>
     <string name="device_usage">"Ús total del dispositiu:"</string>
@@ -130,16 +131,22 @@
     <string name="informal_date_format">"%d-%d-%d"</string>
 
     <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
-    <string name="error_liveApp">"No s'ha pogut llegir la aplicació actual del fill"</string>
+    <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
     <string name="unblock_device">"Desbloquejar dispositiu"</string>
 
     <string name="nom_app">"Nom"</string>
     <string name="categoria_app">"Categoria"</string>
 
+    <string name="editar_horari">"Editar horaris"</string>
     <string name="horari_generic">"Genèric"</string>
     <string name="horari_diari">"Diari"</string>
     <string name="horari_setmanal">"Setmanal"</string>
     <string name="horari_intro">"Escull les hores que el dispositiu estarà actiu:"</string>
+    <string name="horari_actual">"El %s va a dormir a les %s\nEl %s es desperta a les %s"</string>
+    <string name="error_no_event_name">"Escriu un nom per l'event"</string>
+    <string name="error_no_event_days">"Escull quins dies passa aquest event"</string>
+    <string name="error_incorrect_times">"Tria una hora final superior a la inicial"</string>
+    <string name="error_no_fills">"No tenim cap fill vostre al nostre servidor."</string>
 
     <string name="monday">Dilluns</string>
     <string name="tuesday">Dimarts</string>
@@ -216,11 +223,46 @@
     <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
 
     <string name="go_information">"Vés a la documentació"</string>
-    <string name="adictic_splash">AdicTIC_Splash</string>
+
+    <string name="edit">"Editar"</string>
+    <string name="afegir">"Afegir"</string>
+    <string name="esborrar">"Esborrar"</string>
+    <string name="events">"Events"</string>
+
+    <string name="closing_activity">"Sortint de l'activitat"</string>
+    <string name="exit_without_save">"Vols sortir sense guardar?"</string>
+
+    <string name="yes">"Sí"</string>
+    <string name="no">"No"</string>
+
+    <string name="esborrar_event">"Esborrar event"</string>
+    <string name="esborrar_event_text">"Vols esborrar l'event %s?"</string>
+
+    <string name="no_event_selected">"No has seleccionat cap event"</string>
+
+    <string name="name_tag">"Nom:"</string>
+    <string name="event_name">"Escriu el nom de l'event"</string>
+
+    <string name="start_tag">"Inici:"</string>
+    <string name="start_event_hint">"Hora d'inici"</string>
+    <string name="end_tag">"Fi:"</string>
+    <string name="end_event_hint">"Hora de fi"</string>
+
+    <string name="geoloc">Mapa</string>
+
+    <string name="address">"Adreça"</string>
+
+    <string name="unable_location">"No s'ha pogut trobar la localització"</string>
+
+    <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
+
+    <string name="estadistiques">"Informació i Estadístiques"</string>
+    <string name="adictic_splash" translatable="false">AdicTIC_Splash</string>
     <string name="settings">Configuració</string>
     <string name="titol">Títol</string>
     <string name="desc">Descripció</string>
     <string name="escriu_el_teu_dubte">Escriu el teu dubte</string>
+    <string name="localitat_oficina_desitjada">Localitat d\'oficina desitjada</string>
     <string name="enviar">Enviar</string>
     <string name="error_local">No s\'han pogut llegir les localitzacions</string>
     <string name="error_server_read">No s\'ha pogut llegir del servidor</string>
@@ -228,11 +270,15 @@
     <string name="geolocalitzacio">Geolocalització</string>
     <string name="copied_address">Adreça copiada</string>
 
-    <string name="crear_dbute">Crear nou dubte</string>
-    <string name="chats_tancats">Chats tancats</string>
-    <string name="chat_obert">Chat obert</string>
+    <string name="title_activity_dubte">Dubte</string>
+    <string name="no_chat_dubte">"Si tens cap consulta, escriu aquí el teu dubte i se t'obrirà un xat amb un dels nostres professionals quan abans ens sigui possible."</string>
+    <string name="enviar_dubte">Enviar dubte</string>
 
-    <string name="limit">limit</string>
+    <string name="crear_dbute">Crear nou dubte</string>
+    <string name="chats_tancats">Xats tancats</string>
+    <string name="chat_obert">Xat obert</string>
+
+    <string name="limit">Límits</string>
     <string name="dades_del_dispositiu">Dades del dispositiu</string>
     <string name="descans_nocturn">Descans Nocturn</string>
     <string name="error_sending_data">Error enviant dades al servidor.</string>
@@ -255,10 +301,10 @@
     <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
     <string name="cancel">Cancel·lar</string>
     <string name="treure_acces_titol">Treure Accés</string>
-    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per tornar a donar accés només caldrà tornar apretar aquest botó.</string>
     <string name="donar_acces_titol">Donar Accés</string>
-    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
-    <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">En quina localitat t\'agradaria que fos el professional que t\'atendrà?</string>
     <string name="send_dubte">Enviar Consulta</string>
     <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
     <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>
@@ -267,5 +313,12 @@
     <string name="profile_pic">Foto de Perfil</string>
     <string name="closed_chat">La conversa ha finalitzat.</string>
     <string name="veure_oficina">Veure l\'oficina en el mapa</string>
-
+    <string name="usernameAlreadyExists">El nom d\'usuari ja existeix</string>
+    <string name="emailAlreadyExists">El correu electrònic ja existeix</string>
+    <string name="userDoesntExists">L\'usuari no existeix</string>
+    <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
+    <string name="change_theme">Canviar tema</string>
+    <string name="theme_light">Tema clar</string>
+    <string name="theme_dark">Tema fosc</string>
+    <string name="theme_default">Tema per defecte</string>
 </resources>
