@@ -46,7 +46,7 @@
     <string name="hint_email">Correu electrònic</string>
     <string name="no_user">No tens usuari? </string>
     <string name="have_account">Ja tens compte? </string>
-    <string name="register">Registra\'t</string>
+    <string name="register">Registra\'t </string>
     <string name="go_login">Inicia sessió</string>
     <string name="tipus">Aquest dispositiu és de:</string>
 
@@ -105,7 +105,7 @@
     <string name="advice_privateConsult">Consulta privada</string>
     <string name="advice_OurCenters">Els nostres centres</string>
 
-    <string name="forgetPassword"><u>Has oblidat la contrasenya?</u></string>
+    <string name="forgetPassword"><u>Has oblidat la contrasenya? </u></string>
 
     <string name="logout">Tancar Sessió</string>
 
@@ -315,4 +315,6 @@
     <string name="veure_oficina">Veure l\'oficina en el mapa</string>
     <string name="usernameAlreadyExists">El nom d\'usuari ja existeix</string>
     <string name="emailAlreadyExists">El correu electrònic ja existeix</string>
+    <string name="userDoesntExists">L\'usuari no existeix</string>
+    <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
 </resources>
