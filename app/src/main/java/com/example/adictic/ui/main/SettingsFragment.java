@@ -8,7 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.GeneralUsage;
@@ -36,14 +38,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
-        if (TodoApp.getTutor() == 0) {
+
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
-        if (!sharedPreferences.getBoolean("isTutor",false)) {
+        if (!sharedPreferences.getBoolean("isTutor", false)) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
-            /**DEBUG **/
-            settings_tancar_sessio();
-            settings_pujar_informe();
-            // **/
+            if(sharedPreferences.getBoolean("debug",false)) {
+                settings_tancar_sessio();
+                settings_pujar_informe();
+            } else {
+                PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("preferenceChild");
+                PreferenceCategory myPrefCat = (PreferenceCategory) findPreference("pcdebug");
+                preferenceScreen.removePreference(myPrefCat);
+            }
 
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
@@ -53,7 +59,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         settings_change_language();
     }
 
-    private void settings_pujar_informe() {
+    private void settings_pujar_informe(){
         Preference pujar_informe = findPreference("setting_pujar_informe");
 
         assert pujar_informe != null;
@@ -64,7 +70,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 Funcions.canviarMesosAServidor(gul);
 
-                Call<String> call = mTodoService.sendAppUsage(TodoApp.getIDChild(), gul);
+                Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -80,7 +86,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void settings_change_language() {
-        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+        sharedPreferences = getPreferenceManager().getSharedPreferences();
 
         ListPreference language_preference = findPreference("setting_change_language");
         String selectedLanguage = sharedPreferences.getString("language", "none");
@@ -137,7 +143,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void settings_change_theme() {
-        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+        sharedPreferences = getPreferenceManager().getSharedPreferences();
 
         ListPreference theme_preference = findPreference("setting_change_theme");
         String selectedTheme = sharedPreferences.getString("theme", "follow_system");
@@ -150,12 +156,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             sharedPreferences.edit().putString("theme", (String) newValue).apply();
             switch((String) newValue){
                 case "no":
+                    theme_preference.setSummary(getString(R.string.theme_light));
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     break;
                 case "yes":
+                    theme_preference.setSummary(getString(R.string.theme_dark));
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     break;
                 default:
+                    theme_preference.setSummary(getString(R.string.theme_default));
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                     break;
             }
