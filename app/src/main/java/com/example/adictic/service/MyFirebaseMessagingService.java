@@ -31,6 +31,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -126,11 +127,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = getString(R.string.update_blocked_apps);
             } else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
-                sharedPreferences.edit().putBoolean("liveApp",Boolean.parseBoolean(messageMap.get("bool"))).apply();
+                boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+                sharedPreferences.edit().putBoolean("liveApp",active).apply();
 
-                OneTimeWorkRequest myWork =
-                        new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-                WorkManager.getInstance(this).enqueue(myWork);
+                if(active && (!sharedPreferences.contains("appUsageWorkerUpdate") ||
+                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",-1) > Constants.HOUR_IN_MILLIS))
+                {
+                    OneTimeWorkRequest myWork =
+                            new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
+                    WorkManager.getInstance(this).enqueue(myWork);
+
+                    sharedPreferences.edit().putLong("lastUpdateAppUsageWorker", Calendar.getInstance().getTimeInMillis()).apply();
+                }
 
                 Log.d(TAG, "Token liveApp: " + s);
             } else if (messageMap.containsKey("getIcon")) {
