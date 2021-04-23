@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -34,6 +35,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
         }
+        settings_change_theme();
         settings_change_language();
     }
 
@@ -90,6 +92,33 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         });
 
                     });
+            return true;
+        });
+    }
+
+    private void settings_change_theme() {
+        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+
+        ListPreference theme_preference = findPreference("setting_change_theme");
+        String selectedTheme = sharedPreferences.getString("theme", "follow_system");
+
+        assert theme_preference != null;
+        theme_preference.setValue(selectedTheme);
+        theme_preference.setSummary(theme_preference.getEntry());
+
+        theme_preference.setOnPreferenceChangeListener((preference, newValue) -> {
+            sharedPreferences.edit().putString("theme", (String) newValue).apply();
+            switch((String) newValue){
+                case "no":
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    break;
+                case "yes":
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    break;
+                default:
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                    break;
+            }
             return true;
         });
     }

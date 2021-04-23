@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
@@ -113,6 +114,18 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        String selectedTheme = sharedPreferences.getString("theme", "follow_system");
+        switch(selectedTheme){
+            case "no":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "yes":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
         String lang = sharedPreferences.getString("language", "none");
         if (lang.equals("none")) super.attachBaseContext(newBase);
         else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
