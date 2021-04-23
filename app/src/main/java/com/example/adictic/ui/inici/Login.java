@@ -25,6 +25,8 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -154,8 +156,29 @@ public class Login extends AppCompatActivity {
                     }
                     Login.this.finish();
                 } else {
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
-                    toast.show();
+                    TextView usernameInvalid = Login.this.findViewById(R.id.TV_login_usernameInvalid);
+                    TextView passwordInvalid = Login.this.findViewById(R.id.TV_login_passwordError);
+                    usernameInvalid.setVisibility(View.INVISIBLE);
+                    passwordInvalid.setVisibility(View.INVISIBLE);
+                    try {
+                        JSONObject obj = new JSONObject(response.errorBody().string());
+                        switch (obj.getString("message").trim()) {
+                            case "User does not exists":
+                                usernameInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            case "Password does not match":
+                                passwordInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            default:
+                                Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
+                                toast.show();
+                                System.err.println("Error desconegut HTTP en Login: "+obj.getString("message"));
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
