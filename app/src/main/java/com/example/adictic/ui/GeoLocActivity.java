@@ -2,6 +2,7 @@ package com.example.adictic.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Gravity;
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.adictic.R;
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import org.osmdroid.api.IMapController;
@@ -41,6 +43,7 @@ import retrofit2.Response;
 public class GeoLocActivity extends AppCompatActivity {
     ArrayList<Marker> markers = new ArrayList<>();
     private TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
     private MapView map = null;
     private long idChild;
     private Spinner SP_fills;
@@ -66,6 +69,8 @@ public class GeoLocActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
@@ -105,11 +110,11 @@ public class GeoLocActivity extends AppCompatActivity {
                 if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
 
-                    if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0) {
+                    if (!sharedPreferences.getBoolean("isTutor",false)) {
                         boolean trobat = false;
                         int i = 0;
                         while (!trobat && i < fills.size()) {
-                            if (fills.get(i).id == TodoApp.getIDChild()) {
+                            if (fills.get(i).id == sharedPreferences.getLong("idUser",-1)) {
                                 trobat = true;
                                 GeoFill fill = fills.get(i);
                                 fills.clear();
@@ -119,21 +124,16 @@ public class GeoLocActivity extends AppCompatActivity {
                         }
                     }
 
-                    TodoApp.setGeoFills(fills);
                     setMap();
 
                 } else {
-                    fills = TodoApp.getGeoFills();
                     Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                    if (!fills.isEmpty()) setMap();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<GeoFill>> call, @NonNull Throwable t) {
-                fills = TodoApp.getGeoFills();
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                if (!fills.isEmpty()) setMap();
             }
         });
     }

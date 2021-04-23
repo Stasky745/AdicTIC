@@ -17,20 +17,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.EventBlock;
 import com.example.adictic.util.Funcions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import org.joda.time.DateTime;
+
 import java.util.Objects;
 
 public class EventFragment extends DialogFragment {
-    private final HorarisEvents event;
-    private String originalStart, originalFinish, originalTitle;
-    private List<Integer> originalDays;
+    private final EventBlock event;
+    private final EventBlock oldEvent;
 
     private EditText ET_eventName, ET_eventStart, ET_eventEnd;
     private ChipGroup CG_eventDays;
@@ -40,11 +38,12 @@ public class EventFragment extends DialogFragment {
 
     private IEventDialog mCallback;
 
-    public EventFragment(HorarisEvents he) {
+    public EventFragment(EventBlock he) {
         event = he;
+        oldEvent = new EventBlock(he);
     }
 
-    public static EventFragment newInstance(String title, HorarisEvents horarisEvent) {
+    public static EventFragment newInstance(String title, EventBlock horarisEvent) {
         EventFragment frag = new EventFragment(horarisEvent);
         Bundle args = new Bundle();
         args.putString("title", title);
@@ -76,13 +75,11 @@ public class EventFragment extends DialogFragment {
         ET_eventName = view.findViewById(R.id.ET_eventName);
         ET_eventName.setText(event.name);
         ET_eventStart = view.findViewById(R.id.ET_eventStart);
-        ET_eventStart.setText(event.start);
+        ET_eventStart.setText(
+                Funcions.millisOfDay2String(event.startEvent));
         ET_eventEnd = view.findViewById(R.id.ET_eventEnd);
-        ET_eventEnd.setText(event.finish);
-
-        originalStart = event.start;
-        originalFinish = event.finish;
-        originalTitle = event.name;
+        ET_eventEnd.setText(
+                Funcions.millisOfDay2String(event.endEvent));
 
         CG_eventDays = view.findViewById(R.id.CG_eventDays);
         CH_Monday = view.findViewById(R.id.CH_monday);
@@ -94,7 +91,6 @@ public class EventFragment extends DialogFragment {
         CH_Sunday = view.findViewById(R.id.CH_sunday);
 
         setDaysChecked();
-        originalDays = new ArrayList<>(event.days);
 
         BT_accept = view.findViewById(R.id.BT_accept);
         BT_cancel = view.findViewById(R.id.BT_cancel);
@@ -107,49 +103,42 @@ public class EventFragment extends DialogFragment {
     }
 
     private void setDaysChecked() {
-        if (event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
-        if (event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
-        if (event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
-        if (event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
-        if (event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
-        if (event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
-        if (event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
+        if (event.monday) CH_Monday.setChecked(true);
+        if (event.tuesday) CH_Tuesday.setChecked(true);
+        if (event.wednesday) CH_Wednesday.setChecked(true);
+        if (event.thursday) CH_Thursday.setChecked(true);
+        if (event.friday) CH_Friday.setChecked(true);
+        if (event.saturday) CH_Saturday.setChecked(true);
+        if (event.sunday) CH_Sunday.setChecked(true);
     }
 
     public void setButtons() {
         CH_Monday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.MONDAY);
-            else event.days.remove(Integer.valueOf(Calendar.MONDAY));
+            event.monday = isChecked;
         });
 
         CH_Tuesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.TUESDAY);
-            else event.days.remove(Integer.valueOf(Calendar.TUESDAY));
+            event.tuesday = isChecked;
         });
 
         CH_Wednesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.WEDNESDAY);
-            else event.days.remove(Integer.valueOf(Calendar.WEDNESDAY));
+            event.wednesday = isChecked;
         });
 
         CH_Thursday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.THURSDAY);
-            else event.days.remove(Integer.valueOf(Calendar.THURSDAY));
+            event.thursday = isChecked;
         });
 
         CH_Friday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.FRIDAY);
-            else event.days.remove(Integer.valueOf(Calendar.FRIDAY));
+            event.friday = isChecked;
         });
 
         CH_Saturday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.SATURDAY);
-            else event.days.remove(Integer.valueOf(Calendar.SATURDAY));
+            event.saturday = isChecked;
         });
 
         CH_Sunday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) event.days.add(Calendar.SUNDAY);
-            else event.days.remove(Integer.valueOf(Calendar.SUNDAY));
+            event.sunday = isChecked;
         });
 
         ET_eventStart.setOnClickListener(v -> {
@@ -165,8 +154,12 @@ public class EventFragment extends DialogFragment {
                 if (minute < 10) min = "0" + minute;
                 else min = Integer.toString(minute);
 
-                event.start = hour + ":" + min;
-                ET_eventStart.setText(event.start);
+                DateTime dateTime = new DateTime()
+                        .withHourOfDay(hourOfDay)
+                        .withMinuteOfHour(minute);
+
+                event.startEvent = dateTime.getMillisOfDay();
+                ET_eventStart.setText(String.format("%s:%s", hour, min));
             }, start.first, start.second, true);
 
             timePickerDialog.show();
@@ -185,8 +178,12 @@ public class EventFragment extends DialogFragment {
                 if (minute < 10) min = "0" + minute;
                 else min = Integer.toString(minute);
 
-                event.finish = hour + ":" + min;
-                ET_eventEnd.setText(event.finish);
+                DateTime dateTime = new DateTime()
+                        .withHourOfDay(hourOfDay)
+                        .withMinuteOfHour(minute);
+
+                event.endEvent = dateTime.getMillisOfDay();
+                ET_eventEnd.setText(String.format("%s:%s", hour, min));
             }, finish.first, finish.second, true);
 
             timePickerDialog.show();
@@ -204,17 +201,23 @@ public class EventFragment extends DialogFragment {
                 Toast.makeText(getContext(), getString(R.string.error_incorrect_times), Toast.LENGTH_LONG).show();
             } else {
                 event.name = ET_eventName.getText().toString();
+
                 mCallback.onSelectedData(event);
                 dismiss();
             }
         });
 
         BT_cancel.setOnClickListener(v -> {
-            event.start = originalStart;
-            event.finish = originalFinish;
-            event.days = originalDays;
-            setDaysChecked();
-            event.name = originalTitle;
+            event.startEvent = oldEvent.startEvent;
+            event.endEvent = oldEvent.endEvent;
+            event.name = oldEvent.name;
+
+            event.monday = oldEvent.monday;
+            event.tuesday = oldEvent.tuesday;
+            event.wednesday = oldEvent.wednesday;
+            event.thursday = oldEvent.thursday;
+            event.friday = oldEvent.friday;
+            event.saturday = oldEvent.saturday;
             dismiss();
         });
 

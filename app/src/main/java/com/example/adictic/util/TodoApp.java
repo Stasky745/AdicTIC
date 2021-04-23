@@ -2,7 +2,6 @@ package com.example.adictic.util;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Color;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.GeoFill;
@@ -24,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,16 +41,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    public static final int[] GRAPH_COLORS = {
-            Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
-            Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
-    };
-    public final static List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     private static final List<String> blockEvents = new ArrayList<>();
-    public static int CORRECT_USAGE_DAY = 3;
-    public static int DANGEROUS_USAGE_DAY = 5;
-    public static int CORRECT_USAGE_APP = 2;
-    public static int DANGEROUS_USAGE_APP = 4;
     private static boolean geolocOpen = false;
     private static long IDTutor = -1;
     private static Integer tutor = -1;
@@ -220,14 +209,6 @@ public class TodoApp extends Application {
 
     public static void setBlockedDevice(boolean b) {
         TodoApp.blockedDevice = b;
-    }
-
-    public static List<String> getBlockedApps() {
-        return TodoApp.blockedApps;
-    }
-
-    public static void setBlockedApps(List<String> l) {
-        TodoApp.blockedApps = l;
     }
 
     @Override

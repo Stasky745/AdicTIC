@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,6 +21,7 @@ import androidx.work.WorkManager;
 import com.example.adictic.R;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.chat.ChatFragment;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
@@ -45,6 +47,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     String TAG = "Firebase: ";
     TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -55,18 +58,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
     }
 
-    public void updateLimitAppsList(Map<String, String> map) {
+    public void updateBlockedAppsList(Map<String, String> map) {
+        List<BlockedApp> list = new ArrayList<>();
         map.remove("limitApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            TodoApp.getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = entry.getKey();
+            blockedApp.timeLimit = Long.parseLong(entry.getValue());
+            blockedApp.blockedNow = false;
+            list.add(blockedApp);
         }
-    }
 
-    private void updateBlockedAppsList(Map<String, String> map) {
-        map.remove("blockApp");
-
-        List<String> blockList = new ArrayList<>(map.keySet());
-        TodoApp.setBlockedApps(blockList);
+        Funcions.write2File(getApplicationContext(),list);
     }
 
     @Override
@@ -75,6 +78,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         Map<String, String> messageMap = remoteMessage.getData();
 
@@ -104,33 +108,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (messageMap.containsKey("blockDevice")) {
                 if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    TodoApp.setBlockedDevice(true);
+                    sharedPreferences.edit().putBoolean("blockedDevice",true).apply();
                     mDPM.lockNow();
-                } else TodoApp.setBlockedDevice(false);
+                } else sharedPreferences.edit().putBoolean("blockedDevice",false).apply();
             } else if (messageMap.containsKey("freeUse")) {
                 if (Objects.equals(messageMap.get("freeUse"), "1")) {
                     Funcions.startFreeUseLimitList(getApplicationContext());
 
                     title = getString(R.string.free_use_activation);
                 } else {
-                    Funcions.updateLimitedAppsList();
+                    Funcions.updateLimitedAppsList(getApplicationContext());
                     title = getString(R.string.free_use_deactivation);
                 }
-            } else if (messageMap.containsKey("limitApp")) {
-                updateLimitAppsList(messageMap);
-
-                /** FER CRIDA WORKMANAGER **/
-                Funcions.runLimitAppsWorker(getApplicationContext(), 0);
-
-                title = getString(R.string.update_blocked_apps);
             } else if (messageMap.containsKey("blockApp")) {
                 updateBlockedAppsList(messageMap);
-                System.out.println("Blocked: " + TodoApp.getBlockedApps());
 
                 title = getString(R.string.update_blocked_apps);
             } else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
-                TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
+                sharedPreferences.edit().putBoolean("liveApp",Boolean.parseBoolean(messageMap.get("bool"))).apply();
 
                 OneTimeWorkRequest myWork =
                         new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
@@ -142,7 +138,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
             } else if (messageMap.containsKey("horaris")) {
-                Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+                Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
                 call.enqueue(new Callback<Horaris>() {
                     @Override
                     public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
