@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <Preference
-        app:key="setting_tancar_sessio"
-        app:title="@string/tancar_sessio" />
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="preferenceParent">
 
     <ListPreference
         app:entries="@array/languages"
@@ -16,5 +13,9 @@
         app:entryValues="@array/themes_alias"
         app:key="setting_change_theme"
         app:title="@string/change_theme" />
+
+    <Preference
+        app:key="setting_tancar_sessio"
+        app:title="@string/tancar_sessio" />
 
 </PreferenceScreen>

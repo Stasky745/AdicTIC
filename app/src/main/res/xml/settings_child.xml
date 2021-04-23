@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="preferenceChild">
 
     <ListPreference
         app:entries="@array/languages"
@@ -12,5 +13,18 @@
         app:entryValues="@array/themes_alias"
         app:key="setting_change_theme"
         app:title="@string/change_theme" />
+
+    <PreferenceCategory
+        app:key="pcdebug"
+        app:title="Debug">
+
+        <Preference
+            app:key="setting_pujar_informe"
+            app:title="Pujar informe" />
+
+        <Preference
+            app:key="setting_tancar_sessio"
+            app:title="@string/tancar_sessio" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
