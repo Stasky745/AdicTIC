@@ -1,7 +1,6 @@
 package com.example.adictic.service;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,28 +9,19 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.entity.Horaris;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.FreeUseApp;
-import com.example.adictic.roomdb.HorarisNit;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.entity.FreeUseApp;
+import com.example.adictic.entity.HorarisNit;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import org.joda.time.DateTime;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LimitAppsWorker extends Worker {
     int TOTAL_MILLIS_IN_DAY = 86400000;
-    private SharedPreferences sharedPreferences;
 
     public LimitAppsWorker(
             @NonNull Context context,
@@ -46,14 +36,11 @@ public class LimitAppsWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
 
-        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-
-        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
-        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+        // Agafem una llista amb les apps que falten per bloquejar
+        List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_BLOCKED_APPS,false);
+        List<FreeUseApp> freeUseApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_FREE_USE_APPS,false);
 
         //checkHoraris();
 
@@ -61,30 +48,53 @@ public class LimitAppsWorker extends Worker {
 
         long delayNextLimit = Long.MAX_VALUE;
 
-        for(BlockedApp app : blockedApps){
-            AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
+        boolean canvis = false;
 
-            // tenim en compte el temps que l'app ha estat utilitzada durant FreeUse
-            long freeUseUsage = 0;
-            if(freeUseApps.contains(app.pkgName))
-                freeUseUsage = freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageEnd - freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageStart;
-            if(appUsage.totalTime >= app.timeLimit + freeUseUsage){
-                app.blockedNow = true;
-                roomRepo.updateBlockApp(app);
+        for(BlockedApp app : blockedApps){
+            if(!app.blockedNow) {
+                AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
+
+                // tenim en compte el temps que l'app ha estat utilitzada durant FreeUse
+                long freeUseUsage = 0;
+                if (freeUseApps.contains(app.pkgName))
+                    freeUseUsage = freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageEnd - freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageStart;
+                if (appUsage.totalTime >= app.timeLimit + freeUseUsage) {
+                    app.blockedNow = true;
+                    canvis = true;
+                } else {
+                    long timeLeft = app.timeLimit - appUsage.totalTime;
+                    if (timeLeft < delayNextLimit) delayNextLimit = timeLeft;
+                }
             }
-            else{
-                long timeLeft = app.timeLimit - appUsage.totalTime;
-                if(timeLeft < delayNextLimit) delayNextLimit = timeLeft;
+            // Si ha canviat de dia i l'app consta com a bloquejada
+            else if(app.blockedNow && app.timeLimit > -1){
+                AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
+
+                // tenim en compte el temps que l'app ha estat utilitzada durant FreeUse
+                long freeUseUsage = 0;
+                if (freeUseApps.contains(app.pkgName))
+                    freeUseUsage = freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageEnd - freeUseApps.get(freeUseApps.indexOf(app.pkgName)).millisUsageStart;
+                if (appUsage.totalTime < app.timeLimit + freeUseUsage) {
+                    app.blockedNow = false;
+                    canvis = true;
+
+                    long timeLeft = app.timeLimit + freeUseUsage - appUsage.totalTime;
+                    if (timeLeft < delayNextLimit) delayNextLimit = timeLeft;
+                }
             }
         }
+
+        if(canvis)
+            Funcions.write2File(getApplicationContext(),blockedApps);
 
         DateTime dateTime = new DateTime();
         int now = dateTime.getMillisOfDay();
 
-        List<HorarisNit> horarisNits = roomRepo.getAllHorarisNit();
+        List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
         HorarisNit avui = horarisNits.get(horarisNits.indexOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
         long delayNit;
 
+        // delayNit és igual al temps fins que toca anar a dormir o fins a despertar demà
         if(avui.dormir > now) delayNit = avui.dormir - now;
         else{
             Calendar calendar = Calendar.getInstance();
@@ -97,34 +107,5 @@ public class LimitAppsWorker extends Worker {
         Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(delayNextLimit, delayNit));
 
         return Result.success();
-    }
-
-    private void checkHoraris() {
-
-        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-
-        Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
-
-        call.enqueue(new Callback<Horaris>() {
-            @Override
-            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    setHoraris(response.body().horarisNits);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
-
-            }
-        });
-    }
-
-    private void setHoraris(List<HorarisNit> list) {
-        //per cada dia (Sunday = 1) -> (Saturday = 7)
-        for(HorarisNit horarisNit : list){
-            RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-            roomRepo.insertHorarisNit(horarisNit);
-        }
     }
 }

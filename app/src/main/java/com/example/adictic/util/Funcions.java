@@ -1,6 +1,7 @@
 package com.example.adictic.util;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
@@ -19,7 +20,6 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Log;
 import android.util.Pair;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 import androidx.work.Data;
@@ -45,25 +46,32 @@ import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
-import com.example.adictic.entity.TimeDay;
-import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.FreeUseApp;
-import com.example.adictic.roomdb.HorarisNit;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.FreeUseApp;
+import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
-import com.example.adictic.ui.inici.Login;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -78,16 +86,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.adictic.util.Constants.KEY_SIZE;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_APPS;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
-
-    private static void setHoraris(Context ctx, List<HorarisNit> list) {
-        //per cada dia (Sunday = 1) -> (Saturday = 7)
-        for(HorarisNit horarisNit : list){
-            RoomRepo roomRepo = new RoomRepo(ctx.getApplicationContext());
-            roomRepo.insertHorarisNit(horarisNit);
-        }
-    }
 
     private static long getHorariInMillis() {
         Calendar cal = Calendar.getInstance();
@@ -138,7 +142,7 @@ public class Funcions {
     }
 
     public static String date2String(int dia, int mes, int any) {
-        String data = "";
+        String data;
         if (dia < 10) data = "0" + dia + "-";
         else data = dia + "-";
         if (mes < 10) data += "0" + mes + "-";
@@ -154,7 +158,7 @@ public class Funcions {
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
                     d.setImageBitmap(bmp);
@@ -162,7 +166,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
 
             }
         });
@@ -180,7 +184,7 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    setHoraris(ctx, response.body().horarisNits);
+                    write2File(ctx,response.body().horarisNits);
                 }
             }
 
@@ -193,7 +197,7 @@ public class Funcions {
 
     // To check if app has PACKAGE_USAGE_STATS enabled
     public static boolean isAppUsagePermissionOn(Context mContext) {
-        boolean granted = false;
+        boolean granted;
         AppOpsManager appOps = (AppOpsManager) mContext
                 .getSystemService(Context.APP_OPS_SERVICE);
         int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
@@ -231,8 +235,7 @@ public class Funcions {
             minuts -= 60;
         }
 
-        Pair<Integer, Integer> res = new Pair<>(hores, Math.round(minuts));
-        return res;
+        return new Pair<>(hores, Math.round(minuts));
     }
 
     public static int string2MillisOfDay(String time){
@@ -257,7 +260,7 @@ public class Funcions {
 
         if (mActiveAdmins == null) return false;
 
-        Boolean found = false;
+        boolean found = false;
         int i = 0;
         while (!found && i < mActiveAdmins.size()) {
             if (mActiveAdmins.get(i).getPackageName().equals(mContext.getPackageName()))
@@ -301,37 +304,25 @@ public class Funcions {
     }
 
     public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        RoomRepo roomRepo = new RoomRepo(ctx);
-        roomRepo.deleteAllBlockApps();
+        List<BlockedApp> llista = new ArrayList<>();
 
         for(String pkgName : body.blockedApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = pkgName;
             blockedApp.blockedNow = true;
             blockedApp.timeLimit = -1;
-            roomRepo.insertBlockApp(blockedApp);
+            llista.add(blockedApp);
         }
         for(LimitedApps limitedApp : body.limitApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = limitedApp.name;
             blockedApp.blockedNow = false;
             blockedApp.timeLimit = limitedApp.time;
-            roomRepo.insertBlockApp(blockedApp);
+            llista.add(blockedApp);
         }
-    }
 
-//    public static HorarisEvents getEventFromList(String name) {
-//        RoomRepo roomRepo = new RoomRepo()
-//        boolean trobat = false;
-//        int i = 0;
-//        List<HorarisEvents> listEvents = TodoApp.getListEvents();
-//        HorarisEvents event = null;
-//        while (!trobat && i < listEvents.size()) {
-//            event = listEvents.get(i);
-//            if (event.name.equals(name)) trobat = true;
-//        }
-//        return event;
-//    }
+        write2File(ctx,llista);
+    }
 
     private static List<EventBlock> horarisEvents2EventBlock(List<HorarisEvents> horarisEvents){
         List<EventBlock> res = new ArrayList<>();
@@ -371,58 +362,41 @@ public class Funcions {
     }
     
     public static void updateEventList(Context mContext, List<EventBlock> newEvents) {
-        RoomRepo roomRepo = new RoomRepo(mContext);
-
-//        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
-//
-//        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
-        List<EventBlock> currentEvents = roomRepo.getAllEventBlocks();
-
-        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
-
         WorkManager workManager = WorkManager.getInstance(mContext);
 
+        // Llegim la llista d'Events actuals
+        List<EventBlock> currentEvents = readFromFile(mContext,Constants.FILE_EVENT_BLOCK,false);
+
+        // Agafem els events diferents entre les dues llistes
+        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
+
+        // recorrem els events diferents
         for (EventBlock event : disjunctionEvents) {
             int index = newEvents.indexOf(event);
 
-            // Event s'ha esborrat
+            // Event s'ha esborrat (no existeix a la nova llista amb el mateix id)
             if (index == -1) {
                 workManager.cancelUniqueWork(event.name);
-                roomRepo.deleteEventBlock(event);
             }
-            // És un nou event
+            // És un nou event o editat
             else if (event.exactSame(newEvents.get(index))) {
-//                Pair<Integer, Integer> startEvent = stringToTime(event.start);
-//                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
-//
-//                Calendar start = Calendar.getInstance();
-//                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
-//                start.set(Calendar.MINUTE, startEvent.second);
-//
-//                Calendar finish = Calendar.getInstance();
-//                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
-//                finish.set(Calendar.MINUTE, finishEvent.second);
-
                 long now = DateTime.now().getMillisOfDay();
 
                 if (now < event.startEvent) {
-                    runStartBlockEventWorker(mContext, event.name, event.startEvent - now);
+                    runStartBlockEventWorker(mContext, event.id, event.startEvent - now);
                 } else if (now < event.endEvent) {
-                    runFinishBlockEventWorker(mContext, event.name, event.endEvent - now);
+                    runFinishBlockEventWorker(mContext, event.id, event.endEvent - now);
                 }
-//                } else {
-//                    start.add(Calendar.DATE, 1);
-//                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
-//                }
-
-                roomRepo.insertEventBlock(event);
             }
         }
+
+        // Afegim la nova llista al fitxer
+        write2File(mContext,newEvents);
     }
 
-    public static void runStartBlockEventWorker(Context mContext, String name, long delay) {
+    public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name", name);
+        data.putLong("id", id);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
@@ -431,12 +405,12 @@ public class Funcions {
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static void runFinishBlockEventWorker(Context mContext, String name, long delay) {
+    public static void runFinishBlockEventWorker(Context mContext, long id, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name", name);
+        data.putLong("id", id);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
@@ -445,7 +419,7 @@ public class Funcions {
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
     }
 
     /**
@@ -523,8 +497,7 @@ public class Funcions {
             }
             if (appInfo != null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
                 AppUsage appUsage = new AppUsage();
-                AppInfo app = new AppInfo();
-                appUsage.app = app;
+                appUsage.app = new AppInfo();
 
                 if (Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
                 appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
@@ -548,16 +521,15 @@ public class Funcions {
         List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
         // Agafem totes les FreeUseApps
-        RoomRepo roomRepo = new RoomRepo(mContext);
-        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+        List<FreeUseApp> freeUseApps = readFromFile(mContext,Constants.FILE_FREE_USE_APPS,false);
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
         for(FreeUseApp app : freeUseApps){
             AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
             app.millisUsageEnd = au.totalTime;
-
-            roomRepo.updateFreeUseApp(app);
         }
+
+        write2File(mContext,freeUseApps);
     }
 
     public static void startFreeUseLimitList(Context mContext) {
@@ -570,20 +542,24 @@ public class Funcions {
         List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
         // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
-        RoomRepo roomRepo = new RoomRepo(mContext);
-        roomRepo.deleteAllFreeUseApps();
-        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
+        List<BlockedApp> blockedApps = readFromFile(mContext,Constants.FILE_BLOCKED_APPS,false);
+
+        List<FreeUseApp> freeUseApps = new ArrayList<>();
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
         for(BlockedApp app : blockedApps){
-            FreeUseApp freeUseApp = new FreeUseApp();
-            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
-            freeUseApp.pkgName = app.pkgName;
-            freeUseApp.millisUsageStart = au.totalTime;
-            freeUseApp.millisUsageEnd = -1;
+            if(!app.blockedNow) {
+                FreeUseApp freeUseApp = new FreeUseApp();
+                AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+                freeUseApp.pkgName = app.pkgName;
+                freeUseApp.millisUsageStart = au.totalTime;
+                freeUseApp.millisUsageEnd = -1;
 
-            roomRepo.insertFreeUseApp(freeUseApp);
+                freeUseApps.add(freeUseApp);
+            }
         }
+
+        write2File(mContext,freeUseApps);
     }
 
     /**
@@ -632,14 +608,13 @@ public class Funcions {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public static void closeKeyboard(View view, Activity a) {
         // Set up touch listener for non-text box views to hide keyboard.
         if (!(view instanceof EditText)) {
-            view.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View v, MotionEvent event) {
-                    hideSoftKeyboard(a);
-                    return false;
-                }
+            view.setOnTouchListener((v, event) -> {
+                hideSoftKeyboard(a);
+                return false;
             });
         }
 
@@ -669,7 +644,7 @@ public class Funcions {
         Call<String> call = mTodoService.askChildForLiveApp(idChild, liveApp);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (!response.isSuccessful()) {
                     Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                     toast.show();
@@ -677,7 +652,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -726,4 +701,151 @@ public class Funcions {
         }
         return null;
     }
+
+    private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
+        File file = new File(mCtx.getFilesDir(),fileName);
+
+        if(write && file.exists())
+            file.delete();
+
+        try {
+            return new EncryptedFile.Builder(
+                    mCtx,
+                    file,
+                    getMasterKey(mCtx),
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static <T> boolean write2File(Context mCtx, List<T> list){
+        if(!list.isEmpty()){
+            // Agafem el JSON de la llista i inicialitzem EncryptedFile
+            String json = new Gson().toJson(list);
+            EncryptedFile encryptedFile;
+
+            // Mirem a quin fitxer escriure
+            encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
+
+            if(encryptedFile == null) return false;
+
+            // Escrivim al fitxer
+            try {
+                FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
+                fileOutputStream.write(json.getBytes());
+                fileOutputStream.close();
+
+                updateSharedPrefsChange(mCtx,list.get(0), true);
+
+                return true;
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+
+                return false;
+            }
+        }
+        else return false;
+    }
+
+    public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
+        EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            FileInputStream fileInputStream = encryptedFile.openFileInput();
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+
+            String line = reader.readLine();
+            while(line != null){
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+
+            Gson gson = new Gson();
+            Type listType = getListType(filename);
+            ArrayList<T> res = gson.fromJson(stringBuilder.toString(),listType);
+            inputStreamReader.close();
+
+            if(storeChanges) updateSharedPrefsChange(mCtx,res.get(0),false);
+
+            return res;
+
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean fileEmpty(Context mCtx, String fileName){
+        File file = new File(mCtx.getFilesDir(),fileName);
+
+        // Si el fitxer no existeix el tractem com si fos buit.
+        if(!file.exists())
+            return true;
+
+        // Retornem si el fitxer està buit
+        return file.length() == 0;
+    }
+
+    private static Type getListType(String filename) {
+        switch (filename) {
+            case Constants.FILE_BLOCKED_APPS:
+                return new TypeToken<ArrayList<BlockedApp>>() {
+                }.getType();
+            case Constants.FILE_EVENT_BLOCK:
+                return new TypeToken<ArrayList<EventBlock>>() {
+                }.getType();
+            case Constants.FILE_FREE_USE_APPS:
+                return new TypeToken<ArrayList<FreeUseApp>>() {
+                }.getType();
+            case Constants.FILE_HORARIS_NIT:
+                return new TypeToken<ArrayList<HorarisNit>>() {
+                }.getType();
+        }
+        return null;
+    }
+
+    /**
+     * Actualitzar els valors a SharedPrefs per si hi ha hagut canvis en els fitxers
+     * @param mCtx El Context de l'activitat
+     * @param object Per saber quin valor tocar
+     * @param bool El valor a donar
+     */
+    private static void updateSharedPrefsChange(Context mCtx, Object object, boolean bool) {
+        // Mirem a quin sharedPrefs escriure
+        if(object instanceof BlockedApp)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
+        else if (object instanceof EventBlock)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
+        else if (object instanceof FreeUseApp)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_FREE_USE_APPS,bool).apply();
+        else if (object instanceof HorarisNit)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
+    }
+
+    /**
+     * Retorna el fitxer adient
+     * @param mCtx Context de l'activitat
+     * @param object Per saber quin fitxer agafar
+     * @return El fitxer o "null" si han passat un objecte dolent
+     */
+    private static EncryptedFile inicialitzarFitxer(Context mCtx, Object object){
+        // Mirem a quin fitxer escriure
+        if(object instanceof BlockedApp)
+            return getEncryptedFile(mCtx,Constants.FILE_BLOCKED_APPS, true);
+        else if (object instanceof EventBlock)
+            return getEncryptedFile(mCtx,Constants.FILE_EVENT_BLOCK, true);
+        else if (object instanceof FreeUseApp)
+            return getEncryptedFile(mCtx,Constants.FILE_FREE_USE_APPS, true);
+        else if (object instanceof HorarisNit)
+            return getEncryptedFile(mCtx,Constants.FILE_HORARIS_NIT, true);
+        else return null;
+    }
+
 }

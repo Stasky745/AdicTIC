@@ -16,7 +16,6 @@ import com.example.adictic.R;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 

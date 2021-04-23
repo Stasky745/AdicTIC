@@ -1,22 +1,15 @@
 package com.example.adictic.service;
 
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.entity.HorarisEvents;
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
-import org.joda.time.DateTime;
-
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class FinishBlockEventWorker extends Worker {
@@ -29,13 +22,13 @@ public class FinishBlockEventWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        String name = getInputData().getString("name");
+        long id = getInputData().getLong("id",-1);
 
         // Agafem l'event del repositori
-        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-        EventBlock eventBlock = roomRepo.getEventFromList(name);
+        List<EventBlock> list = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK,false);
+        EventBlock eventBlock = list.get(list.indexOf(id));
         eventBlock.activeNow = false;
-        roomRepo.updateEventBlock(eventBlock);
+        Funcions.write2File(getApplicationContext(),list);
 
 //        HorarisEvents event = Funcions.getEventFromList(name);
 //        List<Integer> listDays = event.days;

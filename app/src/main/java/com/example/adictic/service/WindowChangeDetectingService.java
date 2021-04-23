@@ -23,23 +23,21 @@ import com.example.adictic.entity.AppChange;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.entity.EventBlock;
 import com.example.adictic.ui.BlockScreenActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,6 +55,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
     Calendar lastTryUpdate;
     List<AppChange> uninstalledApps;
     List<AppChange> installedApps;
+
+    List<EventBlock> eventBlocks;
+    List<BlockedApp> blockedApps;
 
     String lastActivity;
     String lastPackage;
@@ -177,11 +178,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
+        actualitzarLlistes();
         boolean freeUseEnabled = sharedPreferences.getBoolean("freeUse",false);
         if (!freeUseEnabled && event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-
-            RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
             if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
@@ -209,7 +208,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
             boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false);
-            if (estaBloquejat || !roomRepo.getAllActiveEvents().isEmpty()) {
+            if (estaBloquejat || !eventBlocks.isEmpty()) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -242,8 +241,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                     boolean isBlocked = false;
 
-                    if(roomRepo.getAllBlockedApps().contains(componentName.getPackageName())){
-                        BlockedApp blockedApp = roomRepo.findBlockedAppByPkg(componentName.getPackageName());
+                    if(blockedApps.contains(componentName.getPackageName())){
+                        BlockedApp blockedApp = blockedApps.get(blockedApps.indexOf(componentName.getPackageName()));
                         isBlocked = blockedApp.blockedNow;
                     }
 
@@ -298,6 +297,27 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     }
                 }
             }
+        }
+    }
+
+    private void actualitzarLlistes() {
+        // creem llistes buides si no estan inicialitzades
+        if(eventBlocks == null)
+            eventBlocks = new ArrayList<>();
+
+        if(blockedApps == null)
+            blockedApps = new ArrayList<>();
+
+        // Actualitzem la llista de EventBlock
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false))
+            eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
+
+        // Actualitzem la llista de BlockedApps amb només les apps bloquejades ara mateix
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false)){
+            List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,true);
+            blockedApps = llista.stream()
+                    .filter(blockedApp -> blockedApp.blockedNow)
+                    .collect(Collectors.toList());
         }
     }
 

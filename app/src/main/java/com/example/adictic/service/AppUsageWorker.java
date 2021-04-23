@@ -10,19 +10,13 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.RoomDB;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,9 +41,6 @@ public class AppUsageWorker extends Worker {
         String TAG = "AppUsageWorker";
 
         Log.d(TAG, "Starting Worker");
-
-        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
@@ -78,11 +69,11 @@ public class AppUsageWorker extends Worker {
             public void onResponse(@NonNull Call<BlockedLimitedLists> call2, @NonNull Response<BlockedLimitedLists> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Funcions.updateDB_BlockedApps(getApplicationContext(),response.body());
-                    if(!roomRepo.getAllBlockedApps().isEmpty())
+                    if(!Funcions.fileEmpty(getApplicationContext(), Constants.FILE_BLOCKED_APPS))
                         Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                     ok2 = true;
                 } else {
-                    if(!roomRepo.getAllBlockedApps().isEmpty())
+                    if(!Funcions.fileEmpty(getApplicationContext(), Constants.FILE_BLOCKED_APPS))
                         Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                     ok2 = false;
                 }
@@ -90,7 +81,7 @@ public class AppUsageWorker extends Worker {
 
             @Override
             public void onFailure(@NonNull Call<BlockedLimitedLists> call2, @NonNull Throwable t) {
-                if(!roomRepo.getAllBlockedApps().isEmpty())
+                if(!Funcions.fileEmpty(getApplicationContext(), Constants.FILE_BLOCKED_APPS))
                     Funcions.runLimitAppsWorker(getApplicationContext(), 0);
                 ok2 = false;
             }
