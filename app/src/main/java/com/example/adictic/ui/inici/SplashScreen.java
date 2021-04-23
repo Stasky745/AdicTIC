@@ -114,7 +114,7 @@ public class SplashScreen extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(newBase);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(newBase);
         String selectedTheme = sharedPreferences.getString("theme", "follow_system");
         switch(selectedTheme){
             case "no":

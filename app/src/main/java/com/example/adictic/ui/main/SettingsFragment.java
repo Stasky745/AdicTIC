@@ -86,8 +86,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void settings_change_language() {
-        sharedPreferences = getPreferenceManager().getSharedPreferences();
-
         ListPreference language_preference = findPreference("setting_change_language");
         String selectedLanguage = sharedPreferences.getString("language", "none");
 
@@ -111,7 +109,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         assert tancarSessio != null;
         tancarSessio.setOnPreferenceClickListener(preference -> {
-            TodoApi mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(task -> {
 
@@ -143,8 +140,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void settings_change_theme() {
-        sharedPreferences = getPreferenceManager().getSharedPreferences();
-
         ListPreference theme_preference = findPreference("setting_change_theme");
         String selectedTheme = sharedPreferences.getString("theme", "follow_system");
 
