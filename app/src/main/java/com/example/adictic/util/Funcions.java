@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 import androidx.work.Data;
@@ -60,13 +62,25 @@ import com.example.adictic.service.LimitAppsWorker;
 import com.example.adictic.service.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 import com.example.adictic.ui.inici.Login;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +92,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.example.adictic.util.Constants.KEY_SIZE;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_APPS;
+import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
 
@@ -726,4 +744,128 @@ public class Funcions {
         }
         return null;
     }
+
+    private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
+        File file = new File(mCtx.getFilesDir(),fileName);
+
+        if(write && file.exists())
+            file.delete();
+
+        try {
+            return new EncryptedFile.Builder(
+                    mCtx,
+                    file,
+                    getMasterKey(mCtx),
+                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static <T> boolean write2File(Context mCtx, List<T> list){
+        if(!list.isEmpty()){
+            // Agafem el JSON de la llista i inicialitzem EncryptedFile
+            String json = new Gson().toJson(list);
+            EncryptedFile encryptedFile = null;
+
+            // Mirem a quin fitxer escriure
+            encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
+
+            if(encryptedFile == null) return false;
+
+            // Escrivim al fitxer
+            try {
+                FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
+                fileOutputStream.write(json.getBytes());
+                fileOutputStream.close();
+
+                updateSharedPrefsChange(mCtx,list.get(0), true);
+
+                return true;
+            } catch (GeneralSecurityException | IOException e) {
+                e.printStackTrace();
+
+                return false;
+            }
+        }
+        else return false;
+    }
+
+    public static <T> List<T> readFromFile(Context mCtx, String filename){
+        EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            FileInputStream fileInputStream = encryptedFile.openFileInput();
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+
+            String line = reader.readLine();
+            while(line != null){
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+
+            Gson gson = new Gson();
+            Type listType = getListType(filename);
+            ArrayList<T> res = gson.fromJson(stringBuilder.toString(),listType);
+            inputStreamReader.close();
+
+            updateSharedPrefsChange(mCtx,res.get(0),false);
+
+            return res;
+
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Type getListType(String filename) {
+        switch (filename) {
+            case Constants.FILE_BLOCKED_APPS:
+                return new TypeToken<ArrayList<BlockedApp>>() {
+                }.getType();
+            case Constants.FILE_EVENT_BLOCK:
+                return new TypeToken<ArrayList<EventBlock>>() {
+                }.getType();
+            case Constants.FILE_FREE_USE_APPS:
+                return new TypeToken<ArrayList<FreeUseApp>>() {
+                }.getType();
+            case Constants.FILE_HORARIS_NIT:
+                return new TypeToken<ArrayList<HorarisNit>>() {
+                }.getType();
+        }
+        return null;
+    }
+
+    private static void updateSharedPrefsChange(Context mCtx, Object object, boolean bool) {
+        // Mirem a quin sharedPrefs escriure
+        if(object instanceof BlockedApp)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
+        else if (object instanceof EventBlock)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
+        else if (object instanceof FreeUseApp)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_FREE_USE_APPS,bool).apply();
+        else if (object instanceof HorarisNit)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
+    }
+
+    private static EncryptedFile inicialitzarFitxer(Context mCtx, Object object){
+        // Mirem a quin fitxer escriure
+        if(object instanceof BlockedApp)
+            return getEncryptedFile(mCtx,Constants.FILE_BLOCKED_APPS, true);
+        else if (object instanceof EventBlock)
+            return getEncryptedFile(mCtx,Constants.FILE_EVENT_BLOCK, true);
+        else if (object instanceof FreeUseApp)
+            return getEncryptedFile(mCtx,Constants.FILE_FREE_USE_APPS, true);
+        else if (object instanceof HorarisNit)
+            return getEncryptedFile(mCtx,Constants.FILE_HORARIS_NIT, true);
+        else return null;
+    }
+
 }
