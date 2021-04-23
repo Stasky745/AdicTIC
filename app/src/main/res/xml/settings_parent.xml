@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        app:key="setting_tancar_sessio"
-        app:title="@string/tancar_sessio" />
-
     <ListPreference
         app:entries="@array/languages"
         app:entryValues="@array/language_alias"
         app:key="setting_change_language"
         app:title="@string/change_language" />
+
+    <PreferenceCategory>
+        <Preference
+            app:key="setting_change_password"
+            app:title="@string/changePassword" />
+
+        <Preference
+            app:key="setting_tancar_sessio"
+            app:title="@string/tancar_sessio" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

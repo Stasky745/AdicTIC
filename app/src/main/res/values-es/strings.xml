@@ -301,4 +301,8 @@
     <string name="emailAlreadyExists">El correo electrónico ya existe</string>
     <string name="userDoesntExists">El usuario no existe</string>
     <string name="passwordDoesntMatch">La contraseña no coincide con este usuario</string>
+    <string name="changePassword">Cambiar contraseña</string>
+    <string name="actualPassword">Contraseña actual:</string>
+    <string name="newPassword">Nueva contraseña:</string>
+    <string name="repeatNewPassword">Repite la nueva contraseña:</string>
 </resources>
