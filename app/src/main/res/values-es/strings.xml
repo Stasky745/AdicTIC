@@ -105,7 +105,7 @@
     <string name="advice_privateConsult"> Consulta privada </string>
     <string name="advice_OurCenters"> Nuestros centros </string>
 
-    <string name="forgetPassword"> <u> Olvido contraseña? </u> </string>
+    <string name="forgetPassword"> <u> Has olvidado tu contraseña? </u> </string>
 
     <string name="logout"> Cerrar Sesión </string>
 
@@ -297,4 +297,8 @@
     <string name="links">Enlaces</string>
     <string name="closed_chat">La conversación ha finalizado.</string>
     <string name="veure_oficina">Ver la oficina en el mapa</string>
+    <string name="usernameAlreadyExists">El nombre de usuario ya existe</string>
+    <string name="emailAlreadyExists">El correo electrónico ya existe</string>
+    <string name="userDoesntExists">El usuario no existe</string>
+    <string name="passwordDoesntMatch">La contraseña no coincide con este usuario</string>
 </resources>
