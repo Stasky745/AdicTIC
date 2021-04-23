@@ -1,12 +1,8 @@
-package com.example.adictic.roomdb;
+package com.example.adictic.entity;
 
 import androidx.annotation.Nullable;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
-@Entity
 public class HorarisNit {
-    @PrimaryKey
     public Integer idDia;
 
     // Joda-time getMillisOfDay()
@@ -15,6 +11,8 @@ public class HorarisNit {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        if(obj instanceof Integer)
+            return obj.equals(this.idDia);
         if(obj instanceof HorarisNit)
             return this.idDia.equals(((HorarisNit) obj).idDia);
         else return false;

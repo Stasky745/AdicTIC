@@ -48,11 +48,10 @@ import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.FreeUseApp;
-import com.example.adictic.roomdb.HorarisNit;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.FreeUseApp;
+import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
 import com.example.adictic.service.LimitAppsWorker;
@@ -93,14 +92,6 @@ import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_AP
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
-
-    private static void setHoraris(Context ctx, List<HorarisNit> list) {
-        //per cada dia (Sunday = 1) -> (Saturday = 7)
-        for(HorarisNit horarisNit : list){
-            RoomRepo roomRepo = new RoomRepo(ctx.getApplicationContext());
-            roomRepo.insertHorarisNit(horarisNit);
-        }
-    }
 
     private static long getHorariInMillis() {
         Calendar cal = Calendar.getInstance();
@@ -193,7 +184,7 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    setHoraris(ctx, response.body().horarisNits);
+                    write2File(ctx,response.body().horarisNits);
                 }
             }
 
@@ -313,37 +304,25 @@ public class Funcions {
     }
 
     public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        RoomRepo roomRepo = new RoomRepo(ctx);
-        roomRepo.deleteAllBlockApps();
+        List<BlockedApp> llista = new ArrayList<>();
 
         for(String pkgName : body.blockedApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = pkgName;
             blockedApp.blockedNow = true;
             blockedApp.timeLimit = -1;
-            roomRepo.insertBlockApp(blockedApp);
+            llista.add(blockedApp);
         }
         for(LimitedApps limitedApp : body.limitApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = limitedApp.name;
             blockedApp.blockedNow = false;
             blockedApp.timeLimit = limitedApp.time;
-            roomRepo.insertBlockApp(blockedApp);
+            llista.add(blockedApp);
         }
-    }
 
-//    public static HorarisEvents getEventFromList(String name) {
-//        RoomRepo roomRepo = new RoomRepo()
-//        boolean trobat = false;
-//        int i = 0;
-//        List<HorarisEvents> listEvents = TodoApp.getListEvents();
-//        HorarisEvents event = null;
-//        while (!trobat && i < listEvents.size()) {
-//            event = listEvents.get(i);
-//            if (event.name.equals(name)) trobat = true;
-//        }
-//        return event;
-//    }
+        write2File(ctx,llista);
+    }
 
     private static List<EventBlock> horarisEvents2EventBlock(List<HorarisEvents> horarisEvents){
         List<EventBlock> res = new ArrayList<>();
@@ -383,58 +362,41 @@ public class Funcions {
     }
     
     public static void updateEventList(Context mContext, List<EventBlock> newEvents) {
-        RoomRepo roomRepo = new RoomRepo(mContext);
-
-//        // Transformem la List<HorarisEvents> en List<EventBlock> per poder interactuar amb repo
-//
-//        List<EventBlock> eventBlockList = horarisEvents2EventBlock(newEvents);
-        List<EventBlock> currentEvents = roomRepo.getAllEventBlocks();
-
-        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
-
         WorkManager workManager = WorkManager.getInstance(mContext);
 
+        // Llegim la llista d'Events actuals
+        List<EventBlock> currentEvents = readFromFile(mContext,Constants.FILE_EVENT_BLOCK,false);
+
+        // Agafem els events diferents entre les dues llistes
+        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
+
+        // recorrem els events diferents
         for (EventBlock event : disjunctionEvents) {
             int index = newEvents.indexOf(event);
 
-            // Event s'ha esborrat
+            // Event s'ha esborrat (no existeix a la nova llista amb el mateix id)
             if (index == -1) {
                 workManager.cancelUniqueWork(event.name);
-                roomRepo.deleteEventBlock(event);
             }
-            // És un nou event
+            // És un nou event o editat
             else if (event.exactSame(newEvents.get(index))) {
-//                Pair<Integer, Integer> startEvent = stringToTime(event.start);
-//                Pair<Integer, Integer> finishEvent = stringToTime(event.finish);
-//
-//                Calendar start = Calendar.getInstance();
-//                start.set(Calendar.HOUR_OF_DAY, startEvent.first);
-//                start.set(Calendar.MINUTE, startEvent.second);
-//
-//                Calendar finish = Calendar.getInstance();
-//                finish.set(Calendar.HOUR_OF_DAY, finishEvent.first);
-//                finish.set(Calendar.MINUTE, finishEvent.second);
-
                 long now = DateTime.now().getMillisOfDay();
 
                 if (now < event.startEvent) {
-                    runStartBlockEventWorker(mContext, event.name, event.startEvent - now);
+                    runStartBlockEventWorker(mContext, event.id, event.startEvent - now);
                 } else if (now < event.endEvent) {
-                    runFinishBlockEventWorker(mContext, event.name, event.endEvent - now);
+                    runFinishBlockEventWorker(mContext, event.id, event.endEvent - now);
                 }
-//                } else {
-//                    start.add(Calendar.DATE, 1);
-//                    runStartBlockEventWorker(mContext, event.name, start.getTimeInMillis() - now);
-//                }
-
-                roomRepo.insertEventBlock(event);
             }
         }
+
+        // Afegim la nova llista al fitxer
+        write2File(mContext,newEvents);
     }
 
-    public static void runStartBlockEventWorker(Context mContext, String name, long delay) {
+    public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name", name);
+        data.putLong("id", id);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
@@ -443,12 +405,12 @@ public class Funcions {
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
     }
 
-    public static void runFinishBlockEventWorker(Context mContext, String name, long delay) {
+    public static void runFinishBlockEventWorker(Context mContext, long id, long delay) {
         Data.Builder data = new Data.Builder();
-        data.putString("name", name);
+        data.putLong("id", id);
 
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
@@ -457,7 +419,7 @@ public class Funcions {
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(name, ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
     }
 
     /**
@@ -559,16 +521,15 @@ public class Funcions {
         List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
         // Agafem totes les FreeUseApps
-        RoomRepo roomRepo = new RoomRepo(mContext);
-        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+        List<FreeUseApp> freeUseApps = readFromFile(mContext,Constants.FILE_FREE_USE_APPS,false);
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
         for(FreeUseApp app : freeUseApps){
             AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
             app.millisUsageEnd = au.totalTime;
-
-            roomRepo.updateFreeUseApp(app);
         }
+
+        write2File(mContext,freeUseApps);
     }
 
     public static void startFreeUseLimitList(Context mContext) {
@@ -581,20 +542,24 @@ public class Funcions {
         List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
 
         // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
-        RoomRepo roomRepo = new RoomRepo(mContext);
-        roomRepo.deleteAllFreeUseApps();
-        List<BlockedApp> blockedApps = roomRepo.getAllNotBlockedApps();
+        List<BlockedApp> blockedApps = readFromFile(mContext,Constants.FILE_BLOCKED_APPS,false);
+
+        List<FreeUseApp> freeUseApps = new ArrayList<>();
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
         for(BlockedApp app : blockedApps){
-            FreeUseApp freeUseApp = new FreeUseApp();
-            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
-            freeUseApp.pkgName = app.pkgName;
-            freeUseApp.millisUsageStart = au.totalTime;
-            freeUseApp.millisUsageEnd = -1;
+            if(!app.blockedNow) {
+                FreeUseApp freeUseApp = new FreeUseApp();
+                AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+                freeUseApp.pkgName = app.pkgName;
+                freeUseApp.millisUsageStart = au.totalTime;
+                freeUseApp.millisUsageEnd = -1;
 
-            roomRepo.insertFreeUseApp(freeUseApp);
+                freeUseApps.add(freeUseApp);
+            }
         }
+
+        write2File(mContext,freeUseApps);
     }
 
     /**
@@ -785,7 +750,7 @@ public class Funcions {
         else return false;
     }
 
-    public static <T> List<T> readFromFile(Context mCtx, String filename){
+    public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
         EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -807,7 +772,7 @@ public class Funcions {
             ArrayList<T> res = gson.fromJson(stringBuilder.toString(),listType);
             inputStreamReader.close();
 
-            updateSharedPrefsChange(mCtx,res.get(0),false);
+            if(storeChanges) updateSharedPrefsChange(mCtx,res.get(0),false);
 
             return res;
 
@@ -815,6 +780,17 @@ public class Funcions {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean fileEmpty(Context mCtx, String fileName){
+        File file = new File(mCtx.getFilesDir(),fileName);
+
+        // Si el fitxer no existeix el tractem com si fos buit.
+        if(!file.exists())
+            return true;
+
+        // Retornem si el fitxer està buit
+        return file.length() == 0;
     }
 
     private static Type getListType(String filename) {

@@ -1,21 +1,10 @@
-package com.example.adictic.roomdb;
+package com.example.adictic.entity;
 
 import androidx.annotation.Nullable;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.Index;
-import androidx.room.PrimaryKey;
 
-import org.joda.time.DateTime;
-
-import java.util.Date;
-
-@Entity(indices = {@Index(value = {"nom_event"}, unique = true)})
 public class EventBlock {
-    @PrimaryKey
     public long id;
 
-    @ColumnInfo(name = "nom_event")
     public String name;
 
     // Joda-time getMillisOfDay()
@@ -32,9 +21,28 @@ public class EventBlock {
     public boolean saturday;
     public boolean sunday;
 
+    public EventBlock(EventBlock other){
+        this.id = other.id;
+        this.name = other.name;
+
+        this.startEvent = other.startEvent;
+        this.endEvent = other.endEvent;
+
+        this.activeNow = other.activeNow;
+
+        this.monday = other.monday;
+        this.tuesday = other.tuesday;
+        this.wednesday = other.wednesday;
+        this.thursday = other.thursday;
+        this.friday = other.friday;
+        this.saturday = other.saturday;
+        this.sunday = other.sunday;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
 //        return super.equals(obj);
+
 
         if(obj instanceof EventBlock){
             EventBlock object = (EventBlock) obj;

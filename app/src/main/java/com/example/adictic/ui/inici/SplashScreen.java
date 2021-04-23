@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.service.WindowChangeDetectingService;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;

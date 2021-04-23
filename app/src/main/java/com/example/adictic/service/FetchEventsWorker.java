@@ -6,20 +6,17 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.FreeUseApp;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.FreeUseApp;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 public class FetchEventsWorker extends Worker {
-    RoomRepo roomRepo;
-
     public FetchEventsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -27,58 +24,56 @@ public class FetchEventsWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        roomRepo = new RoomRepo(getApplicationContext());
-
         // Agafem els events del dia actual
-        List<EventBlock> eventsDia = agafarEventsDia();
+        List<EventBlock> eventsList = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,false);
 
         // Si no hi ha events no fem res
-        if(eventsDia == null) return Result.success();
+        if(eventsList == null || eventsList.isEmpty()) return Result.success();
 
         // Per cada event, mirem quant de temps falta perquè comenci i fem un worker a aquella hora
-        for(EventBlock eventBlock : eventsDia){
-            DateTime dateTime = new DateTime()
-                    .withMillisOfDay(eventBlock.startEvent);
+        for(EventBlock eventBlock : eventsList){
+            if(esDelDia(eventBlock)) {
+                DateTime dateTime = new DateTime()
+                        .withMillisOfDay(eventBlock.startEvent);
 
-            long delay = dateTime.getMillis() - DateTime.now().getMillis();
+                long delay = dateTime.getMillis() - DateTime.now().getMillis();
 
-            Funcions.runStartBlockEventWorker(getApplicationContext(),eventBlock.name,delay);
+                Funcions.runStartBlockEventWorker(getApplicationContext(), eventBlock.id, delay);
+            }
         }
 
         // Agafem la taula de FreeUseApps
-        List<FreeUseApp> freeUseApps = roomRepo.getAllFreeUseApps();
+        List<FreeUseApp> freeUseApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_FREE_USE_APPS,false);
 
         // Per cada FreeUseApp, inicialitzem l'us inicial a 0 perquè acaba de començar un dia nou
-        for(FreeUseApp app : freeUseApps){
-            app.millisUsageStart = 0;
-            roomRepo.updateFreeUseApp(app);
-        }
+        freeUseApps.forEach(freeUseApp -> freeUseApp.millisUsageStart = 0);
+        Funcions.write2File(getApplicationContext(),freeUseApps);
 
         return Result.success();
     }
 
-    private List<EventBlock> agafarEventsDia(){
+    private boolean esDelDia(EventBlock eventBlock){
         // 1 - diumenge --> 7 - dissabte
         int dia = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
         if(dia == 1){
-            return roomRepo.getSundayEvents();
+            return eventBlock.sunday;
         }
         else if(dia == 2){
-            return roomRepo.getMondayEvents();
+            return eventBlock.monday;
         }
         else if(dia == 3){
-            return roomRepo.getTuesdayEvents();
+            return eventBlock.tuesday;
         }
         else if(dia == 4){
-            return roomRepo.getWednesdayEvents();
+            return eventBlock.wednesday;
         }
         else if(dia == 5){
-            return roomRepo.getThursdayEvents();
+            return eventBlock.thursday;
         }
         else if(dia == 6){
-            return roomRepo.getFridayEvents();
+            return eventBlock.friday;
         }
-        else return roomRepo.getSaturdayEvents();
+        else return eventBlock.saturday;
     }
 }

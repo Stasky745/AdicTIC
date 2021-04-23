@@ -17,22 +17,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.HorarisEvents;
-import com.example.adictic.roomdb.EventBlock;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.EventBlock;
 import com.example.adictic.util.Funcions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 import java.util.Objects;
 
 public class EventFragment extends DialogFragment {
     private final EventBlock event;
+    private final EventBlock oldEvent;
 
     private EditText ET_eventName, ET_eventStart, ET_eventEnd;
     private ChipGroup CG_eventDays;
@@ -44,6 +40,7 @@ public class EventFragment extends DialogFragment {
 
     public EventFragment(EventBlock he) {
         event = he;
+        oldEvent = new EventBlock(he);
     }
 
     public static EventFragment newInstance(String title, EventBlock horarisEvent) {
@@ -205,17 +202,12 @@ public class EventFragment extends DialogFragment {
             } else {
                 event.name = ET_eventName.getText().toString();
 
-                RoomRepo roomRepo = new RoomRepo(getContext().getApplicationContext());
-                roomRepo.updateEventBlock(event);
-
                 mCallback.onSelectedData(event);
                 dismiss();
             }
         });
 
         BT_cancel.setOnClickListener(v -> {
-            RoomRepo roomRepo = new RoomRepo(getContext().getApplicationContext());
-            EventBlock oldEvent = roomRepo.getEventFromListWithID(event.id);
             event.startEvent = oldEvent.startEvent;
             event.endEvent = oldEvent.endEvent;
             event.name = oldEvent.name;

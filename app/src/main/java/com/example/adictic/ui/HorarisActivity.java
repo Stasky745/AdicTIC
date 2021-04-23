@@ -19,8 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.adictic.R;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.HorarisNit;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
@@ -215,10 +214,10 @@ public class HorarisActivity extends AppCompatActivity {
                 chipGroup.check(CH_horariGeneric.getId());
         }
 
+        List<HorarisNit> list = new ArrayList<>();
         for (HorarisNit horarisNit : horarisNits){
             if(!sharedPreferences.getBoolean("isTutor",false)){
-                RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-                roomRepo.insertHorarisNit(horarisNit);
+                list.add(horarisNit);
             }
             if(horarisNit.idDia == Calendar.MONDAY){
                 ET_wakeMon.setText(Funcions.millisOfDay2String(horarisNit.despertar));
@@ -260,6 +259,8 @@ public class HorarisActivity extends AppCompatActivity {
                 ET_sleepWeekend.setText(horarisNit.dormir);
             }
         }
+
+        Funcions.write2File(getApplicationContext(),list);
     }
 
     public void timeDialog(View v) {

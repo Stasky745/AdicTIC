@@ -19,11 +19,9 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.roomdb.BlockedApp;
-import com.example.adictic.roomdb.RoomRepo;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.chat.ChatFragment;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
@@ -61,16 +59,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
-        RoomRepo roomRepo = new RoomRepo(getApplicationContext());
-        roomRepo.deleteAllBlockApps();
+        List<BlockedApp> list = new ArrayList<>();
         map.remove("limitApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = entry.getKey();
             blockedApp.timeLimit = Long.parseLong(entry.getValue());
             blockedApp.blockedNow = false;
-            roomRepo.insertBlockApp(blockedApp);
+            list.add(blockedApp);
         }
+
+        Funcions.write2File(getApplicationContext(),list);
     }
 
     @Override
