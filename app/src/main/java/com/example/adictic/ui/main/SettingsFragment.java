@@ -54,6 +54,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
+            settings_change_password();
         }
         settings_change_theme();
         settings_change_language();

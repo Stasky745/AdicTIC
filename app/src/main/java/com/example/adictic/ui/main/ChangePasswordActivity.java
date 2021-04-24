@@ -1,31 +1,41 @@
 package com.example.adictic.ui.main;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.ChangePassword;
+import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.Register;
+import com.example.adictic.util.Crypt;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-public class ChangePasswordActivity extends Activity {
+import org.json.JSONObject;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class ChangePasswordActivity extends AppCompatActivity {
 
     TodoApi todoApi;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
         todoApi = ((TodoApp) this.getApplication()).getAPI();
+
+        Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
 
         Button b_accept = findViewById(R.id.BT_popCP_accept);
         Button b_cancel = findViewById(R.id.BT_popCP_cancel);
@@ -37,7 +47,51 @@ public class ChangePasswordActivity extends Activity {
                 EditText p1 = ChangePasswordActivity.this.findViewById(R.id.ET_popCP_newPass);
                 EditText p2 = ChangePasswordActivity.this.findViewById(R.id.ET_popCP_newPass2);
 
-                //todoApi.changePassword();
+                TextView err_pOld = ChangePasswordActivity.this.findViewById(R.id.TV_popCP_error_actualPass);
+                TextView err_p2 = ChangePasswordActivity.this.findViewById(R.id.TV_popCP_error_newPass2);
+
+                err_pOld.setVisibility(View.GONE);
+
+                if(!p1.getText().toString().equals(p2.getText().toString())){
+                    err_p2.setVisibility(View.VISIBLE);
+                } else {
+                    err_p2.setVisibility(View.GONE);
+                    ChangePassword changePassword = new ChangePassword();
+                    changePassword.oldPassword = Crypt.getSHA256(pOld.getText().toString().trim());
+                    changePassword.newPassword = Crypt.getSHA256(p1.getText().toString().trim());
+                    Call<String> call = todoApi.changePassword(changePassword);
+
+                    call.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            if(response.isSuccessful()){
+                                Toast toast = Toast.makeText(ChangePasswordActivity.this, getString(R.string.successful_entry), Toast.LENGTH_LONG);
+                                toast.show();
+                                finish();
+                            } else {
+                                try {
+                                    JSONObject obj = new JSONObject(response.errorBody().string());
+                                    if (obj.getString("message").trim().equals("OldPass does not match")) {
+                                        err_pOld.setVisibility(View.VISIBLE);
+                                    } else {
+                                        Toast toast = Toast.makeText(ChangePasswordActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_LONG);
+                                        toast.show();
+                                        System.err.println("Error desconegut HTTP en ChangePasswordActivity: " + obj.getString("message"));
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            Toast toast = Toast.makeText(ChangePasswordActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+                    });
+                    todoApi.changePassword(changePassword);
+                }
             }
         });
 

@@ -99,10 +99,10 @@ public class Login extends AppCompatActivity {
 
                         if (tutor.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 1, token);
+                            Login.this.checkCredentials(u.getText().toString().trim(), p.getText().toString().trim(), 1, token);
                         } else if (tutelat.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 0, token);
+                            Login.this.checkCredentials(u.getText().toString().trim(), p.getText().toString().trim(), 0, token);
                         } else {
                             noTypeDevice.setVisibility(View.VISIBLE);
                         }

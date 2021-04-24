@@ -5,6 +5,7 @@ import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.entity.BlockedLimitedLists;
+import com.example.adictic.entity.ChangePassword;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.FillNom;
@@ -175,4 +176,7 @@ public interface TodoApi {
 
     @POST("/usage/{idChild}/lastAppUsed")
     Call<String> postLastAppUsed(@Path("idChild") Long idChild, @Body LiveApp liveApp);
+
+    @POST("/users/changePassword")
+    Call<String> changePassword(@Body ChangePassword cp);
 }
