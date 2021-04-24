@@ -48,7 +48,6 @@ import retrofit2.Response;
 public class ChatFragment extends Fragment {
 
     public static Long adminUserId;
-    private SharedPreferences sharedPreferences;
     RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
     private TodoApi mTodoService;
@@ -84,7 +83,7 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.chat_layout, container, false);
         Activity activity = getActivity();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
 
         assert getArguments() != null;
         access = getArguments().getBoolean("access");
