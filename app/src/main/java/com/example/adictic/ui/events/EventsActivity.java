@@ -2,7 +2,6 @@ package com.example.adictic.ui.events;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -22,10 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.EventBlock;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.entity.EventBlock;
-import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -42,12 +39,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     int canvis;
 
+    Horaris horaris;
+
     EventBlock selectedEvent;
 
     RV_Adapter RVadapter;
-
-    List<EventBlock> eventList;
-    List<HorarisNit> horarisNits;
 
     Button BT_acceptarHoraris;
     Button BT_modificarEvent;
@@ -64,30 +60,16 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         idChild = getIntent().getLongExtra("idChild", -1);
-        eventList = new ArrayList<>();
+        horaris = null;
         canvis = 0;
 
         selectedEvent = null;
 
-
         setLayouts();
         getHoraris();
+        assert sharedPreferences != null;
         if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                assert data != null;
-                horarisNits = data.getParcelableExtra("wakeSleepList");
-
-                if (canvis == 0) canvis = data.getIntExtra("canvis", 0);
-            }
-        }
     }
 
     @Override
@@ -113,9 +95,14 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        eventList = response.body().events;
+                        horaris = response.body();
+                        if(horaris.events == null)
+                            horaris.events = new ArrayList<>();
 
-                        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
+                        if(horaris.horarisNits == null)
+                            horaris.horarisNits = new ArrayList<>();
+
+                        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
 
                         RV_eventList.setAdapter(RVadapter);
                     }
@@ -130,18 +117,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     private void setButtons() {
-
         BT_acceptarHoraris.setVisibility(View.VISIBLE);
         BT_modificarEvent.setVisibility(View.VISIBLE);
         BT_afegirEvent.setVisibility(View.VISIBLE);
         BT_esborrarEvent.setVisibility(View.VISIBLE);
 
         BT_acceptarHoraris.setOnClickListener(view -> {
-            Horaris horaris = new Horaris();
-            horaris.events = eventList;
-
-            horaris.horarisNits = horarisNits;
-
             Call<String> call = mTodoService.postHoraris(idChild, horaris);
 
             call.enqueue(new Callback<String>() {
@@ -166,10 +147,10 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                         .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
                             boolean trobat = false;
                             int count = 0;
-                            while (count < eventList.size() && !trobat) {
-                                if (eventList.get(count).name.equals(selectedEvent.name)) {
+                            while (count < horaris.events.size() && !trobat) {
+                                if (horaris.events.get(count).name.equals(selectedEvent.name)) {
                                     trobat = true;
-                                    eventList.remove(count);
+                                    horaris.events.remove(count);
                                 } else count++;
                             }
                         })
@@ -217,19 +198,16 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     @Override
     public void onSelectedData(EventBlock newEvent) {
         if (newEvent.id != 0) {
-            int i = 0;
-            boolean found = false;
-            while (i < eventList.size() && !found) {
-                if (eventList.get(i).id == (newEvent.id)) {
-                    eventList.remove(i);
-                    found = true;
-                }
-                i++;
+            if(horaris.events.stream().anyMatch(eventBlock -> eventBlock.id == newEvent.id)){
+                EventBlock eventBlock = horaris.events.stream().filter(eb -> eb.id == newEvent.id).findFirst().get();
+                horaris.events.remove(eventBlock);
             }
         }
-        eventList.add(newEvent);
+        horaris.events.add(newEvent);
 
-        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
+        canvis = 1;
+
+        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
 
         RV_eventList.setAdapter(RVadapter);
     }

@@ -216,9 +216,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
         });
 
+        Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
         Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        getApplicationContext().startActivity(lockIntent);
+        lockIntent.putExtra("pkgName",lastPackage);
+        startActivity(lockIntent);
     }
 
     private boolean isBlocked() {
