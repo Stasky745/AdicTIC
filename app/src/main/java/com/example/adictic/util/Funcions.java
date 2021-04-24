@@ -79,8 +79,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.ResponseBody;
@@ -736,8 +738,10 @@ public class Funcions {
 
     public static <T> boolean write2File(Context mCtx, List<T> list){
         if(!list.isEmpty()){
+            Set<T> setList = new HashSet<>(list);
+
             // Agafem el JSON de la llista i inicialitzem EncryptedFile
-            String json = new Gson().toJson(list);
+            String json = new Gson().toJson(setList);
             EncryptedFile encryptedFile;
 
             // Mirem a quin fitxer escriure

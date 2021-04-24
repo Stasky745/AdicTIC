@@ -46,8 +46,8 @@ import retrofit2.Response;
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    String TAG = "Firebase: ";
-    TodoApi mTodoService;
+    private final String TAG = "Firebase: ";
+    private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
 
     @Override

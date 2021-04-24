@@ -51,11 +51,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     TodoApi mTodoService;
     SharedPreferences sharedPreferences;
     PackageManager mPm;
-    List<AppInfo> lastListApps;
-    Calendar dayUpdatedInstalledApps;
-    Calendar lastTryUpdate;
-    List<AppChange> uninstalledApps;
-    List<AppChange> installedApps;
 
     List<EventBlock> eventBlocks;
     List<BlockedApp> blockedApps;
@@ -67,32 +62,32 @@ public class WindowChangeDetectingService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
 
-        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
-        fetchDades();
+        assert sharedPreferences != null;
+        if(sharedPreferences.getBoolean("isTutor",false)) {
+            disableSelf();
+        }
+        else {
+            fetchDades();
 
-        uninstalledApps = new ArrayList<>();
-        installedApps = new ArrayList<>();
-        dayUpdatedInstalledApps = Calendar.getInstance();
-        dayUpdatedInstalledApps.add(Calendar.DAY_OF_YEAR, -1);
-        lastTryUpdate = Calendar.getInstance();
-        lastTryUpdate.add(Calendar.DAY_OF_YEAR, -1);
+            mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+            mPm = getPackageManager();
 
-        //Configure these here for compatibility with API 13 and below.
-        AccessibilityServiceInfo config = getServiceInfo();
+            eventBlocks = new ArrayList<>();
+            blockedApps = new ArrayList<>();
 
-        config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-        config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+            lastActivity = "";
+            lastPackage = "";
 
-        mPm = getPackageManager();
-        lastListApps = new ArrayList<>();
-        if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
+            //Configure these here for compatibility with API 13 and below.
+            AccessibilityServiceInfo config = getServiceInfo();
 
-        config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
-
-        setServiceInfo(config);
+            config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
+            config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
+            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+            setServiceInfo(config);
+        }
     }
 
     private void fetchDades() {
@@ -114,137 +109,24 @@ public class WindowChangeDetectingService extends AccessibilityService {
         Funcions.checkHoraris(getApplicationContext());
     }
 
-    private List<AppInfo> getLaunchableApps() {
-        Intent main = new Intent(Intent.ACTION_MAIN);
-        main.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        List<AppInfo> res = new ArrayList<>();
-
-        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
-
-        //List<String> launcherApps = getLauncherApps();
-
-        List<String> duplicatesList = new ArrayList<>();
-
-        for (ResolveInfo ri : list) {
-            ApplicationInfo ai = ri.activityInfo.applicationInfo;
-            // if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
-            if (!duplicatesList.contains(ai.packageName)) {
-                duplicatesList.add(ai.packageName);
-                AppInfo appInfo = new AppInfo();
-                appInfo.appName = mPm.getApplicationLabel(ai).toString();
-                appInfo.pkgName = ai.packageName;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    appInfo.category = ai.category;
-                }
-                res.add(appInfo);
-            }
-        }
-
-        return res;
-    }
-
-//    private List<String> getLauncherApps(){
-//        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
-//
-//        List<String> res = new ArrayList<>();
-//
-//        for(ApplicationInfo ai : list){
-//            if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) res.add(ai.packageName);
-//        }
-//
-//        return res;
-//    }
-
-    private void setChangedAppLists(List<AppInfo> listNewPkgs, Calendar today) {
-        Collection<AppInfo> differentApps = CollectionUtils.disjunction(listNewPkgs, lastListApps);
-
-        for (AppInfo ai : differentApps) {
-            AppChange ac = new AppChange();
-            ac.pkgName = ai.pkgName;
-            ac.day = today.get(Calendar.YEAR) + "/" + (today.get(Calendar.MONTH) + 1) + "/" + today.get(Calendar.DAY_OF_MONTH);
-
-            if (listNewPkgs.contains(ai)) installedApps.add(ac);
-            else uninstalledApps.add(ac);
-        }
-    }
-
-    private void checkInstalledApps() {
-        final List<AppInfo> listInstalledPkgs = getLaunchableApps();
-
-        Calendar today = Calendar.getInstance();
-        if (!CollectionUtils.isEqualCollection(listInstalledPkgs, lastListApps)
-                || (today.get(Calendar.DAY_OF_YEAR) != dayUpdatedInstalledApps.get(Calendar.DAY_OF_YEAR)
-                            && today.get(Calendar.DAY_OF_YEAR) != lastTryUpdate.get(Calendar.DAY_OF_YEAR))) {
-            setChangedAppLists(listInstalledPkgs, today);
-
-            lastTryUpdate = Calendar.getInstance();
-
-            Call<String> call = mTodoService.postInstalledApps(sharedPreferences.getLong("idUser",-1), listInstalledPkgs);
-
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    if (response.isSuccessful()) {
-                        lastListApps = listInstalledPkgs;
-                        dayUpdatedInstalledApps = Calendar.getInstance();
-
-                        installedApps.clear();
-                        uninstalledApps.clear();
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                }
-            });
-        }
-    }
-
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-
-            // DEBUG
-
-            if(blockedApps == null)
-                System.out.println("BLOCKED APPS IS NULL");
-            else
-                System.out.println("BLOCKED APPS SIZE = " + blockedApps.size());
-
-            if(eventBlocks == null)
-                System.out.println("EVENT BLOCKS IS NULL");
-            else
-                System.out.println("EVENT BLOCKS SIZE = " + eventBlocks.size());
-
-            // DEBUG
-
-            if(sharedPreferences.getBoolean("freeUse",false)) return;
-
-            actualitzarLlistes();
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
-            if (!sharedPreferences.getBoolean("isTutor",false)) checkInstalledApps();
+            // Si és FreeUse, tornem sense fer res
+            if(sharedPreferences.getBoolean("freeUse",false)){
+                Log.d(TAG, "Not FreeUse, return.");
+                return;
+            }
 
-            // Enviem l'última app oberta a la mare
+            // Actualitzem les llistes d'Events i BlockedApp
+            actualitzarLlistes();
+
+            // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()){
-                //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-                LiveApp liveApp = new LiveApp();
-                liveApp.pkgName = lastPackage;
-                liveApp.appName = lastActivity;
-                liveApp.time = Calendar.getInstance().getTimeInMillis();
-
-                if (!blackListLiveApp.contains(lastPackage)) {
-                    Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong("idUser",-1), liveApp);
-                    call.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
-
-                        @Override
-                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
-                    });
-                }
+                enviarLastApp();
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
@@ -256,7 +138,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     mDPM.lockNow();
                 }
             }
-            if (event.getPackageName() != null && event.getClassName() != null) {
+            //
+            else if (event.getPackageName() != null && event.getClassName() != null) {
+                // Agafem info de l'Event
                 ComponentName componentName = new ComponentName(
                         event.getPackageName().toString(),
                         event.getClassName().toString()
@@ -264,8 +148,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 ActivityInfo activityInfo = tryGetActivity(componentName);
                 boolean isActivity = activityInfo != null;
+
                 if (isActivity) {
-                    ApplicationInfo appInfo = null;
+                    ApplicationInfo appInfo;
+
                     if (!blackListLiveApp.contains(componentName.getPackageName())) {
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
@@ -275,69 +161,81 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         }
                         lastPackage = componentName.getPackageName();
                         Log.i("CurrentActivity", componentName.flattenToShortString());
-                        Log.i("CurrentPackage", componentName.getPackageName());
-                    }
+                        Log.i("CurrentPackage", lastPackage);
 
-                    //String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                        //Mirem si l'app està bloquejada
+                        boolean isBlocked = isBlocked();
 
-                    boolean isBlocked = false;
+                        if (isBlocked) {
+                            ensenyarBlockScreenActivity();
+                        }
 
-                    if(blockedApps.contains(componentName.getPackageName())){
-                        BlockedApp blockedApp = blockedApps.get(blockedApps.indexOf(componentName.getPackageName()));
-                        isBlocked = blockedApp.blockedNow;
-                    }
+                        Log.i("LiveApp", sharedPreferences.getBoolean("liveApp",false) +
+                                "   idChild: " + sharedPreferences.getLong("idUser",-1));
 
-                    if (isBlocked) {
-                        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong("idUser",-1), componentName.getPackageName());
-                        call.enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
-
-                            @Override
-                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
-                        });
-
-                        Intent lockIntent = new Intent(this, BlockScreenActivity.class);
-                        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        this.startActivity(lockIntent);
-                    }
-
-                    Log.i("LiveApp", sharedPreferences.getBoolean("liveApp",false) +
-                            " " + sharedPreferences.getLong("idUser",-1));
-
-                    if (sharedPreferences.getBoolean("liveApp",false)) {
-                        LiveApp liveApp = new LiveApp();
-                        liveApp.pkgName = componentName.getPackageName();
-
-                        if(appInfo == null)
-                            liveApp.appName = componentName.getPackageName();
-                        else
-                            liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
-
-                        liveApp.time = Calendar.getInstance().getTimeInMillis();
-
-//                        ApplicationInfo appInfo;
-//                        try {
-//                            appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-//                            liveApp.appName = appInfo.loadLabel(getPackageManager()).toString();
-//                        } catch (PackageManager.NameNotFoundException e) {
-//                            liveApp.appName = componentName.getPackageName();
-//                        }
-
-                        //mirar si component.getpackagename() funciona si ho fem amb lastPackage
-                        if (!blackListLiveApp.contains(componentName.getPackageName())) {
-                            Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong("idUser",-1), liveApp);
-                            call.enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
-
-                                @Override
-                                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
-                            });
+                        if (sharedPreferences.getBoolean("liveApp",false)) {
+                            enviarLiveApp();
                         }
                     }
                 }
             }
+        }
+    }
+
+    private void enviarLiveApp() {
+        LiveApp liveApp = new LiveApp();
+        liveApp.pkgName = lastPackage;
+        liveApp.appName = lastActivity;
+        liveApp.time = Calendar.getInstance().getTimeInMillis();
+
+        Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong("idUser",-1), liveApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+        });
+    }
+
+    private void ensenyarBlockScreenActivity() {
+        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong("idUser",-1), lastPackage);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+        });
+
+        Intent lockIntent = new Intent(this, BlockScreenActivity.class);
+        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        this.startActivity(lockIntent);
+    }
+
+    private boolean isBlocked() {
+        if(blockedApps.contains(lastPackage)){
+            BlockedApp blockedApp = blockedApps.get(blockedApps.indexOf(lastPackage));
+            return blockedApp.blockedNow;
+        }
+        return false;
+    }
+
+    private void enviarLastApp() {
+        LiveApp liveApp = new LiveApp();
+        liveApp.pkgName = lastPackage;
+        liveApp.appName = lastActivity;
+        liveApp.time = Calendar.getInstance().getTimeInMillis();
+
+        if (!blackListLiveApp.contains(lastPackage)) {
+            Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong("idUser",-1), liveApp);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+            });
         }
     }
 
