@@ -71,10 +71,11 @@ public class MainParentFragment extends Fragment {
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+            ImageView IV_CurrentApp = root.findViewById(R.id.IV_CurrentApp);
 
             String pkgName = intent.getStringExtra("pkgName");
             try {
-                Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                Funcions.setIconDrawable(requireContext(), pkgName, IV_CurrentApp);
                 currentApp.setText(intent.getStringExtra("appName"));
             } catch (IllegalStateException e){}
         }
@@ -98,6 +99,11 @@ public class MainParentFragment extends Fragment {
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         if(sharedPreferences.getBoolean("isTutor",false)) setLastLiveApp();
+        else{
+            IV_liveIcon.setVisibility(View.GONE);
+            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+            currentApp.setVisibility(View.GONE);
+        }
 
         setButtons();
         getStats();
@@ -186,11 +192,6 @@ public class MainParentFragment extends Fragment {
         if (sharedPreferences.getBoolean("isTutor",false)) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                     new IntentFilter("liveApp"));
-        } else {
-            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-            currentApp.setText(getString(R.string.title_activity_splash_screen));
-            String pkgName = requireActivity().getApplicationContext().getPackageName();
-            Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
         }
 
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
@@ -365,7 +366,8 @@ public class MainParentFragment extends Fragment {
                 IV_mascot.setImageResource(R.drawable.mascot_hora);
             else if (totalUsageTime < TimeUnit.MINUTES.toMillis(135))
                 IV_mascot.setImageResource(R.drawable.mascot_molt);
-            else IV_mascot.setImageResource(R.drawable.mascot_max);
+            else
+                IV_mascot.setImageResource(R.drawable.mascot_max);
         } else {
             IV_mascot.setImageResource(R.drawable.mascot_nit);
         }
