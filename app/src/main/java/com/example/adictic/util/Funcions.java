@@ -13,8 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -39,21 +38,23 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
+import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.FreeUseApp;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.entity.HorarisEvents;
+import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.EventBlock;
-import com.example.adictic.entity.FreeUseApp;
-import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.service.FinishBlockEventWorker;
 import com.example.adictic.service.GeoLocWorker;
@@ -85,7 +86,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -157,24 +157,15 @@ public class Funcions {
     }
 
     public static void setIconDrawable(Context ctx, String pkgName, final ImageView d) {
-        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
+        Uri imageUri = Uri.parse(Global.BASE_URL_PORTFORWARDING).buildUpon()
+                .appendPath("icons")
+                .appendPath(pkgName)
+                .build();
 
-        Call<ResponseBody> call = mTodoService.getIcon(pkgName);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
-                    d.setImageBitmap(bmp);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-
-            }
-        });
+        Glide.with(ctx)
+                .load(imageUri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(d);
     }
 
     public static void checkHoraris(Context ctx) {
