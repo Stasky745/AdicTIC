@@ -54,6 +54,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         } else {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
+            settings_change_password();
         }
         settings_change_theme();
         settings_change_language();
@@ -163,6 +164,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                     break;
             }
+            return true;
+        });
+    }
+
+    private void settings_change_password(){
+        Preference change_password = findPreference("setting_change_password");
+
+        assert change_password != null;
+        change_password.setOnPreferenceClickListener(preference -> {
+            requireActivity().startActivity(new Intent(getActivity(), ChangePasswordActivity.class));
             return true;
         });
     }

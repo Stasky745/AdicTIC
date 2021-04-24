@@ -317,6 +317,10 @@
     <string name="emailAlreadyExists">El correu electrònic ja existeix</string>
     <string name="userDoesntExists">L\'usuari no existeix</string>
     <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
+    <string name="changePassword">Canviar contrasenya</string>
+    <string name="actualPassword">Contrasenya actual:</string>
+    <string name="newPassword">Nova contrasenya:</string>
+    <string name="repeatNewPassword">Repeteix la nova contrasenya:</string>
     <string name="change_theme">Canviar tema</string>
     <string name="theme_light">Tema clar</string>
     <string name="theme_dark">Tema fosc</string>

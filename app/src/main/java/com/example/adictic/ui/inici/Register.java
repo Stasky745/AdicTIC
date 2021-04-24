@@ -62,7 +62,7 @@ public class Register extends AppCompatActivity {
 
             if (p1.getText().toString().equals(p2.getText().toString())) {
                 if (isValidEmail(e.getText().toString().trim())) {
-                    Register.this.checkCredentials(u.getText().toString(), p1.getText().toString(), e.getText().toString().trim());
+                    Register.this.checkCredentials(u.getText().toString().trim(), p1.getText().toString().trim(), e.getText().toString().trim());
                 } else {
                     noValidEmail.setText(getString(R.string.error_noValidEmail));
                     noValidEmail.setVisibility(View.VISIBLE);

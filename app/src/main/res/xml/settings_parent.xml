@@ -14,8 +14,14 @@
         app:key="setting_change_theme"
         app:title="@string/change_theme" />
 
-    <Preference
-        app:key="setting_tancar_sessio"
-        app:title="@string/tancar_sessio" />
+    <PreferenceCategory>
+        <Preference
+            app:key="setting_change_password"
+            app:title="@string/changePassword" />
+
+        <Preference
+            app:key="setting_tancar_sessio"
+            app:title="@string/tancar_sessio" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
