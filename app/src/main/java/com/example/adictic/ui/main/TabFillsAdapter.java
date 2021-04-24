@@ -1,6 +1,7 @@
 package com.example.adictic.ui.main;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -8,7 +9,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
 
@@ -27,11 +27,13 @@ public class TabFillsAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+
         if (position > fills.size() - 1 || position < 0) {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
         } else {
             lastId = fills.get(position).idChild;
-            if (TodoApp.getTutor() == 1) Funcions.askChildForLiveApp(ctx, lastId, true);
+            if (sharedPreferences.getBoolean("isTutor",false)) Funcions.askChildForLiveApp(ctx, lastId, true);
 
             return new MainParentFragment(fills.get(position));
         }

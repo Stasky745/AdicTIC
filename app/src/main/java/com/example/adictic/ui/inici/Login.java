@@ -1,6 +1,7 @@
 package com.example.adictic.ui.inici;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,8 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,9 +34,9 @@ import retrofit2.Response;
 // This is the Login fragment where the user enters the username and password and
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
-
     static Login login;
     TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     public static Login getInstance() {
         return login;
@@ -44,6 +47,7 @@ public class Login extends AppCompatActivity {
         login = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(Login.this);
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
@@ -95,10 +99,10 @@ public class Login extends AppCompatActivity {
 
                         if (tutor.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 1, token);
+                            Login.this.checkCredentials(u.getText().toString().trim(), p.getText().toString().trim(), 1, token);
                         } else if (tutelat.isChecked()) {
                             Log.d(TAG, "TOKEN PASSAR: " + token);
-                            Login.this.checkCredentials(u.getText().toString(), p.getText().toString(), 0, token);
+                            Login.this.checkCredentials(u.getText().toString().trim(), p.getText().toString().trim(), 0, token);
                         } else {
                             noTypeDevice.setVisibility(View.VISIBLE);
                         }
@@ -108,6 +112,8 @@ public class Login extends AppCompatActivity {
         // This is the listener that will be used when the user presses the "Register" button
         b_reg.setOnClickListener(v -> Login.this.startActivity(new Intent(Login.this, Register.class)));
     }
+
+
 
     // This method is called when the "Login" button is pressed in the Login fragment
     public void checkCredentials(String username, String password, final Integer tutor, final String token) {
@@ -122,12 +128,18 @@ public class Login extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                 if (response.isSuccessful()) {
-
                     User usuari = response.body();
                     assert usuari != null;
 
-                    TodoApp.setTutor(usuari.tutor);
-                    TodoApp.setIDTutor(usuari.id);
+                    if (usuari.tutor == 1) {
+                        sharedPreferences.edit().putBoolean("isTutor", true).apply();
+                        sharedPreferences.edit().putLong("idUser",usuari.id).apply();
+                    }
+                    else {
+                        sharedPreferences.edit().putBoolean("isTutor", false).apply();
+                        sharedPreferences.edit().putLong("idTutor", usuari.id).apply();
+                    }
+
                     if (usuari.tutor == 0) {
                         Bundle extras = new Bundle();
 
@@ -144,8 +156,29 @@ public class Login extends AppCompatActivity {
                     }
                     Login.this.finish();
                 } else {
-                    Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
-                    toast.show();
+                    TextView usernameInvalid = Login.this.findViewById(R.id.TV_login_usernameInvalid);
+                    TextView passwordInvalid = Login.this.findViewById(R.id.TV_login_passwordError);
+                    usernameInvalid.setVisibility(View.INVISIBLE);
+                    passwordInvalid.setVisibility(View.INVISIBLE);
+                    try {
+                        JSONObject obj = new JSONObject(response.errorBody().string());
+                        switch (obj.getString("message").trim()) {
+                            case "User does not exists":
+                                usernameInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            case "Password does not match":
+                                passwordInvalid.setVisibility(View.VISIBLE);
+                                break;
+                            default:
+                                Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_LONG);
+                                toast.show();
+                                System.err.println("Error desconegut HTTP en Login: "+obj.getString("message"));
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

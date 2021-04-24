@@ -46,7 +46,7 @@
     <string name="hint_email">Correu electrònic</string>
     <string name="no_user">No tens usuari? </string>
     <string name="have_account">Ja tens compte? </string>
-    <string name="register">Registra\'t</string>
+    <string name="register">Registra\'t </string>
     <string name="go_login">Inicia sessió</string>
     <string name="tipus">Aquest dispositiu és de:</string>
 
@@ -105,7 +105,7 @@
     <string name="advice_privateConsult">Consulta privada</string>
     <string name="advice_OurCenters">Els nostres centres</string>
 
-    <string name="forgetPassword"><u>Has oblidat la contrasenya?</u></string>
+    <string name="forgetPassword"><u>Has oblidat la contrasenya? </u></string>
 
     <string name="logout">Tancar Sessió</string>
 
@@ -257,7 +257,7 @@
     <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
 
     <string name="estadistiques">"Informació i Estadístiques"</string>
-    <string name="adictic_splash">AdicTIC_Splash</string>
+    <string name="adictic_splash" translatable="false">AdicTIC_Splash</string>
     <string name="settings">Configuració</string>
     <string name="titol">Títol</string>
     <string name="desc">Descripció</string>
@@ -275,8 +275,8 @@
     <string name="enviar_dubte">Enviar dubte</string>
 
     <string name="crear_dbute">Crear nou dubte</string>
-    <string name="chats_tancats">Chats tancats</string>
-    <string name="chat_obert">Chat obert</string>
+    <string name="chats_tancats">Xats tancats</string>
+    <string name="chat_obert">Xat obert</string>
 
     <string name="limit">Límits</string>
     <string name="dades_del_dispositiu">Dades del dispositiu</string>
@@ -301,10 +301,10 @@
     <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
     <string name="cancel">Cancel·lar</string>
     <string name="treure_acces_titol">Treure Accés</string>
-    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per tornar a donar accés només caldrà tornar apretar aquest botó.</string>
     <string name="donar_acces_titol">Donar Accés</string>
-    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per donar accés només caldrà tornar apretar aquest botó.</string>
-    <string name="localitat_professional">De quina localitat voldries que fos el professional?</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">En quina localitat t\'agradaria que fos el professional que t\'atendrà?</string>
     <string name="send_dubte">Enviar Consulta</string>
     <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
     <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>
@@ -313,4 +313,18 @@
     <string name="profile_pic">Foto de Perfil</string>
     <string name="closed_chat">La conversa ha finalitzat.</string>
     <string name="veure_oficina">Veure l\'oficina en el mapa</string>
+    <string name="usernameAlreadyExists">El nom d\'usuari ja existeix</string>
+    <string name="emailAlreadyExists">El correu electrònic ja existeix</string>
+    <string name="userDoesntExists">L\'usuari no existeix</string>
+    <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
+    <string name="change_theme">Canviar tema</string>
+    <string name="theme_light">Tema clar</string>
+    <string name="theme_dark">Tema fosc</string>
+    <string name="theme_default">Tema per defecte</string>
+    <string name="changePassword">Canviar contrasenya</string>
+    <string name="actualPassword">Contrasenya actual:</string>
+    <string name="newPassword">Nova contrasenya:</string>
+    <string name="repeatNewPassword">Repeteix la nova contrasenya:</string>
+    <string name="title_installed_app">%s ha instal·lat una nova app</string>
+    <string name="title_uninstalled_app">%s ha desinstal·lat una app</string>
 </resources>

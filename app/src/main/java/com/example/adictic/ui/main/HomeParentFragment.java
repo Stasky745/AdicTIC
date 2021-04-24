@@ -1,5 +1,6 @@
 package com.example.adictic.ui.main;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -26,6 +28,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeParentFragment extends Fragment {
+    private SharedPreferences sharedPreferences;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -36,13 +40,16 @@ public class HomeParentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
 
         ViewPager2 viewPager = view.findViewById(R.id.ViewPager);
         TabLayout tabLayout = view.findViewById(R.id.TabLayout);
 
         TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
-        long idTutor = TodoApp.getIDTutor();
+        long idTutor;
+        if(sharedPreferences.getBoolean("isTutor",false)) idTutor = sharedPreferences.getLong("idUser",-1);
+        else idTutor = sharedPreferences.getLong("idTutor",-1);
         Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
 
         call.enqueue(new Callback<Collection<FillNom>>() {
@@ -52,11 +59,11 @@ public class HomeParentFragment extends Fragment {
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
                     // Si és l'app fill només ensenyem el fill actual
-                    if (TodoApp.getTutor() == 0 && TodoApp.getIDChild() > 0) {
+                    if (!sharedPreferences.getBoolean("isTutor",false)) {
                         boolean trobat = false;
                         int i = 0;
                         while (!trobat && i < fills.size()) {
-                            if (fills.get(i).idChild == TodoApp.getIDChild()) {
+                            if (fills.get(i).idChild == sharedPreferences.getLong("idUser",-1)) {
                                 trobat = true;
                                 FillNom fill = fills.get(i);
                                 fills.clear();

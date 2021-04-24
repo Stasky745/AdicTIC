@@ -33,8 +33,8 @@ public class DevicePolicyAdmin extends Activity {
         mDPAdmin = new ComponentName(this,
                 MyDevicePolicyReceiver.class);
 
-        System.out.println("mDPM: " + mDPM);
-        System.out.println("mDPAdmin: " + mDPAdmin);
+        Log.d(LOG_TAG,"mDPM: " + mDPM);
+        Log.d(LOG_TAG,"mDPAdmin: " + mDPAdmin);
 
         bt_okay = findViewById(R.id.BT_okAdminPerm);
 
@@ -77,16 +77,12 @@ public class DevicePolicyAdmin extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_ENABLE) {
-                if (!Funcions.isAppUsagePermissionOn(this)) {
-                    this.startActivity(new Intent(this, AppUsagePermActivity.class));
-                    this.finish();
-                } else if (!Funcions.isAccessibilitySettingsOn(this)) {
+                if (!Funcions.isAccessibilitySettingsOn(this))
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-                    this.finish();
-                } else {
+                else
                     this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
-                }
+
+                this.finish();
             }
         }
     }

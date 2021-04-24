@@ -9,8 +9,9 @@ public class AppUsage {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        if(obj instanceof String) return app.pkgName.equals(obj);
+        if (obj == null || getClass() != obj.getClass()) return false;
         AppUsage au = (AppUsage) obj;
-        if (au == null || getClass() != obj.getClass()) return false;
         return app.pkgName.equals(au.app.pkgName);
     }
 }

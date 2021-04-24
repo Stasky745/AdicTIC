@@ -16,6 +16,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.ui.DayUsageActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -31,7 +32,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -153,7 +153,7 @@ public class GraphsFragment extends Fragment {
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setSelectionShift(5f);
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        pieDataSet.setColors(Constants.GRAPH_COLORS);
 
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter());
@@ -199,7 +199,7 @@ public class GraphsFragment extends Fragment {
 
     private void setBarChart(List<BarEntry> entries) {
         BarDataSet barDataSet = new BarDataSet(entries, getResources().getString(R.string.daily_usage));
-        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        barDataSet.setColors(Constants.GRAPH_COLORS);
 
         BarData barData = new BarData(barDataSet);
 

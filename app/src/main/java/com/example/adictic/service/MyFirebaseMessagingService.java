@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,7 +21,10 @@ import androidx.work.WorkManager;
 import com.example.adictic.R;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.chat.ChatFragment;
+import com.example.adictic.ui.inici.Login;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -29,6 +33,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,8 +48,9 @@ import retrofit2.Response;
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    String TAG = "Firebase: ";
-    TodoApi mTodoService;
+    private final String TAG = "Firebase: ";
+    private TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -55,18 +61,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
     }
 
-    public void updateLimitAppsList(Map<String, String> map) {
+    public void updateBlockedAppsList(Map<String, String> map) {
+        List<BlockedApp> list = new ArrayList<>();
         map.remove("limitApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            TodoApp.getLimitApps().put(entry.getKey(), Long.parseLong(entry.getValue()));
+            BlockedApp blockedApp = new BlockedApp();
+            blockedApp.pkgName = entry.getKey();
+            blockedApp.timeLimit = Long.parseLong(entry.getValue());
+            blockedApp.blockedNow = false;
+            list.add(blockedApp);
         }
-    }
 
-    private void updateBlockedAppsList(Map<String, String> map) {
-        map.remove("blockApp");
-
-        List<String> blockList = new ArrayList<>(map.keySet());
-        TodoApp.setBlockedApps(blockList);
+        Funcions.write2File(getApplicationContext(),list);
     }
 
     @Override
@@ -75,11 +81,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         Map<String, String> messageMap = remoteMessage.getData();
 
         String title = "";
         String body = "";
+        Class activitatIntent = null;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -104,37 +112,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if (messageMap.containsKey("blockDevice")) {
                 if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    TodoApp.setBlockedDevice(true);
+                    sharedPreferences.edit().putBoolean("blockedDevice",true).apply();
                     mDPM.lockNow();
-                } else TodoApp.setBlockedDevice(false);
+                } else sharedPreferences.edit().putBoolean("blockedDevice",false).apply();
             } else if (messageMap.containsKey("freeUse")) {
                 if (Objects.equals(messageMap.get("freeUse"), "1")) {
                     Funcions.startFreeUseLimitList(getApplicationContext());
 
                     title = getString(R.string.free_use_activation);
                 } else {
-                    Funcions.updateLimitedAppsList();
+                    Funcions.updateLimitedAppsList(getApplicationContext());
                     title = getString(R.string.free_use_deactivation);
                 }
-            } else if (messageMap.containsKey("limitApp")) {
-                updateLimitAppsList(messageMap);
-
-                /** FER CRIDA WORKMANAGER **/
-                Funcions.runLimitAppsWorker(getApplicationContext(), 0);
-
-                title = getString(R.string.update_blocked_apps);
             } else if (messageMap.containsKey("blockApp")) {
                 updateBlockedAppsList(messageMap);
-                System.out.println("Blocked: " + TodoApp.getBlockedApps());
 
                 title = getString(R.string.update_blocked_apps);
+                activitatIntent = BlockAppsActivity.class;
             } else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
-                TodoApp.setLiveApp(Boolean.parseBoolean(messageMap.get("bool")));
+                boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+                sharedPreferences.edit().putBoolean("liveApp",active).apply();
 
-                OneTimeWorkRequest myWork =
-                        new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-                WorkManager.getInstance(this).enqueue(myWork);
+                if(active && (!sharedPreferences.contains("appUsageWorkerUpdate") ||
+                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",-1) > Constants.HOUR_IN_MILLIS))
+                {
+                    OneTimeWorkRequest myWork =
+                            new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
+                    WorkManager.getInstance(this).enqueue(myWork);
+
+                    sharedPreferences.edit().putLong("lastUpdateAppUsageWorker", Calendar.getInstance().getTimeInMillis()).apply();
+                }
 
                 Log.d(TAG, "Token liveApp: " + s);
             } else if (messageMap.containsKey("getIcon")) {
@@ -142,7 +150,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
             } else if (messageMap.containsKey("horaris")) {
-                Call<Horaris> call = mTodoService.getHoraris(TodoApp.getIDChild());
+                Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
                 call.enqueue(new Callback<Horaris>() {
                     @Override
                     public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
@@ -177,6 +185,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
             }
+            else if(messageMap.containsKey("installedApp")){
+                String appName = messageMap.get("installedApp");
+                String childName = messageMap.get("childName");
+                title = getString(R.string.title_installed_app,childName);
+                body = appName;
+                activitatIntent = BlockAppsActivity.class;
+            }
+            else if(messageMap.containsKey("uninstalledApp")){
+                String appName = messageMap.get("uninstalledApp");
+                String childName = messageMap.get("childName");
+                title = getString(R.string.title_uninstalled_app,childName);
+                body = appName;
+                activitatIntent = BlockAppsActivity.class;
+            }
+
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
             else if (messageMap.containsKey("chat")) {
                 switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
@@ -200,7 +223,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             mNotificationManager.createNotificationChannel(mChannel);
                         }
 
-                        MyNotificationManager.getInstance(this).displayNotification(title, body);
+                        MyNotificationManager.getInstance(this).displayNotification(title, body, null);
                         break;
                     case "1":  //Message with Chat
                         Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
@@ -237,18 +260,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         break;
                 }
             }
-
         }
 
         // Check if message contains a notification payload.
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            MyNotificationManager.getInstance(this).displayNotification(title, body);
+            MyNotificationManager.getInstance(this).displayNotification(title, body, activitatIntent);
         }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
     @NonNull
