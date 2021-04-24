@@ -113,33 +113,26 @@ public class EventFragment extends DialogFragment {
     }
 
     public void setButtons() {
-        CH_Monday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.monday = isChecked;
-        });
+        CH_Monday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.monday = isChecked);
 
-        CH_Tuesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.tuesday = isChecked;
-        });
+        CH_Tuesday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.tuesday = isChecked);
 
-        CH_Wednesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.wednesday = isChecked;
-        });
+        CH_Wednesday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.wednesday = isChecked);
 
-        CH_Thursday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.thursday = isChecked;
-        });
+        CH_Thursday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.thursday = isChecked);
 
-        CH_Friday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.friday = isChecked;
-        });
+        CH_Friday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.friday = isChecked);
 
-        CH_Saturday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.saturday = isChecked;
-        });
+        CH_Saturday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.saturday = isChecked);
 
-        CH_Sunday.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            event.sunday = isChecked;
-        });
+        CH_Sunday.setOnCheckedChangeListener((buttonView, isChecked) ->
+                event.sunday = isChecked);
 
         ET_eventStart.setOnClickListener(v -> {
             Pair<Integer, Integer> start = Funcions.stringToTime(ET_eventStart.getText().toString());
