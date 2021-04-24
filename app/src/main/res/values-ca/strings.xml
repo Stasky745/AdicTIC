@@ -325,4 +325,6 @@
     <string name="theme_light">Tema clar</string>
     <string name="theme_dark">Tema fosc</string>
     <string name="theme_default">Tema per defecte</string>
+    <string name="title_installed_app">%s ha instal·lat una nova app</string>
+    <string name="title_uninstalled_app">%s ha desinstal·lat una app</string>
 </resources>

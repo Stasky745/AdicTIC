@@ -179,4 +179,10 @@ public interface TodoApi {
 
     @POST("/users/changePassword")
     Call<String> changePassword(@Body ChangePassword cp);
+
+    @POST("/usage/{idChild}/installedApp")
+    Call<String> postAppInstalled(@Path("idChild") Long idChild, @Body AppInfo appInfo);
+
+    @POST("/usage/{idChild}/uninstalledApp")
+    Call<String> postAppUninstalled(@Path("idChild") Long idChild, @Body String pkgName);
 }

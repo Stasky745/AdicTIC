@@ -17,6 +17,7 @@ import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class LimitAppsWorker extends Worker {
         boolean canvis = false;
 
         for(BlockedApp app : blockedApps){
-            if(!app.blockedNow) {
+            if(!app.blockedNow && listCurrentUsage.contains(app.pkgName)) {
                 AppUsage appUsage = listCurrentUsage.get(listCurrentUsage.indexOf(app.pkgName));
 
                 // tenim en compte el temps que l'app ha estat utilitzada durant FreeUse
@@ -91,18 +92,22 @@ public class LimitAppsWorker extends Worker {
         int now = dateTime.getMillisOfDay();
 
         List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
-        HorarisNit avui = horarisNits.get(horarisNits.indexOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+        HorarisNit avui = null;
+        if(horarisNits == null) horarisNits = new ArrayList<>();
+        else avui = horarisNits.get(horarisNits.indexOf(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
         long delayNit;
 
         // delayNit és igual al temps fins que toca anar a dormir o fins a despertar demà
-        if(avui.dormir > now) delayNit = avui.dormir - now;
-        else{
+        if(avui != null && avui.dormir > now) delayNit = avui.dormir - now;
+        else if (!horarisNits.isEmpty()){
             Calendar calendar = Calendar.getInstance();
             calendar.add(Calendar.DAY_OF_WEEK,1);
             HorarisNit dema = horarisNits.get(horarisNits.indexOf(calendar.get(Calendar.DAY_OF_WEEK)));
 
             delayNit = (TOTAL_MILLIS_IN_DAY - now) + dema.despertar;
         }
+        else
+            delayNit = TOTAL_MILLIS_IN_DAY - now;
 
         Funcions.runLimitAppsWorker(getApplicationContext(), Math.min(delayNextLimit, delayNit));
 

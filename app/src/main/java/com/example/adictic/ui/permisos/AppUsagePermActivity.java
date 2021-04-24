@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
@@ -18,6 +20,7 @@ import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class AppUsagePermActivity extends Activity {
     SharedPreferences sharedPreferences;
@@ -39,16 +42,10 @@ public class AppUsagePermActivity extends Activity {
 
         if (Funcions.isAppUsagePermissionOn(this)) {
 
-            Calendar cal = Calendar.getInstance();
-            // Agafem dades dels últims X dies per inicialitzar dades al servidor
-            cal.add(Calendar.DAY_OF_YEAR, -6);
-            sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
+            Funcions.startAppUsageWorker(getApplicationContext());
 
-            OneTimeWorkRequest myWork =
-                    new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-
-            WorkManager.getInstance(this).enqueue(myWork);
-
+            if (!Funcions.isAdminPermissionsOn(this))
+                this.startActivity(new Intent(this, DevicePolicyAdmin.class));
             if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
             } else {
