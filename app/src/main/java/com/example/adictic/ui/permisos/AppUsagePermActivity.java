@@ -39,7 +39,6 @@ public class AppUsagePermActivity extends Activity {
 
     @Override
     protected void onResume() {
-
         if (Funcions.isAppUsagePermissionOn(this)) {
 
             Funcions.startAppUsageWorker(getApplicationContext());
@@ -63,7 +62,8 @@ public class AppUsagePermActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (Funcions.isAppUsagePermissionOn(this)) {
-                System.out.println("DINS");
+                if (!Funcions.isAdminPermissionsOn(this))
+                    this.startActivity(new Intent(this, DevicePolicyAdmin.class));
                 if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 } else {

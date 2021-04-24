@@ -57,7 +57,7 @@ public class AppUsageWorker extends Worker {
 
         TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
-        Funcions.canviarMesosAServidor(gul);
+        //Funcions.canviarMesosAServidor(gul);
 
         Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
 

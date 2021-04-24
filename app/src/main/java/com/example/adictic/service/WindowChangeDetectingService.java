@@ -91,22 +91,25 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     private void fetchDades() {
-        Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(sharedPreferences.getLong("userId",-1));
-        call.enqueue(new Callback<BlockedLimitedLists>() {
-            @Override
-            public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    Funcions.updateDB_BlockedApps(getApplicationContext(),response.body());
+        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        if(sharedPreferences.contains("userId")) {
+            Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(sharedPreferences.getLong("userId", -1));
+            call.enqueue(new Callback<BlockedLimitedLists>() {
+                @Override
+                public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Funcions.updateDB_BlockedApps(getApplicationContext(), response.body());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
+                @Override
+                public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
 
-            }
-        });
+                }
+            });
 
-        Funcions.checkHoraris(getApplicationContext());
+            Funcions.checkHoraris(getApplicationContext());
+        }
     }
 
     @Override
@@ -140,6 +143,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
             //
             else if (event.getPackageName() != null && event.getClassName() != null) {
+                Log.d(TAG,"L'event no és null - Entra a 'else if'");
+
                 // Agafem info de l'Event
                 ComponentName componentName = new ComponentName(
                         event.getPackageName().toString(),
@@ -150,9 +155,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 boolean isActivity = activityInfo != null;
 
                 if (isActivity) {
+                    Log.d(TAG,"L'event és una activitat");
                     ApplicationInfo appInfo;
 
                     if (!blackListLiveApp.contains(componentName.getPackageName())) {
+                        Log.d(TAG,"L'event no està a 'blackListLiveApp'");
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
                             lastActivity = appInfo.loadLabel(getPackageManager()).toString();
@@ -160,8 +167,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             lastActivity = componentName.getPackageName();
                         }
                         lastPackage = componentName.getPackageName();
-                        Log.i("CurrentActivity", componentName.flattenToShortString());
-                        Log.i("CurrentPackage", lastPackage);
+                        Log.d(TAG,"Llista Apps Bloquejades : " + blockedApps);
+                        Log.d(TAG,"CurrentActivity : " + componentName.flattenToShortString());
+                        Log.d(TAG,"CurrentPackage : " + lastPackage);
 
                         //Mirem si l'app està bloquejada
                         boolean isBlocked = isBlocked();
@@ -208,14 +216,16 @@ public class WindowChangeDetectingService extends AccessibilityService {
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
         });
 
-        Intent lockIntent = new Intent(this, BlockScreenActivity.class);
+        Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
+        Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
         lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.startActivity(lockIntent);
+        lockIntent.putExtra("pkgName",lastPackage);
+        startActivity(lockIntent);
     }
 
     private boolean isBlocked() {
-        if(blockedApps.contains(lastPackage)){
-            BlockedApp blockedApp = blockedApps.get(blockedApps.indexOf(lastPackage));
+        if(blockedApps.stream().anyMatch(o -> o.pkgName.equals(lastPackage))){
+            BlockedApp blockedApp = blockedApps.stream().filter(o -> o.pkgName.equals(lastPackage)).collect(Collectors.toList()).get(0);
             return blockedApp.blockedNow;
         }
         return false;
