@@ -73,10 +73,10 @@ public class MainParentFragment extends Fragment {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
 
             String pkgName = intent.getStringExtra("pkgName");
-
-            Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
-
-            currentApp.setText(intent.getStringExtra("appName"));
+            try {
+                Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                currentApp.setText(intent.getStringExtra("appName"));
+            } catch (IllegalStateException e){}
         }
     };
     private PieChart pieChart;
