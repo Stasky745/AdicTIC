@@ -15,6 +15,9 @@ import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
+import com.example.adictic.ui.permisos.AccessibilityPermActivity;
+import com.example.adictic.ui.permisos.AppUsagePermActivity;
+import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.LocaleHelper;
@@ -62,7 +65,7 @@ public class SplashScreen extends AppCompatActivity {
                                 if (sharedPreferences.getBoolean("isTutor",false))
                                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                                 else if (!sharedPreferences.getBoolean("isTutor",false) && sharedPreferences.getLong("userId",-1) > 0)
-                                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                    mirarPermisos();
                                 else {
                                     User usuari = response.body();
                                     assert usuari != null;
@@ -110,6 +113,25 @@ public class SplashScreen extends AppCompatActivity {
                     });
 
                 });
+    }
+
+    private void mirarPermisos(){
+        if (!Funcions.isAppUsagePermissionOn(SplashScreen.this)) {
+            SplashScreen.this.startActivity(new Intent(SplashScreen.this, AppUsagePermActivity.class));
+            SplashScreen.this.finish();
+        } else {
+            Funcions.startAppUsageWorker(getApplicationContext());
+            if (!Funcions.isAdminPermissionsOn(SplashScreen.this)) {
+                SplashScreen.this.startActivity(new Intent(SplashScreen.this, DevicePolicyAdmin.class));
+                SplashScreen.this.finish();
+            } else if (!Funcions.isAccessibilitySettingsOn(SplashScreen.this)) {
+                SplashScreen.this.startActivity(new Intent(SplashScreen.this, AccessibilityPermActivity.class));
+                SplashScreen.this.finish();
+            } else {
+                SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                SplashScreen.this.finish();
+            }
+        }
     }
 
     @Override

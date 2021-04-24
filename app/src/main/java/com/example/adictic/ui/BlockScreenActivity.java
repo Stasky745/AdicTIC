@@ -18,17 +18,18 @@ public class BlockScreenActivity extends Activity {
 
         ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
 
+        String pkgName = getIntent().getStringExtra("pkgName");
+
         List<ActivityManager.RunningAppProcessInfo> listOfProcesses = manager.getRunningAppProcesses();
-        manager.killBackgroundProcesses("com.android.chrome");
+        manager.killBackgroundProcesses(pkgName);
         for (ActivityManager.RunningAppProcessInfo process : listOfProcesses) {
-            if (process.processName.contains("com.android.chrome")) {
+            if (process.processName.contains(pkgName)) {
                 android.os.Process.killProcess(process.pid);
                 android.os.Process.sendSignal(process.pid, android.os.Process.SIGNAL_KILL);
                 manager.killBackgroundProcesses(process.processName);
                 break;
             }
         }
-
 
         Button btn1 = findViewById(R.id.btn_sortir);
         btn1.setOnClickListener(v -> {
