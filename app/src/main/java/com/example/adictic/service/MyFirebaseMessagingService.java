@@ -22,7 +22,9 @@ import com.example.adictic.R;
 import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.chat.ChatFragment;
+import com.example.adictic.ui.inici.Login;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -31,6 +33,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,8 +48,8 @@ import retrofit2.Response;
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    String TAG = "Firebase: ";
-    TodoApi mTodoService;
+    private final String TAG = "Firebase: ";
+    private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -84,6 +87,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = "";
         String body = "";
+        Class activitatIntent = null;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -124,13 +128,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 updateBlockedAppsList(messageMap);
 
                 title = getString(R.string.update_blocked_apps);
+                activitatIntent = BlockAppsActivity.class;
             } else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
-                sharedPreferences.edit().putBoolean("liveApp",Boolean.parseBoolean(messageMap.get("bool"))).apply();
+                boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+                sharedPreferences.edit().putBoolean("liveApp",active).apply();
 
-                OneTimeWorkRequest myWork =
-                        new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-                WorkManager.getInstance(this).enqueue(myWork);
+                if(active && (!sharedPreferences.contains("appUsageWorkerUpdate") ||
+                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",-1) > Constants.HOUR_IN_MILLIS))
+                {
+                    OneTimeWorkRequest myWork =
+                            new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
+                    WorkManager.getInstance(this).enqueue(myWork);
+
+                    sharedPreferences.edit().putLong("lastUpdateAppUsageWorker", Calendar.getInstance().getTimeInMillis()).apply();
+                }
 
                 Log.d(TAG, "Token liveApp: " + s);
             } else if (messageMap.containsKey("getIcon")) {
@@ -173,6 +185,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
             }
+            else if(messageMap.containsKey("installedApp")){
+                String appName = messageMap.get("installedApp");
+                String childName = messageMap.get("childName");
+                title = getString(R.string.title_installed_app,childName);
+                body = appName;
+                activitatIntent = BlockAppsActivity.class;
+            }
+            else if(messageMap.containsKey("uninstalledApp")){
+                String appName = messageMap.get("uninstalledApp");
+                String childName = messageMap.get("childName");
+                title = getString(R.string.title_uninstalled_app,childName);
+                body = appName;
+                activitatIntent = BlockAppsActivity.class;
+            }
+
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
             else if (messageMap.containsKey("chat")) {
                 switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
@@ -196,7 +223,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             mNotificationManager.createNotificationChannel(mChannel);
                         }
 
-                        MyNotificationManager.getInstance(this).displayNotification(title, body);
+                        MyNotificationManager.getInstance(this).displayNotification(title, body, null);
                         break;
                     case "1":  //Message with Chat
                         Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
@@ -233,18 +260,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         break;
                 }
             }
-
         }
 
         // Check if message contains a notification payload.
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            MyNotificationManager.getInstance(this).displayNotification(title, body);
+            MyNotificationManager.getInstance(this).displayNotification(title, body, activitatIntent);
         }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
     @NonNull
