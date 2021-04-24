@@ -36,7 +36,7 @@ public class AccessibilityPermActivity extends Activity {
             this.finish();
         }
 
-        bt_okay.setOnClickListener(v -> AccessibilityPermActivity.this.startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), 0));
+        bt_okay.setOnClickListener(v -> AccessibilityPermActivity.this.startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), 1));
     }
 
     protected void startFetchEventsWorker(){
@@ -57,7 +57,6 @@ public class AccessibilityPermActivity extends Activity {
 
     @Override
     protected void onResume() {
-
         if (Funcions.isAccessibilitySettingsOn(this)) {
             this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
@@ -66,7 +65,15 @@ public class AccessibilityPermActivity extends Activity {
         super.onResume();
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
+    protected void onPostResume() {
+        if (Funcions.isAccessibilitySettingsOn(this)) {
+            this.startActivity(new Intent(this, NavActivity.class));
+            this.finish();
+        }
+        super.onPostResume();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
