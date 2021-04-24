@@ -29,7 +29,6 @@ public class BlockScreenActivity extends Activity {
             }
         }
 
-
         Button btn1 = findViewById(R.id.btn_sortir);
         btn1.setOnClickListener(v -> {
             Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
