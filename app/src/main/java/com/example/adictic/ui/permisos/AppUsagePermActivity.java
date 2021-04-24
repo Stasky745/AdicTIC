@@ -3,28 +3,34 @@ package com.example.adictic.ui.permisos;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
 import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class AppUsagePermActivity extends Activity {
+    SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_usage_perm_info);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         Button bt_okay = findViewById(R.id.BT_okAppUsagePerm);
 
@@ -33,19 +39,12 @@ public class AppUsagePermActivity extends Activity {
 
     @Override
     protected void onResume() {
-
         if (Funcions.isAppUsagePermissionOn(this)) {
 
-            Calendar cal = Calendar.getInstance();
-            // Agafem dades dels últims X dies per inicialitzar dades al servidor
-            cal.add(Calendar.DAY_OF_YEAR, -6);
-            TodoApp.setDayOfYear(cal.get(Calendar.DAY_OF_YEAR));
+            Funcions.startAppUsageWorker(getApplicationContext());
 
-            OneTimeWorkRequest myWork =
-                    new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-
-            WorkManager.getInstance(this).enqueue(myWork);
-
+            if (!Funcions.isAdminPermissionsOn(this))
+                this.startActivity(new Intent(this, DevicePolicyAdmin.class));
             if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
             } else {
@@ -63,7 +62,8 @@ public class AppUsagePermActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (Funcions.isAppUsagePermissionOn(this)) {
-                System.out.println("DINS");
+                if (!Funcions.isAdminPermissionsOn(this))
+                    this.startActivity(new Intent(this, DevicePolicyAdmin.class));
                 if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 } else {

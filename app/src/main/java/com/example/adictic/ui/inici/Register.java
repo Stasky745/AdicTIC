@@ -19,6 +19,8 @@ import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
+import org.json.JSONObject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,18 +54,22 @@ public class Register extends AppCompatActivity {
 
             TextView noValidEmail = Register.this.findViewById(R.id.TV_noValidEmail);
             TextView noPwMatch = Register.this.findViewById(R.id.TV_NoPwMatch);
+            TextView noUsername = Register.this.findViewById(R.id.TV_noValidUsername);
 
             noValidEmail.setVisibility(GONE);
             noPwMatch.setVisibility(GONE);
+            noUsername.setVisibility(GONE);
 
             if (p1.getText().toString().equals(p2.getText().toString())) {
-                if (isValidEmail(e.getText())) {
-                    Register.this.checkCredentials(u.getText().toString(), p1.getText().toString(), e.getText().toString());
+                if (isValidEmail(e.getText().toString().trim())) {
+                    Register.this.checkCredentials(u.getText().toString().trim(), p1.getText().toString().trim(), e.getText().toString().trim());
                 } else {
+                    noValidEmail.setText(getString(R.string.error_noValidEmail));
                     noValidEmail.setVisibility(View.VISIBLE);
                 }
             } else {
-                if (!isValidEmail(e.getText())) {
+                if (!isValidEmail(e.getText().toString().trim())) {
+                    noValidEmail.setText(getString(R.string.error_noValidEmail));
                     noValidEmail.setVisibility(View.VISIBLE);
                 }
                 noPwMatch.setVisibility(View.VISIBLE);
@@ -97,8 +103,33 @@ public class Register extends AppCompatActivity {
                     toast.show();
                     Register.this.finish();
                 } else {
-                    Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);
-                    toast.show();
+                    TextView noValidEmail = Register.this.findViewById(R.id.TV_noValidEmail);
+                    TextView noUsername = Register.this.findViewById(R.id.TV_noValidUsername);
+                    noValidEmail.setVisibility(GONE);
+                    noUsername.setVisibility(GONE);
+                    try {
+                        JSONObject obj = new JSONObject(response.errorBody().string());
+                        String[] errors = obj.getString("message").split("\\|");
+                        for(String error : errors) {
+                            switch (error.trim()) {
+                                case "Username already exists":
+                                    noUsername.setVisibility(View.VISIBLE);
+                                    break;
+                                case "Email already exist":
+                                    noValidEmail.setText(getString(R.string.emailAlreadyExists));
+                                    noValidEmail.setVisibility(View.VISIBLE);
+                                    break;
+                                default:
+                                    Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);
+                                    toast.show();
+                                    System.err.println("Error desconegut HTTP en Register: "+error);
+                                    break;
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

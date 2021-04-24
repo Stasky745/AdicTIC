@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-
 public class WebLink implements Parcelable {
     public static final Creator<WebLink> CREATOR = new Creator<WebLink>() {
         @Override

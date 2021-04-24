@@ -3,6 +3,7 @@ package com.example.adictic.ui.inici;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
     TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     ColorStateList oldColors;
 
@@ -66,6 +68,8 @@ public class NomFill extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nom_fill);
+
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
@@ -175,19 +179,22 @@ public class NomFill extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) {
-                                TodoApp.setIDChild(fillVell.idChild);
-                                if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                    NomFill.this.finish();
-                                } else if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
+                                sharedPreferences.edit().putLong("idUser",fillVell.idChild).apply();
+                                if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                     NomFill.this.finish();
-                                } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                    NomFill.this.finish();
                                 } else {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                    NomFill.this.finish();
+                                    Funcions.startAppUsageWorker(getApplicationContext());
+                                    if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
+                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                        NomFill.this.finish();
+                                    } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
+                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                        NomFill.this.finish();
+                                    } else {
+                                        NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
+                                        NomFill.this.finish();
+                                    }
                                 }
                             } else {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
@@ -217,19 +224,22 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
                                 if (response.isSuccessful() && response.body() != null) {
-                                    TodoApp.setIDChild(response.body());
-                                    if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                        NomFill.this.finish();
-                                    } else if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
+                                    sharedPreferences.edit().putLong("idUser",response.body()).apply();
+                                    if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                         NomFill.this.finish();
-                                    } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                        NomFill.this.finish();
                                     } else {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                        NomFill.this.finish();
+                                        Funcions.startAppUsageWorker(getApplicationContext());
+                                        if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                            NomFill.this.finish();
+                                        } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                            NomFill.this.finish();
+                                        } else {
+                                            NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
+                                            NomFill.this.finish();
+                                        }
                                     }
                                 } else {
                                     Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);

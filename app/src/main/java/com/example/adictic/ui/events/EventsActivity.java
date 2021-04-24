@@ -2,7 +2,7 @@ package com.example.adictic.ui.events;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -21,13 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.EventBlock;
 import com.example.adictic.entity.Horaris;
-import com.example.adictic.entity.HorarisEvents;
-import com.example.adictic.entity.WakeSleepLists;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +39,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     int canvis;
 
-    HorarisEvents selectedEvent;
+    Horaris horaris;
+
+    EventBlock selectedEvent;
 
     RV_Adapter RVadapter;
-
-    WakeSleepLists wakeSleepList;
-    List<HorarisEvents> eventList;
 
     Button BT_acceptarHoraris;
     Button BT_modificarEvent;
@@ -60,32 +57,19 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_general_layout);
         mTodoService = ((TodoApp) getApplication()).getAPI();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         idChild = getIntent().getLongExtra("idChild", -1);
-        eventList = new ArrayList<>();
+        horaris = null;
         canvis = 0;
 
         selectedEvent = null;
 
-
         setLayouts();
         getHoraris();
-        if (TodoApp.getTutor() == 1) setButtons();
+        assert sharedPreferences != null;
+        if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                assert data != null;
-                wakeSleepList = data.getParcelableExtra("wakeSleepList");
-
-                if (canvis == 0) canvis = data.getIntExtra("canvis", 0);
-            }
-        }
     }
 
     @Override
@@ -111,10 +95,14 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        wakeSleepList = response.body().wakeSleepList;
-                        eventList = response.body().events;
+                        horaris = response.body();
+                        if(horaris.events == null)
+                            horaris.events = new ArrayList<>();
 
-                        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
+                        if(horaris.horarisNits == null)
+                            horaris.horarisNits = new ArrayList<>();
+
+                        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
 
                         RV_eventList.setAdapter(RVadapter);
                     }
@@ -129,22 +117,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     private void setButtons() {
-
         BT_acceptarHoraris.setVisibility(View.VISIBLE);
         BT_modificarEvent.setVisibility(View.VISIBLE);
         BT_afegirEvent.setVisibility(View.VISIBLE);
         BT_esborrarEvent.setVisibility(View.VISIBLE);
 
         BT_acceptarHoraris.setOnClickListener(view -> {
-            Horaris horaris = new Horaris();
-            horaris.events = eventList;
-
-            if (wakeSleepList == null) {
-                wakeSleepList = new WakeSleepLists();
-            }
-
-            horaris.wakeSleepList = wakeSleepList;
-
             Call<String> call = mTodoService.postHoraris(idChild, horaris);
 
             call.enqueue(new Callback<String>() {
@@ -169,10 +147,10 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                         .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
                             boolean trobat = false;
                             int count = 0;
-                            while (count < eventList.size() && !trobat) {
-                                if (eventList.get(count).name.equals(selectedEvent.name)) {
+                            while (count < horaris.events.size() && !trobat) {
+                                if (horaris.events.get(count).name.equals(selectedEvent.name)) {
                                     trobat = true;
-                                    eventList.remove(count);
+                                    horaris.events.remove(count);
                                 } else count++;
                             }
                         })
@@ -184,12 +162,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         });
 
         BT_afegirEvent.setOnClickListener(view -> {
-            HorarisEvents newEvent = new HorarisEvents();
-            newEvent.id = Long.parseLong("0");
-            newEvent.name = "";
-            newEvent.start = "00:00";
-            newEvent.finish = "00:00";
-            newEvent.days = new ArrayList<>();
+            EventBlock newEvent = new EventBlock();
 
             FragmentManager fm = getSupportFragmentManager();
             EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), newEvent);
@@ -223,21 +196,18 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     @Override
-    public void onSelectedData(HorarisEvents newEvent) {
+    public void onSelectedData(EventBlock newEvent) {
         if (newEvent.id != 0) {
-            int i = 0;
-            boolean found = false;
-            while (i < eventList.size() && !found) {
-                if (eventList.get(i).id.equals(newEvent.id)) {
-                    eventList.remove(i);
-                    found = true;
-                }
-                i++;
+            if(horaris.events.stream().anyMatch(eventBlock -> eventBlock.id == newEvent.id)){
+                EventBlock eventBlock = horaris.events.stream().filter(eb -> eb.id == newEvent.id).findFirst().get();
+                horaris.events.remove(eventBlock);
             }
         }
-        eventList.add(newEvent);
+        horaris.events.add(newEvent);
 
-        RVadapter = new RV_Adapter(EventsActivity.this, eventList);
+        canvis = 1;
+
+        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
 
         RV_eventList.setAdapter(RVadapter);
     }
@@ -245,9 +215,9 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
         Context mContext;
         LayoutInflater mInflater;
-        List<HorarisEvents> eventAdapterList;
+        List<EventBlock> eventAdapterList;
 
-        RV_Adapter(Context context, List<HorarisEvents> list) {
+        RV_Adapter(Context context, List<EventBlock> list) {
             mContext = context;
             eventAdapterList = list;
             mInflater = LayoutInflater.from(mContext);
@@ -273,18 +243,27 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
-            final HorarisEvents event = eventAdapterList.get(position);
+            final EventBlock event = eventAdapterList.get(position);
 
             holder.TV_eventName.setText(event.name);
             StringBuilder eventDaysString = new StringBuilder();
-            for (int i : event.days) {
-                String day = new DateFormatSymbols().getWeekdays()[i];
-                String s1 = day.substring(0, 1).toUpperCase();
-                //eventDaysString += s1 + day.substring(1) + " ";
-                eventDaysString.append(s1).append(day.substring(1)).append(" ");
-            }
+
+            if(event.monday) eventDaysString.append(getString(R.string.monday)).append(" ");
+            if(event.tuesday) eventDaysString.append(getString(R.string.tuesday)).append(" ");
+            if(event.wednesday) eventDaysString.append(getString(R.string.wednesday)).append(" ");
+            if(event.thursday) eventDaysString.append(getString(R.string.thursday)).append(" ");
+            if(event.friday) eventDaysString.append(getString(R.string.friday)).append(" ");
+            if(event.saturday) eventDaysString.append(getString(R.string.saturday)).append(" ");
+            if(event.sunday) eventDaysString.append(getString(R.string.sunday)).append(" ");
+//            for (int i : event.days) {
+//                String day = new DateFormatSymbols().getWeekdays()[i];
+//                String s1 = day.substring(0, 1).toUpperCase();
+//                //eventDaysString += s1 + day.substring(1) + " ";
+//                eventDaysString.append(s1).append(day.substring(1)).append(" ");
+//            }
             holder.TV_eventDays.setText(eventDaysString.toString());
-            String eventTimesString = event.start + "\n" + event.finish;
+            String eventTimesString = Funcions.millisOfDay2String(event.startEvent)
+                    + "\n" + Funcions.millisOfDay2String(event.endEvent);
             holder.TV_eventTimes.setText(eventTimesString);
 
             holder.mRootView.setOnClickListener(view -> {

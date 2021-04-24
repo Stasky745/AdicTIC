@@ -32,7 +32,7 @@ public class MyNotificationManager {
         return mInstance;
     }
 
-    public void displayNotification(String title, String body) {
+    public void displayNotification(String title, String body, Class activityIntent) {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(mCtx, Constants.CHANNEL_ID)
@@ -48,8 +48,11 @@ public class MyNotificationManager {
          *  Right now we are using the MainActivity as this is the only activity we have in our application
          *  But for your project you can customize it as you want
          * */
-
-        Intent mainIntent = new Intent(mCtx, NavActivity.class);
+        Intent mainIntent;
+        if(activityIntent == null)
+            mainIntent = new Intent(mCtx, NavActivity.class);
+        else
+            mainIntent = new Intent(mCtx, activityIntent);
 //
 //        Intent gameIntent = new Intent(mCtx, GameProfile.class);
 //        gameIntent.putExtra("gameId", gameID);

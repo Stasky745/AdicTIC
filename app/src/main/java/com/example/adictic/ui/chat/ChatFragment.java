@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import org.joda.time.DateTime;
@@ -81,6 +83,7 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.chat_layout, container, false);
         Activity activity = getActivity();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
 
         assert getArguments() != null;
         access = getArguments().getBoolean("access");
@@ -93,8 +96,7 @@ public class ChatFragment extends Fragment {
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
-        if (TodoApp.getTutor() == 1) myId = TodoApp.getIDTutor();
-        else myId = TodoApp.getIDChild();
+        myId = sharedPreferences.getLong("userId", -1);
 
         setViews();
         setRecyclerView();
