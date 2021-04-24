@@ -33,8 +33,8 @@ public class DevicePolicyAdmin extends Activity {
         mDPAdmin = new ComponentName(this,
                 MyDevicePolicyReceiver.class);
 
-        System.out.println("mDPM: " + mDPM);
-        System.out.println("mDPAdmin: " + mDPAdmin);
+        Log.d(LOG_TAG,"mDPM: " + mDPM);
+        Log.d(LOG_TAG,"mDPAdmin: " + mDPAdmin);
 
         bt_okay = findViewById(R.id.BT_okAdminPerm);
 
