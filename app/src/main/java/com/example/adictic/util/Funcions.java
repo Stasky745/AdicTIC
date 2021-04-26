@@ -83,6 +83,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -97,54 +98,6 @@ import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_AP
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
-
-    private static long getHorariInMillis() {
-        Calendar cal = Calendar.getInstance();
-        String wakeTime = TodoApp.getWakeHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
-        String sleepTime = TodoApp.getSleepHoraris().get(cal.get(Calendar.DAY_OF_WEEK));
-
-        int wakeHour = Integer.parseInt(wakeTime.split(":")[0]);
-        int wakeMinute = Integer.parseInt(wakeTime.split(":")[1]);
-
-        int sleepHour = Integer.parseInt(sleepTime.split(":")[0]);
-        int sleepMinute = Integer.parseInt(sleepTime.split(":")[1]);
-
-        Calendar calWake = Calendar.getInstance();
-        calWake.set(Calendar.HOUR_OF_DAY, wakeHour);
-        calWake.set(Calendar.MINUTE, wakeMinute);
-
-        Calendar calSleep = Calendar.getInstance();
-        calSleep.set(Calendar.HOUR_OF_DAY, sleepHour);
-        calSleep.set(Calendar.MINUTE, sleepMinute);
-
-        long timeNow = cal.getTimeInMillis();
-        long wakeMillis = calWake.getTimeInMillis();
-        long sleepMillis = calSleep.getTimeInMillis();
-
-        if (wakeMillis > sleepMillis) {
-            if (timeNow >= wakeMillis) {
-                TodoApp.setBlockedDevice(false);
-                calSleep.add(Calendar.DAY_OF_YEAR, 1);
-
-                return calSleep.getTimeInMillis();
-            } else if (timeNow >= sleepMillis) {
-                TodoApp.setBlockedDevice(true);
-                return wakeMillis;
-            } else {
-                return sleepMillis;
-            }
-        } else {
-            if (timeNow >= sleepMillis) {
-                TodoApp.setBlockedDevice(true);
-                calWake.add(Calendar.DAY_OF_YEAR, 1);
-
-                return calWake.getTimeInMillis();
-            } else if (timeNow >= wakeMillis) {
-                TodoApp.setBlockedDevice(false);
-                return sleepMillis;
-            } else return wakeMillis;
-        }
-    }
 
     public static String date2String(int dia, int mes, int any) {
         String data;
@@ -691,7 +644,7 @@ public class Funcions {
             return EncryptedSharedPreferences.create(
                     mCtx,
                     "values",
-                    getMasterKey(mCtx), // calling the method above for creating MasterKey
+                    Objects.requireNonNull(getMasterKey(mCtx)), // calling the method above for creating MasterKey
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
@@ -704,21 +657,14 @@ public class Funcions {
     private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
         File file = new File(mCtx.getFilesDir(),fileName);
 
-        try {
-            if(write && file.exists())
-                file.delete();
-            else if(!write && !file.exists())
-                file.createNewFile();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if(write && file.exists())
+            file.delete();
 
         try {
             return new EncryptedFile.Builder(
                     mCtx,
                     file,
-                    getMasterKey(mCtx),
+                    Objects.requireNonNull(getMasterKey(mCtx)),
                     EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build();
         } catch (GeneralSecurityException | IOException e) {
@@ -744,6 +690,7 @@ public class Funcions {
             try {
                 FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
                 fileOutputStream.write(json.getBytes());
+                fileOutputStream.flush();
                 fileOutputStream.close();
 
                 updateSharedPrefsChange(mCtx,list.get(0), true);
@@ -764,12 +711,15 @@ public class Funcions {
         StringBuilder stringBuilder = new StringBuilder();
         try {
             FileInputStream fileInputStream = encryptedFile.openFileInput();
+
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
 
             BufferedReader reader = new BufferedReader(inputStreamReader);
 
             String line = reader.readLine();
+            if(line == null)
+                return new ArrayList<T>();
             while(line != null){
                 stringBuilder.append(line).append('\n');
                 line = reader.readLine();
@@ -778,7 +728,9 @@ public class Funcions {
             Gson gson = new Gson();
             Type listType = getListType(filename);
             ArrayList<T> res = gson.fromJson(stringBuilder.toString(),listType);
+            reader.close();
             inputStreamReader.close();
+            fileInputStream.close();
 
             if(storeChanges) updateSharedPrefsChange(mCtx,res.get(0),false);
 
