@@ -45,7 +45,7 @@ public class AppUsagePermActivity extends Activity {
 
             if (!Funcions.isAdminPermissionsOn(this))
                 this.startActivity(new Intent(this, DevicePolicyAdmin.class));
-            if (!Funcions.isAccessibilitySettingsOn(this)) {
+            else if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
             } else {
                 this.startActivity(new Intent(this, NavActivity.class));
@@ -64,7 +64,7 @@ public class AppUsagePermActivity extends Activity {
             if (Funcions.isAppUsagePermissionOn(this)) {
                 if (!Funcions.isAdminPermissionsOn(this))
                     this.startActivity(new Intent(this, DevicePolicyAdmin.class));
-                if (!Funcions.isAccessibilitySettingsOn(this)) {
+                else if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 } else {
                     this.startActivity(new Intent(this, NavActivity.class));
