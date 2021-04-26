@@ -657,10 +657,12 @@ public class Funcions {
     private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
         File file = new File(mCtx.getFilesDir(),fileName);
 
-        if(write && file.exists())
-            file.delete();
-
         try {
+            if(write && file.exists())
+                file.delete();
+            else if(!file.exists() && !write)
+                crearFitxerPerLlegir(mCtx, fileName);
+
             return new EncryptedFile.Builder(
                     mCtx,
                     file,
@@ -673,16 +675,30 @@ public class Funcions {
         return null;
     }
 
+    private static void crearFitxerPerLlegir(Context mCtx, String filename){
+        EncryptedFile encryptedFile = getEncryptedFile(mCtx,filename,true);
+
+        if(encryptedFile == null) return;
+
+        try {
+            FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
+            fileOutputStream.write("".getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (GeneralSecurityException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static <T> boolean write2File(Context mCtx, List<T> list){
         if(!list.isEmpty()){
             Set<T> setList = new HashSet<>(list);
 
             // Agafem el JSON de la llista i inicialitzem EncryptedFile
             String json = new Gson().toJson(setList);
-            EncryptedFile encryptedFile;
 
             // Mirem a quin fitxer escriure
-            encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
+            EncryptedFile encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
 
             if(encryptedFile == null) return false;
 
@@ -766,7 +782,7 @@ public class Funcions {
 
         WorkManager.getInstance(mCtx)
                 .enqueueUniquePeriodicWork("pujarAppInfo",
-                        ExistingPeriodicWorkPolicy.REPLACE,
+                        ExistingPeriodicWorkPolicy.KEEP,
                         myWork);
     }
 
