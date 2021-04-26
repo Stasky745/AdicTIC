@@ -502,7 +502,8 @@ public class Funcions {
         for(BlockedApp app : blockedApps){
             if(!app.blockedNow) {
                 FreeUseApp freeUseApp = new FreeUseApp();
-                AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
+                AppUsage au = appUsage.stream().filter(obj -> obj.app.pkgName.equals(app.pkgName)).findFirst().get();
+//                AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
                 freeUseApp.pkgName = app.pkgName;
                 freeUseApp.millisUsageStart = au.totalTime;
                 freeUseApp.millisUsageEnd = -1;
@@ -660,8 +661,8 @@ public class Funcions {
         try {
             if(write && file.exists())
                 file.delete();
-            else if(!file.exists() && !write)
-                crearFitxerPerLlegir(mCtx, fileName);
+//            else if(!file.exists() && !write)
+//                crearFitxerPerLlegir(mCtx, fileName);
 
             return new EncryptedFile.Builder(
                     mCtx,
@@ -690,7 +691,7 @@ public class Funcions {
         }
     }
 
-    public static <T> boolean write2File(Context mCtx, List<T> list){
+    public static <T> void write2File(Context mCtx, List<T> list){
         if(!list.isEmpty()){
             Set<T> setList = new HashSet<>(list);
 
@@ -700,7 +701,7 @@ public class Funcions {
             // Mirem a quin fitxer escriure
             EncryptedFile encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
 
-            if(encryptedFile == null) return false;
+            if(encryptedFile == null) return;
 
             // Escrivim al fitxer
             try {
@@ -711,17 +712,17 @@ public class Funcions {
 
                 updateSharedPrefsChange(mCtx,list.get(0), true);
 
-                return true;
             } catch (GeneralSecurityException | IOException e) {
                 e.printStackTrace();
 
-                return false;
             }
         }
-        else return false;
     }
 
     public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
+        if(fileEmpty(mCtx,filename))
+            return new ArrayList<>();
+
         EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -734,8 +735,6 @@ public class Funcions {
             BufferedReader reader = new BufferedReader(inputStreamReader);
 
             String line = reader.readLine();
-            if(line == null)
-                return new ArrayList<T>();
             while(line != null){
                 stringBuilder.append(line).append('\n');
                 line = reader.readLine();
