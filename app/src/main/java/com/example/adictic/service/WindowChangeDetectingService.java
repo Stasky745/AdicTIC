@@ -123,9 +123,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 return;
             }
 
-            // Actualitzem les llistes d'Events i BlockedApp
-            actualitzarLlistes();
-
             // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()){
@@ -142,7 +139,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
             }
             //
-            else if (event.getPackageName() != null && event.getClassName() != null) {
+            else if (event.getPackageName() != null && event.getClassName() != null && !event.getPackageName().equals(lastPackage)) {
                 Log.d(TAG,"L'event no és null - Entra a 'else if'");
 
                 // Agafem info de l'Event
@@ -160,6 +157,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                     if (!blackListLiveApp.contains(componentName.getPackageName())) {
                         Log.d(TAG,"L'event no està a 'blackListLiveApp'");
+
+                        // Actualitzem les llistes d'Events i BlockedApp
+                        actualitzarLlistes();
+
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
                             lastActivity = appInfo.loadLabel(getPackageManager()).toString();

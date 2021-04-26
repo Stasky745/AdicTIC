@@ -41,7 +41,7 @@ public class LimitAppsWorker extends Worker {
 
         // Agafem una llista amb les apps que falten per bloquejar
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_BLOCKED_APPS,false);
-        List<FreeUseApp> freeUseApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_FREE_USE_APPS,false);
+        List<FreeUseApp> freeUseApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_FREE_USE_APPS,false);
 
         //checkHoraris();
 

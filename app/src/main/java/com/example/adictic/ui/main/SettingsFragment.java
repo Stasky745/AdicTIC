@@ -64,24 +64,21 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         Preference pujar_informe = findPreference("setting_pujar_informe");
 
         assert pujar_informe != null;
-        pujar_informe.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), TodoApp.getDayOfYear(), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        pujar_informe.setOnPreferenceClickListener(preference -> {
+            List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), sharedPreferences.getInt("dayOfYear", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 
-                Funcions.canviarMesosAServidor(gul);
+            Funcions.canviarMesosAServidor(gul);
 
-                Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
+            Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
 
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {}
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {}
 
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {}
-                });
-                return true;
-            }
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {}
+            });
+            return true;
         });
 
     }
