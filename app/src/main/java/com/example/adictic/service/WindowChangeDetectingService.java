@@ -2,7 +2,6 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -12,33 +11,24 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
 
-import com.example.adictic.entity.AppChange;
-import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.EventBlock;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,8 +42,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     SharedPreferences sharedPreferences;
     PackageManager mPm;
 
-    List<EventBlock> eventBlocks;
-    List<BlockedApp> blockedApps;
+    List<String> blockedApps;
 
     String lastActivity;
     String lastPackage;
@@ -74,7 +63,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
             mTodoService = ((TodoApp) getApplicationContext()).getAPI();
             mPm = getPackageManager();
 
-            eventBlocks = new ArrayList<>();
             blockedApps = new ArrayList<>();
 
             lastActivity = "";
@@ -130,8 +118,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false) || sharedPreferences.getBoolean("blockedDeviceNit",false);
-            if (estaBloquejat || !eventBlocks.isEmpty()) {
+            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false) || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+
+            int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
+
+            if (estaBloquejat || currentActiveEvents > 0) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -225,11 +216,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     private boolean isBlocked() {
-        if(blockedApps.stream().anyMatch(o -> o.pkgName.equals(lastPackage))){
-            BlockedApp blockedApp = blockedApps.stream().filter(o -> o.pkgName.equals(lastPackage)).collect(Collectors.toList()).get(0);
-            return blockedApp.blockedNow;
-        }
-        return false;
+        return blockedApps.contains(lastPackage);
     }
 
     private void enviarLastApp() {
@@ -253,32 +240,28 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private void actualitzarLlistes() {
         // creem llistes buides si no estan inicialitzades
         boolean primerCop = false;
-        if(eventBlocks == null) {
-            eventBlocks = new ArrayList<>();
-            primerCop = true;
-        }
+//        if(eventBlocks == null) {
+//            eventBlocks = new ArrayList<>();
+//            primerCop = true;
+//        }
 
         if(blockedApps == null) {
             blockedApps = new ArrayList<>();
             primerCop = true;
         }
 
-        // Actualitzem la llista de EventBlock
-        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false)) {
-            eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
-            if(eventBlocks == null)
-                eventBlocks = new ArrayList<>();
-        }
+//        // Actualitzem la llista de EventBlock
+//        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false)) {
+//            eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
+//            if(eventBlocks == null)
+//                eventBlocks = new ArrayList<>();
+//        }
 
         // Actualitzem la llista de BlockedApps amb només les apps bloquejades ara mateix
         if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false)){
-            List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,true);
+            List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,true);
             if(llista == null)
                 blockedApps = new ArrayList<>();
-            else
-                blockedApps = llista.stream()
-                    .filter(blockedApp -> blockedApp.blockedNow)
-                    .collect(Collectors.toList());
         }
     }
 

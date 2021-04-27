@@ -7,6 +7,7 @@ import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 public class Constants {
     public static final long HOUR_IN_MILLIS = 3600000;
+    public static final int TOTAL_MILLIS_IN_DAY = 86400000;
 
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
@@ -15,11 +16,15 @@ public class Constants {
     public static final String FILE_EVENT_BLOCK = "event_block";
     public static final String FILE_FREE_USE_APPS = "freeuse_apps";
     public static final String FILE_HORARIS_NIT = "horaris_nit";
+    public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
     public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "blocked_apps_change";
     public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block_change";
     public static final String SHARED_PREFS_CHANGE_FREE_USE_APPS = "freeuse_apps_change";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit_change";
+
+    public static final String SHARED_PREFS_ACTIVE_EVENTS = "current_active_events";
+    public static final String SHARED_PREFS_ACTIVE_HORARIS_NIT = "blockedDeviceNit";
 
     public static final String CHANNEL_ID = "my_channel_01";
     public static final String CHANNEL_NAME = "Standard Notification";
