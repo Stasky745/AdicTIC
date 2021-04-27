@@ -130,7 +130,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false);
+            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false) || sharedPreferences.getBoolean("blockedDeviceNit",false);
             if (estaBloquejat || !eventBlocks.isEmpty()) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
