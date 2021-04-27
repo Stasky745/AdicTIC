@@ -1,9 +1,7 @@
 package com.example.adictic.ui.permisos;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
@@ -13,7 +11,7 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
-import com.example.adictic.service.FetchEventsWorker;
+import com.example.adictic.workers.event_workers.RestartEventsWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 
@@ -48,7 +46,7 @@ public class AccessibilityPermActivity extends Activity {
         long delay = cal.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
 
         PeriodicWorkRequest fetchEventsRequest =
-                new PeriodicWorkRequest.Builder(FetchEventsWorker.class,24, TimeUnit.HOURS)
+                new PeriodicWorkRequest.Builder(RestartEventsWorker.class,24, TimeUnit.HOURS)
                         .setInitialDelay(delay,TimeUnit.MILLISECONDS)
                         .build();
         WorkManager.getInstance(getApplicationContext())

@@ -55,11 +55,15 @@ import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.service.AppUsageWorker;
-import com.example.adictic.service.FinishBlockEventWorker;
-import com.example.adictic.service.GeoLocWorker;
-import com.example.adictic.service.LimitAppsWorker;
-import com.example.adictic.service.StartBlockEventWorker;
+import com.example.adictic.workers.AppUsageWorker;
+import com.example.adictic.workers.block_apps.BlockAppWorker;
+import com.example.adictic.workers.block_apps.RestartBlockedApps;
+import com.example.adictic.workers.event_workers.DespertarWorker;
+import com.example.adictic.workers.event_workers.DormirWorker;
+import com.example.adictic.workers.event_workers.FinishBlockEventWorker;
+import com.example.adictic.workers.GeoLocWorker;
+import com.example.adictic.workers.event_workers.RestartEventsWorker;
+import com.example.adictic.workers.event_workers.StartBlockEventWorker;
 import com.example.adictic.service.WindowChangeDetectingService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -86,6 +90,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -122,11 +127,11 @@ public class Funcions {
     }
 
     public static void checkHoraris(Context ctx) {
-
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
 
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
+        assert sharedPreferences != null;
         Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
 
         call.enqueue(new Callback<Horaris>() {
@@ -134,9 +139,13 @@ public class Funcions {
             public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().horarisNits != null)
-                        write2File(ctx,response.body().horarisNits);
+                        write2File(ctx, response.body().horarisNits);
+
                     if(response.body().events != null)
                         write2File(ctx,response.body().events);
+
+                    runRestartEventsWorkerOnce(ctx,0);
+                    startRestartEventsWorker24h(ctx);
                 }
             }
 
@@ -235,116 +244,88 @@ public class Funcions {
         return res;
     }
 
-    public static void runLimitAppsWorker(Context mContext, long delay) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(LimitAppsWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("checkLimitedApps", ExistingWorkPolicy.REPLACE, myWork);
-    }
-
-    public static void runGeoLocWorker(Context mContext) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(GeoLocWorker.class)
-                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
-    }
-
     public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
         List<BlockedApp> llista = new ArrayList<>();
+
+        write2File(ctx,body.blockedApps);
 
         for(String pkgName : body.blockedApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = pkgName;
-            blockedApp.blockedNow = true;
             blockedApp.timeLimit = -1;
             llista.add(blockedApp);
         }
         for(LimitedApps limitedApp : body.limitApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = limitedApp.name;
-            blockedApp.blockedNow = false;
             blockedApp.timeLimit = limitedApp.time;
             llista.add(blockedApp);
         }
 
         write2File(ctx,llista);
+
+        runRestartBlockedAppsWorkerOnce(ctx,0);
+        startRestartBlockedAppsWorker24h(ctx);
     }
 
-    private static List<EventBlock> horarisEvents2EventBlock(List<HorarisEvents> horarisEvents){
-        List<EventBlock> res = new ArrayList<>();
-        
-        for(HorarisEvents event : horarisEvents){
-            EventBlock eventBlock = new EventBlock();
+    // **************** WORKERS ****************
 
-            eventBlock.id = event.id;
-            eventBlock.name = event.name;
+    // AppUsageWorkers
 
-            Pair<Integer,Integer> startTime = stringToTime(event.start);
-            DateTime dateTimeStart = new DateTime()
-                    .withHourOfDay(startTime.first)
-                    .withMinuteOfHour(startTime.second);
-            eventBlock.startEvent = dateTimeStart.getMillisOfDay();
-            Pair<Integer,Integer> endTime = stringToTime(event.start);
-            DateTime dateTimeFinish = new DateTime()
-                    .withHourOfDay(endTime.first)
-                    .withMinuteOfHour(endTime.second);
-            eventBlock.endEvent = dateTimeFinish.getMillisOfDay();
+    public static void startAppUsageWorker24h(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        Calendar cal = Calendar.getInstance();
+        // Agafem dades dels últims X dies per inicialitzar dades al servidor
+        cal.add(Calendar.DAY_OF_YEAR, -6);
+        assert sharedPreferences != null;
+        sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
 
-            int millisNow = DateTime.now().getMillisOfDay();
-            eventBlock.activeNow = millisNow >= eventBlock.startEvent && millisNow < eventBlock.endEvent;
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
+                        .build();
 
-            eventBlock.monday = event.days.contains(Calendar.MONDAY);
-            eventBlock.tuesday = event.days.contains(Calendar.TUESDAY);
-            eventBlock.wednesday = event.days.contains(Calendar.WEDNESDAY);
-            eventBlock.thursday = event.days.contains(Calendar.THURSDAY);
-            eventBlock.friday = event.days.contains(Calendar.FRIDAY);
-            eventBlock.saturday = event.days.contains(Calendar.SATURDAY);
-            eventBlock.sunday = event.days.contains(Calendar.SUNDAY);
-
-            res.add(eventBlock);
-        }
-
-        return res;
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("pujarAppInfo",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        myWork);
     }
-    
-    public static void updateEventList(Context mContext, List<EventBlock> newEvents) {
-        WorkManager workManager = WorkManager.getInstance(mContext);
 
-        // Llegim la llista d'Events actuals
-        List<EventBlock> currentEvents = readFromFile(mContext,Constants.FILE_EVENT_BLOCK,false);
+    public static void runUniqueAppUsageWorker(Context mContext) {
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(AppUsageWorker.class)
+                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .build();
 
-        // Agafem els events diferents entre les dues llistes
-        List<EventBlock> disjunctionEvents = new ArrayList<>(CollectionUtils.disjunction(newEvents, currentEvents));
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("uniqueAppUsageWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
 
-        // recorrem els events diferents
-        for (EventBlock event : disjunctionEvents) {
-            int index = newEvents.indexOf(event);
+    // EventWorkers
 
-            // Event s'ha esborrat (no existeix a la nova llista amb el mateix id)
-            if (index == -1) {
-                runFinishBlockEventWorker(mContext,event.id,0);
-                workManager.cancelUniqueWork(event.name);
-            }
-            // És un nou event o editat
-            else if (event.exactSame(newEvents.get(index))) {
-                long now = DateTime.now().getMillisOfDay();
+    public static void startRestartEventsWorker24h(Context mCtx){
+        long now = DateTime.now().getMillisOfDay();
+        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
 
-                if (now < event.startEvent) {
-                    runStartBlockEventWorker(mContext, event.id, event.startEvent - now);
-                } else if (now < event.endEvent) {
-                    runFinishBlockEventWorker(mContext, event.id, event.endEvent - now);
-                }
-            }
-        }
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(RestartEventsWorker.class, 24, TimeUnit.HOURS)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .build();
 
-        // Afegim la nova llista al fitxer
-        write2File(mContext,newEvents);
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("24h_eventBlock",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        myWork);
+    }
+
+    public static void runRestartEventsWorkerOnce(Context mContext, long delay){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(RestartEventsWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("EventsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
+
     }
 
     public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
@@ -374,6 +355,77 @@ public class Funcions {
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
     }
+
+    public static void runDespertarWorker(Context mContext, long delay){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(DespertarWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("despertarWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void runDormirWorker(Context mContext, long delay){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(DormirWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("dormirWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    // BlockAppsWorkers
+
+    public static void startRestartBlockedAppsWorker24h(Context mCtx){
+        long now = DateTime.now().getMillisOfDay();
+        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
+
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(RestartBlockedApps.class, 24, TimeUnit.HOURS)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("24h_blockApps",
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        myWork);
+    }
+
+    public static void runRestartBlockedAppsWorkerOnce(Context mContext, long delay){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(RestartBlockedApps.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("BlockedAppsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    public static void runBlockAppsWorker(Context mContext, long delay) {
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(BlockAppWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("blockAppWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    // GeolocWorkers
+
+    public static void runGeoLocWorker(Context mContext) {
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(GeoLocWorker.class)
+                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    // **************** END WORKERS ****************
 
     /**
      * pre: si fTime = -1, agafa valors del dia actual inacabat
@@ -467,6 +519,7 @@ public class Funcions {
     public static void updateLimitedAppsList(Context mContext) {
         // Desactivem el "freeUse"
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        assert sharedPreferences != null;
         sharedPreferences.edit().putBoolean("freeUse",false).apply();
 
         // Agafem les dades d'ús d'avui
@@ -477,9 +530,15 @@ public class Funcions {
         List<FreeUseApp> freeUseApps = readFromFile(mContext,Constants.FILE_FREE_USE_APPS,false);
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
+        assert freeUseApps != null;
         for(FreeUseApp app : freeUseApps){
-            AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
-            app.millisUsageEnd = au.totalTime;
+            if(appUsage.stream().anyMatch(appUsage1 -> appUsage1.app.pkgName.equals(app.pkgName))) {
+                AppUsage au = appUsage.stream()
+                        .filter(appUsage1 -> appUsage1.app.pkgName.equals(app.pkgName))
+                        .findFirst()
+                        .get();
+                app.millisUsageEnd = au.totalTime;
+            }
         }
 
         write2File(mContext,freeUseApps);
@@ -488,6 +547,7 @@ public class Funcions {
     public static void startFreeUseLimitList(Context mContext) {
         // Activem el "freeUse"
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        assert sharedPreferences != null;
         sharedPreferences.edit().putBoolean("freeUse",true).apply();
 
         // Agafem les dades d'ús d'avui
@@ -496,21 +556,31 @@ public class Funcions {
 
         // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
         List<BlockedApp> blockedApps = readFromFile(mContext,Constants.FILE_BLOCKED_APPS,false);
+        List<String> nowBlockedApps = readFromFile(mContext, Constants.FILE_CURRENT_BLOCKED_APPS, false);
+
+        assert blockedApps != null;
+        assert nowBlockedApps != null;
+        List<String> notBlockedApps = blockedApps.stream()
+                .filter(blockedApp -> nowBlockedApps.contains(blockedApp.pkgName))
+                .map(blockedApp -> blockedApp.pkgName)
+                .collect(Collectors.toList());
 
         List<FreeUseApp> freeUseApps = new ArrayList<>();
 
         // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
-        for(BlockedApp app : blockedApps){
-            if(!app.blockedNow) {
-                FreeUseApp freeUseApp = new FreeUseApp();
-                AppUsage au = appUsage.stream().filter(obj -> obj.app.pkgName.equals(app.pkgName)).findFirst().get();
-//                AppUsage au = appUsage.get(appUsage.indexOf(app.pkgName));
-                freeUseApp.pkgName = app.pkgName;
+        for(String app : notBlockedApps){
+            FreeUseApp freeUseApp = new FreeUseApp();
+            if(appUsage.stream().anyMatch(obj -> obj.app.pkgName.equals(app))){
+                AppUsage au = appUsage.stream().filter(obj -> obj.app.pkgName.equals(app)).findFirst().get();
                 freeUseApp.millisUsageStart = au.totalTime;
-                freeUseApp.millisUsageEnd = -1;
-
-                freeUseApps.add(freeUseApp);
             }
+            else{
+                freeUseApp.millisUsageStart = 0;
+            }
+            freeUseApp.pkgName = app;
+            freeUseApp.millisUsageEnd = 0;
+
+            freeUseApps.add(freeUseApp);
         }
 
         write2File(mContext,freeUseApps);
@@ -677,21 +747,6 @@ public class Funcions {
         return null;
     }
 
-    private static void crearFitxerPerLlegir(Context mCtx, String filename){
-        EncryptedFile encryptedFile = getEncryptedFile(mCtx,filename,true);
-
-        if(encryptedFile == null) return;
-
-        try {
-            FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
-            fileOutputStream.write("".getBytes());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static <T> void write2File(Context mCtx, List<T> list){
         if(!list.isEmpty()){
             Set<T> setList = new HashSet<>(list);
@@ -769,23 +824,6 @@ public class Funcions {
         return file.length() == 0;
     }
 
-    public static void startAppUsageWorker(Context mCtx){
-        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-        Calendar cal = Calendar.getInstance();
-        // Agafem dades dels últims X dies per inicialitzar dades al servidor
-        cal.add(Calendar.DAY_OF_YEAR, -6);
-        sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
-
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
-                        .build();
-
-        WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("pujarAppInfo",
-                        ExistingPeriodicWorkPolicy.KEEP,
-                        myWork);
-    }
-
     private static Type getListType(String filename) {
         switch (filename) {
             case Constants.FILE_BLOCKED_APPS:
@@ -799,6 +837,9 @@ public class Funcions {
                 }.getType();
             case Constants.FILE_HORARIS_NIT:
                 return new TypeToken<ArrayList<HorarisNit>>() {
+                }.getType();
+            case Constants.FILE_CURRENT_BLOCKED_APPS:
+                return new TypeToken<ArrayList<String>>() {
                 }.getType();
         }
         return null;
@@ -820,6 +861,8 @@ public class Funcions {
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_FREE_USE_APPS,bool).apply();
         else if (object instanceof HorarisNit)
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
+        else if (object instanceof String)
+            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
     }
 
     /**
@@ -838,6 +881,8 @@ public class Funcions {
             return getEncryptedFile(mCtx,Constants.FILE_FREE_USE_APPS, true);
         else if (object instanceof HorarisNit)
             return getEncryptedFile(mCtx,Constants.FILE_HORARIS_NIT, true);
+        else if (object instanceof String)
+            return getEncryptedFile(mCtx,Constants.FILE_CURRENT_BLOCKED_APPS, true);
         else return null;
     }
 
