@@ -26,7 +26,7 @@ public class FinishBlockEventWorker extends Worker {
 
         // Agafem l'event del repositori
         List<EventBlock> list = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK,false);
-        EventBlock eventBlock = list.get(list.indexOf(id));
+        EventBlock eventBlock = list.stream().filter(obj -> obj.id == id).findAny().get();
         eventBlock.activeNow = false;
         Funcions.write2File(getApplicationContext(),list);
 

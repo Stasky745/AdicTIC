@@ -328,6 +328,7 @@ public class Funcions {
 
             // Event s'ha esborrat (no existeix a la nova llista amb el mateix id)
             if (index == -1) {
+                runFinishBlockEventWorker(mContext,event.id,0);
                 workManager.cancelUniqueWork(event.name);
             }
             // És un nou event o editat
