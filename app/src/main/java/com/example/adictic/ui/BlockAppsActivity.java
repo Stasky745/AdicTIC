@@ -280,7 +280,14 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if (blockedApp.appTime > 0) {
                 Pair<Integer, Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
-                holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
+
+                if(pairTime.first == 0)
+                    holder.TV_appMaxTime.setText(getString(R.string.mins, pairTime.second));
+                else if(pairTime.second == 0)
+                    holder.TV_appMaxTime.setText(getString(R.string.hrs, pairTime.second));
+                else
+                    holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
+
                 holder.IV_block.setVisibility(View.GONE);
             } else if (blockedApp.appTime == 0) {
                 holder.TV_appMaxTime.setVisibility(View.GONE);
