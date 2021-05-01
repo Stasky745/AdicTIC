@@ -1,6 +1,7 @@
 package com.example.adictic.workers.block_apps;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BlockAppWorker extends Worker {
+    private final static String TAG = "BlockAppWorker";
     public BlockAppWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -30,6 +32,8 @@ public class BlockAppWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        Log.i(TAG,"Worker Start");
+
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
         List<AppUsage> appUsageList = new ArrayList<>(gul.get(0).usage);
 
@@ -38,8 +42,10 @@ public class BlockAppWorker extends Worker {
             freeUseApps = new ArrayList<>();
 
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_BLOCKED_APPS,false);
-        if(blockedApps == null || blockedApps.isEmpty())
+        if(blockedApps == null || blockedApps.isEmpty()) {
+            Log.i(TAG,"BlockedAppList null o empty -> SUCCESS");
             return Result.success();
+        }
 
         List<String> currentBlockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,false);
         assert currentBlockedApps!=null;
@@ -47,6 +53,11 @@ public class BlockAppWorker extends Worker {
         List<BlockedApp> notBlockedApps = blockedApps.stream()
                 .filter(blockedApp -> !currentBlockedApps.contains(blockedApp.pkgName))
                 .collect(Collectors.toList());
+
+        if(notBlockedApps.isEmpty()) {
+            Log.i(TAG,"notBlockedAppList null o empty -> SUCCESS");
+            return Result.success();
+        }
 
         long delay = Constants.TOTAL_MILLIS_IN_DAY;
         boolean canvis = false;
@@ -73,10 +84,15 @@ public class BlockAppWorker extends Worker {
             }
         }
 
-        if(canvis)
-            Funcions.write2File(getApplicationContext(),currentBlockedApps);
+        if(canvis) {
+            Log.d(TAG,"Hi ha hagut canvis a BlockedApps - Escrivim a fitxer");
+            Funcions.write2File(getApplicationContext(), currentBlockedApps);
+        }
 
-        Funcions.runBlockAppsWorker(getApplicationContext(),delay);
+        if(delay < Constants.TOTAL_MILLIS_IN_DAY) {
+            Log.d(TAG,"El delay és inferior a 24h -> configurem BlockAppsWorker (Delay=" + delay + ")");
+            Funcions.runBlockAppsWorker(getApplicationContext(), delay);
+        }
 
         return Result.success();
     }

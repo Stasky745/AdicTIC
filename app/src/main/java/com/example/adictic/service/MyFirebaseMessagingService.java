@@ -59,7 +59,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public void updateBlockedAppsList(Map<String, String> map) {
         List<BlockedApp> list = new ArrayList<>();
-        map.remove("limitApp");
+        map.remove("blockApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = entry.getKey();

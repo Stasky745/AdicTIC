@@ -103,6 +103,7 @@ import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_AP
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
+    private final static String TAG = "Funcions";
 
     public static String date2String(int dia, int mes, int any) {
         String data;
@@ -247,14 +248,6 @@ public class Funcions {
     public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
         List<BlockedApp> llista = new ArrayList<>();
 
-        write2File(ctx,body.blockedApps);
-
-        for(String pkgName : body.blockedApps){
-            BlockedApp blockedApp = new BlockedApp();
-            blockedApp.pkgName = pkgName;
-            blockedApp.timeLimit = -1;
-            llista.add(blockedApp);
-        }
         for(LimitedApps limitedApp : body.limitApps){
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = limitedApp.name;
@@ -288,6 +281,10 @@ public class Funcions {
                 .enqueueUniquePeriodicWork("pujarAppInfo",
                         ExistingPeriodicWorkPolicy.KEEP,
                         myWork);
+
+        Log.d(TAG,"Worker AppUsage 24h Configurat");
+
+        runUniqueAppUsageWorker(mCtx);
     }
 
     public static void runUniqueAppUsageWorker(Context mContext) {
@@ -298,6 +295,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("uniqueAppUsageWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker AppUsage (únic) Començat");
     }
 
     // EventWorkers
@@ -315,6 +314,8 @@ public class Funcions {
                 .enqueueUniquePeriodicWork("24h_eventBlock",
                         ExistingPeriodicWorkPolicy.KEEP,
                         myWork);
+
+        Log.d(TAG,"Worker RestartEvents 24h Configurat");
     }
 
     public static void runRestartEventsWorkerOnce(Context mContext, long delay){
@@ -326,6 +327,7 @@ public class Funcions {
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("EventsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
 
+        Log.d(TAG,"Worker RestartEvents (únic) Començat");
     }
 
     public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
@@ -341,6 +343,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker StartBlockEvent Configurat - ID=" + id + " | delay=" + delay);
     }
 
     public static void runFinishBlockEventWorker(Context mContext, long id, long delay) {
@@ -356,6 +360,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker FinishBlockEvent Configurat - ID=" + id + " | delay=" + delay);
     }
 
     public static void runDespertarWorker(Context mContext, long delay){
@@ -367,6 +373,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("despertarWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker Despertar Configurat - delay=" + delay);
     }
 
     public static void runDormirWorker(Context mContext, long delay){
@@ -378,6 +386,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("dormirWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker Dormir Configurat - delay=" + delay);
     }
 
     // BlockAppsWorkers
@@ -395,6 +405,8 @@ public class Funcions {
                 .enqueueUniquePeriodicWork("24h_blockApps",
                         ExistingPeriodicWorkPolicy.KEEP,
                         myWork);
+
+        Log.d(TAG,"Worker RestartBlockedApps 24h Configurat");
     }
 
     public static void runRestartBlockedAppsWorkerOnce(Context mContext, long delay){
@@ -405,6 +417,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("BlockedAppsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker RestartBlockedApps (únic) Començat");
     }
 
     public static void runBlockAppsWorker(Context mContext, long delay) {
@@ -416,6 +430,8 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("blockAppWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker BlockApp Configurat - Delay=" + delay);
     }
 
     // GeolocWorkers
