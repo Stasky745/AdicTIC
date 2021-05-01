@@ -2,6 +2,7 @@ package com.example.adictic.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.example.adictic.R;
 import com.example.adictic.rest.TodoApi;
@@ -32,6 +33,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class TodoApp extends Application {
 
     TodoApi mTodoService;
+    private static SharedPreferences sharedPreferences = null;
+
+    public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
+    public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     @Override
     public void onCreate() {

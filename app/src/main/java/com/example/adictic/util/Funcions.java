@@ -734,13 +734,16 @@ public class Funcions {
 
     public static SharedPreferences getEncryptedSharedPreferences(Context mCtx) {
         try {
-            return EncryptedSharedPreferences.create(
-                    mCtx,
-                    "values",
-                    Objects.requireNonNull(getMasterKey(mCtx)), // calling the method above for creating MasterKey
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
+            if(TodoApp.getSharedPreferences()==null) {
+                TodoApp.setSharedPreferences(EncryptedSharedPreferences.create(
+                        mCtx,
+                        "values",
+                        Objects.requireNonNull(getMasterKey(mCtx)), // calling the method above for creating MasterKey
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                ));
+            }
+            return TodoApp.getSharedPreferences();
         } catch (Exception e) {
             Log.e(mCtx.getClass().getSimpleName(), "Error on getting encrypted shared preferences", e);
         }
