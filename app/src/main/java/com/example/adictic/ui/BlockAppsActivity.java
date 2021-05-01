@@ -32,6 +32,7 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +67,11 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
-        idChild = getIntent().getLongExtra("idChild", -1);
+        assert sharedPreferences != null;
+        if(!sharedPreferences.getBoolean("isTutor",false))
+            idChild = sharedPreferences.getLong("idUser",-1);
+        else
+            idChild = getIntent().getLongExtra("idChild", -1);
 
         mTodoService = ((TodoApp) this.getApplication()).getAPI();
 
@@ -249,6 +254,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
+
             holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
             if (holder.itemView.isActivated())
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
@@ -274,7 +280,14 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if (blockedApp.appTime > 0) {
                 Pair<Integer, Integer> pairTime = Funcions.millisToString(blockedApp.appTime);
-                holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
+
+                if(pairTime.first == 0)
+                    holder.TV_appMaxTime.setText(getString(R.string.mins, pairTime.second));
+                else if(pairTime.second == 0)
+                    holder.TV_appMaxTime.setText(getString(R.string.hrs, pairTime.second));
+                else
+                    holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
+
                 holder.IV_block.setVisibility(View.GONE);
             } else if (blockedApp.appTime == 0) {
                 holder.TV_appMaxTime.setVisibility(View.GONE);
@@ -284,15 +297,17 @@ public class BlockAppsActivity extends AppCompatActivity {
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
 
-            holder.mRootView.setOnClickListener(v -> {
-                if (selectedApps.contains(blockedApp.pkgName)) {
-                    selectedApps.remove(blockedApp.pkgName);
-                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                } else {
-                    selectedApps.add(blockedApp.pkgName);
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
-                }
-            });
+            if(sharedPreferences.getBoolean("isTutor",false)){
+                holder.mRootView.setOnClickListener(v -> {
+                    if (selectedApps.contains(blockedApp.pkgName)) {
+                        selectedApps.remove(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                    } else {
+                        selectedApps.add(blockedApp.pkgName);
+                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
+                    }
+                });
+            }
         }
 
         @Override

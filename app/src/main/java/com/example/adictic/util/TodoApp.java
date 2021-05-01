@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.GeoFill;
-import com.example.adictic.entity.HorarisEvents;
-import com.example.adictic.entity.Oficina;
 import com.example.adictic.rest.TodoApi;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
@@ -22,15 +19,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
@@ -42,179 +32,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    private static final List<String> blockEvents = new ArrayList<>();
-    private static boolean geolocOpen = false;
-    private static long IDTutor = -1;
-    private static Integer tutor = -1;
-    private static long IDChild = -1;
-    private static int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-    private static boolean freeUse = false;
-    private static long startFreeUse = 0;
-    private static boolean blockedDevice = false;
-    private static boolean liveApp = false;
-    private static String currentAppKid = null;
-    private static String timeOpenedCurrentAppKid = null;
-    private static List<HorarisEvents> listEvents = null;
-    private static Map<String, Long> limitApps = new HashMap<>();
-    private static List<String> blockedApps = new ArrayList<>();
-    private static List<GeoFill> geoFills = new ArrayList<>();
-    private static List<Oficina> oficines = new ArrayList<>();
-    private static Map<Integer, String> wakeHoraris = new HashMap<>();
-    private static Map<Integer, String> sleepHoraris = new HashMap<>();
     TodoApi mTodoService;
     private static SharedPreferences sharedPreferences = null;
 
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
-
-    public static boolean getGeoLocOpen() {
-        return geolocOpen;
-    }
-
-    public static void setGeolocOpen(boolean b) {
-        geolocOpen = b;
-    }
-
-    public static List<GeoFill> getGeoFills() {
-        return geoFills;
-    }
-
-    public static void setGeoFills(List<GeoFill> list) {
-        geoFills = list;
-    }
-
-    public static List<Oficina> getOficines() {
-        return oficines;
-    }
-
-    public static void setOficines(List<Oficina> list) {
-        oficines = list;
-    }
-
-    public static List<HorarisEvents> getListEvents() {
-        return listEvents;
-    }
-
-    public static void setListEvents(List<HorarisEvents> l) {
-        listEvents = l;
-    }
-
-
-    public static void addBlockEvent(String s) {
-        blockEvents.add(s);
-    }
-
-    public static void removeBlockEvent(String s) {
-        blockEvents.remove(s);
-    }
-
-    public static List<String> getBlockEvents() {
-        return blockEvents;
-    }
-
-    public static Map<Integer, String> getWakeHoraris() {
-        return wakeHoraris;
-    }
-
-    public static void setWakeHoraris(Map<Integer, String> m) {
-        wakeHoraris = m;
-    }
-
-    public static Map<Integer, String> getSleepHoraris() {
-        return sleepHoraris;
-    }
-
-    public static void setSleepHoraris(Map<Integer, String> m) {
-        sleepHoraris = m;
-    }
-
-    public static long getStartFreeUse() {
-        return startFreeUse;
-    }
-
-    public static void setStartFreeUse(long l) {
-        startFreeUse = l;
-    }
-
-    public static long getIDChild() {
-        return TodoApp.IDChild;
-    }
-
-    public static void setIDChild(long s) {
-        TodoApp.IDChild = s;
-    }
-
-    public static Long getIDTutor() {
-        return TodoApp.IDTutor;
-    }
-
-    public static void setIDTutor(Long l) {
-        TodoApp.IDTutor = l;
-    }
-
-    public static Integer getTutor() {
-        return TodoApp.tutor;
-    }
-
-    public static void setTutor(Integer i) {
-        TodoApp.tutor = i;
-    }
-
-    public static int getDayOfYear() {
-        return TodoApp.dayOfYear;
-    }
-
-    public static void setDayOfYear(int i) {
-        TodoApp.dayOfYear = i;
-    }
-
-    public static boolean getFreeUse() {
-        return TodoApp.freeUse;
-    }
-
-    public static void setFreeUse(boolean b) {
-        TodoApp.freeUse = b;
-    }
-
-    public static boolean getLiveApp() {
-        return TodoApp.liveApp;
-    }
-
-    public static void setLiveApp(boolean b) {
-        TodoApp.liveApp = b;
-    }
-
-    public static String getCurrentAppKid() {
-        return TodoApp.currentAppKid;
-    }
-
-    public static void setCurrentAppKid(String s) {
-        TodoApp.currentAppKid = s;
-    }
-
-    public static String getTimeOpenedCurrentAppKid() {
-        return TodoApp.timeOpenedCurrentAppKid;
-    }
-
-    public static void setTimeOpenedCurrentAppKid(String s) {
-        TodoApp.timeOpenedCurrentAppKid = s;
-    }
-
-    public static Map<String, Long> getLimitApps() {
-        return TodoApp.limitApps;
-    }
-
-    public static void setLimitApps(Map<String, Long> m) {
-        TodoApp.limitApps = m;
-    }
-
-    public static boolean getBlockedDevice() {
-        return TodoApp.blockedDevice;
-    }
-
-    public static void setBlockedDevice(boolean b) {
-        TodoApp.blockedDevice = b;
-    }
 
     @Override
     public void onCreate() {
@@ -263,12 +85,9 @@ public class TodoApp extends Application {
                     .cookieJar(cookieJar)
                     .addInterceptor(interceptor)
                     .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            //Evita el problema javax.net.ssl.SSLPeerUnverifiedException: Hostname not verified però no és molt segur
-                            return true;
-                        }
+                    .hostnameVerifier((hostname, session) -> {
+                        //Evita el problema javax.net.ssl.SSLPeerUnverifiedException: Hostname not verified però no és molt segur
+                        return true;
                     })
                     .build();
 

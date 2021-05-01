@@ -134,13 +134,8 @@ public class OficinesActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<Oficina>> call, @NonNull Response<List<Oficina>> response) {
                 if (response.isSuccessful()) {
                     oficines = response.body();
-                    TodoApp.setOficines(oficines);
-//                    setMap();
-
                 } else {
                     Toast.makeText(OficinesActivity.this, getString(R.string.error_getOffices), Toast.LENGTH_SHORT).show();
-                    oficines = TodoApp.getOficines();
-//                    setMap();
                 }
                 askPermissionsIfNecessary();
             }
@@ -148,8 +143,6 @@ public class OficinesActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call<List<Oficina>> call, @NonNull Throwable t) {
                 Toast.makeText(OficinesActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                oficines = TodoApp.getOficines();
-//                setMap();
                 askPermissionsIfNecessary();
             }
         });

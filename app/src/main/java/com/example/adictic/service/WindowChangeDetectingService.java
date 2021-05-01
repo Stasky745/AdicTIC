@@ -12,37 +12,41 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.os.Build;
+import android.graphics.PixelFormat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import com.example.adictic.entity.AppChange;
-import com.example.adictic.entity.AppInfo;
+import com.example.adictic.R;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.EventBlock;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import org.apache.commons.collections4.CollectionUtils;
-
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
@@ -52,8 +56,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
     SharedPreferences sharedPreferences;
     PackageManager mPm;
 
-    List<EventBlock> eventBlocks;
-    List<BlockedApp> blockedApps;
+    List<String> blockedApps;
+
+    private View floatyView;
+    private WindowManager windowManager;
 
     String lastActivity;
     String lastPackage;
@@ -74,7 +80,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
             mTodoService = ((TodoApp) getApplicationContext()).getAPI();
             mPm = getPackageManager();
 
-            eventBlocks = new ArrayList<>();
             blockedApps = new ArrayList<>();
 
             lastActivity = "";
@@ -123,8 +128,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 return;
             }
 
-            // Actualitzem les llistes d'Events i BlockedApp
-            actualitzarLlistes();
+            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false))
+                blockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,true);
 
             // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
@@ -133,8 +138,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false);
-            if (estaBloquejat || !eventBlocks.isEmpty()) {
+            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false) || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+
+            int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
+
+            if (estaBloquejat || currentActiveEvents > 0) {
                 if (!myKM.isDeviceLocked()) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -142,7 +150,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
             }
             //
-            else if (event.getPackageName() != null && event.getClassName() != null) {
+            else if (event.getPackageName() != null && event.getClassName() != null && !event.getPackageName().equals(lastPackage)) {
                 Log.d(TAG,"L'event no és null - Entra a 'else if'");
 
                 // Agafem info de l'Event
@@ -160,6 +168,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                     if (!blackListLiveApp.contains(componentName.getPackageName())) {
                         Log.d(TAG,"L'event no està a 'blackListLiveApp'");
+
+                        // Actualitzem les llistes d'Events i BlockedApp
+                        actualitzarLlistes();
+
                         try {
                             appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
                             lastActivity = appInfo.loadLabel(getPackageManager()).toString();
@@ -216,19 +228,28 @@ public class WindowChangeDetectingService extends AccessibilityService {
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
         });
 
-        Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
-        Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
-        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        lockIntent.putExtra("pkgName",lastPackage);
-        startActivity(lockIntent);
+        // Si és MIUI
+        try {
+            @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
+
+            if(miui != null)
+                addOverlayView();
+            else{
+                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
+                Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
+                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.putExtra("pkgName",lastPackage);
+                startActivity(lockIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isBlocked() {
-        if(blockedApps.stream().anyMatch(o -> o.pkgName.equals(lastPackage))){
-            BlockedApp blockedApp = blockedApps.stream().filter(o -> o.pkgName.equals(lastPackage)).collect(Collectors.toList()).get(0);
-            return blockedApp.blockedNow;
-        }
-        return false;
+        return blockedApps.contains(lastPackage);
     }
 
     private void enviarLastApp() {
@@ -252,32 +273,28 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private void actualitzarLlistes() {
         // creem llistes buides si no estan inicialitzades
         boolean primerCop = false;
-        if(eventBlocks == null) {
-            eventBlocks = new ArrayList<>();
-            primerCop = true;
-        }
+//        if(eventBlocks == null) {
+//            eventBlocks = new ArrayList<>();
+//            primerCop = true;
+//        }
 
         if(blockedApps == null) {
             blockedApps = new ArrayList<>();
             primerCop = true;
         }
 
-        // Actualitzem la llista de EventBlock
-        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false)) {
-            eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
-            if(eventBlocks == null)
-                eventBlocks = new ArrayList<>();
-        }
+//        // Actualitzem la llista de EventBlock
+//        if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK,false)) {
+//            eventBlocks = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,true);
+//            if(eventBlocks == null)
+//                eventBlocks = new ArrayList<>();
+//        }
 
         // Actualitzem la llista de BlockedApps amb només les apps bloquejades ara mateix
         if(primerCop || sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false)){
-            List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,true);
+            List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,true);
             if(llista == null)
                 blockedApps = new ArrayList<>();
-            else
-                blockedApps = llista.stream()
-                    .filter(blockedApp -> blockedApp.blockedNow)
-                    .collect(Collectors.toList());
         }
     }
 
@@ -292,4 +309,73 @@ public class WindowChangeDetectingService extends AccessibilityService {
     @Override
     public void onInterrupt() {
     }
+
+    private void addOverlayView() {
+
+        final WindowManager.LayoutParams params;
+        int layoutParamsType;
+
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }
+        else {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                layoutParamsType,
+                0,
+                PixelFormat.OPAQUE);
+
+        params.gravity = Gravity.CENTER | Gravity.START;
+        params.x = 0;
+        params.y = 0;
+
+        FrameLayout interceptorLayout = new FrameLayout(this) {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent event) {
+
+                // Only fire on the ACTION_DOWN event, or you'll get two events (one for _DOWN, one for _UP)
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                    // Check if the HOME button is pressed
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+
+                        Log.v(TAG, "BACK Button Pressed");
+
+                        // As we've taken action, we'll return true to prevent other apps from consuming the event as well
+                        return true;
+                    }
+                }
+
+                // Otherwise don't intercept the event
+                return super.dispatchKeyEvent(event);
+            }
+        };
+
+        LayoutInflater inflater = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+
+        if (inflater != null) {
+            floatyView = inflater.inflate(R.layout.block_layout, interceptorLayout);
+            windowManager.addView(floatyView, params);
+
+            Button BT_sortir = floatyView.findViewById(R.id.btn_sortir);
+            BT_sortir.setOnClickListener(view -> {
+                Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
+                startHomescreen.addCategory(Intent.CATEGORY_HOME);
+                startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(startHomescreen);
+                windowManager.removeView(floatyView);
+            });
+        }
+        else {
+            Log.e("SAW-example", "Layout Inflater Service is null; can't inflate and display R.layout.floating_view");
+        }
+    }
+
 }

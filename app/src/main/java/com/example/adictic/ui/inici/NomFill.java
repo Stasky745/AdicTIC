@@ -184,7 +184,7 @@ public class NomFill extends AppCompatActivity {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                     NomFill.this.finish();
                                 } else {
-                                    Funcions.startAppUsageWorker(getApplicationContext());
+                                    Funcions.startAppUsageWorker24h(getApplicationContext());
                                     if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                         NomFill.this.finish();
@@ -229,7 +229,7 @@ public class NomFill extends AppCompatActivity {
                                         NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                         NomFill.this.finish();
                                     } else {
-                                        Funcions.startAppUsageWorker(getApplicationContext());
+                                        Funcions.startAppUsageWorker24h(getApplicationContext());
                                         if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
                                             NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
                                             NomFill.this.finish();

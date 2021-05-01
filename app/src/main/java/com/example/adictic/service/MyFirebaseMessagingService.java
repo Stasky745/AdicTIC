@@ -15,16 +15,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.Horaris;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.chat.ChatFragment;
-import com.example.adictic.ui.inici.Login;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -50,7 +47,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private final String TAG = "Firebase: ";
     private TodoApi mTodoService;
-    private SharedPreferences sharedPreferences;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -63,16 +59,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public void updateBlockedAppsList(Map<String, String> map) {
         List<BlockedApp> list = new ArrayList<>();
-        map.remove("limitApp");
+        map.remove("blockApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
             BlockedApp blockedApp = new BlockedApp();
             blockedApp.pkgName = entry.getKey();
             blockedApp.timeLimit = Long.parseLong(entry.getValue());
-            blockedApp.blockedNow = false;
             list.add(blockedApp);
         }
 
         Funcions.write2File(getApplicationContext(),list);
+        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
+        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
 
     @Override
@@ -81,7 +78,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         Map<String, String> messageMap = remoteMessage.getData();
 
@@ -108,14 +105,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mNotificationManager.createNotificationChannel(mChannel);
             }
 
-            /** Accions del dispositiu fill**/
+            // ************* Accions del dispositiu fill *************
             if (messageMap.containsKey("blockDevice")) {
+                assert  sharedPreferences != null;
                 if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     sharedPreferences.edit().putBoolean("blockedDevice",true).apply();
                     mDPM.lockNow();
-                } else sharedPreferences.edit().putBoolean("blockedDevice",false).apply();
-            } else if (messageMap.containsKey("freeUse")) {
+                }
+                else sharedPreferences.edit().putBoolean("blockedDevice",false).apply();
+
+            }
+            else if (messageMap.containsKey("freeUse")) {
                 if (Objects.equals(messageMap.get("freeUse"), "1")) {
                     Funcions.startFreeUseLimitList(getApplicationContext());
 
@@ -124,63 +125,51 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Funcions.updateLimitedAppsList(getApplicationContext());
                     title = getString(R.string.free_use_deactivation);
                 }
-            } else if (messageMap.containsKey("blockApp")) {
+            }
+            else if (messageMap.containsKey("blockApp")) {
                 updateBlockedAppsList(messageMap);
 
                 title = getString(R.string.update_blocked_apps);
                 activitatIntent = BlockAppsActivity.class;
-            } else if (messageMap.containsKey("liveApp")) {
+            }
+            else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
                 boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+                assert sharedPreferences != null;
                 sharedPreferences.edit().putBoolean("liveApp",active).apply();
 
                 if(active && (!sharedPreferences.contains("appUsageWorkerUpdate") ||
-                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",-1) > Constants.HOUR_IN_MILLIS))
-                {
-                    OneTimeWorkRequest myWork =
-                            new OneTimeWorkRequest.Builder(AppUsageWorker.class).build();
-                    WorkManager.getInstance(this).enqueue(myWork);
+                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
+
+                    Funcions.runUniqueAppUsageWorker(getApplicationContext());
 
                     sharedPreferences.edit().putLong("lastUpdateAppUsageWorker", Calendar.getInstance().getTimeInMillis()).apply();
                 }
 
                 Log.d(TAG, "Token liveApp: " + s);
-            } else if (messageMap.containsKey("getIcon")) {
+            }
+            else if (messageMap.containsKey("getIcon")) {
                 messageMap.remove("getIcon");
                 List<String> list = new ArrayList<>(messageMap.keySet());
                 sendIcon(list);
-            } else if (messageMap.containsKey("horaris")) {
-                Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
-                call.enqueue(new Callback<Horaris>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
-                        if (response.isSuccessful()) {
-                            assert response.body() != null;
-                            Funcions.updateEventList(getApplicationContext(), response.body().events);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
-
-                    }
-                });
-                Funcions.runLimitAppsWorker(getApplicationContext(), 0);
+            }
+            else if (messageMap.containsKey("horaris")) {
+                Funcions.checkHoraris(getApplicationContext());
                 title = getString(R.string.horaris_notification);
-            } else if (messageMap.containsKey("geolocActive")) {
+            }
+            else if (messageMap.containsKey("geolocActive")) {
                 Funcions.runGeoLocWorker(getApplicationContext());
             }
 
-            /**
-             * Accions del dispositiu pare
-             * **/
+           // ************* Accions del dispositiu tutor *************
             else if (messageMap.containsKey("currentAppUpdate")) {
                 String aux = messageMap.get("currentAppUpdate");
 
                 Intent intent = new Intent("liveApp");
                 intent.putExtra("appName", messageMap.get("appName"));
                 intent.putExtra("pkgName", aux);
-                intent.putExtra("time", messageMap.get("Time"));
+                intent.putExtra("time", messageMap.get("time"));
+                intent.putExtra("idChild", messageMap.get("idChild"));
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
                 Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
