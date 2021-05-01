@@ -13,6 +13,8 @@ import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,15 +60,15 @@ public class RestartBlockedApps extends Worker {
         // Si el dispositiu està bloquejat durant la nit, afegim al delay el temps fins que s'hagi de despertar
         List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
         if(horarisNits != null && !horarisNits.isEmpty())
-            delay = horarisNits.stream().filter(obj -> obj.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get().despertar;
+            delay = Math.max(horarisNits.stream().filter(obj -> obj.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get().despertar - DateTime.now().getMillisOfDay(), delay);
 
-        // Afegim al delay el temps mínim fins que es pugui bloquejar una app
-        long minTimeAllowed = Constants.TOTAL_MILLIS_IN_DAY;
-        for(BlockedApp blockedApp : blockedApps){
-            if(blockedApp.timeLimit > 0 && blockedApp.timeLimit < minTimeAllowed)
-                minTimeAllowed = blockedApp.timeLimit;
-        }
-        delay += minTimeAllowed;
+//        // Afegim al delay el temps mínim fins que es pugui bloquejar una app
+//        long minTimeAllowed = Constants.TOTAL_MILLIS_IN_DAY;
+//        for(BlockedApp blockedApp : blockedApps){
+//            if(blockedApp.timeLimit > 0 && blockedApp.timeLimit < minTimeAllowed)
+//                minTimeAllowed = blockedApp.timeLimit;
+//        }
+//        delay += minTimeAllowed;
 
         Funcions.runBlockAppsWorker(getApplicationContext(),delay);
 
