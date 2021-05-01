@@ -37,7 +37,7 @@ public class MyNotificationManager {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(mCtx, Constants.CHANNEL_ID)
                         .setAutoCancel(true)
-                        .setSmallIcon(R.mipmap.ic_launcher_round)
+                        .setSmallIcon(R.mipmap.adictic_logo_round)
                         .setContentTitle(title)
                         .setContentText(body)
                         .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher_round));

@@ -81,7 +81,7 @@ public class AppUsageWorker extends Worker {
     }
 
     private void checkInstalledApps() {
-        if(!sharedPreferences.contains("installedApps") || !sharedPreferences.getBoolean("installedApps",false)) {
+//        if(!sharedPreferences.contains("installedApps") || !sharedPreferences.getBoolean("installedApps",false)) {
             final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
             TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
@@ -91,7 +91,7 @@ public class AppUsageWorker extends Worker {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     if (response.isSuccessful()) {
-                        sharedPreferences.edit().putBoolean("installedApps",true).apply();
+//                        sharedPreferences.edit().putBoolean("installedApps",true).apply();
                     }
                 }
 
@@ -99,7 +99,7 @@ public class AppUsageWorker extends Worker {
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 }
             });
-        }
+//        }
     }
 
     private List<AppInfo> getLaunchableApps() {

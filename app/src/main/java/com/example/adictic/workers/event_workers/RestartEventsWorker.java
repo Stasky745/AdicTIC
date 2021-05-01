@@ -2,6 +2,7 @@ package com.example.adictic.workers.event_workers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.WorkManager;
@@ -21,6 +22,7 @@ import java.util.Calendar;
 import java.util.List;
 
 public class RestartEventsWorker extends Worker {
+    private final static String TAG = "RestartEventsWorker";
     public RestartEventsWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -28,6 +30,8 @@ public class RestartEventsWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        Log.d(TAG,"Worker començat");
+
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Aturem tots els workers d'Events que estiguin configurats
@@ -39,14 +43,18 @@ public class RestartEventsWorker extends Worker {
         List<HorarisNit> horarisNitList = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
 
         // Si no hi ha events no fem res
-        if((eventsList == null || eventsList.isEmpty()) && (horarisNitList == null || horarisNitList.isEmpty()))
+        if((eventsList == null || eventsList.isEmpty()) && (horarisNitList == null || horarisNitList.isEmpty())) {
+            Log.d(TAG,"EventsList i horarisList null/empty -> SUCCESS");
             return Result.success();
+        }
 
         // Si existeixen EVENTS
         if(eventsList != null && !eventsList.isEmpty()){
+            Log.d(TAG,"EventsList conté events");
             // Per cada event, mirem quant de temps falta perquè comenci i fem un worker a aquella hora
             for (EventBlock eventBlock : eventsList) {
                 if (esDelDia(eventBlock)) {
+                    Log.d(TAG,"Event " + eventBlock.name + " és del dia actual");
                     // Preparem el Worker d'inici d'event
                     DateTime startEvent = new DateTime()
                             .withMillisOfDay(eventBlock.startEvent);
@@ -58,9 +66,11 @@ public class RestartEventsWorker extends Worker {
                             .withMillisOfDay(eventBlock.endEvent);
 
                     long delayEnd = finishEvent.getMillis() - DateTime.now().getMillisOfDay();
+                    Log.d(TAG,"Event " + eventBlock.name + " | delayStart=" + delayStart + " | delayEnd=" + delayEnd);
 
                     // Si l'event ja està passant
                     if(delayStart < 0 && delayEnd > 0){
+                        Log.d(TAG,"Event " + eventBlock.name + " ja està passant");
                         assert sharedPreferences != null;
                         int currentBlockedEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS,0);
                         sharedPreferences.edit().putInt(Constants.SHARED_PREFS_ACTIVE_EVENTS,currentBlockedEvents+1).apply();
@@ -68,6 +78,7 @@ public class RestartEventsWorker extends Worker {
                     }
                     // Si l'event encara ha de començar
                     else if(delayStart > 0) {
+                        Log.d(TAG,"Event " + eventBlock.name + " ha de començar");
                         Funcions.runStartBlockEventWorker(getApplicationContext(), eventBlock.id, delayStart);
                         Funcions.runFinishBlockEventWorker(getApplicationContext(), eventBlock.id, delayEnd);
                     }
@@ -89,6 +100,8 @@ public class RestartEventsWorker extends Worker {
         if(horarisNitList != null && !horarisNitList.isEmpty()){
             HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
             long now = DateTime.now().getMillisOfDay();
+
+            Log.d(TAG,"Now=" + now + " | Despertar=" + avui.despertar + " | Dormir=" + avui.dormir);
 
             if(now < avui.despertar){
                 Funcions.runDespertarWorker(getApplicationContext(),avui.despertar - now);
