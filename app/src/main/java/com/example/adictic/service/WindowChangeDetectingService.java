@@ -2,6 +2,7 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -11,11 +12,20 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.PixelFormat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.example.adictic.R;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
@@ -25,6 +35,8 @@ import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -33,6 +45,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
@@ -43,6 +57,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
     PackageManager mPm;
 
     List<String> blockedApps;
+
+    private View floatyView;
+    private WindowManager windowManager;
 
     String lastActivity;
     String lastPackage;
@@ -211,11 +228,24 @@ public class WindowChangeDetectingService extends AccessibilityService {
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
         });
 
-        Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
-        Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
-        lockIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        lockIntent.putExtra("pkgName",lastPackage);
-        startActivity(lockIntent);
+        // Si és MIUI
+        try {
+            @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
+
+            if(miui != null)
+                addOverlayView();
+            else{
+                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
+                Intent lockIntent = new Intent(WindowChangeDetectingService.this, BlockScreenActivity.class);
+                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.putExtra("pkgName",lastPackage);
+                startActivity(lockIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isBlocked() {
@@ -279,4 +309,73 @@ public class WindowChangeDetectingService extends AccessibilityService {
     @Override
     public void onInterrupt() {
     }
+
+    private void addOverlayView() {
+
+        final WindowManager.LayoutParams params;
+        int layoutParamsType;
+
+        windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }
+        else {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                layoutParamsType,
+                0,
+                PixelFormat.OPAQUE);
+
+        params.gravity = Gravity.CENTER | Gravity.START;
+        params.x = 0;
+        params.y = 0;
+
+        FrameLayout interceptorLayout = new FrameLayout(this) {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent event) {
+
+                // Only fire on the ACTION_DOWN event, or you'll get two events (one for _DOWN, one for _UP)
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                    // Check if the HOME button is pressed
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+
+                        Log.v(TAG, "BACK Button Pressed");
+
+                        // As we've taken action, we'll return true to prevent other apps from consuming the event as well
+                        return true;
+                    }
+                }
+
+                // Otherwise don't intercept the event
+                return super.dispatchKeyEvent(event);
+            }
+        };
+
+        LayoutInflater inflater = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+
+        if (inflater != null) {
+            floatyView = inflater.inflate(R.layout.block_layout, interceptorLayout);
+            windowManager.addView(floatyView, params);
+
+            Button BT_sortir = floatyView.findViewById(R.id.btn_sortir);
+            BT_sortir.setOnClickListener(view -> {
+                Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
+                startHomescreen.addCategory(Intent.CATEGORY_HOME);
+                startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(startHomescreen);
+                windowManager.removeView(floatyView);
+            });
+        }
+        else {
+            Log.e("SAW-example", "Layout Inflater Service is null; can't inflate and display R.layout.floating_view");
+        }
+    }
+
 }
