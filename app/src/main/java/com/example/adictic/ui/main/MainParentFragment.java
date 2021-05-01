@@ -108,7 +108,10 @@ public class MainParentFragment extends Fragment {
         }
 
         setButtons();
-        getStats();
+        if(sharedPreferences.getBoolean("isTutor",false))
+            getStats();
+        else
+            makeGraph(Funcions.getGeneralUsages(getActivity(),-1, -1));
 
         return root;
     }
