@@ -111,6 +111,9 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 return;
             }
 
+            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false))
+                blockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,true);
+
             // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()){
