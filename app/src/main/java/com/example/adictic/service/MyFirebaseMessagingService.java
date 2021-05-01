@@ -180,7 +180,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Intent intent = new Intent("liveApp");
                 intent.putExtra("appName", messageMap.get("appName"));
                 intent.putExtra("pkgName", aux);
-                intent.putExtra("time", messageMap.get("Time"));
+                intent.putExtra("time", messageMap.get("time"));
+                intent.putExtra("idChild", messageMap.get("idChild"));
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 
                 Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
