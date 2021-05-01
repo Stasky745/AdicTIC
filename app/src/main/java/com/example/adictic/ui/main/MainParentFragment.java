@@ -72,11 +72,14 @@ public class MainParentFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
 
-            String pkgName = intent.getStringExtra("pkgName");
-            try {
-                Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
-                currentApp.setText(intent.getStringExtra("appName"));
-            } catch (IllegalStateException e){}
+            if(intent.getStringExtra("idChild").equals(String.valueOf(idChildSelected))) {
+                String pkgName = intent.getStringExtra("pkgName");
+                try {
+                    Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                    currentApp.setText(intent.getStringExtra("appName"));
+                } catch (IllegalStateException e) {
+                }
+            }
         }
     };
     private PieChart pieChart;
