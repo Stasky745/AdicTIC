@@ -2,6 +2,7 @@ package com.example.adictic.util;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.GeoFill;
@@ -61,6 +62,10 @@ public class TodoApp extends Application {
     private static Map<Integer, String> wakeHoraris = new HashMap<>();
     private static Map<Integer, String> sleepHoraris = new HashMap<>();
     TodoApi mTodoService;
+    private static SharedPreferences sharedPreferences = null;
+
+    public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
+    public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static boolean getGeoLocOpen() {
         return geolocOpen;
