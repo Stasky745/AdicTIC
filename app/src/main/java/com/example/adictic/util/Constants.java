@@ -30,6 +30,9 @@ public class Constants {
     public static final String CHANNEL_NAME = "Standard Notification";
     public static final String CHANNEL_DESCRIPTION = "Trying out notifications";
 
+    public static final String WORKER_TAG_BLOCK_APPS = "blocked_apps_worker_tag";
+    public static final String WORKER_TAG_EVENT_BLOCK = "event_block_worker_tag";
+
     public static final int[] GRAPH_COLORS = {
             Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
             Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")

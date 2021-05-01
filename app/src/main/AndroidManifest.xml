@@ -110,6 +110,23 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.ACTION_TIMEZONE_CHANGED"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.ACTION_TIME"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_TIME_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
