@@ -1,4 +1,4 @@
-package com.example.adictic.service;
+package com.example.adictic.workers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

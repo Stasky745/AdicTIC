@@ -9,18 +9,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import com.example.adictic.R;
-import com.example.adictic.service.AppUsageWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
-
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 public class AppUsagePermActivity extends Activity {
     SharedPreferences sharedPreferences;
@@ -41,11 +32,11 @@ public class AppUsagePermActivity extends Activity {
     protected void onResume() {
         if (Funcions.isAppUsagePermissionOn(this)) {
 
-            Funcions.startAppUsageWorker(getApplicationContext());
+            Funcions.startAppUsageWorker24h(getApplicationContext());
 
             if (!Funcions.isAdminPermissionsOn(this))
                 this.startActivity(new Intent(this, DevicePolicyAdmin.class));
-            if (!Funcions.isAccessibilitySettingsOn(this)) {
+            else if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
             } else {
                 this.startActivity(new Intent(this, NavActivity.class));
@@ -64,7 +55,7 @@ public class AppUsagePermActivity extends Activity {
             if (Funcions.isAppUsagePermissionOn(this)) {
                 if (!Funcions.isAdminPermissionsOn(this))
                     this.startActivity(new Intent(this, DevicePolicyAdmin.class));
-                if (!Funcions.isAccessibilitySettingsOn(this)) {
+                else if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
                 } else {
                     this.startActivity(new Intent(this, NavActivity.class));
