@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -120,7 +119,7 @@ public class SplashScreen extends AppCompatActivity {
             SplashScreen.this.startActivity(new Intent(SplashScreen.this, AppUsagePermActivity.class));
             SplashScreen.this.finish();
         } else {
-            Funcions.startAppUsageWorker(getApplicationContext());
+            Funcions.startAppUsageWorker24h(getApplicationContext());
             if (!Funcions.isAdminPermissionsOn(SplashScreen.this)) {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, DevicePolicyAdmin.class));
                 SplashScreen.this.finish();
