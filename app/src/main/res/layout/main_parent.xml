@@ -1,62 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/IV_mascot"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+        app:layout_constraintStart_toStartOf="@+id/guideline24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/mascot_min" />
 
     <Button
         android:id="@+id/BT_FreeTime"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/free_time"
         android:textAllCaps="false"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
         app:layout_constraintEnd_toEndOf="@+id/BT_BlockDevice"
-        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice"
-        app:layout_constraintTop_toBottomOf="@+id/BT_BlockDevice" />
+        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice" />
 
     <Button
         android:id="@+id/BT_BlockDevice"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:text="@string/block_device"
         android:textAllCaps="false"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline25"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/IV_mascot" />
 
     <ImageView
         android:id="@+id/IV_CurrentApp"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/google_storage_bucket"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/guideline26"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/TV_CurrentApp"
         app:layout_constraintEnd_toStartOf="@+id/guideline24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/IV_mascot"
         app:srcCompat="@drawable/ic_wifi_off" />
 
     <TextView
         android:id="@+id/TV_CurrentApp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:text="@string/disconnected"
         android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
         app:layout_constraintEnd_toEndOf="@+id/IV_CurrentApp"
-        app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp"
-        app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
+        app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp" />
 
     <View
         android:id="@+id/divider"
@@ -68,28 +79,21 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_CurrentApp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline26"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.21" />
+        app:layout_constraintTop_toBottomOf="@+id/IV_mascot" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline24"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.33" />
+        app:layout_constraintGuide_percent="0.3" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline25"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.67" />
+        app:layout_constraintGuide_percent="0.7" />
 
     <ScrollView
         android:id="@+id/SV_Opcions"
@@ -367,17 +371,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <ImageView
-        android:id="@+id/IV_mascot"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/TV_CurrentApp"
-        app:layout_constraintEnd_toStartOf="@+id/guideline25"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline24"
-        app:layout_constraintTop_toTopOf="@+id/IV_CurrentApp"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/mascot_min" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
