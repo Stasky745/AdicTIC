@@ -22,6 +22,11 @@ public class BlockAppWorker extends Worker {
         super(context, workerParams);
     }
 
+    @Override
+    public void onStopped() {
+        super.onStopped();
+    }
+
     @NonNull
     @Override
     public Result doWork() {

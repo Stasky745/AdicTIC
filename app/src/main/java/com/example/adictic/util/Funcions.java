@@ -336,6 +336,7 @@ public class Funcions {
                 new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .setInputData(data.build())
+                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -350,6 +351,7 @@ public class Funcions {
                 new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .setInputData(data.build())
+                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -360,6 +362,7 @@ public class Funcions {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(DespertarWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -370,6 +373,7 @@ public class Funcions {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(DormirWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -407,6 +411,7 @@ public class Funcions {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(BlockAppWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_BLOCK_APPS)
                         .build();
 
         WorkManager.getInstance(mContext)

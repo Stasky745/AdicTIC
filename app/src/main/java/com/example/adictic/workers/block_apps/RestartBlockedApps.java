@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -33,6 +34,10 @@ public class RestartBlockedApps extends Worker {
         Log.d(TAG, "Starting Worker");
 
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,false);
+
+        // Cancelem tots els workers que hi pugui haver
+        WorkManager.getInstance(getApplicationContext())
+                .cancelAllWorkByTag(Constants.WORKER_TAG_BLOCK_APPS);
 
         // Afegim les apps que estan bloquejades permanentment i cap altra
         List<String> permanentBlockedApps;

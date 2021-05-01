@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -28,6 +29,10 @@ public class RestartEventsWorker extends Worker {
     @Override
     public Result doWork() {
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
+        // Aturem tots els workers d'Events que estiguin configurats
+        WorkManager.getInstance(getApplicationContext())
+                .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
         // Agafem els events del dia actual
         List<EventBlock> eventsList = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,false);
