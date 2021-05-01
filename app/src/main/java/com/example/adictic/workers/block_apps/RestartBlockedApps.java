@@ -48,7 +48,7 @@ public class RestartBlockedApps extends Worker {
             return Result.success();
         }
 
-        permanentBlockedApps = blockedApps.stream().filter(blockedApp -> blockedApp.timeLimit < 0)
+        permanentBlockedApps = blockedApps.stream().filter(blockedApp -> blockedApp.timeLimit == 0)
                 .map(blockedApp -> blockedApp.pkgName)
                 .collect(Collectors.toList());
         Funcions.write2File(getApplicationContext(),permanentBlockedApps);
@@ -63,7 +63,7 @@ public class RestartBlockedApps extends Worker {
         // Afegim al delay el temps mínim fins que es pugui bloquejar una app
         long minTimeAllowed = Constants.TOTAL_MILLIS_IN_DAY;
         for(BlockedApp blockedApp : blockedApps){
-            if(blockedApp.timeLimit != -1 && blockedApp.timeLimit < minTimeAllowed)
+            if(blockedApp.timeLimit > 0 && blockedApp.timeLimit < minTimeAllowed)
                 minTimeAllowed = blockedApp.timeLimit;
         }
         delay += minTimeAllowed;
