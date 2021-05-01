@@ -8,7 +8,7 @@ public class BlockedApp {
     // -1 si bloqueig permanent
     public long timeLimit;
 
-    public boolean blockedNow;
+    //public boolean blockedNow;
 
     @Override
     public boolean equals(@Nullable Object obj) {
