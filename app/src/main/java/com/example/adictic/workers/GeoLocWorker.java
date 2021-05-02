@@ -74,6 +74,7 @@ public class GeoLocWorker extends Worker {
                 });
 
         if (currentLocation != null) {
+            Log.d(TAG,"Google Location OK - Enviant Localització");
             enviarLoc();
             return Result.success();
         } else if (isNetworkEnabled) {
