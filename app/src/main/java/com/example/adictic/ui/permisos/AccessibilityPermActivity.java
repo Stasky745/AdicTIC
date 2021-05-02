@@ -1,5 +1,6 @@
 package com.example.adictic.ui.permisos;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -23,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-public class AccessibilityPermActivity extends Activity {
+public class AccessibilityPermActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,8 @@ public class AccessibilityPermActivity extends Activity {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                 checkDrawOverlayPermission();
             }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
             else{
                 this.startActivity(new Intent(this, NavActivity.class));
                 this.finish();
@@ -67,7 +71,10 @@ public class AccessibilityPermActivity extends Activity {
     @Override
     protected void onResume() {
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            this.startActivity(new Intent(this, NavActivity.class));
+            if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+            else
+                this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
         }
 
@@ -81,6 +88,8 @@ public class AccessibilityPermActivity extends Activity {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                 checkDrawOverlayPermission();
             }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
             else{
                 this.startActivity(new Intent(this, NavActivity.class));
                 this.finish();
@@ -98,6 +107,8 @@ public class AccessibilityPermActivity extends Activity {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                     checkDrawOverlayPermission();
                 }
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                    this.startActivity(new Intent(this,BackgroundLocationPerm.class));
                 else{
                     this.startActivity(new Intent(this, NavActivity.class));
                     this.finish();
@@ -120,6 +131,8 @@ public class AccessibilityPermActivity extends Activity {
             // Launch Intent, with the supplied request code
             startActivityForResult(intent, 10101);
         }
+        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+            this.startActivity(new Intent(this,BackgroundLocationPerm.class));
         else{
             this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
