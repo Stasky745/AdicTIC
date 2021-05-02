@@ -15,6 +15,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
@@ -23,8 +25,10 @@ import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.chat.ChatFragment;
 import com.example.adictic.util.Constants;
+import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
+import com.example.adictic.workers.event_workers.StartBlockEventWorker;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -34,6 +38,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -48,6 +54,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private final String TAG = "Firebase: ";
     private TodoApi mTodoService;
 
+    private long updateGeoloc = -1;
+
     @Override
     public void onNewToken(@NonNull String token) {
         Log.d(TAG, "Refreshed token: " + token);
@@ -55,6 +63,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
+        long idUser;
+        if(sharedPreferences.getBoolean("isTutor",false))
+            idUser = -1;
+        else
+            idUser = sharedPreferences.getLong("idUser",-1);
+
+        Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, token,0);
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
@@ -158,7 +175,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = getString(R.string.horaris_notification);
             }
             else if (messageMap.containsKey("geolocActive")) {
-                Funcions.runGeoLocWorker(getApplicationContext());
+                long now = Calendar.getInstance().getTimeInMillis();
+                long minute = 1000*60;
+                if(updateGeoloc == -1 || now - updateGeoloc > minute)
+                    Funcions.runGeoLocWorker(getApplicationContext());
             }
 
            // ************* Accions del dispositiu tutor *************
@@ -189,7 +209,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 activitatIntent = BlockAppsActivity.class;
             }
             else if(messageMap.containsKey("geolocFills")){
-                //
+                Intent intent = new Intent("actualitzarLoc");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+                Log.d(TAG,"Actualitzar fills");
             }
 
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
