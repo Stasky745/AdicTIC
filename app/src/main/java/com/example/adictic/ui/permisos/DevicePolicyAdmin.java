@@ -82,7 +82,7 @@ public class DevicePolicyAdmin extends AppCompatActivity {
             if (requestCode == REQUEST_ENABLE) {
                 if (!Funcions.isAccessibilitySettingsOn(this))
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                     this.startActivity(new Intent(this,BackgroundLocationPerm.class));
                 else
                     this.startActivity(new Intent(this, NavActivity.class));

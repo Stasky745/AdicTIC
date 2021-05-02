@@ -41,7 +41,7 @@ public class AccessibilityPermActivity extends AppCompatActivity {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                 checkDrawOverlayPermission();
             }
-            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                 this.startActivity(new Intent(this,BackgroundLocationPerm.class));
             else{
                 this.startActivity(new Intent(this, NavActivity.class));
@@ -71,7 +71,7 @@ public class AccessibilityPermActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                 this.startActivity(new Intent(this,BackgroundLocationPerm.class));
             else
                 this.startActivity(new Intent(this, NavActivity.class));
@@ -88,7 +88,7 @@ public class AccessibilityPermActivity extends AppCompatActivity {
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                 checkDrawOverlayPermission();
             }
-            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                 this.startActivity(new Intent(this,BackgroundLocationPerm.class));
             else{
                 this.startActivity(new Intent(this, NavActivity.class));
@@ -107,7 +107,7 @@ public class AccessibilityPermActivity extends AppCompatActivity {
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
                     checkDrawOverlayPermission();
                 }
-                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                     this.startActivity(new Intent(this,BackgroundLocationPerm.class));
                 else{
                     this.startActivity(new Intent(this, NavActivity.class));

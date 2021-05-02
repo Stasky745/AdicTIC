@@ -194,7 +194,7 @@ public class NomFill extends AppCompatActivity {
                                         NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
                                         NomFill.this.finish();
                                     }
-                                    else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                                    else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                                         NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
                                     else {
                                         NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
@@ -242,7 +242,7 @@ public class NomFill extends AppCompatActivity {
                                             NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
                                             NomFill.this.finish();
                                         }
-                                        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                                        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                                             NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
                                         else {
                                             NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
