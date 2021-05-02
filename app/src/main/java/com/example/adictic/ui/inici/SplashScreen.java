@@ -129,7 +129,7 @@ public class SplashScreen extends AppCompatActivity {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, AccessibilityPermActivity.class));
                 SplashScreen.this.finish();
             }
-            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
                 this.startActivity(new Intent(this, BackgroundLocationPerm.class));
             else {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
