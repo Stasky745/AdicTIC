@@ -2,6 +2,7 @@ package com.example.adictic.ui.permisos;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -53,16 +54,20 @@ public class BackgroundLocationPerm extends AppCompatActivity {
         Button BT_okay = findViewById(R.id.BT_okBackLocationPerm);
 
         BT_okay.setOnClickListener(view -> {
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
-                askPermissionsIfNecessary();
-            }
-            else {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                this.startActivityForResult(intent, 1);
-            }
+            demanarPermisos();
         });
+    }
+
+    private void demanarPermisos() {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
+            askPermissionsIfNecessary();
+        }
+        else {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            this.startActivityForResult(intent, 1);
+        }
     }
 
     @Override
@@ -75,8 +80,17 @@ public class BackgroundLocationPerm extends AppCompatActivity {
                 finish();
             }
             else{
-//                new AlertDialog.Builder(getApplicationContext())
-//                        .
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Continuar sense permís de Localització?")
+                        .setMessage("Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d'aquest dispositiu, segur que vols continuar?")
+                        .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
+                            demanarPermisos();
+                        })
+                        .setNegativeButton(R.string.cancel, ((dialogInterface, i) -> {
+                            startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
+                            finish();
+                        }))
+                        .show();
             }
         }
     }
@@ -107,7 +121,17 @@ public class BackgroundLocationPerm extends AppCompatActivity {
                 startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
                 finish();
             } else {
-                Toast.makeText(this, getString(R.string.need_permission), Toast.LENGTH_LONG).show();
+                new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("Continuar sense permís de Localització?")
+                        .setMessage("Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d'aquest dispositiu, segur que vols continuar?")
+                        .setPositiveButton(R.string.accept, (dialogInterface, x) -> {
+                            demanarPermisos();
+                        })
+                        .setNegativeButton(R.string.cancel, ((dialogInterface, j) -> {
+                            startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
+                            finish();
+                        }))
+                        .show();
             }
         }
     }
