@@ -41,6 +41,10 @@ public interface TodoApi {
     @POST("/users/login")
     Call<User> login(@Body UserLogin login);
 
+    // Si és tutor -> idChild = -1
+    @POST("/users/token/{idChild}")
+    Call<String> updateToken(@Path("idChild") Long idChild, @Body String token);
+
     @POST("/users/logout")
     Call<String> logout(@Body String token);
 
