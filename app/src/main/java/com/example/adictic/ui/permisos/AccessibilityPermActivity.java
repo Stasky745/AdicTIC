@@ -1,5 +1,6 @@
 package com.example.adictic.ui.permisos;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -23,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-public class AccessibilityPermActivity extends Activity {
+public class AccessibilityPermActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +37,15 @@ public class AccessibilityPermActivity extends Activity {
         startFetchEventsWorker();
 
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            try {
-                @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                Method get = c.getMethod("get", String.class);
-                String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                // estem a MIUI i Android v > O
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                    checkDrawOverlayPermission();
-                }
-                else{
-                    this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
-                }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            // estem a MIUI i Android v > O
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                checkDrawOverlayPermission();
+            }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+            else{
+                this.startActivity(new Intent(this, NavActivity.class));
+                this.finish();
             }
         }
 
@@ -75,7 +71,10 @@ public class AccessibilityPermActivity extends Activity {
     @Override
     protected void onResume() {
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            this.startActivity(new Intent(this, NavActivity.class));
+            if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+            else
+                this.startActivity(new Intent(this, NavActivity.class));
             this.finish();
         }
 
@@ -85,21 +84,15 @@ public class AccessibilityPermActivity extends Activity {
     @Override
     protected void onPostResume() {
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            try {
-                @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                Method get = c.getMethod("get", String.class);
-                String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                // estem a MIUI i Android v > O
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                    checkDrawOverlayPermission();
-                }
-                else{
-                    this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
-                }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            // estem a MIUI i Android v > O
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                checkDrawOverlayPermission();
+            }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+            else{
+                this.startActivity(new Intent(this, NavActivity.class));
+                this.finish();
             }
         }
         super.onPostResume();
@@ -110,21 +103,15 @@ public class AccessibilityPermActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 0) {
             if (Funcions.isAccessibilitySettingsOn(this)) {
-                try {
-                    @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                    Method get = c.getMethod("get", String.class);
-                    String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                    // estem a MIUI i Android v > O
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                        checkDrawOverlayPermission();
-                    }
-                    else{
-                        this.startActivity(new Intent(this, NavActivity.class));
-                        this.finish();
-                    }
-                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                // estem a MIUI i Android v > O
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                    checkDrawOverlayPermission();
+                }
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                    this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+                else{
+                    this.startActivity(new Intent(this, NavActivity.class));
+                    this.finish();
                 }
             }
         }
@@ -144,6 +131,8 @@ public class AccessibilityPermActivity extends Activity {
             // Launch Intent, with the supplied request code
             startActivityForResult(intent, 10101);
         }
+        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+            this.startActivity(new Intent(this,BackgroundLocationPerm.class));
         else{
             this.startActivity(new Intent(this, NavActivity.class));
             this.finish();

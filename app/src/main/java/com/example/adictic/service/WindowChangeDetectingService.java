@@ -230,11 +230,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
         // Si és MIUI
         try {
-            @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-            String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-            if(miui != null)
+            if(Funcions.isXiaomi())
                 addOverlayView();
             else{
                 Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
