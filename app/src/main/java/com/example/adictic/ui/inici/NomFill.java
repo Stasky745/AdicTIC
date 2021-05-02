@@ -1,5 +1,6 @@
 package com.example.adictic.ui.inici;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
+import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
@@ -191,7 +193,10 @@ public class NomFill extends AppCompatActivity {
                                     } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
                                         NomFill.this.finish();
-                                    } else {
+                                    }
+                                    else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                                        NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
+                                    else {
                                         NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
                                         NomFill.this.finish();
                                     }
@@ -236,7 +241,10 @@ public class NomFill extends AppCompatActivity {
                                         } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
                                             NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
                                             NomFill.this.finish();
-                                        } else {
+                                        }
+                                        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                                            NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
+                                        else {
                                             NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
                                             NomFill.this.finish();
                                         }

@@ -1,7 +1,7 @@
 package com.example.adictic.ui.permisos;
 
+import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.adictic.R;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 
-public class AppUsagePermActivity extends Activity {
+public class AppUsagePermActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
 
 
@@ -23,7 +25,7 @@ public class AppUsagePermActivity extends Activity {
         setContentView(R.layout.app_usage_perm_info);
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
-        Button bt_okay = findViewById(R.id.BT_okAppUsagePerm);
+        Button bt_okay = findViewById(R.id.BT_okBackLocationPerm);
 
         bt_okay.setOnClickListener(v -> AppUsagePermActivity.this.startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)));
     }
@@ -38,7 +40,10 @@ public class AppUsagePermActivity extends Activity {
                 this.startActivity(new Intent(this, DevicePolicyAdmin.class));
             else if (!Funcions.isAccessibilitySettingsOn(this)) {
                 this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-            } else {
+            }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+            else {
                 this.startActivity(new Intent(this, NavActivity.class));
             }
             this.finish();
@@ -57,7 +62,10 @@ public class AppUsagePermActivity extends Activity {
                     this.startActivity(new Intent(this, DevicePolicyAdmin.class));
                 else if (!Funcions.isAccessibilitySettingsOn(this)) {
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
-                } else {
+                }
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                    this.startActivity(new Intent(this,BackgroundLocationPerm.class));
+                else {
                     this.startActivity(new Intent(this, NavActivity.class));
                 }
                 this.finish();

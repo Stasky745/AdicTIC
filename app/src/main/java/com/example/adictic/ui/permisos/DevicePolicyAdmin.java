@@ -1,5 +1,6 @@
 package com.example.adictic.ui.permisos;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.admin.DeviceAdminReceiver;
@@ -13,11 +14,13 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.adictic.R;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 
-public class DevicePolicyAdmin extends Activity {
+public class DevicePolicyAdmin extends AppCompatActivity {
 
     protected static final int REQUEST_ENABLE = 1;
     private final static String LOG_TAG = "DevicePolicyAdmin";
@@ -79,6 +82,8 @@ public class DevicePolicyAdmin extends Activity {
             if (requestCode == REQUEST_ENABLE) {
                 if (!Funcions.isAccessibilitySettingsOn(this))
                     this.startActivity(new Intent(this, AccessibilityPermActivity.class));
+                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                    this.startActivity(new Intent(this,BackgroundLocationPerm.class));
                 else
                     this.startActivity(new Intent(this, NavActivity.class));
 

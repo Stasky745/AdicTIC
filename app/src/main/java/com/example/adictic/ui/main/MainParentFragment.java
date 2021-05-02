@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,8 @@ import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
 
+    private final static String TAG = "MainParentFragment";
+
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
@@ -71,14 +75,15 @@ public class MainParentFragment extends Fragment {
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-            ImageView IV_CurrentApp = root.findViewById(R.id.IV_CurrentApp);
 
             if(intent.getStringExtra("idChild").equals(String.valueOf(idChildSelected))) {
                 String pkgName = intent.getStringExtra("pkgName");
                 try {
                     Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
                     currentApp.setText(intent.getStringExtra("appName"));
-                } catch (IllegalStateException e) {}
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -192,12 +197,16 @@ public class MainParentFragment extends Fragment {
         };
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
-        CL_Geoloc.setOnClickListener(geoloc);
+        if(sharedPreferences.getBoolean("isTutor",false)){
+            CL_Geoloc.setOnClickListener(geoloc);
 
-        if (sharedPreferences.getBoolean("isTutor",false)) {
-            LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
-                    new IntentFilter("liveApp"));
+            if (sharedPreferences.getBoolean("isTutor", false)) {
+                LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
+                        new IntentFilter("liveApp"));
+            }
         }
+        else
+            CL_Geoloc.setVisibility(View.GONE);
 
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
