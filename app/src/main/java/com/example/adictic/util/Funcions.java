@@ -194,7 +194,8 @@ public class Funcions {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             return ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
         }
-        else return true;
+        else
+            return false;
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {
