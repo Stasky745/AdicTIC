@@ -1,5 +1,6 @@
 package com.example.adictic.util;
 
+import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -56,6 +58,7 @@ import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.workers.AppUsageWorker;
+import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
 import com.example.adictic.workers.block_apps.RestartBlockedApps;
 import com.example.adictic.workers.event_workers.DespertarWorker;
@@ -186,6 +189,15 @@ public class Funcions {
         }
 
         return false;
+    }
+
+    public static boolean isBackgroundLocationPermissionOn(Context mContext) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
+        else
+            return ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {
@@ -444,6 +456,25 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    // UpdateTokenWorker
+
+    public static void runUpdateTokenWorker(Context mContext, long idUser, String token, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putLong("idUser", idUser);
+        data.putString("token", token);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(UpdateTokenWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
     // **************** END WORKERS ****************
@@ -835,6 +866,10 @@ public class Funcions {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static boolean isXiaomi(){
+        return Build.MANUFACTURER.toLowerCase().equals("xiaomi");
     }
 
     public static boolean fileEmpty(Context mCtx, String fileName){
