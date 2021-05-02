@@ -329,4 +329,6 @@
     <string name="title_uninstalled_app">%s ha desinstal·lat una app</string>
     <string name="perm_background_loc_title">Permís de localització</string>
     <string name="perm_back_location_desc">Aquesta aplicació requereix de permisos de localització en tot moment a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n · Saber la geolocalització del dispositiu.</string>
+    <string name="dialog_title_perm_loc">Continuar sense permís de Localització?</string>
+    <string name="dialog_body_perm_loc">Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d\'aquest dispositiu, segur que vols continuar?</string>
 </resources>
