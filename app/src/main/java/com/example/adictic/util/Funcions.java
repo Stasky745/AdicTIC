@@ -834,6 +834,10 @@ public class Funcions {
         }
     }
 
+    public static boolean isXiaomi(){
+        return Build.MANUFACTURER.toLowerCase().equals("xiaomi");
+    }
+
     public static boolean fileEmpty(Context mCtx, String fileName){
         File file = new File(mCtx.getFilesDir(),fileName);
 

@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +64,8 @@ import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
 
+    private final static String TAG = "MainParentFragment";
+
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
@@ -97,6 +101,14 @@ public class MainParentFragment extends Fragment {
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+
+        Log.d(TAG,"Device: " + Build.DEVICE);
+        Log.d(TAG,"Model (and Product): " + android.os.Build.MODEL + " ("
+                + android.os.Build.PRODUCT + ")");
+        Log.d(TAG, "OS Version: " + System.getProperty("os.version") + " ("
+                + android.os.Build.VERSION.INCREMENTAL + ")");
+        Log.d(TAG,"Manufacturer: " + Build.MANUFACTURER);
+        Log.d(TAG,"Other tags: " + Build.TAGS);
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
