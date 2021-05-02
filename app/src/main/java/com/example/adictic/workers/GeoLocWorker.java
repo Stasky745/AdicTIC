@@ -55,6 +55,11 @@ public class GeoLocWorker extends Worker {
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
 
+        if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext())){
+            Log.d(TAG,"No hi ha permisos de localització");
+            return Result.failure();
+        }
+
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -69,6 +74,7 @@ public class GeoLocWorker extends Worker {
                 });
 
         if (currentLocation != null) {
+            Log.d(TAG,"Google Location OK - Enviant Localització");
             enviarLoc();
             return Result.success();
         } else if (isNetworkEnabled) {
