@@ -1,7 +1,10 @@
 package com.example.adictic.ui;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.GeoFill;
@@ -50,6 +54,14 @@ public class GeoLocActivity extends AppCompatActivity {
     private List<GeoFill> fills = new ArrayList<>();
     private int posicio = 0;
 
+    private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            idChild =((GeoFill) markers.get(posicio).getRelatedObject()).id;
+            fills.clear();
+            demanarLocFills();
+        }
+    };
+
     @Override
     public void onResume() {
         super.onResume();
@@ -71,6 +83,9 @@ public class GeoLocActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(messageReceiver,
+                new IntentFilter("actualitzarLoc"));
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
@@ -185,6 +200,7 @@ public class GeoLocActivity extends AppCompatActivity {
         }
 
         mapController.setCenter(startPoint);
+
         setSpinner();
     }
 
