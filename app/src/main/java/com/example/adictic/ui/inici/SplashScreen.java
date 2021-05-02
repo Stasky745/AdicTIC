@@ -1,5 +1,6 @@
 package com.example.adictic.ui.inici;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
+import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
@@ -126,7 +128,10 @@ public class SplashScreen extends AppCompatActivity {
             } else if (!Funcions.isAccessibilitySettingsOn(SplashScreen.this)) {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, AccessibilityPermActivity.class));
                 SplashScreen.this.finish();
-            } else {
+            }
+            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) && shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+                this.startActivity(new Intent(this, BackgroundLocationPerm.class));
+            else {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                 SplashScreen.this.finish();
             }
