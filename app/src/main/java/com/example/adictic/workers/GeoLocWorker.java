@@ -52,8 +52,14 @@ public class GeoLocWorker extends Worker {
     @Override
     public Result doWork() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        int iterations = 0;
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+
+        if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext())){
+            Log.d(TAG,"No hi ha permisos de localització");
+            return Result.failure();
+        }
 
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -61,7 +67,7 @@ public class GeoLocWorker extends Worker {
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener((Activity) mContext, location -> {
+                .addOnSuccessListener(location -> {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         currentLocation = new GeoPoint(location);
@@ -69,14 +75,17 @@ public class GeoLocWorker extends Worker {
                 });
 
         if (currentLocation != null) {
+            Log.d(TAG,"Google Location OK - Enviant Localització");
             enviarLoc();
             return Result.success();
         } else if (isNetworkEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
 
             float oldAccuracy = 100;
-            while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+            while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
+                iterations++;
+            }
 
             locationManager.removeUpdates(myLocationListener);
 
@@ -93,8 +102,10 @@ public class GeoLocWorker extends Worker {
             MyLocationListener myLocationListener = new MyLocationListener();
 
             float oldAccuracy = 100;
-            while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+            while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
+                iterations++;
+            }
 
             locationManager.removeUpdates(myLocationListener);
 
