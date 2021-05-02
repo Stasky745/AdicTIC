@@ -474,7 +474,7 @@ public class Funcions {
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
 
-        Log.d(TAG,"Worker StartBlockEvent Configurat - ID=" + idUser + " | delay=" + delay);
+        Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
     // **************** END WORKERS ****************
