@@ -53,11 +53,15 @@ public class GeoLocActivity extends AppCompatActivity {
     private Spinner SP_fills;
     private List<GeoFill> fills = new ArrayList<>();
     private int posicio = 0;
+    private boolean inicial = true;
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            idChild =((GeoFill) markers.get(posicio).getRelatedObject()).id;
+            idChild =((GeoFill) ((Marker)SP_fills.getSelectedItem()).getRelatedObject()).id;
             fills.clear();
+            markers.clear();
+            posicio = 0;
+            map.getOverlays().clear();
             demanarLocFills();
         }
     };
@@ -90,7 +94,7 @@ public class GeoLocActivity extends AppCompatActivity {
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
         try {
-            Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+            Configuration.getInstance().load(ctx, sharedPreferences);
         } catch (java.lang.NullPointerException exc) {
             exc.printStackTrace();
         }
@@ -124,21 +128,6 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<GeoFill>> call, @NonNull Response<List<GeoFill>> response) {
                 if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
-
-                    if (!sharedPreferences.getBoolean("isTutor",false)) {
-                        boolean trobat = false;
-                        int i = 0;
-                        while (!trobat && i < fills.size()) {
-                            if (fills.get(i).id == sharedPreferences.getLong("idUser",-1)) {
-                                trobat = true;
-                                GeoFill fill = fills.get(i);
-                                fills.clear();
-                                fills.add(fill);
-                            }
-                            i++;
-                        }
-                    }
-
                     setMap();
 
                 } else {
@@ -158,7 +147,10 @@ public class GeoLocActivity extends AppCompatActivity {
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
-        mapController.setZoom(17.0);
+        if(inicial) {
+            mapController.setZoom(17.0);
+            inicial = false;
+        }
 
         int i = 0;
         for (GeoFill fill : fills) {
@@ -177,7 +169,7 @@ public class GeoLocActivity extends AppCompatActivity {
                         int pos = markers.indexOf(marker1);
                         SP_fills.setSelection(pos);
                         marker1.showInfoWindow();
-                        map.getController().setCenter(setInfoWindowOffset(marker1.getPosition()));
+                        map.getController().setCenter(marker1.getPosition());
                     }
 
                     return true;
@@ -216,7 +208,7 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Marker marker = markers.get(i);
                 InfoWindow.closeAllInfoWindowsOn(map);
-                map.getController().setCenter(setInfoWindowOffset(marker.getPosition()));
+                map.getController().setCenter(marker.getPosition());
                 marker.showInfoWindow();
             }
 
@@ -226,9 +218,9 @@ public class GeoLocActivity extends AppCompatActivity {
         });
     }
 
-    public GeoPoint setInfoWindowOffset(GeoPoint gp) {
-        return new GeoPoint(gp.getLatitude() + 0.0025, gp.getLongitude());
-    }
+//    public GeoPoint setInfoWindowOffset(GeoPoint gp) {
+//        return new GeoPoint(gp.getLatitude() + 0.0025, gp.getLongitude());
+//    }
 
     private class SpinAdapter extends ArrayAdapter<Marker> {
         ArrayList<Marker> markers;

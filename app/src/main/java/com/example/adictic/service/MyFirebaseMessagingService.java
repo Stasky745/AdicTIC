@@ -71,7 +71,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         else
             idUser = sharedPreferences.getLong("idUser",-1);
 
-        Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, token,0);
+        Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, Crypt.getAES(token),0);
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
@@ -177,8 +177,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if (messageMap.containsKey("geolocActive")) {
                 long now = Calendar.getInstance().getTimeInMillis();
                 long minute = 1000*60;
-                if(updateGeoloc == -1 || now - updateGeoloc > minute)
+                if(updateGeoloc == -1 || now - updateGeoloc > minute) {
                     Funcions.runGeoLocWorker(getApplicationContext());
+                    updateGeoloc = now;
+                }
             }
 
            // ************* Accions del dispositiu tutor *************
