@@ -182,6 +182,7 @@ public class OficinesActivity extends AppCompatActivity {
         if (currentLocation == null) {
             locationListener = new MyLocationListener();
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            int iterations = 0;
 
             boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -190,8 +191,10 @@ public class OficinesActivity extends AppCompatActivity {
                 MyLocationListener myLocationListener = new MyLocationListener();
 
                 float oldAccuracy = 100;
-                while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
+                    iterations++;
+                }
 
                 locationManager.removeUpdates(myLocationListener);
 
@@ -205,8 +208,10 @@ public class OficinesActivity extends AppCompatActivity {
                 MyLocationListener myLocationListener = new MyLocationListener();
 
                 float oldAccuracy = 100;
-                while(accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)
+                while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
+                    iterations++;
+                }
 
                 locationManager.removeUpdates(myLocationListener);
 
