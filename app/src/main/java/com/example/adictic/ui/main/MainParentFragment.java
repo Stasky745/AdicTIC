@@ -102,14 +102,6 @@ public class MainParentFragment extends Fragment {
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
 
-        Log.d(TAG,"Device: " + Build.DEVICE);
-        Log.d(TAG,"Model (and Product): " + android.os.Build.MODEL + " ("
-                + android.os.Build.PRODUCT + ")");
-        Log.d(TAG, "OS Version: " + System.getProperty("os.version") + " ("
-                + android.os.Build.VERSION.INCREMENTAL + ")");
-        Log.d(TAG,"Manufacturer: " + Build.MANUFACTURER);
-        Log.d(TAG,"Other tags: " + Build.TAGS);
-
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         if(sharedPreferences.getBoolean("isTutor",false)) setLastLiveApp();
@@ -204,12 +196,16 @@ public class MainParentFragment extends Fragment {
         };
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
-        CL_Geoloc.setOnClickListener(geoloc);
+        if(sharedPreferences.getBoolean("isTutor",false)){
+            CL_Geoloc.setOnClickListener(geoloc);
 
-        if (sharedPreferences.getBoolean("isTutor",false)) {
-            LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
-                    new IntentFilter("liveApp"));
+            if (sharedPreferences.getBoolean("isTutor", false)) {
+                LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
+                        new IntentFilter("liveApp"));
+            }
         }
+        else
+            CL_Geoloc.setVisibility(View.GONE);
 
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
