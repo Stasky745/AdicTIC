@@ -1,5 +1,6 @@
 package com.example.adictic.util;
 
+import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -186,6 +188,13 @@ public class Funcions {
         }
 
         return false;
+    }
+
+    public static boolean isBackgroundLocationPermissionOn(Context mContext) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
+        else return true;
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {

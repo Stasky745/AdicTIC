@@ -61,7 +61,7 @@ public class GeoLocWorker extends Worker {
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         fusedLocationClient.getLastLocation()
-                .addOnSuccessListener((Activity) mContext, location -> {
+                .addOnSuccessListener(location -> {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         currentLocation = new GeoPoint(location);
