@@ -180,7 +180,7 @@ public class Funcions {
 
     // To check if accessibility service is enabled
     public static boolean isAccessibilitySettingsOn(Context mContext) {
-        /*AccessibilityManager am = (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        AccessibilityManager am = (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
         List<AccessibilityServiceInfo> enabledServices = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
 
         for (AccessibilityServiceInfo enabledService : enabledServices) {
@@ -188,12 +188,13 @@ public class Funcions {
             if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(WindowChangeDetectingService.class.getName()))
                 return true;
         }
-        return false;
-        */
+
         String prefString = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-
-        return prefString!= null && prefString.contains(mContext.getPackageName() + "/" + WindowChangeDetectingService.class.getName());
-
+        if(prefString!= null && prefString.contains(mContext.getPackageName() + "/" + WindowChangeDetectingService.class.getName())) {
+            Log.e(TAG, "AccessibilityServiceInfo negatiu però prefString positiu");
+            return true;
+        }
+        return false;
     }
 
     public static boolean isBackgroundLocationPermissionOn(Context mContext) {
