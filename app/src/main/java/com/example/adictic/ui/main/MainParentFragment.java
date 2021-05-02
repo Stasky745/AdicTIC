@@ -75,14 +75,15 @@ public class MainParentFragment extends Fragment {
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-            ImageView IV_CurrentApp = root.findViewById(R.id.IV_CurrentApp);
 
             if(intent.getStringExtra("idChild").equals(String.valueOf(idChildSelected))) {
                 String pkgName = intent.getStringExtra("pkgName");
                 try {
                     Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
                     currentApp.setText(intent.getStringExtra("appName"));
-                } catch (IllegalStateException e) {}
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };

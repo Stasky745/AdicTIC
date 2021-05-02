@@ -58,6 +58,7 @@ import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.workers.AppUsageWorker;
+import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
 import com.example.adictic.workers.block_apps.RestartBlockedApps;
 import com.example.adictic.workers.event_workers.DespertarWorker;
@@ -455,6 +456,25 @@ public class Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
+    }
+
+    // UpdateTokenWorker
+
+    public static void runUpdateTokenWorker(Context mContext, long idUser, String token, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putLong("idUser", idUser);
+        data.putString("token", token);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(UpdateTokenWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker StartBlockEvent Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
     // **************** END WORKERS ****************
