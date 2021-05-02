@@ -188,6 +188,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 body = appName;
                 activitatIntent = BlockAppsActivity.class;
             }
+            else if(messageMap.containsKey("geolocFills")){
+                //
+            }
 
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
             else if (messageMap.containsKey("chat")) {

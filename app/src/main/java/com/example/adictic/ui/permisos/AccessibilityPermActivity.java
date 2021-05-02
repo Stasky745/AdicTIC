@@ -35,21 +35,13 @@ public class AccessibilityPermActivity extends Activity {
         startFetchEventsWorker();
 
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            try {
-                @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                Method get = c.getMethod("get", String.class);
-                String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                // estem a MIUI i Android v > O
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                    checkDrawOverlayPermission();
-                }
-                else{
-                    this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
-                }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            // estem a MIUI i Android v > O
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                checkDrawOverlayPermission();
+            }
+            else{
+                this.startActivity(new Intent(this, NavActivity.class));
+                this.finish();
             }
         }
 
@@ -85,21 +77,13 @@ public class AccessibilityPermActivity extends Activity {
     @Override
     protected void onPostResume() {
         if (Funcions.isAccessibilitySettingsOn(this)) {
-            try {
-                @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                Method get = c.getMethod("get", String.class);
-                String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                // estem a MIUI i Android v > O
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                    checkDrawOverlayPermission();
-                }
-                else{
-                    this.startActivity(new Intent(this, NavActivity.class));
-                    this.finish();
-                }
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
+            // estem a MIUI i Android v > O
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                checkDrawOverlayPermission();
+            }
+            else{
+                this.startActivity(new Intent(this, NavActivity.class));
+                this.finish();
             }
         }
         super.onPostResume();
@@ -110,21 +94,13 @@ public class AccessibilityPermActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 0) {
             if (Funcions.isAccessibilitySettingsOn(this)) {
-                try {
-                    @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
-                    Method get = c.getMethod("get", String.class);
-                    String miui = (String) get.invoke(c, "ro.miui.ui.version.name");
-
-                    // estem a MIUI i Android v > O
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && miui != null){
-                        checkDrawOverlayPermission();
-                    }
-                    else{
-                        this.startActivity(new Intent(this, NavActivity.class));
-                        this.finish();
-                    }
-                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
+                // estem a MIUI i Android v > O
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Funcions.isXiaomi()){
+                    checkDrawOverlayPermission();
+                }
+                else{
+                    this.startActivity(new Intent(this, NavActivity.class));
+                    this.finish();
                 }
             }
         }
