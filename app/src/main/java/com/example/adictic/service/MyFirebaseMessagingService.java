@@ -54,6 +54,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private final String TAG = "Firebase: ";
     private TodoApi mTodoService;
 
+    private long updateGeoloc = -1;
+
     @Override
     public void onNewToken(@NonNull String token) {
         Log.d(TAG, "Refreshed token: " + token);
@@ -173,7 +175,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = getString(R.string.horaris_notification);
             }
             else if (messageMap.containsKey("geolocActive")) {
-                Funcions.runGeoLocWorker(getApplicationContext());
+                long now = Calendar.getInstance().getTimeInMillis();
+                long minute = 1000*60;
+                if(updateGeoloc == -1 || now - updateGeoloc > minute)
+                    Funcions.runGeoLocWorker(getApplicationContext());
             }
 
            // ************* Accions del dispositiu tutor *************
@@ -204,7 +209,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 activitatIntent = BlockAppsActivity.class;
             }
             else if(messageMap.containsKey("geolocFills")){
-                //
+                Intent intent = new Intent("actualitzarLoc");
+                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
+                Log.d(TAG,"Actualitzar fills");
             }
 
             //MyNotificationManager.getInstance(this).displayNotification(title, body);
