@@ -30,6 +30,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -52,7 +53,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Agafem la nostra id
-        sharedPreferences.getLong("userId",-1);
+        myId = sharedPreferences.getLong("userId",-1);
 
         adminProfile = getIntent().getExtras().getParcelable("chat");
         setViews();
@@ -218,19 +219,16 @@ public class ClosedChatActivity extends AppCompatActivity {
             void bind(UserMessage mes) {
                 messageText.setText(mes.message);
 
+                DateTime dateTime = new DateTime(mes.createdAt);
+
                 // Format the stored timestamp into a readable String using method.
-                String time = "";
-                if (mes.createdAt.getHours() < 10) time += "0";
-                time += mes.createdAt.getHours() + ":";
-                if (mes.createdAt.getMinutes() < 10) time += "0";
-                time += mes.createdAt.getMinutes();
+                String time = Funcions.formatHora(dateTime.getHourOfDay(),dateTime.getMinuteOfHour());
                 timeText.setText(time);
             }
         }
 
         private class ReceivedMessageHolder extends RecyclerView.ViewHolder {
-            TextView messageText, timeText, nameText;
-            ImageView profileImage;
+            TextView messageText, timeText;
 
             ReceivedMessageHolder(View itemView) {
                 super(itemView);

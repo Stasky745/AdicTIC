@@ -60,7 +60,7 @@ public class RestartBlockedApps extends Worker {
         // Si el dispositiu està bloquejat durant la nit, afegim al delay el temps fins que s'hagi de despertar
         List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
         if(horarisNits != null && !horarisNits.isEmpty())
-            delay = Math.max(horarisNits.stream().filter(obj -> obj.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get().despertar - DateTime.now().getMillisOfDay(), delay);
+            delay = Math.max(horarisNits.stream().filter(obj -> obj.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get().despertar - DateTime.now().getMillisOfDay(), delay);
 
 //        // Afegim al delay el temps mínim fins que es pugui bloquejar una app
 //        long minTimeAllowed = Constants.TOTAL_MILLIS_IN_DAY;

@@ -1,10 +1,8 @@
 package com.example.adictic.entity;
 
-import androidx.annotation.Nullable;
-
 import java.util.List;
 
-public class HorarisEvents {
-    public List<EventBlock> events;
+public class HorarisAPI {
+    public int tipus;
     public List<HorarisNit> horarisNit;
 }

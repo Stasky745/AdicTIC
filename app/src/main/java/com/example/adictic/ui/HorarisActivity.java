@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisAPI;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.util.Funcions;
@@ -59,7 +59,7 @@ public class HorarisActivity extends AppCompatActivity {
 
     Button BT_sendHoraris;
 
-    List<HorarisNit> horarisNits;
+    HorarisAPI horarisNits;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -161,23 +161,22 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void getHoraris() {
-        Call<Horaris> call = mTodoService.getHoraris(idChild);
+        Call<HorarisAPI> call = mTodoService.getHoraris(idChild);
 
-        call.enqueue(new Callback<Horaris>() {
+        call.enqueue(new Callback<HorarisAPI>() {
             @Override
-            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
+            public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        horarisNits = response.body().horarisNits;
-
-                        if (horarisNits != null) setTexts(response.body().tipus);
+                        horarisNits = response.body();
+                        setTexts(horarisNits.tipus);
                     }
                 } else
                     Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
                 Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
@@ -208,55 +207,58 @@ public class HorarisActivity extends AppCompatActivity {
         switch (tipus) {
             case 1:
                 chipGroup.check(CH_horariDiari.getId());
+                break;
             case 2:
                 chipGroup.check(CH_horariSetmana.getId());
+                break;
             case 3:
                 chipGroup.check(CH_horariGeneric.getId());
+                break;
         }
 
         List<HorarisNit> list = new ArrayList<>();
-        for (HorarisNit horarisNit : horarisNits){
+        for (HorarisNit horarisNit : horarisNits.horarisNit){
             if(!sharedPreferences.getBoolean("isTutor",false)){
                 list.add(horarisNit);
             }
-            if(horarisNit.idDia == Calendar.MONDAY){
+            if(horarisNit.dia == Calendar.MONDAY){
                 ET_wakeMon.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepMon.setText(Funcions.millisOfDay2String(horarisNit.dormir));
 
                 // Omplir els TextViews Genèrics també
-                ET_wakeGeneric.setText(horarisNit.despertar);
-                ET_sleepGeneric.setText(horarisNit.dormir);
+                ET_wakeGeneric.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                ET_sleepGeneric.setText(Funcions.millisOfDay2String(horarisNit.dormir));
 
-                ET_wakeWeekday.setText(horarisNit.despertar);
-                ET_sleepWeekday.setText(horarisNit.dormir);
+                ET_wakeWeekday.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                ET_sleepWeekday.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.TUESDAY){
+            else if(horarisNit.dia == Calendar.TUESDAY){
                 ET_wakeTue.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepTue.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.WEDNESDAY){
+            else if(horarisNit.dia == Calendar.WEDNESDAY){
                 ET_wakeWed.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepWed.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.THURSDAY){
+            else if(horarisNit.dia == Calendar.THURSDAY){
                 ET_wakeThu.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepThu.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.FRIDAY){
+            else if(horarisNit.dia == Calendar.FRIDAY){
                 ET_wakeFri.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepFri.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.SATURDAY){
+            else if(horarisNit.dia == Calendar.SATURDAY){
                 ET_wakeSat.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepSat.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
-            else if(horarisNit.idDia == Calendar.SUNDAY){
+            else if(horarisNit.dia == Calendar.SUNDAY){
                 ET_wakeSun.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 ET_sleepSun.setText(Funcions.millisOfDay2String(horarisNit.dormir));
 
-                ET_wakeWeekend.setText(horarisNit.despertar);
+                ET_wakeWeekend.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                ET_sleepWeekend.setText(horarisNit.dormir);
+                ET_sleepWeekend.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
         }
 
@@ -280,7 +282,7 @@ public class HorarisActivity extends AppCompatActivity {
         }
 
         TimePickerDialog.OnTimeSetListener timeListener = (view, hourOfDay, minute1) -> {
-            String time = hourOfDay + ":" + minute1;
+            String time = Funcions.formatHora(hourOfDay, minute1);
             if (!et.getText().equals(time)) {
                 et.setText(time);
                 canvis = 1;
@@ -321,9 +323,9 @@ public class HorarisActivity extends AppCompatActivity {
 
             List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
 
-            Horaris horaris = new Horaris();
+            HorarisAPI horaris = new HorarisAPI();
 
-            horaris.horarisNits = horarisNits;
+            horaris.horarisNit = horarisNits;
 
             horaris.tipus = chipGroup.getCheckedChipId();
 
@@ -350,7 +352,7 @@ public class HorarisActivity extends AppCompatActivity {
 
         for(int i = 1; i <= 7; i++){
             HorarisNit horari = new HorarisNit();
-            horari.idDia = i;
+            horari.dia = i;
             if(i == Calendar.MONDAY){
                 if (checkedId == CH_horariDiari.getId()) {
                     horari.despertar = Funcions.string2MillisOfDay(ET_wakeMon.getText().toString());
@@ -435,7 +437,7 @@ public class HorarisActivity extends AppCompatActivity {
                     horari.dormir = Funcions.string2MillisOfDay(ET_sleepGeneric.getText().toString());
                 }
             }
-            else if(i == Calendar.SUNDAY){
+            else {
                 if (checkedId == CH_horariDiari.getId()) {
                     horari.despertar = Funcions.string2MillisOfDay(ET_wakeSun.getText().toString());
                     horari.dormir = Funcions.string2MillisOfDay(ET_sleepSun.getText().toString());
