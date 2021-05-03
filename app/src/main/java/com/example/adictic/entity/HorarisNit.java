@@ -3,7 +3,7 @@ package com.example.adictic.entity;
 import androidx.annotation.Nullable;
 
 public class HorarisNit {
-    public Integer idDia;
+    public Integer dia;
 
     // Joda-time getMillisOfDay()
     public Integer dormir;
@@ -12,9 +12,9 @@ public class HorarisNit {
     @Override
     public boolean equals(@Nullable Object obj) {
         if(obj instanceof Integer)
-            return obj.equals(this.idDia);
+            return obj.equals(this.dia);
         if(obj instanceof HorarisNit)
-            return this.idDia.equals(((HorarisNit) obj).idDia);
+            return this.dia.equals(((HorarisNit) obj).dia);
         else return false;
     }
 }

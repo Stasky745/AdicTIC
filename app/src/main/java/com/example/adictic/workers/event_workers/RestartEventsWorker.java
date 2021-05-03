@@ -98,7 +98,7 @@ public class RestartEventsWorker extends Worker {
 
         // Si existeixen HORARISNIT
         if(horarisNitList != null && !horarisNitList.isEmpty()){
-            HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
+            HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
             long now = DateTime.now().getMillisOfDay();
 
             Log.d(TAG,"Now=" + now + " | Despertar=" + avui.despertar + " | Dormir=" + avui.dormir);
