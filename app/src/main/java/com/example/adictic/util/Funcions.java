@@ -150,6 +150,7 @@ public class Funcions {
     }
 
     public static void checkHoraris(Context ctx) {
+        Log.d(TAG,"Check Horaris");
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
 
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
@@ -162,11 +163,15 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<HorarisEvents> call, @NonNull Response<HorarisEvents> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if(response.body().horarisNit != null)
+                    if(response.body().horarisNit != null && !response.body().horarisNit.isEmpty())
                         write2File(ctx, response.body().horarisNit);
+                    else
+                        clearFile(ctx,Constants.FILE_HORARIS_NIT);
 
-                    if(response.body().events != null)
+                    if(response.body().events != null && !response.body().events.isEmpty())
                         write2File(ctx, response.body().events);
+                    else
+                        clearFile(ctx,Constants.FILE_EVENT_BLOCK);
 
                     // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
@@ -824,6 +829,11 @@ public class Funcions {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void clearFile(Context mCtx, String filename){
+        File file = new File(mCtx.getFilesDir(), filename);
+        file.delete();
     }
 
     public static <T> void write2File(Context mCtx, List<T> list){
