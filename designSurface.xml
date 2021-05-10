@@ -1,0 +1,10 @@
+<application>
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/item_message_received.xml" value="0.1" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/fragment_chat.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+</application>
