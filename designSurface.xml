@@ -2,12 +2,20 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/block_app_layout.xml" value="1.0" />
         <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/home_parent_fragment.xml" value="0.21927083333333333" />
         <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/item_message_received.xml" value="0.1" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/ic_arrow_close.xml" value="0.28177083333333336" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/ic_horaris.xml" value="0.28177083333333336" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/ic_informe.xml" value="0.28177083333333336" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/block_app_item.xml" value="0.26927083333333335" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/block_app_layout.xml" value="1.0" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/fragment_chat.xml" value="0.1" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/home_parent_fragment.xml" value="0.2671875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/informe_layout.xml" value="0.2296875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/informe_resum.xml" value="0.2296875" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/main_parent.xml" value="0.2671875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/simple_rv_item.xml" value="0.2296875" />
       </map>
     </option>
   </component>
