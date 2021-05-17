@@ -12,10 +12,14 @@
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/block_app_layout.xml" value="1.0" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/fragment_chat.xml" value="0.1" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/home_parent_fragment.xml" value="0.2671875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/horaris_event.xml" value="0.2296875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/horaris_event_item.xml" value="0.2296875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/horaris_layout.xml" value="1.0" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/informe_layout.xml" value="0.2296875" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/informe_resum.xml" value="0.2296875" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/main_parent.xml" value="0.2671875" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/simple_rv_item.xml" value="0.2296875" />
+        <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/layout/usage_stats_item.xml" value="0.2296875" />
       </map>
     </option>
   </component>
