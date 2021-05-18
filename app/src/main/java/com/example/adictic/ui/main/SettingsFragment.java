@@ -12,6 +12,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
@@ -43,7 +44,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
-            if(sharedPreferences.getBoolean("debug",false)) {
+            if(BuildConfig.DEBUG) {
+                settings_change_theme();
                 settings_tancar_sessio();
                 settings_pujar_informe();
             } else {
@@ -56,8 +58,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
             settings_change_password();
+            if(BuildConfig.DEBUG){
+                settings_change_theme();
+            } else {
+                PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("preferenceParent");
+                PreferenceCategory myPrefCat = (PreferenceCategory) findPreference("ppdebug");
+                preferenceScreen.removePreference(myPrefCat);
+            }
         }
-        settings_change_theme();
+
         settings_change_language();
     }
 
