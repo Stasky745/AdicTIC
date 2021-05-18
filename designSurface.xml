@@ -2,9 +2,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/drawable/block_background.xml" value="0.25833333333333336" />
         <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/block_app_layout.xml" value="1.0" />
         <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/home_parent_fragment.xml" value="0.21927083333333333" />
         <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/layout/item_message_received.xml" value="0.1" />
+        <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/mipmap-anydpi-v26/block_round.xml" value="0.25833333333333336" />
+        <entry key="..\:/Projectes/AdicTIC/AdicTIC_Android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.25833333333333336" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/block_background.xml" value="0.12135416666666667" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/ic_arrow_close.xml" value="0.28177083333333336" />
         <entry key="..\:/Projectes/AdicTIC_Admin/app/src/main/res/drawable-v24/ic_horaris.xml" value="0.28177083333333336" />
