@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.adictic.entity.FillNom;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class TabFillsAdapter extends FragmentStateAdapter {
     private final ArrayList<FillNom> fills;
@@ -38,7 +38,7 @@ public class TabFillsAdapter extends FragmentStateAdapter {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
         } else {
             lastId = fills.get(position).idChild;
-            if (sharedPreferences.getBoolean("isTutor",false)) Funcions.askChildForLiveApp(ctx, lastId, true);
+            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) Funcions.askChildForLiveApp(ctx, lastId, true);
 
             return new MainParentFragment(fills.get(position));
         }

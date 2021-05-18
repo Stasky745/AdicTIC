@@ -29,6 +29,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -67,8 +68,8 @@ public class BlockAppsActivity extends AppCompatActivity {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         assert sharedPreferences != null;
-        if(!sharedPreferences.getBoolean("isTutor",false))
-            idChild = sharedPreferences.getLong("idUser",-1);
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
         else
             idChild = getIntent().getLongExtra("idChild", -1);
 
@@ -87,7 +88,7 @@ public class BlockAppsActivity extends AppCompatActivity {
         BT_unlock = findViewById(R.id.BT_unlock);
         BT_unlock.setVisibility(View.GONE);
 
-        if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setButtons();
         setRecyclerView();
         setSearchBar();
     }
@@ -326,7 +327,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 holder.TV_appMaxTime.setVisibility(View.INVISIBLE);
             }
 
-            if(sharedPreferences.getBoolean("isTutor",false)){
+            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
                 holder.mRootView.setOnClickListener(v -> {
                     if (selectedApps.contains(blockedApp.pkgName)) {
                         selectedApps.remove(blockedApp.pkgName);

@@ -20,6 +20,7 @@ import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -132,12 +133,12 @@ public class Login extends AppCompatActivity {
                     assert usuari != null;
 
                     if (usuari.tutor == 1) {
-                        sharedPreferences.edit().putBoolean("isTutor", true).apply();
-                        sharedPreferences.edit().putLong("idUser",usuari.id).apply();
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR, true).apply();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,usuari.id).apply();
                     }
                     else {
-                        sharedPreferences.edit().putBoolean("isTutor", false).apply();
-                        sharedPreferences.edit().putLong("idTutor", usuari.id).apply();
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR, false).apply();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDTUTOR, usuari.id).apply();
                     }
 
                     if (usuari.tutor == 0) {

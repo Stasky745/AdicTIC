@@ -11,10 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.ChangePassword;
-import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.inici.Login;
-import com.example.adictic.ui.inici.Register;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
