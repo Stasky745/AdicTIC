@@ -8,10 +8,12 @@ import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.ChangePassword;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.entity.Dubte;
+import com.example.adictic.entity.EventsAPI;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.GeoFill;
-import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisAPI;
+import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.entity.NouFillLogin;
@@ -102,11 +104,23 @@ public interface TodoApi {
     @POST("/users/{id}/unblock")
     Call<String> unblockChild(@Path("id") Long childId);
 
+    @GET("/users/{idChild}/blockStatus")
+    Call<Boolean> getBlockStatus(@Path("idChild") Long childId);
+
     @POST("/usage/{id}/horaris")
-    Call<String> postHoraris(@Path("id") Long childId, @Body Horaris horaris);
+    Call<String> postHoraris(@Path("id") Long childId, @Body HorarisAPI horaris);
 
     @GET("/usage/{id}/horaris")
-    Call<Horaris> getHoraris(@Path("id") Long childId);
+    Call<HorarisAPI> getHoraris(@Path("id") Long childId);
+
+    @POST("/usage/{id}/events")
+    Call<String> postEvents(@Path("id") Long childId, @Body EventsAPI horaris);
+
+    @GET("/usage/{id}/events")
+    Call<EventsAPI> getEvents(@Path("id") Long childId);
+
+    @GET("/usage/{id}/horarisEvents")
+    Call<HorarisEvents> getHorarisEvents(@Path("id") Long childId);
 
     @POST("/icons/{pkgName}")
     @Multipart

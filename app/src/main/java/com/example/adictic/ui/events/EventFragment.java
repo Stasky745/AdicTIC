@@ -65,7 +65,7 @@ public class EventFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.horaris_event, container);
+        return inflater.inflate(R.layout.horaris_event_fragment, container);
     }
 
     @Override
@@ -138,21 +138,12 @@ public class EventFragment extends DialogFragment {
             Pair<Integer, Integer> start = Funcions.stringToTime(ET_eventStart.getText().toString());
 
             final TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), R.style.datePicker, (view, hourOfDay, minute) -> {
-                String hour;
-                String min;
-
-                if (hourOfDay < 10) hour = "0" + hourOfDay;
-                else hour = Integer.toString(hourOfDay);
-
-                if (minute < 10) min = "0" + minute;
-                else min = Integer.toString(minute);
-
                 DateTime dateTime = new DateTime()
                         .withHourOfDay(hourOfDay)
                         .withMinuteOfHour(minute);
 
                 event.startEvent = dateTime.getMillisOfDay();
-                ET_eventStart.setText(String.format("%s:%s", hour, min));
+                ET_eventStart.setText(Funcions.formatHora(hourOfDay,minute));
             }, start.first, start.second, true);
 
             timePickerDialog.show();

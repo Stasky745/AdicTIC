@@ -11,6 +11,7 @@ import com.example.adictic.entity.FillNom;
 import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class TabFillsAdapter extends FragmentStateAdapter {
     private final ArrayList<FillNom> fills;
@@ -20,6 +21,10 @@ public class TabFillsAdapter extends FragmentStateAdapter {
     public TabFillsAdapter(Fragment fa, Context context, ArrayList<FillNom> list) {
         super(fa);
         fills = list;
+
+        // Per prova de vídeo per concurs Yvonne
+        fills.sort((fillNom, t1) -> Long.compare(fillNom.idChild, t1.idChild));
+
         ctx = context;
         lastId = -1;
     }
