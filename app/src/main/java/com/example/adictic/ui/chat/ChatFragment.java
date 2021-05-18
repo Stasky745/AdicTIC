@@ -30,6 +30,7 @@ import com.example.adictic.entity.ChatInfo;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -97,7 +98,7 @@ public class ChatFragment extends Fragment {
 
         // Agafem la nostra id
         assert sharedPreferences != null;
-        myId = sharedPreferences.getLong("userId", -1);
+        myId = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
 
         setViews();
         setRecyclerView();

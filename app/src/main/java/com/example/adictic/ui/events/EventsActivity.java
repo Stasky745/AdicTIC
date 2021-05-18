@@ -23,6 +23,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.EventBlock;
 import com.example.adictic.entity.EventsAPI;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -68,7 +69,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         setLayouts();
         getHoraris();
         assert sharedPreferences != null;
-        if (sharedPreferences.getBoolean("isTutor",false)) setButtons();
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setButtons();
 
     }
 

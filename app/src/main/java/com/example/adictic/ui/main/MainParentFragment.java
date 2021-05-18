@@ -105,7 +105,7 @@ public class MainParentFragment extends Fragment {
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
-        if(sharedPreferences.getBoolean("isTutor",false)) setLastLiveApp();
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setLastLiveApp();
         else{
             IV_liveIcon.setVisibility(View.GONE);
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
@@ -113,7 +113,7 @@ public class MainParentFragment extends Fragment {
         }
 
         setButtons();
-        if(sharedPreferences.getBoolean("isTutor",false))
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             getStats();
         else
             makeGraph(Funcions.getGeneralUsages(getActivity(),-1, -1));
@@ -197,10 +197,10 @@ public class MainParentFragment extends Fragment {
         };
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
-        if(sharedPreferences.getBoolean("isTutor",false)){
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
             CL_Geoloc.setOnClickListener(geoloc);
 
-            if (sharedPreferences.getBoolean("isTutor", false)) {
+            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
                 LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                         new IntentFilter("liveApp"));
             }
@@ -211,7 +211,7 @@ public class MainParentFragment extends Fragment {
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
-        if (sharedPreferences.getBoolean("isTutor",false)) {
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             blockButton.setVisibility(View.VISIBLE);
             blockButton.setOnClickListener(v -> {
                 Call<String> call;
@@ -246,7 +246,7 @@ public class MainParentFragment extends Fragment {
 
         Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
-        if (sharedPreferences.getBoolean("isTutor",false)) {
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call;
@@ -463,7 +463,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        if (sharedPreferences.getBoolean("isTutor",false))
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
         super.finalize();
     }
