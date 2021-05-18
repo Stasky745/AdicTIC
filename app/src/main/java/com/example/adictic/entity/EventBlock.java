@@ -2,7 +2,9 @@ package com.example.adictic.entity;
 
 import androidx.annotation.Nullable;
 
-public class EventBlock {
+import java.util.Comparator;
+
+public class EventBlock implements Comparator {
     public long id;
 
     public String name;
@@ -40,9 +42,16 @@ public class EventBlock {
     }
 
     @Override
+    public int compare(Object o, Object t1) {
+        EventBlock eventBlock1 = (EventBlock) o;
+        EventBlock eventBlock2 = (EventBlock) t1;
+
+        return Integer.compare(eventBlock1.startEvent, eventBlock2.startEvent);
+    }
+
+    @Override
     public boolean equals(@Nullable Object obj) {
 //        return super.equals(obj);
-
 
         if(obj instanceof EventBlock){
             EventBlock object = (EventBlock) obj;

@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.EventBlock;
-import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.EventsAPI;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -39,7 +39,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     int canvis;
 
-    Horaris horaris;
+    EventsAPI events;
 
     EventBlock selectedEvent;
 
@@ -55,12 +55,12 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.horaris_general_layout);
+        setContentView(R.layout.horaris_event);
         mTodoService = ((TodoApp) getApplication()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         idChild = getIntent().getLongExtra("idChild", -1);
-        horaris = null;
+        events = null;
         canvis = 0;
 
         selectedEvent = null;
@@ -88,21 +88,18 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     }
 
     private void getHoraris() {
-        Call<Horaris> call = mTodoService.getHoraris(idChild);
+        Call<EventsAPI> call = mTodoService.getEvents(idChild);
 
-        call.enqueue(new Callback<Horaris>() {
+        call.enqueue(new Callback<EventsAPI>() {
             @Override
-            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
+            public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        horaris = response.body();
-                        if(horaris.events == null)
-                            horaris.events = new ArrayList<>();
+                        events = response.body();
+                        if(events.events == null)
+                            events.events = new ArrayList<>();
 
-                        if(horaris.horarisNits == null)
-                            horaris.horarisNits = new ArrayList<>();
-
-                        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
+                        RVadapter = new RV_Adapter(EventsActivity.this, events.events);
 
                         RV_eventList.setAdapter(RVadapter);
                     }
@@ -110,7 +107,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
 
             }
         });
@@ -123,7 +120,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         BT_esborrarEvent.setVisibility(View.VISIBLE);
 
         BT_acceptarHoraris.setOnClickListener(view -> {
-            Call<String> call = mTodoService.postHoraris(idChild, horaris);
+            Call<String> call = mTodoService.postEvents(idChild, events);
 
             call.enqueue(new Callback<String>() {
                 @Override
@@ -145,14 +142,28 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                         .setTitle(getString(R.string.esborrar_event))
                         .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
                         .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
-                            boolean trobat = false;
-                            int count = 0;
-                            while (count < horaris.events.size() && !trobat) {
-                                if (horaris.events.get(count).name.equals(selectedEvent.name)) {
-                                    trobat = true;
-                                    horaris.events.remove(count);
-                                } else count++;
-                            }
+
+                            EventBlock eventBlock = events.events.stream()
+                                    .filter(eventBlock1 -> eventBlock1.equals(selectedEvent))
+                                    .findAny()
+                                    .get();
+
+                            events.events.remove(eventBlock);
+                            selectedEvent = null;
+                            canvis = 1;
+                            RVadapter.refreshRV(events.events);
+
+//                            boolean trobat = false;
+//                            int count = 0;
+//                            while (count < events.events.size() && !trobat) {
+//                                if (events.events.get(count).name.equals(selectedEvent.name)) {
+//                                    trobat = true;
+//                                    events.events.remove(count);
+//                                    selectedEvent = null;
+//                                    RVadapter.refreshRV(events.events);
+//                                } else
+//                                    count++;
+//                            }
                         })
                         .setNegativeButton(getString(R.string.no), null)
                         .show();
@@ -198,18 +209,19 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     @Override
     public void onSelectedData(EventBlock newEvent) {
         if (newEvent.id != 0) {
-            if(horaris.events.stream().anyMatch(eventBlock -> eventBlock.id == newEvent.id)){
-                EventBlock eventBlock = horaris.events.stream().filter(eb -> eb.id == newEvent.id).findFirst().get();
-                horaris.events.remove(eventBlock);
+            if(events.events.stream().anyMatch(eventBlock -> eventBlock.id == newEvent.id)){
+                EventBlock eventBlock = events.events.stream().filter(eb -> eb.id == newEvent.id).findFirst().get();
+                events.events.remove(eventBlock);
             }
         }
-        horaris.events.add(newEvent);
+        events.events.add(newEvent);
 
         canvis = 1;
+        RVadapter.refreshRV(events.events);
 
-        RVadapter = new RV_Adapter(EventsActivity.this, horaris.events);
-
-        RV_eventList.setAdapter(RVadapter);
+//        RVadapter = new RV_Adapter(EventsActivity.this, events.events);
+//
+//        RV_eventList.setAdapter(RVadapter);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
@@ -221,6 +233,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             mContext = context;
             eventAdapterList = list;
             mInflater = LayoutInflater.from(mContext);
+        }
+
+        public void refreshRV(List<EventBlock> list){
+            eventAdapterList = list;
+            notifyDataSetChanged();
         }
 
         @NonNull

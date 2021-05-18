@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -83,6 +84,7 @@ public class GeoLocWorker extends Worker {
 
             float oldAccuracy = 100;
             while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
+                Looper.prepare();
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
                 iterations++;
             }

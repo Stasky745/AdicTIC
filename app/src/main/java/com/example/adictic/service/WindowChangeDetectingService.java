@@ -98,7 +98,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private void fetchDades() {
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
         if(sharedPreferences.contains("userId")) {
-            Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(sharedPreferences.getLong("userId", -1));
+            long idChild = sharedPreferences.getLong("userId", -1);
+            Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(idChild);
             call.enqueue(new Callback<BlockedLimitedLists>() {
                 @Override
                 public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
@@ -114,6 +115,21 @@ public class WindowChangeDetectingService extends AccessibilityService {
             });
 
             Funcions.checkHoraris(getApplicationContext());
+
+            Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
+            call2.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
+                    if(response.isSuccessful() && response.body() != null){
+                        sharedPreferences.edit().putBoolean("blockedDevice",response.body()).apply();
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
+
+                }
+            });
         }
     }
 

@@ -49,9 +49,10 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.EventBlock;
+import com.example.adictic.entity.EventsAPI;
 import com.example.adictic.entity.FreeUseApp;
 import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.entity.Horaris;
+import com.example.adictic.entity.HorarisAPI;
 import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.entity.LimitedApps;
@@ -72,7 +73,6 @@ import com.example.adictic.service.WindowChangeDetectingService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 
 import java.io.BufferedReader;
@@ -109,6 +109,24 @@ import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT
 public class Funcions {
     private final static String TAG = "Funcions";
 
+    public static String formatHora(int hora, int min){
+        String res = "";
+
+        if(hora < 10)
+            res += "0"+hora;
+        else
+            res += hora;
+
+        res += ":";
+
+        if(min < 10)
+            res += "0"+min;
+        else
+            res += min;
+
+        return res;
+    }
+
     public static String date2String(int dia, int mes, int any) {
         String data;
         if (dia < 10) data = "0" + dia + "-";
@@ -132,32 +150,37 @@ public class Funcions {
     }
 
     public static void checkHoraris(Context ctx) {
+        Log.d(TAG,"Check Horaris");
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
 
         TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
 
         assert sharedPreferences != null;
-        Call<Horaris> call = mTodoService.getHoraris(sharedPreferences.getLong("idUser",-1));
 
-        call.enqueue(new Callback<Horaris>() {
+        // Agafem els horaris de la nit i Events
+        Call<HorarisEvents> call = mTodoService.getHorarisEvents(sharedPreferences.getLong("idUser",-1));
+        call.enqueue(new Callback<HorarisEvents>() {
             @Override
-            public void onResponse(@NonNull Call<Horaris> call, @NonNull Response<Horaris> response) {
+            public void onResponse(@NonNull Call<HorarisEvents> call, @NonNull Response<HorarisEvents> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if(response.body().horarisNits != null)
-                        write2File(ctx, response.body().horarisNits);
+                    if(response.body().horarisNit != null && !response.body().horarisNit.isEmpty())
+                        write2File(ctx, response.body().horarisNit);
+                    else
+                        clearFile(ctx,Constants.FILE_HORARIS_NIT);
 
-                    if(response.body().events != null)
-                        write2File(ctx,response.body().events);
+                    if(response.body().events != null && !response.body().events.isEmpty())
+                        write2File(ctx, response.body().events);
+                    else
+                        clearFile(ctx,Constants.FILE_EVENT_BLOCK);
 
+                    // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
                     startRestartEventsWorker24h(ctx);
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<Horaris> call, @NonNull Throwable t) {
-
-            }
+            public void onFailure(@NonNull Call<HorarisEvents> call, @NonNull Throwable t) { }
         });
     }
 
@@ -230,7 +253,7 @@ public class Funcions {
         DateTime dateTime = new DateTime()
                 .withMillisOfDay(millis);
 
-        return dateTime.getHourOfDay() + ":" + dateTime.getMinuteOfHour();
+        return formatHora(dateTime.getHourOfDay(), dateTime.getMinuteOfHour());
     }
 
     // To check if Admin Permissions are on
@@ -806,6 +829,11 @@ public class Funcions {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void clearFile(Context mCtx, String filename){
+        File file = new File(mCtx.getFilesDir(), filename);
+        file.delete();
     }
 
     public static <T> void write2File(Context mCtx, List<T> list){
