@@ -39,11 +39,7 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-        sharedPreferences.edit().putBoolean("debug",getIntent().getBooleanExtra("debug",false)).apply();
         setContentView(R.layout.activity_splash_screen);
-
     }
 
     @Override
