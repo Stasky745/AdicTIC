@@ -71,7 +71,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         assert sharedPreferences != null;
-        if(sharedPreferences.getBoolean("isTutor",false)) {
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             disableSelf();
         }
         else {
@@ -97,8 +97,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     private void fetchDades() {
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-        if(sharedPreferences.contains("userId")) {
-            long idChild = sharedPreferences.getLong("userId", -1);
+        if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
+            long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
             Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(idChild);
             call.enqueue(new Callback<BlockedLimitedLists>() {
                 @Override
@@ -121,7 +121,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 @Override
                 public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
                     if(response.isSuccessful() && response.body() != null){
-                        sharedPreferences.edit().putBoolean("blockedDevice",response.body()).apply();
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
                     }
                 }
 
@@ -139,7 +139,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
             // Si és FreeUse, tornem sense fer res
-            if(sharedPreferences.getBoolean("freeUse",false)){
+            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE,false)){
                 Log.d(TAG, "Not FreeUse, return.");
                 return;
             }
@@ -154,7 +154,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = sharedPreferences.getBoolean("blockedDevice",false) || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+            boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false) || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
 
             int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
 
@@ -206,10 +206,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
                             ensenyarBlockScreenActivity();
                         }
 
-                        Log.i("LiveApp", sharedPreferences.getBoolean("liveApp",false) +
-                                "   idChild: " + sharedPreferences.getLong("idUser",-1));
+                        Log.i("LiveApp", sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP,false) +
+                                "   idChild: " + sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
 
-                        if (sharedPreferences.getBoolean("liveApp",false)) {
+                        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP,false)) {
                             enviarLiveApp();
                         }
                     }
@@ -224,7 +224,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         liveApp.appName = lastActivity;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-        Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong("idUser",-1), liveApp);
+        Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
@@ -235,7 +235,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     private void ensenyarBlockScreenActivity() {
-        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong("idUser",-1), lastPackage);
+        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), lastPackage);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
@@ -271,7 +271,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
         if (!blackListLiveApp.contains(lastPackage)) {
-            Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong("idUser",-1), liveApp);
+            Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
