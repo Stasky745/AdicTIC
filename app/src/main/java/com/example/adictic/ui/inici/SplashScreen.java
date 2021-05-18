@@ -39,11 +39,7 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-        sharedPreferences.edit().putBoolean("debug",getIntent().getBooleanExtra("debug",false)).apply();
         setContentView(R.layout.activity_splash_screen);
-
     }
 
     @Override
@@ -153,7 +149,8 @@ public class SplashScreen extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
         }
         String lang = sharedPreferences.getString("language", "none");

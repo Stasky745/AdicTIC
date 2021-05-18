@@ -239,7 +239,7 @@ public class GraphsFragment extends Fragment {
                 Intent i = new Intent(getActivity(), DayUsageActivity.class);
                 i.putExtra("idChild", idChild);
                 i.putExtra("day", day);
-                i.putExtra("month", month - 1);
+                i.putExtra("month", month);
                 i.putExtra("year", currentYear);
                 startActivity(i);
             }
