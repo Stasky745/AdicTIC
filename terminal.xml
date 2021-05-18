@@ -1,0 +1,5 @@
+<application>
+  <component name="TerminalOptionsProvider">
+    <option name="myShellPath" value="P:\PortableApps\PortableApps\Cmder\cmder_shell.bat" />
+  </component>
+</application>
