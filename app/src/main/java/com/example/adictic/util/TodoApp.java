@@ -3,6 +3,7 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.example.adictic.BuildConfig;
 import com.example.adictic.rest.TodoApi;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
@@ -51,15 +52,20 @@ public class TodoApp extends Application {
 
     public OkHttpClient getOkHttpClient() {
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        if(BuildConfig.DEBUG) {
+            HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            httpClient.addInterceptor(interceptor);
+        }
 
         ClearableCookieJar cookieJar =
                 new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
 
-        return new OkHttpClient.Builder()
+        return httpClient
                 .cookieJar(cookieJar)
-                .addInterceptor(interceptor)
                 .build();
     }
 }
