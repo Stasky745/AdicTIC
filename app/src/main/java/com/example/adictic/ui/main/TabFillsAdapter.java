@@ -11,7 +11,6 @@ import com.example.adictic.entity.FillNom;
 import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class TabFillsAdapter extends FragmentStateAdapter {
     private final ArrayList<FillNom> fills;
