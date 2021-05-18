@@ -17,6 +17,7 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -132,7 +133,7 @@ public class GeoLocWorker extends Worker {
         SimpleDateFormat dateFormat = new SimpleDateFormat(CURRENT_TIME_FORMAT, Locale.getDefault());
         fill.hora = dateFormat.format(Calendar.getInstance().getTime());
 
-        retrofit2.Call<String> call = mTodoService.postCurrentLocation(sharedPreferences.getLong("idUser",-1), fill);
+        retrofit2.Call<String> call = mTodoService.postCurrentLocation(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), fill);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {

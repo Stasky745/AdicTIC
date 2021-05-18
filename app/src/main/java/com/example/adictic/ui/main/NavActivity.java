@@ -9,9 +9,26 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.FillNom;
+import com.example.adictic.entity.LiveApp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class NavActivity extends AppCompatActivity {
+
+    public final Integer tempsPerActu = 5 * 60 * 1000;
+
+    public TreeMap<Long, Long> mainParent_lastAppUsedUpdate = new TreeMap<>();
+    public TreeMap<Long, LiveApp> mainParent_lastAppUsed = new TreeMap<>();;
+    public TreeMap<Long, Long> mainParent_lastUsageChartUpdate = new TreeMap<>();;
+    public TreeMap<Long, Map<String, Long>> mainParent_usageChart = new TreeMap<>();;
+    public TreeMap<Long, Long> mainParent_totalUsageTime = new TreeMap<>();;
+
+    public ArrayList<FillNom> homeParent_childs = null;
+    public Long homeParent_lastChildsUpdate = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

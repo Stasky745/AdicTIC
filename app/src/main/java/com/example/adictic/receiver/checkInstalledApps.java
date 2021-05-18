@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -52,7 +53,7 @@ public class checkInstalledApps extends BroadcastReceiver {
                 appInfo.category = applicationInfo.category;
             }
 
-            Call<String> call = mTodoService.postAppInstalled(sharedPreferences.getLong("userId",-1),appInfo);
+            Call<String> call = mTodoService.postAppInstalled(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1),appInfo);
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -71,7 +72,7 @@ public class checkInstalledApps extends BroadcastReceiver {
     }
 
     private void enviarAppUninstall(String pkgName){
-        Call<String> call = mTodoService.postAppUninstalled(sharedPreferences.getLong("userId",-1),pkgName);
+        Call<String> call = mTodoService.postAppUninstalled(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1),pkgName);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
