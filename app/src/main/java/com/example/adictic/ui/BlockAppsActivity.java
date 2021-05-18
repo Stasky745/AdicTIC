@@ -32,7 +32,6 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +106,15 @@ public class BlockAppsActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.isSuccessful()) setRecyclerView();
+                        if (response.isSuccessful()) {
+                            for(BlockAppEntity blockedApp : blockAppList){
+                                if(selectedApps.contains(blockedApp.pkgName))
+                                    blockedApp.appTime = 0L;
+                            }
+                            Collections.sort(blockAppList);
+                            selectedApps.clear();
+                            ET_Search.setText("");
+                        }
                     }
 
                     @Override
@@ -132,7 +139,15 @@ public class BlockAppsActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.isSuccessful()) setRecyclerView();
+                        if (response.isSuccessful()) {
+                            for(BlockAppEntity blockedApp : blockAppList){
+                                if(selectedApps.contains(blockedApp.pkgName))
+                                    blockedApp.appTime = -1L;
+                            }
+                            Collections.sort(blockAppList);
+                            selectedApps.clear();
+                            ET_Search.setText("");
+                        }
                     }
 
                     @Override
@@ -155,7 +170,15 @@ public class BlockAppsActivity extends AppCompatActivity {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    if (response.isSuccessful()) setRecyclerView();
+                    if (response.isSuccessful()) {
+                        for(BlockAppEntity blockedApp : blockAppList){
+                            if(selectedApps.contains(blockedApp.pkgName))
+                                blockedApp.appTime = time;
+                        }
+                        Collections.sort(blockAppList);
+                        selectedApps.clear();
+                        ET_Search.setText("");
+                    }
                 }
 
                 @Override
@@ -241,6 +264,11 @@ public class BlockAppsActivity extends AppCompatActivity {
             mInflater = LayoutInflater.from(mContext);
         }
 
+        public void updateList(List<BlockAppEntity> bList){
+            notifyDataSetChanged();
+            blockAppList = bList;
+        }
+
         @NonNull
         @Override
         public RV_Adapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -284,10 +312,11 @@ public class BlockAppsActivity extends AppCompatActivity {
                 if(pairTime.first == 0)
                     holder.TV_appMaxTime.setText(getString(R.string.mins, pairTime.second));
                 else if(pairTime.second == 0)
-                    holder.TV_appMaxTime.setText(getString(R.string.hrs, pairTime.second));
+                    holder.TV_appMaxTime.setText(getString(R.string.hrs, pairTime.first));
                 else
                     holder.TV_appMaxTime.setText(getString(R.string.hours_endl_minutes, pairTime.first, pairTime.second));
 
+                holder.TV_appMaxTime.setVisibility(View.VISIBLE);
                 holder.IV_block.setVisibility(View.GONE);
             } else if (blockedApp.appTime == 0) {
                 holder.TV_appMaxTime.setVisibility(View.GONE);

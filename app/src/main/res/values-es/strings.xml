@@ -154,7 +154,7 @@
     <string name="weekend"> Fin de semana </string>
 
     <string name="wake_up"> Despertar: </string>
-    <string name="sleep"> Adormecer: </string>
+    <string name="sleep"> Dormir: </string>
 
     <string name="wake_up_hint"> Hora de despertar </string>
     <string name="sleep_hint"> "Hora de bloquear" </string>

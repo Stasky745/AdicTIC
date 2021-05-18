@@ -96,6 +96,7 @@ public class ChatFragment extends Fragment {
         mTodoService = ((TodoApp) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
+        assert sharedPreferences != null;
         myId = sharedPreferences.getLong("userId", -1);
 
         setViews();
@@ -408,11 +409,7 @@ public class ChatFragment extends Fragment {
 
                 DateTime dateTime = new DateTime(mes.createdAt);
                 // Format the stored timestamp into a readable String using method.
-                String time = "";
-                if (dateTime.getHourOfDay() < 10) time += "0";
-                time += dateTime.getHourOfDay() + ":";
-                if (dateTime.getMinuteOfDay() < 10) time += "0";
-                time += dateTime.getMinuteOfDay();
+                String time = Funcions.formatHora(dateTime.getHourOfDay(),dateTime.getMinuteOfHour());
                 timeText.setText(time);
             }
         }

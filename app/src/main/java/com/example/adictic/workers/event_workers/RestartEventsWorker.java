@@ -38,6 +38,10 @@ public class RestartEventsWorker extends Worker {
         WorkManager.getInstance(getApplicationContext())
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
+        // Posem les dades dels events a 0
+        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_ACTIVE_EVENTS,0).apply();
+        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false).apply();
+
         // Agafem els events del dia actual
         List<EventBlock> eventsList = Funcions.readFromFile(getApplicationContext(),Constants.FILE_EVENT_BLOCK,false);
         List<HorarisNit> horarisNitList = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
@@ -98,7 +102,7 @@ public class RestartEventsWorker extends Worker {
 
         // Si existeixen HORARISNIT
         if(horarisNitList != null && !horarisNitList.isEmpty()){
-            HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.idDia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
+            HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
             long now = DateTime.now().getMillisOfDay();
 
             Log.d(TAG,"Now=" + now + " | Despertar=" + avui.despertar + " | Dormir=" + avui.dormir);

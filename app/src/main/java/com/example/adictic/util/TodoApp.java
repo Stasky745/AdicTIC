@@ -32,7 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TodoApp extends Application {
 
-    TodoApi mTodoService;
+    private TodoApi mTodoService;
     private static SharedPreferences sharedPreferences = null;
 
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
