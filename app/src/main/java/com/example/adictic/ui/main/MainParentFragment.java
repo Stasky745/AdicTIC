@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,8 +52,10 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -66,6 +66,7 @@ public class MainParentFragment extends Fragment {
 
     private final static String TAG = "MainParentFragment";
 
+    private NavActivity parentActivity;
     private TodoApi mTodoService;
     private long idChildSelected = -1;
     private View root;
@@ -99,8 +100,8 @@ public class MainParentFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.main_parent, container, false);
-        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
-
+        parentActivity = (NavActivity) getActivity();
+        mTodoService = ((TodoApp) Objects.requireNonNull(parentActivity).getApplication()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
@@ -116,41 +117,51 @@ public class MainParentFragment extends Fragment {
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             getStats();
         else
-            makeGraph(Funcions.getGeneralUsages(getActivity(),-1, -1));
+            makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
+
 
         return root;
     }
 
     private void setLastLiveApp(){
-        Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
-        call.enqueue(new Callback<LiveApp>() {
-            @Override
-            public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
-                if(response.isSuccessful() && response.body() != null){
-                    LiveApp liveApp = response.body();
-                    Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
-
-                    TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-
-
-                    DateTime hora = new DateTime(liveApp.time);
-                    String liveAppText;
-                    DateTimeFormatter fmt;
-                    if(hora.getDayOfYear() == DateTime.now().getDayOfYear()) {
-                        fmt = DateTimeFormat.forPattern("HH:mm");
+        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected)) setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
+        //Fer-ho si fa més de 5 minuts que no hem actualitzat.
+        if(!parentActivity.mainParent_lastAppUsedUpdate.containsKey(idChildSelected) ||
+                (parentActivity.mainParent_lastAppUsedUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
+            Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
+            call.enqueue(new Callback<LiveApp>() {
+                @Override
+                public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        parentActivity.mainParent_lastAppUsed.put(idChildSelected,response.body());
+                        parentActivity.mainParent_lastAppUsedUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
+                        setLiveAppMenu(response.body());
                     }
-                    else{
-                        fmt = DateTimeFormat.forPattern("dd/MM");
-                    }
-                    liveAppText = liveApp.appName + "\n" + hora.toString(fmt);
-
-                    currentApp.setText(liveAppText);
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) { }
-        });
+                @Override
+                public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) {
+                }
+            });
+        }
+    }
+
+    private void setLiveAppMenu(LiveApp liveApp){
+        Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
+
+        TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+
+        DateTime hora = new DateTime(liveApp.time);
+        String liveAppText;
+        DateTimeFormatter fmt;
+        if (hora.getDayOfYear() == DateTime.now().getDayOfYear()) {
+            fmt = DateTimeFormat.forPattern("HH:mm");
+        } else {
+            fmt = DateTimeFormat.forPattern("dd/MM");
+        }
+        liveAppText = liveApp.appName + "\n" + hora.toString(fmt);
+
+        currentApp.setText(liveAppText);
     }
 
     private void setButtons() {
@@ -324,50 +335,67 @@ public class MainParentFragment extends Fragment {
     }
 
     private void getStats() {
-        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
-        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
-        call.enqueue(new Callback<Collection<GeneralUsage>>() {
-            @Override
-            public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Collection<GeneralUsage> collection = response.body();
-                    Funcions.canviarMesosDeServidor(collection);
-                    if(collection.isEmpty()){
-                        root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
-                        root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+
+        if (parentActivity.mainParent_usageChart.containsKey(idChildSelected) && parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty()) {
+            root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
+            root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+        } else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected)) setUsageMenu();
+
+        if(!parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
+                (parentActivity.mainParent_lastUsageChartUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
+            String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
+            Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
+            call.enqueue(new Callback<Collection<GeneralUsage>>() {
+                @Override
+                public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Collection<GeneralUsage> collection = response.body();
+                        Funcions.canviarMesosDeServidor(collection);
+                        makeGraph(collection);
+                        parentActivity.mainParent_lastUsageChartUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
+                    } else {
+                        Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                     }
-                    else makeGraph(collection);
-                } else {
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
-                Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 
     private void makeGraph(Collection<GeneralUsage> genericAppUsage) {
-        pieChart = root.findViewById(R.id.Ch_Pie);
-        long totalUsageTime = 0;
+        if (genericAppUsage.isEmpty()) {
+            root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
+            root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+            parentActivity.mainParent_usageChart.put(idChildSelected, Collections.emptyMap());
+        } else {
+            long totalUsageTime = 0;
 
-        Map<String, Long> mapUsage = new HashMap<>();
+            Map<String, Long> mapUsage = new HashMap<>();
 
-        for (GeneralUsage gu : genericAppUsage) {
-            if (gu.totalTime > 0) {
-                totalUsageTime += gu.totalTime;
-                for (AppUsage au : gu.usage) {
-                    if (mapUsage.containsKey(au.app.appName))
-                        mapUsage.put(au.app.appName, mapUsage.get(au.app.appName) + au.totalTime);
-                    else mapUsage.put(au.app.appName, au.totalTime);
+            for (GeneralUsage gu : genericAppUsage) {
+                if (gu.totalTime > 0) {
+                    totalUsageTime += gu.totalTime;
+                    for (AppUsage au : gu.usage) {
+                        if (mapUsage.containsKey(au.app.appName))
+                            mapUsage.put(au.app.appName, mapUsage.get(au.app.appName) + au.totalTime);
+                        else mapUsage.put(au.app.appName, au.totalTime);
+                    }
                 }
             }
-        }
 
-        setMascot(totalUsageTime);
-        setPieChart(mapUsage, totalUsageTime);
+            parentActivity.mainParent_usageChart.put(idChildSelected,mapUsage);
+            parentActivity.mainParent_totalUsageTime.put(idChildSelected,totalUsageTime);
+            setUsageMenu();
+        }
+    }
+
+    private void setUsageMenu(){
+        setMascot(parentActivity.mainParent_totalUsageTime.get(idChildSelected));
+        setPieChart(parentActivity.mainParent_usageChart.get(idChildSelected), parentActivity.mainParent_totalUsageTime.get(idChildSelected));
     }
 
     private void setMascot(long totalUsageTime) {
@@ -388,6 +416,7 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setPieChart(Map<String, Long> mapUsage, long totalUsageTime) {
+        pieChart = root.findViewById(R.id.Ch_Pie);
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
         for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {

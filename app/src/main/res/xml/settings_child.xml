@@ -8,15 +8,15 @@
         app:key="setting_change_language"
         app:title="@string/change_language" />
 
-    <ListPreference
-        app:entries="@array/themes"
-        app:entryValues="@array/themes_alias"
-        app:key="setting_change_theme"
-        app:title="@string/change_theme" />
-
     <PreferenceCategory
         app:key="pcdebug"
         app:title="Debug">
+
+        <ListPreference
+            app:entries="@array/themes"
+            app:entryValues="@array/themes_alias"
+            app:key="setting_change_theme"
+            app:title="@string/change_theme" />
 
         <Preference
             app:key="setting_pujar_informe"
