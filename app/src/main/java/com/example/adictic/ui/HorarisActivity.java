@@ -20,6 +20,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.HorarisAPI;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.HorarisNit;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
@@ -74,7 +75,7 @@ public class HorarisActivity extends AppCompatActivity {
 
         setViews();
 
-        if (sharedPreferences.getBoolean("isTutor",false)) {
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             TV_info.setVisibility(View.VISIBLE);
             setViewsTutor(true);
 
@@ -218,7 +219,7 @@ public class HorarisActivity extends AppCompatActivity {
 
         List<HorarisNit> list = new ArrayList<>();
         for (HorarisNit horarisNit : horarisNits.horarisNit){
-            if(!sharedPreferences.getBoolean("isTutor",false)){
+            if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
                 list.add(horarisNit);
             }
             if(horarisNit.dia == Calendar.MONDAY){

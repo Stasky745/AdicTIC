@@ -23,6 +23,17 @@ public class Constants {
     public static final String SHARED_PREFS_CHANGE_FREE_USE_APPS = "freeuse_apps_change";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit_change";
 
+    public static final String SHARED_PREFS_IDUSER = "idUser";
+    public static final String SHARED_PREFS_IDTUTOR = "idTutor";
+    public static final String SHARED_PREFS_ISTUTOR = "isTutor";
+    public static final String SHARED_PREFS_BLOCKEDDEVICE = "blockedDevice";
+    public static final String SHARED_PREFS_FREEUSE = "freeuse";
+    public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
+    public static final String SHARED_PREFS_LIVEAPP = "liveApp";
+
+    public static final String SHARED_PREFS_APPUSAGEWORKERUPDATE = "appUsageWorkerUpdate";
+    public static final String SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER = "lastUpdateAppUsageWorker";
+
     public static final String SHARED_PREFS_ACTIVE_EVENTS = "current_active_events";
     public static final String SHARED_PREFS_ACTIVE_HORARIS_NIT = "blockedDeviceNit";
 

@@ -35,6 +35,7 @@ import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
 import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -181,7 +182,7 @@ public class NomFill extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             if (response.isSuccessful()) {
-                                sharedPreferences.edit().putLong("idUser",fillVell.idChild).apply();
+                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
                                 if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                     NomFill.this.finish();
@@ -229,7 +230,7 @@ public class NomFill extends AppCompatActivity {
                             @Override
                             public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
                                 if (response.isSuccessful() && response.body() != null) {
-                                    sharedPreferences.edit().putLong("idUser",response.body()).apply();
+                                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
                                     if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                         NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                         NomFill.this.finish();

@@ -22,6 +22,7 @@ import com.example.adictic.entity.AdminProfile;
 import com.example.adictic.entity.UserMessage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
@@ -53,7 +54,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Agafem la nostra id
-        myId = sharedPreferences.getLong("userId",-1);
+        myId = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
 
         adminProfile = getIntent().getExtras().getParcelable("chat");
         setViews();

@@ -18,6 +18,7 @@ import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.SplashScreen;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -41,7 +42,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
-        if (!sharedPreferences.getBoolean("isTutor", false)) {
+        if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
             setPreferencesFromResource(R.xml.settings_child, rootKey);
             if(BuildConfig.DEBUG) {
                 settings_change_theme();
@@ -78,7 +79,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             Funcions.canviarMesosAServidor(gul);
 
-            Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
+            Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
 
             call.enqueue(new Callback<String>() {
                 @Override

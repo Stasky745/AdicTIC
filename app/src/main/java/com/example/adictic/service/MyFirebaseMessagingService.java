@@ -65,13 +65,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
-        long idUser;
-        if(sharedPreferences.getBoolean("isTutor",false))
-            idUser = -1;
-        else
-            idUser = sharedPreferences.getLong("idUser",-1);
+        long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+//        if(sharedPreferences.getBoolean("isTutor",false))
+//            idUser = -1;
+//        else
+//            idUser = sharedPreferences.getLong("idUser",-1);
 
-        Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, Crypt.getAES(token),0);
+        if(idUser > -1)
+            Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, token,0);
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
@@ -127,10 +128,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 assert  sharedPreferences != null;
                 if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    sharedPreferences.edit().putBoolean("blockedDevice",true).apply();
+                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                     mDPM.lockNow();
                 }
-                else sharedPreferences.edit().putBoolean("blockedDevice",false).apply();
+                else sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
 
             }
             else if (messageMap.containsKey("freeUse")) {
@@ -153,14 +154,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String s = messageMap.get("liveApp");
                 boolean active = Boolean.parseBoolean(messageMap.get("bool"));
                 assert sharedPreferences != null;
-                sharedPreferences.edit().putBoolean("liveApp",active).apply();
+                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
-                if(active && (!sharedPreferences.contains("appUsageWorkerUpdate") ||
-                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong("lastUpdateAppUsageWorker",Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
+                if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
+                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
 
                     Funcions.runUniqueAppUsageWorker(getApplicationContext());
 
-                    sharedPreferences.edit().putLong("lastUpdateAppUsageWorker", Calendar.getInstance().getTimeInMillis()).apply();
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, Calendar.getInstance().getTimeInMillis()).apply();
                 }
 
                 Log.d(TAG, "Token liveApp: " + s);
