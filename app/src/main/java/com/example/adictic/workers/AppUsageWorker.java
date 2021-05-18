@@ -61,11 +61,11 @@ public class AppUsageWorker extends Worker {
 
         ok = true;
 
-        Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong("idUser",-1), gul);
+        Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                sharedPreferences.edit().putInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+                sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR,Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
             }
 
             @Override
@@ -85,7 +85,7 @@ public class AppUsageWorker extends Worker {
             final List<AppInfo> listInstalledPkgs = getLaunchableApps();
 
             TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-            Call<String> call = mTodoService.postInstalledApps(sharedPreferences.getLong("idUser", -1), listInstalledPkgs);
+            Call<String> call = mTodoService.postInstalledApps(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1), listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {
                 @Override

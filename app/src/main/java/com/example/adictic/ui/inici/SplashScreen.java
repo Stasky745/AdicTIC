@@ -1,6 +1,5 @@
 package com.example.adictic.ui.inici;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +19,7 @@ import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
 import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.LocaleHelper;
@@ -43,7 +43,6 @@ public class SplashScreen extends AppCompatActivity {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         sharedPreferences.edit().putBoolean("debug",getIntent().getBooleanExtra("debug",false)).apply();
         setContentView(R.layout.activity_splash_screen);
-
     }
 
     @Override
@@ -55,9 +54,15 @@ public class SplashScreen extends AppCompatActivity {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
+                        Log.d(TAG, "Firebase task is unsuccessful.");
+                        SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
+                        SplashScreen.this.finish();
                         return;
                     }
                     token = task.getResult();
+
+                    Log.d(TAG,"Firebase Token: " + token);
+                    Log.d(TAG,"Firebase Token (Encrypted): " + Crypt.getAES(token));
 
                     Call<User> call = todoApi.checkWithToken(Crypt.getAES(token));
                     call.enqueue(new Callback<User>() {
@@ -66,25 +71,25 @@ public class SplashScreen extends AppCompatActivity {
 
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "Firebase Token = " + token);
-                                if (sharedPreferences.getBoolean("isTutor",false))
+                                if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
                                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                                else if (!sharedPreferences.getBoolean("isTutor",false) && sharedPreferences.getLong("userId",-1) > 0)
+                                else if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false) && sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1) > 0)
                                     mirarPermisos();
                                 else {
                                     User usuari = response.body();
                                     assert usuari != null;
 
                                     if(usuari.tutor == 1) {
-                                        sharedPreferences.edit().putBoolean("isTutor", true).apply();
-                                        sharedPreferences.edit().putLong("userId", usuari.id).apply();
+                                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR, true).apply();
+                                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, usuari.id).apply();
                                     }
                                     else {
-                                        sharedPreferences.edit().putBoolean("isTutor",false).apply();
-                                        sharedPreferences.edit().putLong("idTutor", usuari.id).apply();
+                                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR,false).apply();
+                                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDTUTOR, usuari.id).apply();
                                     }
 
                                     if (usuari.tutor == 0 && !usuari.llista.isEmpty()) {
-                                        sharedPreferences.edit().putLong("userId", usuari.llista.get(0).idChild).apply();
+                                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, usuari.llista.get(0).idChild).apply();
                                         SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
                                         SplashScreen.this.finish();
                                     } else if (usuari.tutor == 0) {
@@ -106,6 +111,7 @@ public class SplashScreen extends AppCompatActivity {
                                 }
                             } else {
                                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
+                                SplashScreen.this.finish();
                             }
                         }
 

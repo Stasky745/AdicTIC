@@ -158,7 +158,7 @@ public class Funcions {
         assert sharedPreferences != null;
 
         // Agafem els horaris de la nit i Events
-        Call<HorarisEvents> call = mTodoService.getHorarisEvents(sharedPreferences.getLong("idUser",-1));
+        Call<HorarisEvents> call = mTodoService.getHorarisEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
         call.enqueue(new Callback<HorarisEvents>() {
             @Override
             public void onResponse(@NonNull Call<HorarisEvents> call, @NonNull Response<HorarisEvents> response) {
@@ -312,7 +312,7 @@ public class Funcions {
         // Agafem dades dels últims X dies per inicialitzar dades al servidor
         cal.add(Calendar.DAY_OF_YEAR, -6);
         assert sharedPreferences != null;
-        sharedPreferences.edit().putInt("dayOfYear",cal.get(Calendar.DAY_OF_YEAR)).apply();
+        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR,cal.get(Calendar.DAY_OF_YEAR)).apply();
 
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
@@ -601,7 +601,7 @@ public class Funcions {
         // Desactivem el "freeUse"
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
         assert sharedPreferences != null;
-        sharedPreferences.edit().putBoolean("freeUse",false).apply();
+        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE,false).apply();
 
         // Agafem les dades d'ús d'avui
         List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
@@ -629,7 +629,7 @@ public class Funcions {
         // Activem el "freeUse"
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
         assert sharedPreferences != null;
-        sharedPreferences.edit().putBoolean("freeUse",true).apply();
+        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE,true).apply();
 
         // Agafem les dades d'ús d'avui
         List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);

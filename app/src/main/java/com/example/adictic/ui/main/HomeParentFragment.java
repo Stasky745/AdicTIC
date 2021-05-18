@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
@@ -48,8 +49,8 @@ public class HomeParentFragment extends Fragment {
         TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
         long idTutor;
-        if(sharedPreferences.getBoolean("isTutor",false)) idTutor = sharedPreferences.getLong("idUser",-1);
-        else idTutor = sharedPreferences.getLong("idTutor",-1);
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+        else idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR,-1);
         Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
 
         call.enqueue(new Callback<Collection<FillNom>>() {
@@ -59,11 +60,11 @@ public class HomeParentFragment extends Fragment {
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
                     // Si és l'app fill només ensenyem el fill actual
-                    if (!sharedPreferences.getBoolean("isTutor",false)) {
+                    if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
                         boolean trobat = false;
                         int i = 0;
                         while (!trobat && i < fills.size()) {
-                            if (fills.get(i).idChild == sharedPreferences.getLong("idUser",-1)) {
+                            if (fills.get(i).idChild == sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1)) {
                                 trobat = true;
                                 FillNom fill = fills.get(i);
                                 fills.clear();
