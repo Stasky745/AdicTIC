@@ -53,6 +53,8 @@ public class NoChatFragment extends Fragment {
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
+        Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
+
         assert getArguments() != null;
         hasDubte = getArguments().getBoolean("dubte");
 
