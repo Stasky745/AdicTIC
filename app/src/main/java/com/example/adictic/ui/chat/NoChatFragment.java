@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.Dubte;
+import com.example.adictic.entity.DubteLocalitzacions;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -23,7 +24,9 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -53,9 +56,8 @@ public class NoChatFragment extends Fragment {
         assert getArguments() != null;
         hasDubte = getArguments().getBoolean("dubte");
 
-        getLocalitzacions();
-
         setViews(root);
+        getInfo();
         setButton(root);
 
         return root;
@@ -90,7 +92,8 @@ public class NoChatFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_LONG).show();
+                            getActivity().finish();
                         } else {
                             Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                             toast.show();
@@ -109,12 +112,18 @@ public class NoChatFragment extends Fragment {
         });
     }
 
-    private void getLocalitzacions() {
-        Call<Collection<Localitzacio>> call = mTodoService.getLocalitzacions();
-        call.enqueue(new Callback<Collection<Localitzacio>>() {
+    private void getInfo() {
+        Call<DubteLocalitzacions> call = mTodoService.getLocalitzacionsAndOpenDubte();
+        call.enqueue(new Callback<DubteLocalitzacions>() {
             @Override
-            public void onResponse(@NonNull Call<Collection<Localitzacio>> call, @NonNull Response<Collection<Localitzacio>> response) {
-                if (response.isSuccessful() && response.body() != null) setLocalitzacions(response.body());
+            public void onResponse(@NonNull Call<DubteLocalitzacions> call, @NonNull Response<DubteLocalitzacions> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().dubte!=null) {
+                        TIET_dubteTitol.setText(response.body().dubte.titol);
+                        TIET_dubteDesc.setText(response.body().dubte.descripcio);
+                        setLocalitzacions(response.body().localitzacions, response.body().dubte.localitzacio);
+                    } else setLocalitzacions(response.body().localitzacions, Collections.emptyList());
+                }
                 else {
                     Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                     toast.show();
@@ -122,14 +131,14 @@ public class NoChatFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Collection<Localitzacio>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<DubteLocalitzacions> call, @NonNull Throwable t) {
                 Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
     }
 
-    private void setLocalitzacions(Collection<Localitzacio> localitzacions) {
+    private void setLocalitzacions(Collection<Localitzacio> localitzacions, List<Long> enabledLocations) {
         HashMap<Long,Localitzacio> localitzacioMap = new HashMap<>();
         for(Localitzacio loc : localitzacions){
             localitzacioMap.put(loc.id,loc);
@@ -143,6 +152,14 @@ public class NoChatFragment extends Fragment {
 
             CG_localitats.addView(chip);
         }
-        CG_localitats.getChildAt(0).performClick();
+        if(enabledLocations.isEmpty())
+            CG_localitats.getChildAt(0).performClick();
+        else{
+            try {
+                for (Long locIds : enabledLocations) {
+                    CG_localitats.getChildAt(((Long)(locIds-1)).intValue()).performClick();
+                }
+            } catch(IndexOutOfBoundsException ex){ ex.printStackTrace(); }
+        }
     }
 }
