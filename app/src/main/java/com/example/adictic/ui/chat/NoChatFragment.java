@@ -23,7 +23,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -65,8 +65,6 @@ public class NoChatFragment extends Fragment {
         TIET_dubteTitol = root.findViewById(R.id.TIET_dubteTitol);
         TIET_dubteDesc = root.findViewById(R.id.TIET_dubteDesc);
         CG_localitats = root.findViewById(R.id.CG_localitats);
-        CG_localitats.setSelectionRequired(true);
-        CG_localitats.setSingleSelection(false);
     }
 
     private void setButton(View root) {
@@ -132,16 +130,19 @@ public class NoChatFragment extends Fragment {
     }
 
     private void setLocalitzacions(Collection<Localitzacio> localitzacions) {
-        ((List<Localitzacio>) localitzacions).add(0, new Localitzacio((long) 0, "Online"));
+        HashMap<Long,Localitzacio> localitzacioMap = new HashMap<>();
+        for(Localitzacio loc : localitzacions){
+            localitzacioMap.put(loc.id,loc);
+        }
+
         // Create an ArrayAdapter using the string array and a default spinner layout
-        for (Localitzacio loc : localitzacions) {
+        for (Localitzacio loc : localitzacioMap.values()) {
             Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip, CG_localitats, false);
             chip.setText(loc.poblacio);
             chip.setId(loc.id.intValue());
 
-            if (chip.getId() == 0) chip.setSelected(true);
-
             CG_localitats.addView(chip);
         }
+        CG_localitats.getChildAt(0).performClick();
     }
 }
