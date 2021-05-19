@@ -66,13 +66,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
         long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
-//        if(sharedPreferences.getBoolean("isTutor",false))
-//            idUser = -1;
-//        else
-//            idUser = sharedPreferences.getLong("idUser",-1);
+        if(idUser!=-1) {
+            if (sharedPreferences.getBoolean("isTutor", false))
+                idUser = -1;
+            else
+                idUser = sharedPreferences.getLong("idUser", -1);
 
-        if(idUser > -1)
-            Funcions.runUpdateTokenWorker(getApplicationContext(),idUser, token,0);
+            Funcions.runUpdateTokenWorker(getApplicationContext(), idUser, token, 0);
+        }
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
