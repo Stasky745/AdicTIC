@@ -51,7 +51,6 @@ public class NoChatFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
-        Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
