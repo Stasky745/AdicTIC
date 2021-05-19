@@ -125,6 +125,7 @@ public class ChatFragment extends Fragment {
     private void setButtons(Activity activity) {
         ImageView sendButton = view.findViewById(R.id.IV_send);
         sendButton.setClickable(true);
+        sendButton.setFocusable(true);
         sendButton.setOnClickListener(v -> {
             EditText chatbox = view.findViewById(R.id.edittext_chatbox);
             if (!chatbox.getText().toString().isEmpty()) {

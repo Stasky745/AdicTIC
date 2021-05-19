@@ -15,6 +15,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -47,6 +48,8 @@ public class NoChatFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
+
+        Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
         assert getArguments() != null;
         hasDubte = getArguments().getBoolean("dubte");
