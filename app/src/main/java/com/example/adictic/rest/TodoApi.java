@@ -8,6 +8,7 @@ import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.ChangePassword;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.entity.Dubte;
+import com.example.adictic.entity.DubteLocalitzacions;
 import com.example.adictic.entity.EventsAPI;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.GeneralUsage;
@@ -161,6 +162,9 @@ public interface TodoApi {
 
     @GET("/poblacions")
     Call<Collection<Localitzacio>> getLocalitzacions();
+
+    @GET("/users/dubtes/poblacions")
+    Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte();
 
     @POST("/users/dubtes")
     Call<String> postDubte(@Body Dubte dubte);

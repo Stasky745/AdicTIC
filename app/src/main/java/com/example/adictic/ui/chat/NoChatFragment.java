@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.Dubte;
+import com.example.adictic.entity.DubteLocalitzacions;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
@@ -23,6 +24,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,15 +51,15 @@ public class NoChatFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
         mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
+        Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
         assert getArguments() != null;
         hasDubte = getArguments().getBoolean("dubte");
 
-        getLocalitzacions();
-
         setViews(root);
+        getInfo();
         setButton(root);
 
         return root;
@@ -66,8 +69,6 @@ public class NoChatFragment extends Fragment {
         TIET_dubteTitol = root.findViewById(R.id.TIET_dubteTitol);
         TIET_dubteDesc = root.findViewById(R.id.TIET_dubteDesc);
         CG_localitats = root.findViewById(R.id.CG_localitats);
-        CG_localitats.setSelectionRequired(true);
-        CG_localitats.setSingleSelection(false);
     }
 
     private void setButton(View root) {
@@ -93,7 +94,8 @@ public class NoChatFragment extends Fragment {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_LONG).show();
+                            getActivity().finish();
                         } else {
                             Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                             toast.show();
@@ -112,12 +114,18 @@ public class NoChatFragment extends Fragment {
         });
     }
 
-    private void getLocalitzacions() {
-        Call<Collection<Localitzacio>> call = mTodoService.getLocalitzacions();
-        call.enqueue(new Callback<Collection<Localitzacio>>() {
+    private void getInfo() {
+        Call<DubteLocalitzacions> call = mTodoService.getLocalitzacionsAndOpenDubte();
+        call.enqueue(new Callback<DubteLocalitzacions>() {
             @Override
-            public void onResponse(@NonNull Call<Collection<Localitzacio>> call, @NonNull Response<Collection<Localitzacio>> response) {
-                if (response.isSuccessful() && response.body() != null) setLocalitzacions(response.body());
+            public void onResponse(@NonNull Call<DubteLocalitzacions> call, @NonNull Response<DubteLocalitzacions> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().dubte!=null) {
+                        TIET_dubteTitol.setText(response.body().dubte.titol);
+                        TIET_dubteDesc.setText(response.body().dubte.descripcio);
+                        setLocalitzacions(response.body().localitzacions, response.body().dubte.localitzacio);
+                    } else setLocalitzacions(response.body().localitzacions, Collections.emptyList());
+                }
                 else {
                     Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
                     toast.show();
@@ -125,24 +133,35 @@ public class NoChatFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Collection<Localitzacio>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<DubteLocalitzacions> call, @NonNull Throwable t) {
                 Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
     }
 
-    private void setLocalitzacions(Collection<Localitzacio> localitzacions) {
-        ((List<Localitzacio>) localitzacions).add(0, new Localitzacio((long) 0, "Online"));
+    private void setLocalitzacions(Collection<Localitzacio> localitzacions, List<Long> enabledLocations) {
+        HashMap<Long,Localitzacio> localitzacioMap = new HashMap<>();
+        for(Localitzacio loc : localitzacions){
+            localitzacioMap.put(loc.id,loc);
+        }
+
         // Create an ArrayAdapter using the string array and a default spinner layout
-        for (Localitzacio loc : localitzacions) {
+        for (Localitzacio loc : localitzacioMap.values()) {
             Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip, CG_localitats, false);
             chip.setText(loc.poblacio);
             chip.setId(loc.id.intValue());
 
-            if (chip.getId() == 0) chip.setSelected(true);
-
             CG_localitats.addView(chip);
+        }
+        if(enabledLocations.isEmpty())
+            CG_localitats.getChildAt(0).performClick();
+        else{
+            try {
+                for (Long locIds : enabledLocations) {
+                    CG_localitats.getChildAt(((Long)(locIds-1)).intValue()).performClick();
+                }
+            } catch(IndexOutOfBoundsException ex){ ex.printStackTrace(); }
         }
     }
 }
