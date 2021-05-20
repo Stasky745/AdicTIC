@@ -36,9 +36,12 @@ public class TodoApp extends Application {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .create();
 
+        String URL = Global.BASE_URL_RELEASE;
+        if(BuildConfig.DEBUG) URL = Global.BASE_URL_DEBUG;
+
         Retrofit retrofit = new Retrofit.Builder()
                 .client(httpClient)
-                .baseUrl(Global.BASE_URL_PORTFORWARDING)
+                .baseUrl(URL)
                 //.baseUrl(Global.BASE_URL_GENYMOTION)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
