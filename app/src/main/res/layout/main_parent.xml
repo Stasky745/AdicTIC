@@ -28,14 +28,15 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
         app:layout_constraintEnd_toEndOf="@+id/BT_BlockDevice"
-        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice" />
+        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice"
+        app:layout_constraintTop_toBottomOf="@+id/BT_BlockDevice" />
 
     <Button
         android:id="@+id/BT_BlockDevice"
         style="@style/ButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:text="@string/block_device"
         android:textAllCaps="false"
