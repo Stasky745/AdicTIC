@@ -2,8 +2,11 @@ package com.example.adictic.util;
 
 import android.graphics.Color;
 
+import java.util.Arrays;
+
 import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
+import static java.lang.Math.round;
 
 public class Constants {
     public static final long HOUR_IN_MILLIS = 3600000;
@@ -53,4 +56,27 @@ public class Constants {
     public static int DANGEROUS_USAGE_DAY = 5;
     public static int CORRECT_USAGE_APP = 2;
     public static int DANGEROUS_USAGE_APP = 4;
+
+    public static final long[] AGE_TIMES_MILLIS = createAgeTimesMillis();
+    public static final double[] AGE_TIMES = createAgeTimes();
+
+    private static long[] createAgeTimesMillis(){
+        long[] array = new long[30];
+        Arrays.fill(array, 0, 2, 0);
+        Arrays.fill(array, 2, 12, HOUR_IN_MILLIS);
+        Arrays.fill(array, 12, 15, Math.round(1.5 * HOUR_IN_MILLIS));
+        Arrays.fill(array, 15, 30, 2 * HOUR_IN_MILLIS);
+
+        return array;
+    }
+
+    private static double[] createAgeTimes(){
+        double[] array = new double[30];
+        Arrays.fill(array, 0, 2, 0);
+        Arrays.fill(array, 2, 12, 1);
+        Arrays.fill(array, 12, 15, 1.5);
+        Arrays.fill(array, 15, 30, 2);
+
+        return array;
+    }
 }

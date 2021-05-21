@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -298,6 +299,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return bmp;
     }
 
+    @SuppressWarnings("deprecation")
     private void sendIcon(List<String> list) {
         for (String s : list) {
             try {
@@ -306,13 +308,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 Bitmap bitmap = getBitmapFromDrawable(icon);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                    bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,100,stream);
+                else{
+                    bitmap.compress(Bitmap.CompressFormat.WEBP,100,stream);
+                }
+
                 byte[] byteArray = stream.toByteArray();
 
                 RequestBody requestFile =
                         RequestBody.create(
-                                MediaType.parse("image/png"),
-                                byteArray
+                                byteArray,
+                                MediaType.parse("image/webp")
                         );
 
                 // MultipartBody.Part is used to send also the actual file name
