@@ -1,6 +1,7 @@
 package com.example.adictic.ui.informe;
 
 import android.app.AlertDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.TimesAccessedDay;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
@@ -39,7 +41,8 @@ import retrofit2.Response;
 
 public class InformeActivity extends AppCompatActivity {
 
-    long idChild;
+    private long idChild;
+    private int age;
     private TodoApi mTodoService;
     private TabsAdapter tabsAdapter;
     private ViewPager viewPager;
@@ -150,7 +153,12 @@ public class InformeActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    tabsAdapter.setAge(response.body());
+                    age = response.body();
+
+                    /* Assegurem que l'edat no surt de rang **/
+                    age = Math.min(Math.abs(age), 29);
+
+                    tabsAdapter.setAge(age);
                 }
             }
 
@@ -216,7 +224,6 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void setPercentages(Collection<GeneralUsage> col) {
-        long totalTime = col.size() * 24L * 60 * 60 * 1000;
         long totalUsageTime = 0;
         for (GeneralUsage gu : col) {
             totalUsageTime += gu.totalTime;
@@ -225,20 +232,26 @@ public class InformeActivity extends AppCompatActivity {
         tabsAdapter.setTimes(totalUsageTime);
         viewPager.setAdapter(tabsAdapter);
 
-        percentage = totalUsageTime * 100.0f / totalTime;
+        long totalRecomanat = col.size() * Constants.AGE_TIMES_MILLIS[age];
+        percentage = totalUsageTime * 100.0f / totalRecomanat;
+        if(percentage>100)
+            TV_percentageUsage.setTextColor(getColor(R.color.vermell));
         TV_percentageUsage.setText(getString(R.string.percentage, Math.round(percentage)));
 
         Pair<Integer, Integer> usagePair = Funcions.millisToString(totalUsageTime);
-        Pair<Integer, Integer> totalTimePair = Funcions.millisToString(totalTime);
+        Pair<Integer, Integer> totalTimePair = Funcions.millisToString(totalRecomanat);
 
-
-        String first;
-        if (usagePair.first == 0) {
+        String first, second;
+        if (usagePair.first == 0)
             first = getString(R.string.mins, usagePair.second);
-        } else {
+        else
             first = getString(R.string.hours_minutes, usagePair.first, usagePair.second);
-        }
-        String second = getString(R.string.hrs, totalTimePair.first);
+
+        if (totalTimePair.second == 0)
+            second = getString(R.string.hrs, totalTimePair.first);
+        else
+            second = getString(R.string.hours_minutes, totalTimePair.first, totalTimePair.second); //Pot ser que s'hagi de posar 30 com a valor predefinit en els minuts
+
         TV_totalUsage.setText(getString(R.string.comp, first, second));
     }
 
@@ -256,11 +269,7 @@ public class InformeActivity extends AppCompatActivity {
                     monthList.sort(Collections.reverseOrder());
                     currentMonth = Collections.min(monthList);
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, currentMonth);
-                    String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                    String buttonTag = monthName + " " + currentYear;
-                    dateButton.setText(buttonTag);
+                    setButtonText();
 
                     btnMonth();
                 }, currentYear, currentMonth);
@@ -278,16 +287,25 @@ public class InformeActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void setButtonText() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, currentMonth);
+        String monthName;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG_STANDALONE, Locale.getDefault());
+        else
+            monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+
+        String buttonTag = monthName + " " + currentYear;
+        dateButton.setText(buttonTag);
+    }
+
     private void btnMonth() {
         MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
                 (selectedMonth, selectedYear) -> {
                     currentMonth = selectedMonth;
                     getStats(currentMonth, currentYear);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, currentMonth);
-                    String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                    String buttonTag = monthName + " " + currentYear;
-                    dateButton.setText(buttonTag);
+                    setButtonText();
                 }, currentYear, currentMonth);
 
         int minMonth = Collections.min(monthList);
@@ -343,11 +361,7 @@ public class InformeActivity extends AppCompatActivity {
 
                         currentMonth = Collections.max(monthList);
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.MONTH, currentMonth);
-                        String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                        String buttonTag = monthName + " " + currentYear;
-                        dateButton.setText(buttonTag);
+                        setButtonText();
 
                         getStats(currentMonth, currentYear);
                     }
