@@ -43,6 +43,7 @@ import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.AppUsage;
@@ -138,7 +139,11 @@ public class Funcions {
     }
 
     public static void setIconDrawable(Context ctx, String pkgName, final ImageView d) {
-        Uri imageUri = Uri.parse(Global.BASE_URL_PORTFORWARDING).buildUpon()
+
+        String URL = Global.BASE_URL_RELEASE;
+        if(BuildConfig.DEBUG) URL = Global.BASE_URL_DEBUG;
+
+        Uri imageUri = Uri.parse(URL).buildUpon()
                 .appendPath("icons")
                 .appendPath(pkgName)
                 .build();
