@@ -1,6 +1,7 @@
 package com.example.adictic.ui.informe;
 
 import android.app.AlertDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -268,11 +269,7 @@ public class InformeActivity extends AppCompatActivity {
                     monthList.sort(Collections.reverseOrder());
                     currentMonth = Collections.min(monthList);
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, currentMonth);
-                    String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                    String buttonTag = monthName + " " + currentYear;
-                    dateButton.setText(buttonTag);
+                    setButtonText();
 
                     btnMonth();
                 }, currentYear, currentMonth);
@@ -290,16 +287,25 @@ public class InformeActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void setButtonText() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, currentMonth);
+        String monthName;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG_STANDALONE, Locale.getDefault());
+        else
+            monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+
+        String buttonTag = monthName + " " + currentYear;
+        dateButton.setText(buttonTag);
+    }
+
     private void btnMonth() {
         MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(this,
                 (selectedMonth, selectedYear) -> {
                     currentMonth = selectedMonth;
                     getStats(currentMonth, currentYear);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.MONTH, currentMonth);
-                    String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                    String buttonTag = monthName + " " + currentYear;
-                    dateButton.setText(buttonTag);
+                    setButtonText();
                 }, currentYear, currentMonth);
 
         int minMonth = Collections.min(monthList);
@@ -355,11 +361,7 @@ public class InformeActivity extends AppCompatActivity {
 
                         currentMonth = Collections.max(monthList);
 
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(Calendar.MONTH, currentMonth);
-                        String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-                        String buttonTag = monthName + " " + currentYear;
-                        dateButton.setText(buttonTag);
+                        setButtonText();
 
                         getStats(currentMonth, currentYear);
                     }
