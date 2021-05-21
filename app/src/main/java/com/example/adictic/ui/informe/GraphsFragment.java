@@ -3,6 +3,7 @@ package com.example.adictic.ui.informe;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -20,6 +21,8 @@ import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -141,23 +144,30 @@ public class GraphsFragment extends Fragment {
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
         for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {
-            if (entry.getValue() >= totalUsageTime * 0.05)
+            // Si hi ha poques entrades no crear "Altres"
+            if(mapUsage.size() < 5)
                 yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
-            else {
-                others += entry.getValue();
+            else{
+                if (entry.getValue() >= totalUsageTime * 0.05)
+                    yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+                else {
+                    others += entry.getValue();
+                }
             }
         }
 
+        if(!(mapUsage.size() < 5))
         yValues.add(new PieEntry(others, "Altres"));
 
-        PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
+        PieDataSet pieDataSet = new PieDataSet(yValues,"");
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setSelectionShift(5f);
         pieDataSet.setColors(Constants.GRAPH_COLORS);
 
         PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new PercentFormatter());
-        pieData.setValueTextSize(10);
+        pieData.setValueFormatter(new PercentFormatter(pieChart));
+        pieData.setValueTextSize(12);
+        //pieData.setValueTypeface(Typeface.DEFAULT_BOLD);
 
         pieChart.setData(pieData);
         pieChart.setUsePercentValues(true);
@@ -171,14 +181,21 @@ public class GraphsFragment extends Fragment {
         pieChart.animateY(1000);
 
         pieChart.setDrawEntryLabels(false);
-        pieChart.getLegend().setEnabled(false);
+        pieChart.getLegend().setEnabled(true);
+        pieChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
+        pieChart.getLegend().setDirection(Legend.LegendDirection.LEFT_TO_RIGHT);
+        pieChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        pieChart.getLegend().setOrientation(Legend.LegendOrientation.VERTICAL);
+        pieChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 final PieEntry pe = (PieEntry) e;
 
                 TV_pieApp.setText(pe.getLabel());
-
+                TV_pieApp.setTextSize(20);
+                TV_pieApp.setTypeface(Typeface.DEFAULT_BOLD);
 
                 Pair<Integer, Integer> appTime = Funcions.millisToString(e.getY());
 
@@ -191,6 +208,8 @@ public class GraphsFragment extends Fragment {
             @Override
             public void onNothingSelected() {
                 TV_pieApp.setText(getResources().getString(R.string.press_pie_chart));
+                TV_pieApp.setTextSize(14);
+                TV_pieApp.setTypeface(Typeface.DEFAULT);
                 pieChart.setCenterText("");
             }
         });

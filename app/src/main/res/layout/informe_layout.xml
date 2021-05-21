@@ -52,6 +52,7 @@
                 android:text="@string/press_pie_chart"
                 android:textColor="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="30dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/CG_category" />
 

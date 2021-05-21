@@ -62,6 +62,7 @@ import static android.content.Intent.ACTION_VIEW;
 
 /**
  * https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java
+ * https://developer.android.com/training/location/retrieve-current.html
  **/
 
 public class OficinesActivity extends AppCompatActivity {
@@ -161,24 +162,6 @@ public class OficinesActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void setMap() {
-//        ActivityCompat.requestPermissions(this,new String[]{
-//                // if you need to show the current location, uncomment the line below
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                // WRITE_EXTERNAL_STORAGE is required in order to show the map
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//        }, 1);
-
-//        requestPermissionsIfNecessary(new String[]{
-//                // if you need to show the current location, uncomment the line below
-//                Manifest.permission.ACCESS_FINE_LOCATION,
-//                Manifest.permission.ACCESS_COARSE_LOCATION,
-//                // WRITE_EXTERNAL_STORAGE is required in order to show the map
-//                Manifest.permission.READ_EXTERNAL_STORAGE,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//        });
-
         if (currentLocation == null) {
             locationListener = new MyLocationListener();
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
