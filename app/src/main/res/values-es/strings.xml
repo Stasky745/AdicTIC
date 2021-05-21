@@ -130,7 +130,7 @@
     <string name="percentage"> "%d %%" </string>
     <string name="informal_date_format"> "%d-%d-%d" </string>
 
-    <string name="percentage_info"> "Este usuario ha utilizado el dispositivo%s de las%s posibles. Esto quiere decir que ha sido un%s %%del tiempo utilizándolo." </string>
+    <string name="percentage_info">" Este usuario ha utilizado el dispositivo %s de las %s recomendadas. Esto quiere decir que ha estado un %s%% del tiempo recomendado utilizándolo. "</string>
     <string name="error_liveApp"> "No se pudo leer la aplicación actual del hijo" </string>
     <string name="unblock_device"> "Desbloquear dispositivo" </string>
 
@@ -231,7 +231,7 @@
     <string name="error_no_event_name">Escribe un nombre para el evento</string>
     <string name="error_no_event_days">Escoge qué días pasa este evento</string>
     <string name="error_incorrect_times">Escoge una hora final superior a la inicial</string>
-    <string name="error_no_fills">No tenemos ningún hijo vuestro en nuestro servidor.</string>
+    <string name="error_no_fills">Actualmente no tenemos ningún hijo/a registrado. Para hacerlo solo falta:\\n1. Instalar la app AdicTIC al dispositivo móvil de su hijo/a\\n2. Iniciar sesión con el mismo usuario y contraseña pero escogiendo \"adolescente\".\\n3. Disfrutar de las ventajas que os proporciona AdicTIC.</string>
     <string name="edit">Editar</string>
     <string name="afegir">Añadir</string>
     <string name="esborrar">Borrar</string>

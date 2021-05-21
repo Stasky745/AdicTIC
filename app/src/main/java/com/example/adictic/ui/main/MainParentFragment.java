@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -439,8 +440,9 @@ public class MainParentFragment extends Fragment {
         pieDataSet.setColors(Constants.GRAPH_COLORS);
 
         PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new PercentFormatter());
-        pieData.setValueTextSize(10);
+        pieData.setValueFormatter(new PercentFormatter(pieChart));
+        pieData.setValueTextSize(12);
+        pieData.setValueTypeface(Typeface.DEFAULT_BOLD);
 
         pieChart.setData(pieData);
         pieChart.setUsePercentValues(true);
