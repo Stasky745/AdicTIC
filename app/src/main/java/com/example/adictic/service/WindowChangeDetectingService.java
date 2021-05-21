@@ -322,6 +322,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onInterrupt() {
     }
 
+    @SuppressWarnings("deprecation")
     private void addOverlayView() {
 
         final WindowManager.LayoutParams params;

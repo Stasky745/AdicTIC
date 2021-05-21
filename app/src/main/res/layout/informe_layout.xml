@@ -49,9 +49,12 @@
                 android:layout_below="@+id/graphDivider"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="24dp"
+                android:ellipsize="marquee"
+                android:singleLine="true"
                 android:text="@string/press_pie_chart"
                 android:textColor="@color/colorPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_min="30dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/CG_category" />
 

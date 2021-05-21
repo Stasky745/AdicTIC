@@ -22,6 +22,8 @@
         <item name="android:textColor">@android:color/secondary_text_light</item>
         <item name="android:gravity">center|center_vertical</item>
         <item name="android:background">@color/background_activity</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
     </style>
 
     <style name="ChipStyle" parent="Theme.MaterialComponents.DayNight.DarkActionBar">

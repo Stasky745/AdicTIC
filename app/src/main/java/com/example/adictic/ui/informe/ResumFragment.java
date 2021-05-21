@@ -18,6 +18,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.ui.support.AdviceFragment;
+import com.example.adictic.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,7 @@ import static java.lang.Math.round;
 
 public class ResumFragment extends Fragment {
 
-    private final long HORES_A_MILLIS = 60 * 60 * 1000;
+    private final long HORA_EN_MILLIS = 60 * 60 * 1000;
 
     private final List<GeneralUsage> appList;
 
@@ -45,30 +46,15 @@ public class ResumFragment extends Fragment {
     private final Map<String, Long> tempsApps = new HashMap<>();
     private final Map<String, Long> intentsAcces;
 
-    private final long[] ageTimesMillis = new long[30];
-    private final double[] ageTimes = new double[30];
     private final int age;
 
-    {
-        Arrays.fill(ageTimesMillis, 2 * HORES_A_MILLIS);
-        for (int i = 0; i < 2; i++) ageTimesMillis[i] = 0;
-        for (int i = 2; i < 12; i++) ageTimesMillis[i] = HORES_A_MILLIS;
-        for (int i = 12; i < 15; i++) ageTimesMillis[i] = round(1.5 * HORES_A_MILLIS);
-    }
-
-    {
-        Arrays.fill(ageTimes, 2);
-        for (int i = 0; i < 2; i++) ageTimes[i] = 0;
-        for (int i = 2; i < 12; i++) ageTimes[i] = 1;
-        for (int i = 12; i < 15; i++) ageTimes[i] = 1.5;
-    }
-
-    ResumFragment(Collection<GeneralUsage> col, long totalUsageT, int a, Map<String, Long> map) {
+    ResumFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, Map<String, Long> map) {
         appList = new ArrayList<>(col);
-        mitjanaHoresDia = round(10.0 * totalUsageT / (appList.size() * HORES_A_MILLIS)) / 10.0;
+        mitjanaHoresDia = round(10.0 * totalUsageT / (appList.size() * HORA_EN_MILLIS)) / 10.0;
 
-        /* Assegurem que l'edat no surt de rang **/
-        age = Math.min(Math.abs(a), 29);
+//        /* Assegurem que l'edat no surt de rang **/
+//        age = Math.min(Math.abs(edat), 29);
+        age = edat;
 
         intentsAcces = map;
     }
@@ -88,11 +74,11 @@ public class ResumFragment extends Fragment {
     }
 
     private void setResum() {
-        if (tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaHoresDia <= ageTimes[Math.min(age, 20)])
+        if (tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaHoresDia <= Constants.AGE_TIMES[Math.min(age, 20)])
             TV_resum.setText(getString(R.string.resum_bo));
         else {
             String resum_final = getString(R.string.resum);
-            if (mitjanaHoresDia > ageTimes[Math.min(age, 20)])
+            if (mitjanaHoresDia > Constants.AGE_TIMES[Math.min(age, 20)])
                 resum_final += getString(R.string.resum_us_device);
             if (!tempsApps.isEmpty()) resum_final += getString(R.string.resum_us_apps);
             if (!intentsAcces.isEmpty()) resum_final += getString(R.string.resum_intents_acces);
@@ -128,7 +114,7 @@ public class ResumFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(layoutManager);
 
-        rv.setHasFixedSize(true);
+        //rv.setHasFixedSize(true);
 
         RecyclerView.Adapter mAdapter = new SimpleAdapter(map, t, getActivity());
         rv.setAdapter(mAdapter);
@@ -147,7 +133,7 @@ public class ResumFragment extends Fragment {
         Map<String, Long> auxTempsApps = new HashMap<>(tempsApps);
         for (Map.Entry<String, Long> entry : auxTempsApps.entrySet()) {
             long time = entry.getValue() / appList.size();
-            if (time < ageTimesMillis[age]) tempsApps.remove(entry.getKey());
+            if (time < Constants.AGE_TIMES_MILLIS[age]) tempsApps.remove(entry.getKey());
             else tempsApps.put(entry.getKey(), time);
         }
 
@@ -159,15 +145,15 @@ public class ResumFragment extends Fragment {
 
     private void setIntro() {
         String tempsRecomanat;
-        if (ageTimes[Math.min(age, 20)] != 1.5)
-            tempsRecomanat = String.valueOf(Math.round(ageTimes[Math.min(age, 20)]));
-        else tempsRecomanat = String.valueOf(ageTimes[Math.min(age, 20)]);
+        if (Constants.AGE_TIMES[Math.min(age, 20)] != 1.5)
+            tempsRecomanat = String.valueOf(Math.round(Constants.AGE_TIMES[Math.min(age, 20)]));
+        else tempsRecomanat = String.valueOf(Constants.AGE_TIMES[Math.min(age, 20)]);
 
         String mitj;
         if (10 * mitjanaHoresDia % 10 == 0) mitj = String.valueOf(Math.round(mitjanaHoresDia));
         else mitj = String.valueOf(mitjanaHoresDia);
 
-        if (mitjanaHoresDia <= ageTimes[Math.min(age, 20)])
+        if (mitjanaHoresDia <= Constants.AGE_TIMES[Math.min(age, 20)])
             TV_intro.setText(getString(R.string.intro_bona, age, tempsRecomanat, mitj));
         else TV_intro.setText(getString(R.string.intro_dolenta, age, tempsRecomanat, mitj));
     }
@@ -192,7 +178,7 @@ public class ResumFragment extends Fragment {
 
         BT_informacio.setOnClickListener(v -> {
             AdviceFragment adviceFragment = new AdviceFragment();
-            getActivity().getSupportFragmentManager().beginTransaction()
+            requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(((ViewGroup) getView().getParent()).getId(), adviceFragment)
                     .addToBackStack(null)
                     .commit();
