@@ -157,9 +157,9 @@ public class GraphsFragment extends Fragment {
         }
 
         if(!(mapUsage.size() < 5))
-        yValues.add(new PieEntry(others, "Altres"));
+            yValues.add(new PieEntry(others, "Altres"));
 
-        PieDataSet pieDataSet = new PieDataSet(yValues,"");
+        PieDataSet pieDataSet = new PieDataSet(yValues,"Ús d'apps");
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setSelectionShift(5f);
         pieDataSet.setColors(Constants.GRAPH_COLORS);
@@ -167,7 +167,6 @@ public class GraphsFragment extends Fragment {
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueFormatter(new PercentFormatter(pieChart));
         pieData.setValueTextSize(12);
-        //pieData.setValueTypeface(Typeface.DEFAULT_BOLD);
 
         pieChart.setData(pieData);
         pieChart.setUsePercentValues(true);
@@ -181,12 +180,7 @@ public class GraphsFragment extends Fragment {
         pieChart.animateY(1000);
 
         pieChart.setDrawEntryLabels(false);
-        pieChart.getLegend().setEnabled(true);
-        pieChart.getLegend().setForm(Legend.LegendForm.CIRCLE);
-        pieChart.getLegend().setDirection(Legend.LegendDirection.LEFT_TO_RIGHT);
-        pieChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        pieChart.getLegend().setOrientation(Legend.LegendOrientation.VERTICAL);
-        pieChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        pieChart.getLegend().setEnabled(false);
 
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override

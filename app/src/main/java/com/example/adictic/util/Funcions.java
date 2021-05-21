@@ -190,12 +190,19 @@ public class Funcions {
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
+    @SuppressWarnings("deprecation")
     public static boolean isAppUsagePermissionOn(Context mContext) {
         boolean granted;
         AppOpsManager appOps = (AppOpsManager) mContext
                 .getSystemService(Context.APP_OPS_SERVICE);
-        int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                android.os.Process.myUid(), mContext.getPackageName());
+        int mode;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(), mContext.getPackageName());
+        }
+        else
+            mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                    android.os.Process.myUid(), mContext.getPackageName());
 
         if (mode == AppOpsManager.MODE_DEFAULT) {
             granted = (mContext.checkCallingOrSelfPermission(android.Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED);

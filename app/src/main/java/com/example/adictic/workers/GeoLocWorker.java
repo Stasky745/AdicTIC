@@ -146,6 +146,7 @@ public class GeoLocWorker extends Worker {
 
     }
 
+    @SuppressWarnings("deprecation")
     class MyLocationListener implements LocationListener {
 
         public void onLocationChanged(Location location) {

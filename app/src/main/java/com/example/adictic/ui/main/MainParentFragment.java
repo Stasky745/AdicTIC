@@ -423,16 +423,22 @@ public class MainParentFragment extends Fragment {
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
         for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {
-            if (entry.getValue() >= totalUsageTime * 0.05)
+            // Si hi ha poques entrades no crear "Altres"
+            if(mapUsage.size() < 5)
                 yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
-            else {
-                others += entry.getValue();
+            else{
+                if (entry.getValue() >= totalUsageTime * 0.05)
+                    yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+                else {
+                    others += entry.getValue();
+                }
             }
         }
 
         Pair<Integer, Integer> totalTime = Funcions.millisToString(totalUsageTime);
 
-        yValues.add(new PieEntry(others, "Altres"));
+        if(!(mapUsage.size() < 5))
+            yValues.add(new PieEntry(others, "Altres"));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
@@ -463,6 +469,7 @@ public class MainParentFragment extends Fragment {
 
         pieChart.setDrawEntryLabels(false);
         pieChart.getLegend().setEnabled(false);
+
         pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
@@ -470,7 +477,8 @@ public class MainParentFragment extends Fragment {
 
                 TextView TV_pieApp = root.findViewById(R.id.TV_PieApp);
                 TV_pieApp.setText(pe.getLabel());
-
+                TV_pieApp.setTextSize(20);
+                TV_pieApp.setTypeface(Typeface.DEFAULT_BOLD);
 
                 Pair<Integer, Integer> appTime = Funcions.millisToString(e.getY());
 
@@ -483,6 +491,8 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onNothingSelected() {
                 TextView TV_pieApp = root.findViewById(R.id.TV_PieApp);
+                TV_pieApp.setTextSize(14);
+                TV_pieApp.setTypeface(Typeface.DEFAULT);
 
                 TV_pieApp.setText(getResources().getString(R.string.press_pie_chart));
                 if (totalTime.first == 0)
