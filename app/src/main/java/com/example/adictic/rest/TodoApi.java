@@ -207,4 +207,10 @@ public interface TodoApi {
 
     @POST("/usage/{idChild}/uninstalledApp")
     Call<String> postAppUninstalled(@Path("idChild") Long idChild, @Body String pkgName);
+
+    @POST("/update/adictic")
+    Call<String> checkForUpdates(@Body String version);
+
+    @GET("/update/adictic")
+    Call<ResponseBody> getLatestVersion();
 }
