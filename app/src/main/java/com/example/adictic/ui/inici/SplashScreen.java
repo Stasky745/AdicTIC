@@ -1,8 +1,11 @@
 package com.example.adictic.ui.inici;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -10,7 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
+import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.rest.TodoApi;
@@ -26,6 +33,13 @@ import com.example.adictic.util.LocaleHelper;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+
+import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,19 +49,22 @@ public class SplashScreen extends AppCompatActivity {
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
     private String token = "";
+    private TodoApi todoApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
+        todoApi = ((TodoApp) this.getApplication()).getAPI();
+        checkForUpdates();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
 
-        final TodoApi todoApi = ((TodoApp) this.getApplication()).getAPI();
-
+    private void startApp(){
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -163,5 +180,106 @@ public class SplashScreen extends AppCompatActivity {
         String lang = sharedPreferences.getString("language", "none");
         if (lang.equals("none")) super.attachBaseContext(newBase);
         else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
+    }
+
+    private void checkForUpdates() {
+        if(BuildConfig.DEBUG){
+            startApp();
+            return;
+        }
+        Call<String> call = todoApi.checkForUpdates(BuildConfig.VERSION_NAME);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful() && response.body()!=null && !response.body().equals("NO")) {
+                    installUpdate(response.body());
+                }
+                else{
+                    FilenameFilter filenameFilter = (file, s) -> s.endsWith(".apk");// && !file.isDirectory();
+                    File[] list = getExternalCacheDir().listFiles(filenameFilter);
+                    if (list != null && list.length > 0) {
+                        Arrays.stream(list)
+                                .forEach(File::delete);
+                    }
+                    startApp();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+    }
+
+    private void installUpdate(String newVersion){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+        String PATH = getExternalCacheDir().getPath();
+        String apkName = "adictic_"+newVersion+".apk";
+        File file = new File(PATH,apkName);
+        System.out.println(file.getAbsolutePath());
+        if(file.exists()){
+            installApk(file);
+            return;
+        }
+        getUpdateFromServer();
+    }
+
+    private void getUpdateFromServer() {
+        Call<ResponseBody> call = todoApi.getLatestVersion();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body()!=null) {
+                    try {
+                        String PATH = getExternalCacheDir().getPath();
+                        String apkName = response.headers().get("Content-Disposition").split("filename=")[1].replace("\"","");
+
+                        File file = new File(PATH,apkName);
+                        if(!file.exists()) {
+                            BufferedSink sink = Okio.buffer(Okio.sink(file));
+                            sink.writeAll(response.body().source());
+                            sink.flush();
+                        }
+                        installApk(file);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+                else startApp();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
+                toast.show(); }
+        });
+    }
+
+    private void installApk(File file){
+        PackageManager pkgManager= SplashScreen.this.getPackageManager();
+        PackageInfo packageInfo = pkgManager.getPackageArchiveInfo(file.getAbsolutePath(), 0);
+        if(packageInfo == null){
+            file.delete();
+            getUpdateFromServer();
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+        intent.setData (FileProvider.getUriForFile(SplashScreen.this, BuildConfig.APPLICATION_ID + ".provider", file));
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        SplashScreen.this.startActivityForResult(intent,1034);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1034)
+        {
+            startApp();
+        }
     }
 }
