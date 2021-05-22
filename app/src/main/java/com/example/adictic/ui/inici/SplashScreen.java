@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -194,9 +195,9 @@ public class SplashScreen extends AppCompatActivity {
                     installUpdate(response.body());
                 }
                 else{
-                    FilenameFilter filenameFilter = (file, s) -> s.endsWith(".apk") && !file.isDirectory();
+                    FilenameFilter filenameFilter = (file, s) -> s.endsWith(".apk");// && !file.isDirectory();
                     File[] list = getExternalCacheDir().listFiles(filenameFilter);
-                    if (list != null) {
+                    if (list != null && list.length > 0) {
                         Arrays.stream(list)
                                 .forEach(File::delete);
                     }
@@ -224,6 +225,10 @@ public class SplashScreen extends AppCompatActivity {
             installApk(file);
             return;
         }
+        getUpdateFromServer();
+    }
+
+    private void getUpdateFromServer() {
         Call<ResponseBody> call = todoApi.getLatestVersion();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -255,6 +260,14 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void installApk(File file){
+        PackageManager pkgManager= SplashScreen.this.getPackageManager();
+        PackageInfo packageInfo = pkgManager.getPackageArchiveInfo(file.getAbsolutePath(), 0);
+        if(packageInfo == null){
+            file.delete();
+            getUpdateFromServer();
+            return;
+        }
+
         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
         intent.setData (FileProvider.getUriForFile(SplashScreen.this, BuildConfig.APPLICATION_ID + ".provider", file));
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -262,8 +275,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1034)
         {
