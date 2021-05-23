@@ -231,7 +231,7 @@
     <string name="error_no_event_name">Escribe un nombre para el evento</string>
     <string name="error_no_event_days">Escoge qué días pasa este evento</string>
     <string name="error_incorrect_times">Escoge una hora final superior a la inicial</string>
-    <string name="error_no_fills">\"Actualmente no tenemos ningún hijo/a registrado. Para hacerlo solo falta:\\n1. Instalar la app AdicTIC al dispositivo móvil de su hijo/a\\n2. Iniciar sesión con el mismo usuario y contraseña pero escogiendo \"adolescente\".\\n3. Disfrutar de las ventajas que os proporciona AdicTIC.\"</string>
+    <string name="error_no_fills">"Actualmente no tenemos ningún hijo/a registrado.\nPara hacerlo solo falta:\n\n1. Instalar la app AdicTIC al dispositivo móvil de su hijo/a.\n\n2. Iniciar sesión con el mismo usuario y contraseña pero escogiendo \"adolescente\".\n\n3. Disfrutar de las ventajas que os proporciona AdicTIC."</string>
     <string name="edit">Editar</string>
     <string name="afegir">Añadir</string>
     <string name="esborrar">Borrar</string>
