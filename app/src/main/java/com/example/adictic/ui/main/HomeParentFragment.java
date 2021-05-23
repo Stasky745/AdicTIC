@@ -1,6 +1,8 @@
 package com.example.adictic.ui.main;
 
 import android.content.SharedPreferences;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
