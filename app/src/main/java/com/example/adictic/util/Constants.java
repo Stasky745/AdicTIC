@@ -58,7 +58,6 @@ public class Constants {
     public static int DANGEROUS_USAGE_APP = 4;
 
     public static final long[] AGE_TIMES_MILLIS = createAgeTimesMillis();
-    public static final double[] AGE_TIMES = createAgeTimes();
     public static final String[] AGE_TIMES_STRING = createAgeTimesString();
 
     private static long[] createAgeTimesMillis(){
@@ -69,18 +68,6 @@ public class Constants {
         Arrays.fill(array, 5, 13, HOUR_IN_MILLIS);
         Arrays.fill(array, 13, 16, Math.round(1.5 * HOUR_IN_MILLIS));
         Arrays.fill(array, 16, 30, 2 * HOUR_IN_MILLIS);
-
-        return array;
-    }
-
-    private static double[] createAgeTimes(){
-        double[] array = new double[30];
-        Arrays.fill(array, 0, 3, 0);
-        array[3] = 0.5;
-        array[4] = 0.75;
-        Arrays.fill(array, 5, 13, 1);
-        Arrays.fill(array, 13, 16, 1.5);
-        Arrays.fill(array, 16, 30, 2);
 
         return array;
     }
