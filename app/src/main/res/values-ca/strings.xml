@@ -146,7 +146,7 @@
     <string name="error_no_event_name">"Escriu un nom per l'event"</string>
     <string name="error_no_event_days">"Escull quins dies passa aquest event"</string>
     <string name="error_incorrect_times">"Tria una hora final superior a la inicial"</string>
-    <string name="error_no_fills">"Actualment no hi ha cap fill/a registrat.\n\nPer a fer-ho només cal:\n\n1. Instal·lar l'app AdicTIC al dispositiu mòbil del vostre/a fill/a.\n\n2. Iniciar sessió amb el mateix usuari i contrasenya però prement l'opció \"adolescent\".\n\n3. Gaudir dels avantatges que us proporcionarà AdicTIC."</string>
+    <string name="error_no_fills">"Actualment no hi ha cap fill/a registrat.\nPer a fer-ho només cal:\n\n1. Instal·lar l'app AdicTIC al dispositiu mòbil del vostre/a fill/a.\n\n2. Iniciar sessió amb el mateix usuari i contrasenya però prement l'opció \"adolescent\".\n\n3. Gaudir dels avantatges que us proporcionarà AdicTIC."</string>
 
     <string name="monday">Dilluns</string>
     <string name="tuesday">Dimarts</string>
