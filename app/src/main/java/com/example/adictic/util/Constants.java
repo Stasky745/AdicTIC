@@ -59,23 +59,40 @@ public class Constants {
 
     public static final long[] AGE_TIMES_MILLIS = createAgeTimesMillis();
     public static final double[] AGE_TIMES = createAgeTimes();
+    public static final String[] AGE_TIMES_STRING = createAgeTimesString();
 
     private static long[] createAgeTimesMillis(){
         long[] array = new long[30];
-        Arrays.fill(array, 0, 2, 0);
-        Arrays.fill(array, 2, 12, HOUR_IN_MILLIS);
-        Arrays.fill(array, 12, 15, Math.round(1.5 * HOUR_IN_MILLIS));
-        Arrays.fill(array, 15, 30, 2 * HOUR_IN_MILLIS);
+        Arrays.fill(array, 0, 3, 0);
+        array[3] = Math.round(0.5 * HOUR_IN_MILLIS);
+        array[4] = Math.round(0.75 * HOUR_IN_MILLIS);
+        Arrays.fill(array, 5, 13, HOUR_IN_MILLIS);
+        Arrays.fill(array, 13, 16, Math.round(1.5 * HOUR_IN_MILLIS));
+        Arrays.fill(array, 16, 30, 2 * HOUR_IN_MILLIS);
 
         return array;
     }
 
     private static double[] createAgeTimes(){
         double[] array = new double[30];
-        Arrays.fill(array, 0, 2, 0);
-        Arrays.fill(array, 2, 12, 1);
-        Arrays.fill(array, 12, 15, 1.5);
-        Arrays.fill(array, 15, 30, 2);
+        Arrays.fill(array, 0, 3, 0);
+        array[3] = 0.5;
+        array[4] = 0.75;
+        Arrays.fill(array, 5, 13, 1);
+        Arrays.fill(array, 13, 16, 1.5);
+        Arrays.fill(array, 16, 30, 2);
+
+        return array;
+    }
+
+    private static String[] createAgeTimesString(){
+        String[] array = new String[30];
+        Arrays.fill(array, 0, 3, "0 hores");
+        array[3] = "30 minuts";
+        array[4] = "45 minuts";
+        Arrays.fill(array, 5, 13, "1 hora");
+        Arrays.fill(array, 13, 16, "1:30 hores");
+        Arrays.fill(array, 16, 30, "2 hores");
 
         return array;
     }
