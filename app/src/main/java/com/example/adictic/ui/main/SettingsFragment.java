@@ -132,6 +132,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             @Override
                             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                                 if (response.isSuccessful()) {
+                                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,null).apply();
+                                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,null).apply();
                                     requireActivity().startActivity(new Intent(getActivity(), Login.class));
                                     requireActivity().finish();
                                 }

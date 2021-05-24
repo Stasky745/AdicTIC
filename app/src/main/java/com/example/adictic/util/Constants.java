@@ -26,6 +26,8 @@ public class Constants {
     public static final String SHARED_PREFS_CHANGE_FREE_USE_APPS = "freeuse_apps_change";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit_change";
 
+    public static final String SHARED_PREFS_USERNAME = "username";
+    public static final String SHARED_PREFS_PASSWORD = "password";
     public static final String SHARED_PREFS_IDUSER = "idUser";
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";

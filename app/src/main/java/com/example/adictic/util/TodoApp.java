@@ -3,6 +3,8 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import com.example.adictic.BuildConfig;
 import com.example.adictic.rest.TodoApi;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
@@ -12,7 +14,16 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -69,6 +80,33 @@ public class TodoApp extends Application {
 
         return httpClient
                 .cookieJar(cookieJar)
+                .authenticator((route, response) -> {
+                    if (responseCount(response) >= 3) {
+                        return null; // If we've failed 3 times, give up.
+                    }
+
+                    String username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME,null);
+                    String password = sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, null);
+
+                    if(username != null && password != null) {
+                        System.out.println("Authenticating for response: " + response);
+                        System.out.println("Challenges: " + response.challenges());
+                        String credential = Credentials.basic(username, password);
+                        return response.request().newBuilder()
+                                .header("Authorization", credential)
+                                .build();
+                    }
+
+                    return null;
+                })
                 .build();
+    }
+
+    private int responseCount(Response response) {
+        int result = 1;
+        while ((response = response.priorResponse()) != null) {
+            result++;
+        }
+        return result;
     }
 }
