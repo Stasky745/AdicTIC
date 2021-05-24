@@ -132,6 +132,9 @@ public class Login extends AppCompatActivity {
                     User usuari = response.body();
                     assert usuari != null;
 
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,ul.username).apply();
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,ul.password).apply();
+
                     if (usuari.tutor == 1) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,usuari.id).apply();
