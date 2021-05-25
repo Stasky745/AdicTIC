@@ -11,16 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
@@ -34,8 +33,12 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -43,6 +46,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -59,9 +63,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
     private final String TAG = "DayUsageActivity";
     private long idChild;
-    private ChipGroup chipGroup;
     private Chip CH_singleDate;
-    private Chip CH_rangeDates;
     private Spinner SP_sort;
     private TextView TV_initialDate;
     private TextView TV_finalDate;
@@ -78,7 +80,7 @@ public class DayUsageActivity extends AppCompatActivity {
     private Map<Integer, Map<Integer, List<Integer>>> daysMap;
     private List<Integer> yearList;
     private List<Integer> monthList;
-    int xDays;
+    private int xDays;
     private UsageStatsAdapter mAdapter;
     private final DatePickerDialog.OnDateSetListener initialDateListener = new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -158,7 +160,6 @@ public class DayUsageActivity extends AppCompatActivity {
         SP_sort = findViewById(R.id.typeSpinner);
 
         CH_singleDate = findViewById(R.id.CH_singleDate);
-        CH_rangeDates = findViewById(R.id.CH_rangeDates);
 
         TV_initialDate = findViewById(R.id.TV_initialDate);
         TV_finalDate = findViewById(R.id.TV_finalDate);
@@ -167,9 +168,11 @@ public class DayUsageActivity extends AppCompatActivity {
         TV_error.setVisibility(View.GONE);
 
         BT_initialDate = findViewById(R.id.BT_initialDate);
+        BT_initialDate.setOnClickListener(view -> btnInitialDate());
         BT_finalDate = findViewById(R.id.BT_finalDate);
+        BT_finalDate.setOnClickListener(view -> btnFinalDate());
 
-        chipGroup = findViewById(R.id.CG_dateChips);
+        ChipGroup chipGroup = findViewById(R.id.CG_dateChips);
 
         daysMap = new HashMap<>();
         yearList = new ArrayList<>();
@@ -298,14 +301,13 @@ public class DayUsageActivity extends AppCompatActivity {
             TV_totalUse.setTextColor(Color.rgb(255, 128, 64));
 
         // Canviar format de HH:mm:ss a "Dies Hores Minuts"
-        long elapsedDays = totalTime / Constants.TOTAL_MILLIS_IN_DAY;;
-        totalTime = totalTime % Constants.TOTAL_MILLIS_IN_DAY;;
+        long elapsedDays = totalTime / Constants.TOTAL_MILLIS_IN_DAY;
+        totalTime %= Constants.TOTAL_MILLIS_IN_DAY;
 
         long elapsedHours = totalTime / Constants.HOUR_IN_MILLIS;
-        totalTime = totalTime % Constants.HOUR_IN_MILLIS;
+        totalTime %= Constants.HOUR_IN_MILLIS;
 
         long elapsedMinutes = totalTime / (60*1000);
-        totalTime = totalTime % (60*1000);
 
         String text;
         if (elapsedDays == 0) {
@@ -320,7 +322,7 @@ public class DayUsageActivity extends AppCompatActivity {
         TV_totalUse.setText(text);
     }
 
-    public void btnInitialDate(View view) {
+    public void btnInitialDate() {
         DatePickerDialog initialPicker = new DatePickerDialog(this, R.style.datePicker, initialDateListener, initialYear, initialMonth, initialDay);
         initialPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
 
@@ -338,7 +340,7 @@ public class DayUsageActivity extends AppCompatActivity {
         initialPicker.show();
     }
 
-    public void btnFinalDate(View view) {
+    public void btnFinalDate() {
         DatePickerDialog finalPicker = new DatePickerDialog(this, R.style.datePicker, finalDateListener, finalYear, finalMonth, finalDay);
         finalPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
 
@@ -481,13 +483,12 @@ public class DayUsageActivity extends AppCompatActivity {
                 long totalTime = pkgStats.totalTime;
 
                 long elapsedDays = totalTime / daysInMilli;
-                totalTime = totalTime % daysInMilli;
+                totalTime %= daysInMilli;
 
                 long elapsedHours = totalTime / hoursInMilli;
-                totalTime = totalTime % hoursInMilli;
+                totalTime %= hoursInMilli;
 
                 long elapsedMinutes = totalTime / minutesInMilli;
-                totalTime = totalTime % minutesInMilli;
 
                 String time;
                 if (elapsedDays == 0) {

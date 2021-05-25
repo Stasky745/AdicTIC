@@ -316,4 +316,5 @@
     <string name="dialog_title_perm_loc">Continuar sin el permiso de Localización?</string>
     <string name="dialog_body_perm_loc">Sin el permiso de localización no se podrá tener un seguimiento de la geolocalización de este dispositivo. Está seguro de querer continuar?</string>
     <string name="alfabeticament">Alfabéticamente</string>
+    <string name="choose_date_range">Escoge las fechas</string>
 </resources>

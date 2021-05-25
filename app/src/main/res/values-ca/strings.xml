@@ -257,7 +257,6 @@
     <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
 
     <string name="estadistiques">"Informació i Estadístiques"</string>
-    <string name="adictic_splash" translatable="false">AdicTIC_Splash</string>
     <string name="settings">Configuració</string>
     <string name="titol">Títol</string>
     <string name="desc">Descripció</string>
@@ -332,4 +331,5 @@
     <string name="dialog_title_perm_loc">Continuar sense permís de Localització?</string>
     <string name="dialog_body_perm_loc">Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d\'aquest dispositiu, segur que vols continuar?</string>
     <string name="alfabeticament">Alfabèticament</string>
+    <string name="choose_date_range">Escull les dates</string>
 </resources>

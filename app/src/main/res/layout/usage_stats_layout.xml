@@ -117,7 +117,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/background_activity"
-        android:onClick="btnInitialDate"
         android:textAllCaps="false"
         app:layout_constraintStart_toEndOf="@+id/TV_sortStats"
         app:layout_constraintTop_toBottomOf="@+id/CG_dateChips" />
@@ -138,7 +137,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/background_activity"
-        android:onClick="btnFinalDate"
         android:textAllCaps="false"
         app:layout_constraintStart_toEndOf="@+id/TV_finalDate"
         app:layout_constraintTop_toTopOf="@+id/BT_initialDate" />
