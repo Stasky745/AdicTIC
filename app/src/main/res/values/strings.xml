@@ -20,6 +20,7 @@
     <string name="last_time_used">"Oberta últim cop: "</string>
     <string name="time_span">"Temps d'ús: "</string>
     <string name="lastXDays">"Veure activitat dels últims: "</string>
+    <string name="alfabeticament">"Alfabèticament"</string>
 
     <string name="display_order_text">Ordenat per:</string>
     <!-- label for usage time -->
