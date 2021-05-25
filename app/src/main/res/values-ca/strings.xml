@@ -332,4 +332,5 @@
     <string name="dialog_body_perm_loc">Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d\'aquest dispositiu, segur que vols continuar?</string>
     <string name="alfabeticament">Alfabèticament</string>
     <string name="choose_date_range">Escull les dates</string>
+    <string name="escull_dates">Escull dates</string>
 </resources>

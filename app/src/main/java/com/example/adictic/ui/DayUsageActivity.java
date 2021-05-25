@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,17 +60,16 @@ public class DayUsageActivity extends AppCompatActivity {
     private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
     private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
+    private SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
     private TodoApi mTodoService;
 
     private final String TAG = "DayUsageActivity";
     private long idChild;
-    private Chip CH_singleDate;
     private Spinner SP_sort;
-    private TextView TV_initialDate;
-    private TextView TV_finalDate;
     private TextView TV_error;
-    private Button BT_initialDate;
-    private Button BT_finalDate;
+    private TextView TV_dates;
+    private Button BT_pickDates;
     private int initialDay;
     private int initialMonth;
     private int initialYear;
@@ -82,36 +82,6 @@ public class DayUsageActivity extends AppCompatActivity {
     private List<Integer> monthList;
     private int xDays;
     private UsageStatsAdapter mAdapter;
-    private final DatePickerDialog.OnDateSetListener initialDateListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker arg0, int year, int month, int day) {
-            initialYear = year;
-            initialMonth = month;
-            initialDay = day;
-
-            if (CH_singleDate.isChecked()) {
-                finalYear = year;
-                finalMonth = month;
-                finalDay = day;
-            } else checkFutureDates();
-
-            getStats();
-
-            BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-        }
-    };
-    private final DatePickerDialog.OnDateSetListener finalDateListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker arg0, int year, int month, int day) {
-            finalYear = year;
-            finalMonth = month;
-            finalDay = day;
-
-            getStats();
-
-            BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-        }
-    };
 
     private void setSpinner(){
         // Creem la llista dels elements
@@ -159,20 +129,13 @@ public class DayUsageActivity extends AppCompatActivity {
 
         SP_sort = findViewById(R.id.typeSpinner);
 
-        CH_singleDate = findViewById(R.id.CH_singleDate);
-
-        TV_initialDate = findViewById(R.id.TV_initialDate);
-        TV_finalDate = findViewById(R.id.TV_finalDate);
+        TV_dates = findViewById(R.id.TV_dates);
 
         TV_error = findViewById(R.id.TV_emptyList);
         TV_error.setVisibility(View.GONE);
 
-        BT_initialDate = findViewById(R.id.BT_initialDate);
-        BT_initialDate.setOnClickListener(view -> btnInitialDate());
-        BT_finalDate = findViewById(R.id.BT_finalDate);
-        BT_finalDate.setOnClickListener(view -> btnFinalDate());
-
-        ChipGroup chipGroup = findViewById(R.id.CG_dateChips);
+        BT_pickDates = findViewById(R.id.BT_pickDates);
+        BT_pickDates.setOnClickListener(view -> setupRangePickerDialog());
 
         daysMap = new HashMap<>();
         yearList = new ArrayList<>();
@@ -186,45 +149,25 @@ public class DayUsageActivity extends AppCompatActivity {
             finalDay = initialDay = cal.get(Calendar.DAY_OF_MONTH);
             finalMonth = initialMonth = cal.get(Calendar.MONTH);
             finalYear = initialYear = cal.get(Calendar.YEAR);
+
+            String text = formatter.format(cal.getTimeInMillis());
+            TV_dates.setText(text);
         } else {
             finalDay = initialDay = day;
             finalMonth = initialMonth = getIntent().getIntExtra("month", Calendar.getInstance().get(Calendar.MONTH));
             finalYear = initialYear = getIntent().getIntExtra("year", Calendar.getInstance().get(Calendar.YEAR));
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(finalYear, finalMonth, finalDay);
+            String text = formatter.format(calendar.getTimeInMillis());
+            TV_dates.setText(text);
         }
-
-        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (CH_singleDate.isChecked()) {
-                BT_finalDate.setVisibility(View.INVISIBLE);
-                TV_finalDate.setVisibility(View.INVISIBLE);
-                TV_initialDate.setText(getResources().getString(R.string.date));
-                BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-
-                if(initialDay != finalDay || initialMonth != finalMonth || initialYear != finalYear) {
-                    finalDay = initialDay;
-                    finalMonth = initialMonth;
-                    finalYear = initialYear;
-                    getStats();
-                }
-
-            } else {
-                BT_finalDate.setVisibility(View.VISIBLE);
-                TV_finalDate.setVisibility(View.VISIBLE);
-                TV_initialDate.setText(getResources().getString(R.string.initial_date));
-                BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-                BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-            }
-        });
-
-        chipGroup.setSelectionRequired(false);
-        chipGroup.clearCheck();
-        chipGroup.check(CH_singleDate.getId());
-        chipGroup.setSelectionRequired(true);
 
         getMonthYearLists();
     }
 
     private void getStats() {
-        checkFutureDates();
+        //checkFutureDates();
         String initialDate = getResources().getString(R.string.informal_date_format, initialDay, initialMonth + 1, initialYear);
         String finalDate = getResources().getString(R.string.informal_date_format, finalDay, finalMonth + 1, finalYear);
 
@@ -322,36 +265,87 @@ public class DayUsageActivity extends AppCompatActivity {
         TV_totalUse.setText(text);
     }
 
-    public void btnInitialDate() {
-        DatePickerDialog initialPicker = new DatePickerDialog(this, R.style.datePicker, initialDateListener, initialYear, initialMonth, initialDay);
-        initialPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
+    private void setupRangePickerDialog(){
+        Calendar initialDate = Calendar.getInstance();
+        initialDate.set(initialYear,initialMonth,initialDay);
+        long initialMillis = initialDate.getTimeInMillis();
+
+        Calendar finalDate = Calendar.getInstance();
+        finalDate.set(finalYear,finalMonth,finalDay);
+        long finalMillis = finalDate.getTimeInMillis();
+
+        MaterialDatePicker.Builder<Pair<Long, Long>> builderRange = MaterialDatePicker.Builder.dateRangePicker();
+        builderRange.setTheme(R.style.ChipStyle)
+                .setCalendarConstraints(limitRange().build())
+                .setTitleText(getString(R.string.choose_date_range))
+                .setSelection(new Pair<>(initialMillis, finalMillis));
+        MaterialDatePicker<Pair<Long, Long>> pickerRange = builderRange.build();
+
+        pickerRange.addOnPositiveButtonClickListener(selection -> {
+            if(selection != null && selection.first != null && selection.second != null) {
+                Calendar firstDate = Calendar.getInstance();
+                firstDate.setTimeInMillis(selection.first);
+                Calendar finalDate1 = Calendar.getInstance();
+                finalDate1.setTimeInMillis(selection.second);
+
+                initialDay = firstDate.get(Calendar.DAY_OF_MONTH);
+                initialMonth = firstDate.get(Calendar.MONTH);
+                initialYear = firstDate.get(Calendar.YEAR);
+
+                finalDay = finalDate1.get(Calendar.DAY_OF_MONTH);
+                finalMonth = finalDate1.get(Calendar.MONTH);
+                finalYear = finalDate1.get(Calendar.YEAR);
+
+                getStats();
+
+
+                String text;
+                if(firstDate.get(Calendar.DAY_OF_YEAR) == finalDate1.get(Calendar.DAY_OF_YEAR))
+                    text = formatter.format(selection.first);
+                else
+                    text = formatter.format(selection.first) + " - " + formatter.format(selection.second);
+                TV_dates.setText(text);
+            }
+        });
+        pickerRange.show(getSupportFragmentManager(), pickerRange.toString());
+    }
+
+    private CalendarConstraints.Builder limitRange(){
+        CalendarConstraints.Builder constraintsBuilderRange = new CalendarConstraints.Builder();
+        Calendar calendarStart = Calendar.getInstance();
 
         int firstYear = Collections.min(yearList);
         int firstMonth = Collections.min(daysMap.get(firstYear).keySet());
         List<Integer> month = daysMap.get(firstYear).get(firstMonth);
         int firstDay = Collections.min(month);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, firstDay);
-        cal.set(Calendar.MONTH, firstMonth);
-        cal.set(Calendar.YEAR, firstYear);
+        calendarStart.set(firstYear, firstMonth, firstDay);
+        long startMillis = calendarStart.getTimeInMillis();
+        long maxDateMillis = Calendar.getInstance().getTimeInMillis();
 
-        initialPicker.getDatePicker().setMinDate(cal.getTimeInMillis());
-        initialPicker.show();
-    }
+        constraintsBuilderRange.setStart(startMillis);
+        constraintsBuilderRange.setEnd(maxDateMillis);
 
-    public void btnFinalDate() {
-        DatePickerDialog finalPicker = new DatePickerDialog(this, R.style.datePicker, finalDateListener, finalYear, finalMonth, finalDay);
-        finalPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
+        CalendarConstraints.DateValidator dateValidator = new CalendarConstraints.DateValidator() {
+            @Override
+            public boolean isValid(long date) {
+                return !(startMillis > date || maxDateMillis < date);
+            }
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, initialDay);
-        cal.set(Calendar.MONTH, initialMonth);
-        cal.set(Calendar.YEAR, initialYear);
+            @Override
+            public int describeContents() {
+                return 0;
+            }
 
-        finalPicker.getDatePicker().setMinDate(cal.getTimeInMillis());
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
 
-        finalPicker.show();
+            }
+        };
+
+        constraintsBuilderRange.setValidator(dateValidator);
+
+        return constraintsBuilderRange;
     }
 
     private void checkFutureDates() {
@@ -360,18 +354,27 @@ public class DayUsageActivity extends AppCompatActivity {
             finalMonth = initialMonth;
             finalDay = initialDay;
 
-            BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(finalYear, finalMonth, finalDay);
+            String text = formatter.format(calendar.getTimeInMillis());
+            TV_dates.setText(text);
         } else if (initialYear == finalYear) {
             if (initialMonth > finalMonth) {
                 finalMonth = initialMonth;
                 finalDay = initialDay;
 
-                BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(finalYear, finalMonth, finalDay);
+                String text = formatter.format(calendar.getTimeInMillis());
+                TV_dates.setText(text);
             } else if (initialMonth == finalMonth) {
                 if (initialDay > finalDay) {
                     finalDay = initialDay;
 
-                    BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(finalYear, finalMonth, finalDay);
+                    String text = formatter.format(calendar.getTimeInMillis());
+                    TV_dates.setText(text);
                 }
             }
         }
@@ -445,7 +448,7 @@ public class DayUsageActivity extends AppCompatActivity {
         private final ArrayList<AppUsage> mPackageStats;
         private final Context mContext;
         //private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
-        private int mDisplayOrder = _DISPLAY_ORDER_USAGE_TIME;
+        private int mDisplayOrder;
         private final LayoutInflater mInflater;
 
         UsageStatsAdapter(List<AppUsage> appList, Context c) {
@@ -454,7 +457,7 @@ public class DayUsageActivity extends AppCompatActivity {
             mPackageStats = new ArrayList<>(appList);
 
             // Sort list
-            sortList(_DISPLAY_ORDER_USAGE_TIME);
+            sortList();
         }
 
         @NonNull
@@ -472,8 +475,7 @@ public class DayUsageActivity extends AppCompatActivity {
                 Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
-                holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
-                        System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
+                holder.lastTimeUsed.setText(formatter.format(pkgStats.lastTimeUsed));
                 // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
                 long secondsInMilli = 1000;
                 long minutesInMilli = secondsInMilli * 60;
