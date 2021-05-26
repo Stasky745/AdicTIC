@@ -28,6 +28,7 @@ public class Constants {
 
     public static final String SHARED_PREFS_USERNAME = "username";
     public static final String SHARED_PREFS_PASSWORD = "password";
+    public static final String SHARED_PREFS_TOKEN = "firebaseToken";
     public static final String SHARED_PREFS_IDUSER = "idUser";
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";

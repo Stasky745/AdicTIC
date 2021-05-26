@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.example.adictic.BuildConfig;
+import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
@@ -20,8 +21,10 @@ import java.io.IOException;
 
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -103,9 +106,22 @@ public class TodoApp extends Application {
                     if(username != null && password != null) {
                         System.out.println("Authenticating for response: " + response);
                         System.out.println("Challenges: " + response.challenges());
-                        String credential = Credentials.basic(username, password);
+
+                        UserLogin userLogin = new UserLogin();
+                        userLogin.username = username;
+                        userLogin.password = password;
+                        userLogin.token = sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "");
+
+                        String gson = new Gson().toJson(userLogin);
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                        RequestBody body = RequestBody.create(gson, JSON);
+
+                        String url = BuildConfig.DEBUG ? Global.BASE_URL_DEBUG : Global.BASE_URL_RELEASE;
+                        url += "users/login";
+
                         return response.request().newBuilder()
-                                .header("Authorization", credential)
+                                .url(url)
+                                .post(body)
                                 .build();
                     }
 
