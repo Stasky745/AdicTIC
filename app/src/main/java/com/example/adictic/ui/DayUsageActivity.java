@@ -1,11 +1,9 @@
 package com.example.adictic.ui;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,13 +29,9 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,7 +53,7 @@ public class DayUsageActivity extends AppCompatActivity {
     private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
     private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
-    private SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
     private TodoApi mTodoService;
 
@@ -69,7 +62,6 @@ public class DayUsageActivity extends AppCompatActivity {
     private Spinner SP_sort;
     private TextView TV_error;
     private TextView TV_dates;
-    private Button BT_pickDates;
     private int initialDay;
     private int initialMonth;
     private int initialYear;
@@ -134,7 +126,7 @@ public class DayUsageActivity extends AppCompatActivity {
         TV_error = findViewById(R.id.TV_emptyList);
         TV_error.setVisibility(View.GONE);
 
-        BT_pickDates = findViewById(R.id.BT_pickDates);
+        Button BT_pickDates = findViewById(R.id.BT_pickDates);
         BT_pickDates.setOnClickListener(view -> setupRangePickerDialog());
 
         daysMap = new HashMap<>();
@@ -346,38 +338,6 @@ public class DayUsageActivity extends AppCompatActivity {
         constraintsBuilderRange.setValidator(dateValidator);
 
         return constraintsBuilderRange;
-    }
-
-    private void checkFutureDates() {
-        if (initialYear > finalYear) {
-            finalYear = initialYear;
-            finalMonth = initialMonth;
-            finalDay = initialDay;
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(finalYear, finalMonth, finalDay);
-            String text = formatter.format(calendar.getTimeInMillis());
-            TV_dates.setText(text);
-        } else if (initialYear == finalYear) {
-            if (initialMonth > finalMonth) {
-                finalMonth = initialMonth;
-                finalDay = initialDay;
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(finalYear, finalMonth, finalDay);
-                String text = formatter.format(calendar.getTimeInMillis());
-                TV_dates.setText(text);
-            } else if (initialMonth == finalMonth) {
-                if (initialDay > finalDay) {
-                    finalDay = initialDay;
-
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(finalYear, finalMonth, finalDay);
-                    String text = formatter.format(calendar.getTimeInMillis());
-                    TV_dates.setText(text);
-                }
-            }
-        }
     }
 
     public void getMonthYearLists() {
