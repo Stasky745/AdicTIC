@@ -40,15 +40,15 @@ public class TodoApp extends Application {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-            "Implementació d'aquest llistat de novetats a l'actualització"
+
     };
 
     public static String[] fixes = {
-            "Evitar la desincronització amb el servidor (cal provar) : S'HA D'INICIAR SESSIÓ DE NOU, CAL TANCAR SESSIÓ I TORNAR A ENTRAR"
+
     };
 
     public static String[] changes = {
-            "Nou calendari a \"Veure ús d'aplicacions\""
+            "Nou calendari a \"Veure ús d'aplicacions\" (canvi d'estil de l'app, AVISAR si hi ha algun color extrany)"
     };
 
     @Override
