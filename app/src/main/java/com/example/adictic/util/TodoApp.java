@@ -36,6 +36,18 @@ public class TodoApp extends Application {
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
+    public static String[] newFeatures = {
+            "Implementació d'aquest llistat de novetats a l'actualització"
+    };
+
+    public static String[] fixes = {
+
+    };
+
+    public static String[] changes = {
+            "Nou calendari a \"Veure ús d'aplicacions\""
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
