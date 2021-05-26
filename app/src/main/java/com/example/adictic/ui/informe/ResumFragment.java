@@ -19,6 +19,7 @@ import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.ui.support.AdviceFragment;
 import com.example.adictic.util.Constants;
+import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class ResumFragment extends Fragment {
 
     private RecyclerView RV_abusedApps, RV_clickedBlockedApps;
 
-    private final double mitjanaHoresDia;
+    private final long mitjanaMillisDia;
 
     private final Map<String, Long> tempsApps = new HashMap<>();
     private final Map<String, Long> intentsAcces;
@@ -50,9 +51,9 @@ public class ResumFragment extends Fragment {
 
     ResumFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, Map<String, Long> map) {
         appList = new ArrayList<>(col);
-        mitjanaHoresDia = round(10.0 * totalUsageT / (appList.size() * HORA_EN_MILLIS)) / 10.0;
+        mitjanaMillisDia = totalUsageT / appList.size();
 
-//        /* Assegurem que l'edat no surt de rang **/
+//        /* Assegurem que l'edat no surt de rang **/ JA ES FA A INFORMEACTIVITY
 //        age = Math.min(Math.abs(edat), 29);
         age = edat;
 
@@ -74,11 +75,11 @@ public class ResumFragment extends Fragment {
     }
 
     private void setResum() {
-        if (tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaHoresDia <= Constants.AGE_TIMES[Math.min(age, 20)])
+        if (tempsApps.isEmpty() && intentsAcces.isEmpty() && mitjanaMillisDia <= Constants.AGE_TIMES_MILLIS[age])
             TV_resum.setText(getString(R.string.resum_bo));
         else {
             String resum_final = getString(R.string.resum);
-            if (mitjanaHoresDia > Constants.AGE_TIMES[Math.min(age, 20)])
+            if (mitjanaMillisDia > Constants.AGE_TIMES_MILLIS[age])
                 resum_final += getString(R.string.resum_us_device);
             if (!tempsApps.isEmpty()) resum_final += getString(R.string.resum_us_apps);
             if (!intentsAcces.isEmpty()) resum_final += getString(R.string.resum_intents_acces);
@@ -144,18 +145,18 @@ public class ResumFragment extends Fragment {
     }
 
     private void setIntro() {
-        String tempsRecomanat;
-        if (Constants.AGE_TIMES[Math.min(age, 20)] != 1.5)
-            tempsRecomanat = String.valueOf(Math.round(Constants.AGE_TIMES[Math.min(age, 20)]));
-        else tempsRecomanat = String.valueOf(Constants.AGE_TIMES[Math.min(age, 20)]);
+        String tempsRecomanat = Constants.AGE_TIMES_STRING[age];
 
-        String mitj;
-        if (10 * mitjanaHoresDia % 10 == 0) mitj = String.valueOf(Math.round(mitjanaHoresDia));
-        else mitj = String.valueOf(mitjanaHoresDia);
+        String mitj = Funcions.millisOfDay2String(Math.round(mitjanaMillisDia));
+//        if (10 * mitjanaHoresDia % 10 == 0)
+//            mitj = String.valueOf(Math.round(mitjanaHoresDia));
+//        else
+//            mitj = String.valueOf(mitjanaHoresDia);
 
-        if (mitjanaHoresDia <= Constants.AGE_TIMES[Math.min(age, 20)])
+        if (mitjanaMillisDia <= Constants.AGE_TIMES_MILLIS[age])
             TV_intro.setText(getString(R.string.intro_bona, age, tempsRecomanat, mitj));
-        else TV_intro.setText(getString(R.string.intro_dolenta, age, tempsRecomanat, mitj));
+        else
+            TV_intro.setText(getString(R.string.intro_dolenta, age, tempsRecomanat, mitj));
     }
 
     private void setButtons() {

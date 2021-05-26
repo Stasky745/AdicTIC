@@ -26,6 +26,9 @@ public class Constants {
     public static final String SHARED_PREFS_CHANGE_FREE_USE_APPS = "freeuse_apps_change";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit_change";
 
+    public static final String SHARED_PREFS_USERNAME = "username";
+    public static final String SHARED_PREFS_PASSWORD = "password";
+    public static final String SHARED_PREFS_TOKEN = "firebaseToken";
     public static final String SHARED_PREFS_IDUSER = "idUser";
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";
@@ -33,6 +36,8 @@ public class Constants {
     public static final String SHARED_PREFS_FREEUSE = "freeuse";
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
+
+    public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
 
     public static final String SHARED_PREFS_APPUSAGEWORKERUPDATE = "appUsageWorkerUpdate";
     public static final String SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER = "lastUpdateAppUsageWorker";
@@ -58,24 +63,28 @@ public class Constants {
     public static int DANGEROUS_USAGE_APP = 4;
 
     public static final long[] AGE_TIMES_MILLIS = createAgeTimesMillis();
-    public static final double[] AGE_TIMES = createAgeTimes();
+    public static final String[] AGE_TIMES_STRING = createAgeTimesString();
 
     private static long[] createAgeTimesMillis(){
         long[] array = new long[30];
-        Arrays.fill(array, 0, 2, 0);
-        Arrays.fill(array, 2, 12, HOUR_IN_MILLIS);
-        Arrays.fill(array, 12, 15, Math.round(1.5 * HOUR_IN_MILLIS));
-        Arrays.fill(array, 15, 30, 2 * HOUR_IN_MILLIS);
+        Arrays.fill(array, 0, 3, 0);
+        array[3] = Math.round(0.5 * HOUR_IN_MILLIS);
+        array[4] = Math.round(0.75 * HOUR_IN_MILLIS);
+        Arrays.fill(array, 5, 13, HOUR_IN_MILLIS);
+        Arrays.fill(array, 13, 16, Math.round(1.5 * HOUR_IN_MILLIS));
+        Arrays.fill(array, 16, 30, 2 * HOUR_IN_MILLIS);
 
         return array;
     }
 
-    private static double[] createAgeTimes(){
-        double[] array = new double[30];
-        Arrays.fill(array, 0, 2, 0);
-        Arrays.fill(array, 2, 12, 1);
-        Arrays.fill(array, 12, 15, 1.5);
-        Arrays.fill(array, 15, 30, 2);
+    private static String[] createAgeTimesString(){
+        String[] array = new String[30];
+        Arrays.fill(array, 0, 3, "0 hores");
+        array[3] = "30 minuts";
+        array[4] = "45 minuts";
+        Arrays.fill(array, 5, 13, "1 hora");
+        Arrays.fill(array, 13, 16, "1:30 hores");
+        Arrays.fill(array, 16, 30, "2 hores");
 
         return array;
     }
