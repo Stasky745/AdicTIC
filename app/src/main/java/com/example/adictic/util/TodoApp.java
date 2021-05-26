@@ -44,7 +44,7 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-
+            "Evitar la desincronització amb el servidor (cal provar) : S'HA D'INICIAR SESSIÓ DE NOU, CAL TANCAR SESSIÓ I TORNAR A ENTRAR"
     };
 
     public static String[] changes = {
@@ -110,6 +110,7 @@ public class TodoApp extends Application {
                         UserLogin userLogin = new UserLogin();
                         userLogin.username = username;
                         userLogin.password = password;
+                        userLogin.tutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false) ? 1 : 0;
                         userLogin.token = sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "");
 
                         String gson = new Gson().toJson(userLogin);
