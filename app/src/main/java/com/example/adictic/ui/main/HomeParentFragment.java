@@ -1,6 +1,8 @@
 package com.example.adictic.ui.main;
 
 import android.content.SharedPreferences;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +49,7 @@ public class HomeParentFragment extends Fragment {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         parentActivity = (NavActivity) getActivity();
 
-        if(parentActivity.homeParent_childs!=null) setupTabLayout(parentActivity.homeParent_childs);
+        if(parentActivity.homeParent_childs!=null && !parentActivity.homeParent_childs.isEmpty()) setupTabLayout(parentActivity.homeParent_childs);
         if(parentActivity.homeParent_childs==null || (parentActivity.homeParent_lastChildsUpdate+ parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
             TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
@@ -64,6 +66,8 @@ public class HomeParentFragment extends Fragment {
                         parentActivity.homeParent_childs = new ArrayList<>(response.body());
                         parentActivity.homeParent_lastChildsUpdate = Calendar.getInstance().getTimeInMillis();
                         setupTabLayout(parentActivity.homeParent_childs);
+                        TextView error = view.findViewById(R.id.TV_noFills);
+                        error.setVisibility(View.GONE);
                     } else {
                         TextView error = view.findViewById(R.id.TV_noFills);
                         error.setVisibility(View.VISIBLE);

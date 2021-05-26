@@ -1,6 +1,7 @@
 package com.example.adictic.workers;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
@@ -37,6 +39,11 @@ public class UpdateTokenWorker extends Worker {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 success = response.isSuccessful();
+                if(success) {
+                    SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+                    assert sharedPreferences != null;
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+                }
             }
 
             @Override

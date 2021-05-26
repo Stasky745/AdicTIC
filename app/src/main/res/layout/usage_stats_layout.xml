@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -28,21 +29,21 @@
         android:id="@+id/typeSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:entries="@array/usage_stats_display_order_types"
         app:layout_constraintStart_toEndOf="@+id/TV_sortStats"
-        app:layout_constraintTop_toBottomOf="@+id/BT_initialDate" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_dates" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pkg_list"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_totalUseVar">
-
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@+id/TV_totalUseVar" />
 
     <TextView
         android:id="@+id/TV_totalUse"
@@ -64,83 +65,40 @@
         app:layout_constraintStart_toEndOf="@+id/TV_totalUse"
         app:layout_constraintTop_toTopOf="@+id/TV_totalUse" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/CG_dateChips"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:checkedChip="@id/CH_singleDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:singleLine="true"
-        app:singleSelection="true">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/CH_singleDate"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:checkable="true"
-            android:checked="false"
-            android:text="@string/chip_single_date"
-            android:theme="@style/ChipStyle" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/CH_rangeDates"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:checkable="true"
-            android:checked="false"
-            android:text="@string/chip_range_dates"
-            android:theme="@style/ChipStyle" />
-
-    </com.google.android.material.chip.ChipGroup>
-
     <TextView
         android:id="@+id/TV_initialDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="@string/initial_date"
-        app:layout_constraintBottom_toBottomOf="@+id/BT_initialDate"
+        android:text="@string/date"
+        app:layout_constraintBottom_toBottomOf="@+id/TV_dates"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/BT_initialDate" />
+        app:layout_constraintTop_toTopOf="@+id/TV_dates" />
 
     <Button
-        android:id="@+id/BT_initialDate"
-        android:layout_width="wrap_content"
+        android:id="@+id/BT_pickDates"
+        style="@style/ButtonStyle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/background_activity"
-        android:onClick="btnInitialDate"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toEndOf="@+id/TV_sortStats"
-        app:layout_constraintTop_toBottomOf="@+id/CG_dateChips" />
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/escull_dates"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/TV_finalDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/final_date"
-        app:layout_constraintBottom_toBottomOf="@+id/BT_finalDate"
-        app:layout_constraintStart_toEndOf="@+id/BT_initialDate"
-        app:layout_constraintTop_toTopOf="@+id/BT_finalDate" />
-
-    <Button
-        android:id="@+id/BT_finalDate"
-        android:layout_width="wrap_content"
+        android:id="@+id/TV_dates"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:backgroundTint="@color/background_activity"
-        android:onClick="btnFinalDate"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toEndOf="@+id/TV_finalDate"
-        app:layout_constraintTop_toTopOf="@+id/BT_initialDate" />
+        android:layout_marginTop="16dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/TV_initialDate"
+        app:layout_constraintTop_toBottomOf="@+id/BT_pickDates"
+        tools:text="20/04/2019" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
