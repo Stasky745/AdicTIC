@@ -36,6 +36,8 @@ public class Constants {
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
 
+    public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
+
     public static final String SHARED_PREFS_APPUSAGEWORKERUPDATE = "appUsageWorkerUpdate";
     public static final String SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER = "lastUpdateAppUsageWorker";
 
