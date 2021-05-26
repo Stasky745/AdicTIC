@@ -204,8 +204,8 @@
     <string name="error_no_bday"> "Falta la fecha de nacimiento" </string>
 
     <!-- Resumen Informe -->
-    <string name="intro_bona"> "Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de %s horas al día. Este mes se ha conseguido mantener un promedio de %s horas al día , inferior a la recomendada! "</string>
-    <string name="intro_dolenta"> "Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de %s horas al día. Este mes se ha conseguido mantener un promedio de %s horas al día , superior a la recomendada. Se debería procurar bajar esta media por debajo de los valores sugeridos. "</string>
+    <string name="intro_bona">" Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de %s al día. Este mes se ha conseguido mantener un promedio de %s horas al día , inferior a la recomendada! "</string>
+    <string name="intro_dolenta">" Para una persona de %d años, la cantidad de uso de un dispositivo recomendada es de %s al día. Este mes se ha conseguido mantener un promedio de %s horas al día , superior a la recomendada. Se debería procurar bajar esta media por debajo de los valores sugeridos. "</string>
     <string name="us_apps_buit"> "Idealmente, el uso diario de cada aplicación debería ser inferior al uso diario total recomendado. Este mes se ha mantenido este ideal! Enhorabuena!" </string>
     <string name="us_apps"> "Idealmente, el uso diario de cada aplicación debería ser inferior al uso diario total recomendado. Este mes ha habido algunas aplicaciones que han superado esta pauta. Se debería procurar reducir uso de estas. "</string>
     <string name="intents_acces_buit"> "Un número excesivo de intentos acceder a una aplicación bloqueada puede ser causa de olvido que ésta no está disponible, o una indicación de que la persona intenta por todos los medios acceder a ella, y esto podría deberse a un problema de adicción. Este mes no se ha intentado acceder con una media de más de 5 golpes diarios a ninguna aplicación bloqueada, la cifra que elegimos que puede presentar un problema de adicción a la persona. Felicidades! "</string>
@@ -231,7 +231,7 @@
     <string name="error_no_event_name">Escribe un nombre para el evento</string>
     <string name="error_no_event_days">Escoge qué días pasa este evento</string>
     <string name="error_incorrect_times">Escoge una hora final superior a la inicial</string>
-    <string name="error_no_fills">Actualmente no tenemos ningún hijo/a registrado. Para hacerlo solo falta:\\n1. Instalar la app AdicTIC al dispositivo móvil de su hijo/a\\n2. Iniciar sesión con el mismo usuario y contraseña pero escogiendo \"adolescente\".\\n3. Disfrutar de las ventajas que os proporciona AdicTIC.</string>
+    <string name="error_no_fills">"Actualmente no tenemos ningún hijo/a registrado.\nPara hacerlo solo falta:\n\n1. Instalar la app AdicTIC al dispositivo móvil de su hijo/a.\n\n2. Iniciar sesión con el mismo usuario y contraseña pero escogiendo \"adolescente\".\n\n3. Disfrutar de las ventajas que os proporciona AdicTIC."</string>
     <string name="edit">Editar</string>
     <string name="afegir">Añadir</string>
     <string name="esborrar">Borrar</string>
@@ -315,4 +315,11 @@
     <string name="perm_back_location_desc">Esta aplicación requiere de permisos de localización en todo momento en todos los dispositivos excepto el del tutor. \n\n Estos permisos permiten: \n\n · Saber la geolocalización del dispositivo.</string>
     <string name="dialog_title_perm_loc">Continuar sin el permiso de Localización?</string>
     <string name="dialog_body_perm_loc">Sin el permiso de localización no se podrá tener un seguimiento de la geolocalización de este dispositivo. Está seguro de querer continuar?</string>
+    <string name="alfabeticament">Alfabéticamente</string>
+    <string name="choose_date_range">Escoge las fechas</string>
+    <string name="escull_dates">Escoge fechas</string>
+    <string name="app_update_title">APLICACIÓN ACTUALIZADA</string>
+    <string name="noves_implementacions">Nuevas implementaciones</string>
+    <string name="problemes_arreglats">Arreglos</string>
+    <string name="canvis">Cambios</string>
 </resources>
