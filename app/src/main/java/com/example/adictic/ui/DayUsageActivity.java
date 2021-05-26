@@ -1,25 +1,24 @@
 package com.example.adictic.ui;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.format.DateUtils;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.AppInfo;
@@ -30,10 +29,10 @@ import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.MaterialDatePicker;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -41,70 +40,76 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DayUsageActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class DayUsageActivity extends AppCompatActivity {
+    // Constants defining order for display order
+    private static final int _DISPLAY_ORDER_USAGE_TIME = 0;
+    private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
+    private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
-    TodoApi mTodoService;
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-    String TAG = "DayUsageActivity";
-    long idChild;
-    ChipGroup chipGroup;
-    Chip CH_singleDate;
-    Chip CH_rangeDates;
-    Spinner SP_sort;
-    TextView TV_initialDate;
-    TextView TV_finalDate;
-    TextView TV_error;
-    Button BT_initialDate;
-    Button BT_finalDate;
-    int initialDay;
-    int initialMonth;
-    int initialYear;
-    int finalDay;
-    int finalMonth;
-    int finalYear;
-    ListView listView;
-    Map<Integer, Map<Integer, List<Integer>>> daysMap;
-    List<Integer> yearList;
-    List<Integer> monthList;
-    int xDays;
-    private LayoutInflater mInflater;
+    private TodoApi mTodoService;
+
+    private final String TAG = "DayUsageActivity";
+    private long idChild;
+    private Spinner SP_sort;
+    private TextView TV_error;
+    private TextView TV_dates;
+    private int initialDay;
+    private int initialMonth;
+    private int initialYear;
+    private int finalDay;
+    private int finalMonth;
+    private int finalYear;
+    private RecyclerView listView;
+    private Map<Integer, Map<Integer, List<Integer>>> daysMap;
+    private List<Integer> yearList;
+    private List<Integer> monthList;
+    private int xDays;
     private UsageStatsAdapter mAdapter;
-    private final DatePickerDialog.OnDateSetListener initialDateListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker arg0, int year, int month, int day) {
-            initialYear = year;
-            initialMonth = month;
-            initialDay = day;
 
-            if (CH_singleDate.isChecked()) {
-                finalYear = year;
-                finalMonth = month;
-                finalDay = day;
-            } else checkFutureDates();
+    private void setSpinner(){
+        // Creem la llista dels elements
+        List<String> spinnerArray = new ArrayList<>();
+        spinnerArray.add(getString(R.string.time_span));
+        spinnerArray.add(getString(R.string.last_time_used));
+        spinnerArray.add(getString(R.string.alfabeticament));
 
-            getStats();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.support_simple_spinner_dropdown_item,
+                spinnerArray);
 
-            BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-        }
-    };
-    private final DatePickerDialog.OnDateSetListener finalDateListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker arg0, int year, int month, int day) {
-            finalYear = year;
-            finalMonth = month;
-            finalDay = day;
+        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        SP_sort.setAdapter(adapter);
 
-            getStats();
+        SP_sort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = SP_sort.getSelectedItem().toString();
+                if(selected.equals(getString(R.string.time_span)))
+                    mAdapter.sortList(_DISPLAY_ORDER_USAGE_TIME);
+                else if(selected.equals(getString(R.string.last_time_used)))
+                    mAdapter.sortList(_DISPLAY_ORDER_LAST_TIME_USED);
+                else
+                    mAdapter.sortList(_DISPLAY_ORDER_APP_NAME);
+            }
 
-            BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-        }
-    };
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        SP_sort.setSelection(0);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,22 +121,13 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
 
         SP_sort = findViewById(R.id.typeSpinner);
 
-        SP_sort.setOnItemSelectedListener(this);
-
-        CH_singleDate = findViewById(R.id.CH_singleDate);
-        CH_rangeDates = findViewById(R.id.CH_rangeDates);
-
-        TV_initialDate = findViewById(R.id.TV_initialDate);
-        TV_finalDate = findViewById(R.id.TV_finalDate);
+        TV_dates = findViewById(R.id.TV_dates);
 
         TV_error = findViewById(R.id.TV_emptyList);
         TV_error.setVisibility(View.GONE);
 
-        BT_initialDate = findViewById(R.id.BT_initialDate);
-        BT_finalDate = findViewById(R.id.BT_finalDate);
-
-        chipGroup = findViewById(R.id.CG_dateChips);
-
+        Button BT_pickDates = findViewById(R.id.BT_pickDates);
+        BT_pickDates.setOnClickListener(view -> setupRangePickerDialog());
 
         daysMap = new HashMap<>();
         yearList = new ArrayList<>();
@@ -145,44 +141,25 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             finalDay = initialDay = cal.get(Calendar.DAY_OF_MONTH);
             finalMonth = initialMonth = cal.get(Calendar.MONTH);
             finalYear = initialYear = cal.get(Calendar.YEAR);
+
+            String text = formatter.format(cal.getTimeInMillis());
+            TV_dates.setText(text);
         } else {
             finalDay = initialDay = day;
             finalMonth = initialMonth = getIntent().getIntExtra("month", Calendar.getInstance().get(Calendar.MONTH));
             finalYear = initialYear = getIntent().getIntExtra("year", Calendar.getInstance().get(Calendar.YEAR));
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(finalYear, finalMonth, finalDay);
+            String text = formatter.format(calendar.getTimeInMillis());
+            TV_dates.setText(text);
         }
-
-        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (CH_singleDate.isChecked()) {
-                BT_finalDate.setVisibility(View.INVISIBLE);
-                TV_finalDate.setVisibility(View.INVISIBLE);
-                TV_initialDate.setText(getResources().getString(R.string.date));
-                BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-
-                finalDay = initialDay;
-                finalMonth = initialMonth;
-                finalYear = initialYear;
-
-            } else {
-                BT_finalDate.setVisibility(View.VISIBLE);
-                TV_finalDate.setVisibility(View.VISIBLE);
-                TV_initialDate.setText(getResources().getString(R.string.initial_date));
-                BT_initialDate.setText(getResources().getString(R.string.date_format, initialDay, getResources().getStringArray(R.array.month_names)[initialMonth + 1], initialYear));
-                BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-
-            }
-            getStats();
-        });
-
-        chipGroup.setSelectionRequired(false);
-        chipGroup.clearCheck();
-        chipGroup.check(CH_singleDate.getId());
-        chipGroup.setSelectionRequired(true);
 
         getMonthYearLists();
     }
 
     private void getStats() {
-        checkFutureDates();
+        //checkFutureDates();
         String initialDate = getResources().getString(R.string.informal_date_format, initialDay, initialMonth + 1, initialYear);
         String finalDate = getResources().getString(R.string.informal_date_format, finalDay, finalMonth + 1, finalYear);
 
@@ -208,13 +185,17 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void makeList(Collection<GeneralUsage> gul) {
-
         xDays = gul.size();
+        long totalTime = 0;
 
+        // Si hi ha diferents dies amb les mateixes aplicacions, sumem els temps
         List<AppUsage> appList = new ArrayList<>();
         for (GeneralUsage gu : gul) {
             for (AppUsage au : gu.usage) {
                 int index = appList.indexOf(au);
+
+                totalTime += au.totalTime;
+
                 if (index != -1) {
                     AppUsage current = appList.remove(index);
                     AppUsage res = new AppUsage();
@@ -224,7 +205,8 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                     res.totalTime = au.totalTime + current.totalTime;
                     if (current.lastTimeUsed > au.lastTimeUsed)
                         res.lastTimeUsed = current.lastTimeUsed;
-                    else res.lastTimeUsed = au.lastTimeUsed;
+                    else
+                        res.lastTimeUsed = au.lastTimeUsed;
 
                     appList.add(res);
                 } else {
@@ -233,65 +215,129 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
             }
         }
 
-        mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        // Actualitzem el TV
+        updateTotalTimeTV(totalTime);
 
-        mAdapter = new UsageStatsAdapter(appList, getApplicationContext());
+        mAdapter = new UsageStatsAdapter(appList, DayUsageActivity.this);
         listView.setAdapter(mAdapter);
+        //setSpinner ha d'anar després de l'adapter
+        setSpinner();
     }
 
-    public void btnInitialDate(View view) {
-        DatePickerDialog initialPicker = new DatePickerDialog(this, R.style.datePicker, initialDateListener, initialYear, initialMonth, initialDay);
-        initialPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
+    private void updateTotalTimeTV(long totalTime) {
+        TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
+
+        // Set colours according to total time spent
+        if (totalTime <= xDays * Constants.CORRECT_USAGE_DAY)
+            TV_totalUse.setTextColor(getColor(R.color.colorPrimary));
+        else if (totalTime > xDays * Constants.DANGEROUS_USAGE_DAY)
+            TV_totalUse.setTextColor(Color.RED);
+        else
+            TV_totalUse.setTextColor(Color.rgb(255, 128, 64));
+
+        // Canviar format de HH:mm:ss a "Dies Hores Minuts"
+        long elapsedDays = totalTime / Constants.TOTAL_MILLIS_IN_DAY;
+        totalTime %= Constants.TOTAL_MILLIS_IN_DAY;
+
+        long elapsedHours = totalTime / Constants.HOUR_IN_MILLIS;
+        totalTime %= Constants.HOUR_IN_MILLIS;
+
+        long elapsedMinutes = totalTime / (60*1000);
+
+        String text;
+        if (elapsedDays == 0) {
+            if (elapsedHours == 0) {
+                text = elapsedMinutes + getString(R.string.minutes);
+            } else {
+                text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+            }
+        } else {
+            text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+        }
+        TV_totalUse.setText(text);
+    }
+
+    private void setupRangePickerDialog(){
+        Calendar initialDate = Calendar.getInstance();
+        initialDate.set(initialYear,initialMonth,initialDay);
+        long initialMillis = initialDate.getTimeInMillis();
+
+        Calendar finalDate = Calendar.getInstance();
+        finalDate.set(finalYear,finalMonth,finalDay);
+        long finalMillis = finalDate.getTimeInMillis();
+
+        MaterialDatePicker.Builder<Pair<Long, Long>> builderRange = MaterialDatePicker.Builder.dateRangePicker();
+        builderRange.setTheme(R.style.ChipStyle)
+                .setCalendarConstraints(limitRange().build())
+                .setTitleText(getString(R.string.choose_date_range))
+                .setSelection(new Pair<>(initialMillis, finalMillis));
+        MaterialDatePicker<Pair<Long, Long>> pickerRange = builderRange.build();
+
+        pickerRange.addOnPositiveButtonClickListener(selection -> {
+            if(selection != null && selection.first != null && selection.second != null) {
+                Calendar firstDate = Calendar.getInstance();
+                firstDate.setTimeInMillis(selection.first);
+                Calendar finalDate1 = Calendar.getInstance();
+                finalDate1.setTimeInMillis(selection.second);
+
+                initialDay = firstDate.get(Calendar.DAY_OF_MONTH);
+                initialMonth = firstDate.get(Calendar.MONTH);
+                initialYear = firstDate.get(Calendar.YEAR);
+
+                finalDay = finalDate1.get(Calendar.DAY_OF_MONTH);
+                finalMonth = finalDate1.get(Calendar.MONTH);
+                finalYear = finalDate1.get(Calendar.YEAR);
+
+                getStats();
+
+
+                String text;
+                if(firstDate.get(Calendar.DAY_OF_YEAR) == finalDate1.get(Calendar.DAY_OF_YEAR))
+                    text = formatter.format(selection.first);
+                else
+                    text = formatter.format(selection.first) + " - " + formatter.format(selection.second);
+                TV_dates.setText(text);
+            }
+        });
+        pickerRange.show(getSupportFragmentManager(), pickerRange.toString());
+    }
+
+    private CalendarConstraints.Builder limitRange(){
+        CalendarConstraints.Builder constraintsBuilderRange = new CalendarConstraints.Builder();
+        Calendar calendarStart = Calendar.getInstance();
 
         int firstYear = Collections.min(yearList);
         int firstMonth = Collections.min(daysMap.get(firstYear).keySet());
         List<Integer> month = daysMap.get(firstYear).get(firstMonth);
         int firstDay = Collections.min(month);
 
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, firstDay);
-        cal.set(Calendar.MONTH, firstMonth);
-        cal.set(Calendar.YEAR, firstYear);
+        calendarStart.set(firstYear, firstMonth, firstDay);
+        long startMillis = calendarStart.getTimeInMillis();
+        long maxDateMillis = Calendar.getInstance().getTimeInMillis();
 
-        initialPicker.getDatePicker().setMinDate(cal.getTimeInMillis());
-        initialPicker.show();
-    }
+        constraintsBuilderRange.setStart(startMillis);
+        constraintsBuilderRange.setEnd(maxDateMillis);
 
-    public void btnFinalDate(View view) {
-        DatePickerDialog finalPicker = new DatePickerDialog(this, R.style.datePicker, finalDateListener, finalYear, finalMonth, finalDay);
-        finalPicker.getDatePicker().setMaxDate(Calendar.getInstance().getTimeInMillis());
-
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, initialDay);
-        cal.set(Calendar.MONTH, initialMonth);
-        cal.set(Calendar.YEAR, initialYear);
-
-        finalPicker.getDatePicker().setMinDate(cal.getTimeInMillis());
-
-        finalPicker.show();
-    }
-
-    private void checkFutureDates() {
-        if (initialYear > finalYear) {
-            finalYear = initialYear;
-            finalMonth = initialMonth;
-            finalDay = initialDay;
-
-            BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-        } else if (initialYear == finalYear) {
-            if (initialMonth > finalMonth) {
-                finalMonth = initialMonth;
-                finalDay = initialDay;
-
-                BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-            } else if (initialMonth == finalMonth) {
-                if (initialDay > finalDay) {
-                    finalDay = initialDay;
-
-                    BT_finalDate.setText(getResources().getString(R.string.date_format, finalDay, getResources().getStringArray(R.array.month_names)[finalMonth + 1], finalYear));
-                }
+        CalendarConstraints.DateValidator dateValidator = new CalendarConstraints.DateValidator() {
+            @Override
+            public boolean isValid(long date) {
+                return !(startMillis > date || maxDateMillis < date);
             }
-        }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
+
+            }
+        };
+
+        constraintsBuilderRange.setValidator(dateValidator);
+
+        return constraintsBuilderRange;
     }
 
     public void getMonthYearLists() {
@@ -333,16 +379,6 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         TV_error.setTextColor(Color.RED);
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (mAdapter != null) mAdapter.sortList(position);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
     public static class AppNameComparator implements Comparator<AppUsage> {
         @Override
         public final int compare(AppUsage a, AppUsage b) {
@@ -365,155 +401,56 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
         }
     }
 
-    // View Holder used when displaying views
-    static class AppViewHolder {
-        TextView pkgName;
-        TextView lastTimeUsed;
-        TextView usageTime;
-        ImageView icon;
-    }
-
-    class UsageStatsAdapter extends BaseAdapter {
-        // Constants defining order for display order
-        private static final int _DISPLAY_ORDER_USAGE_TIME = 0;
-        private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
-        private static final int _DISPLAY_ORDER_APP_NAME = 2;
+    class UsageStatsAdapter extends RecyclerView.Adapter<UsageStatsAdapter.MyViewHolder> {
         private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
         private final UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
-        private final AppNameComparator mAppLabelComparator;
-        private final ArrayList<AppUsage> mPackageStats = new ArrayList<>();
+        private final AppNameComparator mAppLabelComparator = new AppNameComparator();
+        private final ArrayList<AppUsage> mPackageStats;
         private final Context mContext;
         //private final ArrayMap<String, Drawable> mIcons = new ArrayMap<>();
-        private int mDisplayOrder = _DISPLAY_ORDER_USAGE_TIME;
-        private long totalTime = 0;
+        private int mDisplayOrder;
+        private final LayoutInflater mInflater;
 
         UsageStatsAdapter(List<AppUsage> appList, Context c) {
             mContext = c;
-            for (AppUsage app : appList) {
-                //Drawable appIcon = null;
-                //appIcon = getPackageManager().getApplicationIcon(app.pkgName);
-                totalTime = totalTime + app.totalTime;
-
-                int index = mPackageStats.indexOf(app);
-                if (index == -1) {
-                    mPackageStats.add(app);
-                } else {
-                    AppUsage newApp = mPackageStats.remove(index);
-                    newApp.totalTime += app.totalTime;
-                    if (app.lastTimeUsed > newApp.lastTimeUsed)
-                        newApp.lastTimeUsed = app.lastTimeUsed;
-
-                    mPackageStats.add(newApp);
-                }
-            }
-
-            TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
-
-            // Set colours according to total time spent
-            if (totalTime <= xDays * Constants.CORRECT_USAGE_DAY)
-                TV_totalUse.setTextColor(Color.GREEN);
-            else if (totalTime > xDays * Constants.DANGEROUS_USAGE_DAY)
-                TV_totalUse.setTextColor(Color.RED);
-            else TV_totalUse.setTextColor(Color.rgb(255, 128, 64));
-
-            // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
-            long secondsInMilli = 1000;
-            long minutesInMilli = secondsInMilli * 60;
-            long hoursInMilli = minutesInMilli * 60;
-            long daysInMilli = hoursInMilli * 24;
-
-            long elapsedDays = totalTime / daysInMilli;
-            totalTime = totalTime % daysInMilli;
-
-            long elapsedHours = totalTime / hoursInMilli;
-            totalTime = totalTime % hoursInMilli;
-
-            long elapsedMinutes = totalTime / minutesInMilli;
-            totalTime = totalTime % minutesInMilli;
-
-            String text;
-            if (elapsedDays == 0) {
-                if (elapsedHours == 0) {
-                    text = elapsedMinutes + getString(R.string.minutes);
-                } else {
-                    text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
-                }
-            } else {
-               text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
-            }
-            TV_totalUse.setText(text);
+            mInflater = LayoutInflater.from(c);
+            mPackageStats = new ArrayList<>(appList);
 
             // Sort list
-            mAppLabelComparator = new AppNameComparator();
             sortList();
         }
 
+        @NonNull
         @Override
-        public int getCount() {
-            return mPackageStats.size();
+        public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = mInflater.inflate(R.layout.usage_stats_item, parent,false);
+
+            return new MyViewHolder(view);
         }
 
         @Override
-        public Object getItem(int position) {
-            return mPackageStats.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            // A ViewHolder keeps references to children views to avoid unneccessary calls
-            // to findViewById() on each row.
-            AppViewHolder holder;
-
-            // When convertView is not null, we can reuse it directly, there is no need
-            // to reinflate it. We only inflate a new View when the convertView supplied
-            // by ListView is null.
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.usage_stats_item, null);
-
-                // Creates a ViewHolder and store references to the two children views
-                // we want to bind data to.
-                holder = new AppViewHolder();
-                holder.pkgName = convertView.findViewById(R.id.package_name);
-                holder.lastTimeUsed = convertView.findViewById(R.id.last_time_used);
-                holder.usageTime = convertView.findViewById(R.id.usage_time);
-
-                holder.icon = convertView.findViewById(R.id.usage_icon);
-                convertView.setTag(holder);
-            } else {
-                // Get the ViewHolder back to get fast access to the TextView
-                // and the ImageView.
-                holder = (AppViewHolder) convertView.getTag();
-            }
-
-            // Bind the data efficiently with the holder
+        public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
                 Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
-                holder.lastTimeUsed.setText(DateUtils.formatSameDayTime(pkgStats.lastTimeUsed,
-                        System.currentTimeMillis(), DateFormat.MEDIUM, DateFormat.MEDIUM));
+                holder.lastTimeUsed.setText(formatter.format(pkgStats.lastTimeUsed));
                 // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
                 long secondsInMilli = 1000;
                 long minutesInMilli = secondsInMilli * 60;
                 long hoursInMilli = minutesInMilli * 60;
                 long daysInMilli = hoursInMilli * 24;
 
-                totalTime = pkgStats.totalTime;
+                long totalTime = pkgStats.totalTime;
 
                 long elapsedDays = totalTime / daysInMilli;
-                totalTime = totalTime % daysInMilli;
+                totalTime %= daysInMilli;
 
                 long elapsedHours = totalTime / hoursInMilli;
-                totalTime = totalTime % hoursInMilli;
+                totalTime %= hoursInMilli;
 
                 long elapsedMinutes = totalTime / minutesInMilli;
-                totalTime = totalTime % minutesInMilli;
 
                 String time;
                 if (elapsedDays == 0) {
@@ -532,20 +469,26 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 double usageTimeInt = pkgStats.totalTime / (double) 3600000;
 
                 if (usageTimeInt <= xDays * Constants.CORRECT_USAGE_APP)
-                    holder.usageTime.setTextColor(Color.GREEN);
+                    holder.usageTime.setTextColor(getColor(R.color.colorPrimary));
                 else if (usageTimeInt > xDays * Constants.DANGEROUS_USAGE_APP)
                     holder.usageTime.setTextColor(Color.RED);
                 else holder.usageTime.setTextColor(Color.rgb(255, 128, 64));
-                //holder.icon.setImageDrawable(mIcons.get(pkgStats.getPackageName()));
             } else {
                 Log.w(TAG, "No usage stats info for package:" + position);
             }
-            return convertView;
         }
 
-        void sortList(int sortOrder) {
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemCount() { return mPackageStats.size(); }
+
+        public void sortList(int sortOrder) {
             if (mDisplayOrder == sortOrder) {
-                // do nothing
+                notifyDataSetChanged();
                 return;
             }
             mDisplayOrder = sortOrder;
@@ -564,6 +507,24 @@ public class DayUsageActivity extends AppCompatActivity implements AdapterView.O
                 mPackageStats.sort(mAppLabelComparator);
             }
             notifyDataSetChanged();
+        }
+
+        public class MyViewHolder extends RecyclerView.ViewHolder {
+            TextView pkgName, lastTimeUsed, usageTime;
+            ImageView icon;
+
+            protected View mRootView;
+
+            MyViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                mRootView = itemView;
+
+                pkgName = mRootView.findViewById(R.id.package_name);
+                lastTimeUsed = mRootView.findViewById(R.id.last_time_used);
+                usageTime = mRootView.findViewById(R.id.usage_time);
+                icon = mRootView.findViewById(R.id.usage_icon);
+            }
         }
     }
 
