@@ -266,12 +266,12 @@ public class DayUsageActivity extends AppCompatActivity {
         finalDate.set(finalYear,finalMonth,finalDay);
         long finalMillis = finalDate.getTimeInMillis();
 
-        MaterialDatePicker.Builder<Pair<Long, Long>> builderRange = MaterialDatePicker.Builder.dateRangePicker();
-        builderRange.setTheme(R.style.ChipStyle)
+        MaterialDatePicker<Pair<Long, Long>> pickerRange = MaterialDatePicker.Builder.dateRangePicker()
+                .setTheme(R.style.ThemeOverlay_MaterialComponents_MaterialCalendar)
                 .setCalendarConstraints(limitRange().build())
                 .setTitleText(getString(R.string.choose_date_range))
-                .setSelection(new Pair<>(initialMillis, finalMillis));
-        MaterialDatePicker<Pair<Long, Long>> pickerRange = builderRange.build();
+                .setSelection(new Pair<>(initialMillis, finalMillis))
+                .build();
 
         pickerRange.addOnPositiveButtonClickListener(selection -> {
             if(selection != null && selection.first != null && selection.second != null) {
