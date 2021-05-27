@@ -34,7 +34,7 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-
+            "Botó de \"Temps Lliure\" ja funciona com cal"
     };
 
     public static String[] changes = {
