@@ -100,7 +100,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         BT_blockNow.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
-                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.select_apps_lock, Toast.LENGTH_LONG).show();
             else {
                 Call<String> call = mTodoService.blockApps(idChild, selectedApps);
 
@@ -127,13 +127,13 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         BT_limitApp.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
-                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.select_apps_lock, Toast.LENGTH_LONG).show();
             else useTimePicker();
         });
 
         BT_unlock.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
-                Toast.makeText(getApplicationContext(), R.string.select_apps, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.select_apps_unlock, Toast.LENGTH_LONG).show();
             else {
                 Call<String> call = mTodoService.unlockApps(idChild, selectedApps);
 
