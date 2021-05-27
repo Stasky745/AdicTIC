@@ -3,8 +3,6 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
-
 import com.example.adictic.BuildConfig;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
@@ -15,18 +13,10 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-
-import okhttp3.Authenticator;
-import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
