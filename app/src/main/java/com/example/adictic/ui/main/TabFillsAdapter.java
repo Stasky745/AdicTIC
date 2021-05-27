@@ -38,7 +38,6 @@ public class TabFillsAdapter extends FragmentStateAdapter {
             throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
         } else {
             lastId = fills.get(position).idChild;
-            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) Funcions.askChildForLiveApp(ctx, lastId, true);
 
             return new MainParentFragment(fills.get(position));
         }
