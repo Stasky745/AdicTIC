@@ -35,7 +35,9 @@ public class TodoApp extends Application {
 
     public static String[] fixes = {
             "Botó de \"Temps Lliure\" ja funciona com cal",
-            "Ja es sincronitza bé per veure l'aplicació actual del fill en tot moment"
+            "Ja es sincronitza bé per veure l'aplicació actual del fill en tot moment",
+            "La geolocalització POTSER funciona (cal provar)",
+            "El total d'hores de l'informe i l'informe diari ja corresponen"
     };
 
     public static String[] changes = {

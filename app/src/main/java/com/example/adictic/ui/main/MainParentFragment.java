@@ -108,12 +108,10 @@ public class MainParentFragment extends Fragment {
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         setButtons();
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             getStats();
-        }
-        else {
+        else
             makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
-        }
 
         return root;
     }

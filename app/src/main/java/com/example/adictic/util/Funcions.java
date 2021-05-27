@@ -490,13 +490,23 @@ public class Funcions {
     // GeolocWorkers
 
     public static void runGeoLocWorker(Context mContext) {
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(GeoLocWorker.class, 1, TimeUnit.HOURS)
+                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniquePeriodicWork("geoLocWorker", ExistingPeriodicWorkPolicy.KEEP, myWork);
+    }
+
+    public static void runGeoLocWorkerOnce(Context mContext) {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(GeoLocWorker.class)
                         .setInitialDelay(0, TimeUnit.MILLISECONDS)
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("geoLocWorker", ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniqueWork("geoLocWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
     }
 
     // UpdateTokenWorker

@@ -41,7 +41,7 @@ public class GeoLocWorker extends Worker {
     private final FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
-    float accuracy = 0;
+    private float accuracy = 0;
 
     public GeoLocWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -80,12 +80,12 @@ public class GeoLocWorker extends Worker {
             Log.d(TAG,"Google Location OK - Enviant Localització");
             enviarLoc();
             return Result.success();
-        } else if (isNetworkEnabled) {
+        }
+        else if (isNetworkEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
 
             float oldAccuracy = 100;
             while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
-                Looper.prepare();
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
                 iterations++;
             }
@@ -152,7 +152,6 @@ public class GeoLocWorker extends Worker {
         public void onLocationChanged(Location location) {
             accuracy = location.getAccuracy();
             currentLocation = new GeoPoint(location);
-            //displayMyCurrentLocationOverlay();
         }
 
         public void onProviderDisabled(String provider) {

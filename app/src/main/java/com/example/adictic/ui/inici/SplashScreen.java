@@ -85,8 +85,10 @@ public class SplashScreen extends AppCompatActivity {
 
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "Firebase Token = " + token);
-                                if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+                                if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+                                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
                                     SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                }
                                 else if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false) && sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1) > 0)
                                     mirarPermisos();
                                 else {
