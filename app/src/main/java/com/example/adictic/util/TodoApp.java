@@ -48,7 +48,7 @@ public class TodoApp extends Application {
     };
 
     public static String[] changes = {
-            "Nou calendari a \"Veure ús d'aplicacions\" (canvi d'estil de l'app, AVISAR si hi ha algun color extrany)"
+            "Ja no es veuen els valors sobre les barres de l'informe"
     };
 
     @Override

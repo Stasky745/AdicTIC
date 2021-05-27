@@ -213,6 +213,7 @@ public class GraphsFragment extends Fragment {
     private void setBarChart(List<BarEntry> entries) {
         BarDataSet barDataSet = new BarDataSet(entries, getResources().getString(R.string.daily_usage));
         barDataSet.setColors(Constants.GRAPH_COLORS);
+        barDataSet.setDrawValues(false);
 
         BarData barData = new BarData(barDataSet);
 
