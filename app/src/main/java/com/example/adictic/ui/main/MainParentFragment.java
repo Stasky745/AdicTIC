@@ -107,25 +107,33 @@ public class MainParentFragment extends Fragment {
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setLastLiveApp();
+        setButtons();
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+            getStats();
+        }
+        else {
+            makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
+        }
+
+        return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+            setLastLiveApp();
         else{
             IV_liveIcon.setVisibility(View.GONE);
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
             currentApp.setVisibility(View.GONE);
         }
-
-        setButtons();
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
-            getStats();
-        else
-            makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
-
-
-        return root;
     }
 
     private void setLastLiveApp(){
-        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected)) setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
+        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected))
+            setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
         //Fer-ho si fa més de 5 minuts que no hem actualitzat.
         if(!parentActivity.mainParent_lastAppUsedUpdate.containsKey(idChildSelected) ||
                 (parentActivity.mainParent_lastAppUsedUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
@@ -265,17 +273,20 @@ public class MainParentFragment extends Fragment {
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call;
                 if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
-                    call = mTodoService.blockChild(idChildSelected);
-                } else call = mTodoService.unblockChild(idChildSelected);
+                    call = mTodoService.freeUse(idChildSelected, true);
+                } else
+                    call = mTodoService.freeUse(idChildSelected, false);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
                             if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
                                 BT_FreeTime.setText(getString(R.string.stop_free_time));
-                            else BT_FreeTime.setText(getString(R.string.free_time));
+                            else
+                                BT_FreeTime.setText(getString(R.string.free_time));
                         }
-                        else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
