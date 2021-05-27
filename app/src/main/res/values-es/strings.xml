@@ -174,7 +174,7 @@
 
     <string name="app_icon"> "Logo de la app" </string>
 
-    <string name="select_apps"> "Seleccionar las aplicaciones que quieres bloquear" </string>
+    <string name="select_apps_lock">" Seleccionar las aplicaciones que quieres bloquear"</string>
 
     <string name="free_use_activation"> "Tienes uso ilimitado de este dispositivo" </string>
     <string name="free_use_deactivation"> "Se acabó el uso ilimitado de este dispositivo" </string>
@@ -322,4 +322,5 @@
     <string name="noves_implementacions">Nuevas implementaciones</string>
     <string name="problemes_arreglats">Arreglos</string>
     <string name="canvis">Cambios</string>
+    <string name="select_apps_unlock">" Seleccionar las aplicaciones que quieres desbloquear"</string>
 </resources>
