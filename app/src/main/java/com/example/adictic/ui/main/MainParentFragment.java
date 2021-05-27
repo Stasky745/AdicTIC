@@ -122,6 +122,9 @@ public class MainParentFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+            Funcions.askChildForLiveApp(requireContext(), idChildSelected, true);
+
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             setLastLiveApp();
         else{
