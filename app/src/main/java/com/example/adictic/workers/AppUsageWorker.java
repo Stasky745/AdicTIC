@@ -15,7 +15,6 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.AppInfo;
-import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Constants;
@@ -25,8 +24,6 @@ import com.example.adictic.util.TodoApp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import javax.xml.transform.Result;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,6 +47,9 @@ public class AppUsageWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+
+        // Inicialitzem el GeoLocWorker si no existeix
+        Funcions.runGeoLocWorker(getApplicationContext());
 
         checkInstalledApps();
 

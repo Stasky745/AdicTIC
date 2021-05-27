@@ -105,6 +105,9 @@ public interface TodoApi {
     @POST("/users/{id}/unblock")
     Call<String> unblockChild(@Path("id") Long childId);
 
+    @POST("/users/{idChild}/freeuse")
+    Call<String> freeUse(@Path("idChild") Long childId, @Body Boolean freeUse);
+
     @GET("/users/{idChild}/blockStatus")
     Call<Boolean> getBlockStatus(@Path("idChild") Long childId);
 

@@ -114,11 +114,12 @@ public class BackgroundLocationPerm extends AppCompatActivity {
                         .setTitle(R.string.dialog_title_perm_loc)
                         .setMessage(R.string.dialog_body_perm_loc)
                         .setPositiveButton(R.string.accept, (dialogInterface, x) -> {
-                            demanarPermisos();
-                        })
-                        .setNegativeButton(R.string.cancel, ((dialogInterface, j) -> {
                             startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
                             finish();
+                        })
+                        .setNegativeButton(R.string.cancel, ((dialogInterface, j) -> {
+                            dialogInterface.dismiss();
+                            demanarPermisos();
                         }))
                         .show();
             }

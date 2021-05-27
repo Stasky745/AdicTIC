@@ -66,6 +66,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
+
+        if (Objects.equals(Crypt.getAES(token), sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "")))
+            return;
+
         long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
         if(idUser!=-1) {
             if (sharedPreferences.getBoolean("isTutor", false))
@@ -181,7 +185,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 long now = Calendar.getInstance().getTimeInMillis();
                 long minute = 1000*60;
                 if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                    Funcions.runGeoLocWorker(getApplicationContext());
+                    Funcions.runGeoLocWorkerOnce(getApplicationContext());
                     updateGeoloc = now;
                 }
             }

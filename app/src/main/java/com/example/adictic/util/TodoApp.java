@@ -3,8 +3,6 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
-
 import com.example.adictic.BuildConfig;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
@@ -15,18 +13,10 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
-
-import okhttp3.Authenticator;
-import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -44,11 +34,15 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-
+            "Botó de \"Temps Lliure\" ja funciona com cal",
+            "Ja es sincronitza bé per veure l'aplicació actual del fill en tot moment",
+            "La geolocalització POTSER funciona (cal provar)",
+            "El total d'hores de l'informe i l'informe diari ja corresponen",
+            "Ara ja desbloqueja apps al moment"
     };
 
     public static String[] changes = {
-            "Nou calendari a \"Veure ús d'aplicacions\" (canvi d'estil de l'app, AVISAR si hi ha algun color extrany)"
+            "Ja no es veuen els valors sobre les barres de l'informe"
     };
 
     @Override
