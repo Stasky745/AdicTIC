@@ -34,15 +34,11 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Botó de \"Temps Lliure\" ja funciona com cal",
-            "Ja es sincronitza bé per veure l'aplicació actual del fill en tot moment",
-            "La geolocalització POTSER funciona (cal provar)",
-            "El total d'hores de l'informe i l'informe diari ja corresponen",
-            "Ara ja desbloqueja apps al moment"
+            "Descans nocturn no peta quan s'apreta el botó sense res dins"
     };
 
     public static String[] changes = {
-            "Ja no es veuen els valors sobre les barres de l'informe"
+
     };
 
     @Override
