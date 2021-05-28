@@ -53,7 +53,8 @@ public class DayUsageActivity extends AppCompatActivity {
     private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
     private static final int _DISPLAY_ORDER_APP_NAME = 2;
 
-    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private final SimpleDateFormat formatterDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    private final SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     private TodoApi mTodoService;
 
@@ -142,7 +143,7 @@ public class DayUsageActivity extends AppCompatActivity {
             finalMonth = initialMonth = cal.get(Calendar.MONTH);
             finalYear = initialYear = cal.get(Calendar.YEAR);
 
-            String text = formatter.format(cal.getTimeInMillis());
+            String text = formatterDate.format(cal.getTimeInMillis());
             TV_dates.setText(text);
         } else {
             finalDay = initialDay = day;
@@ -151,7 +152,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
             Calendar calendar = Calendar.getInstance();
             calendar.set(finalYear, finalMonth, finalDay);
-            String text = formatter.format(calendar.getTimeInMillis());
+            String text = formatterDate.format(calendar.getTimeInMillis());
             TV_dates.setText(text);
         }
 
@@ -293,9 +294,9 @@ public class DayUsageActivity extends AppCompatActivity {
 
                 String text;
                 if(firstDate.get(Calendar.DAY_OF_YEAR) == finalDate1.get(Calendar.DAY_OF_YEAR))
-                    text = formatter.format(selection.first);
+                    text = formatterDate.format(selection.first);
                 else
-                    text = formatter.format(selection.first) + " - " + formatter.format(selection.second);
+                    text = formatterDate.format(selection.first) + " - " + formatterDate.format(selection.second);
                 TV_dates.setText(text);
             }
         });
@@ -435,7 +436,12 @@ public class DayUsageActivity extends AppCompatActivity {
                 Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
-                holder.lastTimeUsed.setText(formatter.format(pkgStats.lastTimeUsed));
+
+                long now = Calendar.getInstance().getTimeInMillis();
+                if(now - pkgStats.lastTimeUsed < Constants.TOTAL_MILLIS_IN_DAY)
+                    holder.lastTimeUsed.setText(formatterTime.format(pkgStats.lastTimeUsed));
+                else
+                    holder.lastTimeUsed.setText(formatterDate.format(pkgStats.lastTimeUsed));
                 // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
                 long secondsInMilli = 1000;
                 long minutesInMilli = secondsInMilli * 60;
