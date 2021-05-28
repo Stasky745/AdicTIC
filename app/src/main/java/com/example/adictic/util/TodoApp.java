@@ -34,11 +34,13 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Descans nocturn no peta quan s'apreta el botó sense res dins"
+            "Descans nocturn no peta quan s'apreta el botó sense res dins",
+            "Data i text d'ús d'aplicacions ja no es solapa",
+            "Geolocalització ensenya el mapa buit si no rep res del servidor, no ensenya mapa si no connecta amb servidor"
     };
 
     public static String[] changes = {
-
+            "Ús d'aplicacions ensenya hora en comptes de data de l'últim cop utilitzat si fa menys de 24h"
     };
 
     @Override
