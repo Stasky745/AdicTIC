@@ -140,7 +140,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // Si és FreeUse, tornem sense fer res
             if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE,false)){
-                Log.d(TAG, "Not FreeUse, return.");
+                Log.d(TAG, "FreeUse, return.");
                 return;
             }
 
