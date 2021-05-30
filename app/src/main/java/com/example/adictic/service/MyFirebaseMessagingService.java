@@ -181,6 +181,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Funcions.checkHoraris(getApplicationContext());
                 title = getString(R.string.horaris_notification);
             }
+            else if (messageMap.containsKey("events")) {
+                Funcions.checkHoraris(getApplicationContext());
+            }
             else if (messageMap.containsKey("geolocActive")) {
                 long now = Calendar.getInstance().getTimeInMillis();
                 long minute = 1000*60;

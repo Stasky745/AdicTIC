@@ -103,7 +103,11 @@ public class ClosedChatActivity extends AppCompatActivity {
 
     public void getMessages() {
         mMessageAdapter.clear();
-        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(adminProfile.idUser.toString());
+        long idChild = -1L;
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(idChild, adminProfile.idUser);
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
