@@ -36,31 +36,35 @@ import retrofit2.Response;
 
 public class HorarisActivity extends AppCompatActivity {
 
+    private final int TIPUS_HORARIS_DIARIS = 1;
+    private final int TIPUS_HORARIS_SETMANA = 2;
+    private final int TIPUS_HORARIS_GENERICS = 3;
+
     private SharedPreferences sharedPreferences;
 
-    static ChipGroup chipGroup;
-    static Chip CH_horariGeneric;
-    static Chip CH_horariDiari;
-    static Chip CH_horariSetmana;
-    TodoApi mTodoService;
-    long idChild;
-    int canvis;
-    ScrollView SV_horariDiari;
-    ConstraintLayout CL_horariGeneric;
-    ConstraintLayout CL_horariSetmana;
+    private static ChipGroup chipGroup;
+    private static Chip CH_horariGeneric;
+    private static Chip CH_horariDiari;
+    private static Chip CH_horariSetmana;
+    private TodoApi mTodoService;
+    private long idChild;
+    private int canvis;
+    private ScrollView SV_horariDiari;
+    private ConstraintLayout CL_horariGeneric;
+    private ConstraintLayout CL_horariSetmana;
 
-    TextView ET_wakeMon, ET_wakeTue, ET_wakeWed, ET_wakeThu, ET_wakeFri, ET_wakeSat, ET_wakeSun;
-    TextView ET_sleepMon, ET_sleepTue, ET_sleepWed, ET_sleepThu, ET_sleepFri, ET_sleepSat, ET_sleepSun;
-    TextView ET_wakeGeneric;
-    TextView ET_sleepGeneric;
-    TextView ET_wakeWeekday, ET_wakeWeekend;
-    TextView ET_sleepWeekday, ET_sleepWeekend;
+    private TextView ET_wakeMon, ET_wakeTue, ET_wakeWed, ET_wakeThu, ET_wakeFri, ET_wakeSat, ET_wakeSun;
+    private TextView ET_sleepMon, ET_sleepTue, ET_sleepWed, ET_sleepThu, ET_sleepFri, ET_sleepSat, ET_sleepSun;
+    private TextView ET_wakeGeneric;
+    private TextView ET_sleepGeneric;
+    private TextView ET_wakeWeekday, ET_wakeWeekend;
+    private TextView ET_sleepWeekday, ET_sleepWeekend;
 
-    TextView TV_info;
+    private TextView TV_info;
 
-    Button BT_sendHoraris;
+    private Button BT_sendHoraris;
 
-    HorarisAPI horarisNits;
+    private HorarisAPI horarisNits;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -206,13 +210,13 @@ public class HorarisActivity extends AppCompatActivity {
 
     public void setTexts(int tipus) {
         switch (tipus) {
-            case 1:
+            case TIPUS_HORARIS_DIARIS:
                 chipGroup.check(CH_horariDiari.getId());
                 break;
-            case 2:
+            case TIPUS_HORARIS_SETMANA:
                 chipGroup.check(CH_horariSetmana.getId());
                 break;
-            case 3:
+            case TIPUS_HORARIS_GENERICS:
                 chipGroup.check(CH_horariGeneric.getId());
                 break;
         }
@@ -223,43 +227,62 @@ public class HorarisActivity extends AppCompatActivity {
                 list.add(horarisNit);
             }
             if(horarisNit.dia == Calendar.MONDAY){
-                ET_wakeMon.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepMon.setText(Funcions.millisOfDay2String(horarisNit.dormir));
-
-                // Omplir els TextViews Genèrics també
-                ET_wakeGeneric.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepGeneric.setText(Funcions.millisOfDay2String(horarisNit.dormir));
-
-                ET_wakeWeekday.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepWeekday.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1){
+                    ET_wakeMon.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                    ET_wakeGeneric.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                    ET_wakeWeekday.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                }
+                if(horarisNit.dormir != -1) {
+                    ET_sleepMon.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                    ET_sleepGeneric.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                    ET_sleepWeekday.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                }
             }
             else if(horarisNit.dia == Calendar.TUESDAY){
-                ET_wakeTue.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepTue.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1)
+                    ET_wakeTue.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+
+                if(horarisNit.dormir != -1)
+                    ET_sleepTue.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.WEDNESDAY){
-                ET_wakeWed.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepWed.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1)
+                    ET_wakeWed.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+
+                if(horarisNit.dormir != -1)
+                    ET_sleepWed.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.THURSDAY){
-                ET_wakeThu.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepThu.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1)
+                    ET_wakeThu.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+
+                if(horarisNit.dormir != -1)
+                    ET_sleepThu.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.FRIDAY){
-                ET_wakeFri.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepFri.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1)
+                    ET_wakeFri.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+
+                if(horarisNit.dormir != -1)
+                    ET_sleepFri.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.SATURDAY){
-                ET_wakeSat.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepSat.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1)
+                    ET_wakeSat.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+
+                if(horarisNit.dormir != -1)
+                    ET_sleepSat.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.SUNDAY){
-                ET_wakeSun.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-                ET_sleepSun.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.despertar != -1){
+                    ET_wakeSun.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                    ET_wakeWeekend.setText(Funcions.millisOfDay2String(horarisNit.despertar));
+                }
 
-                ET_wakeWeekend.setText(Funcions.millisOfDay2String(horarisNit.despertar));
-
-                ET_sleepWeekend.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                if(horarisNit.dormir != -1) {
+                    ET_sleepSun.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                    ET_sleepWeekend.setText(Funcions.millisOfDay2String(horarisNit.dormir));
+                }
             }
         }
 
@@ -320,6 +343,11 @@ public class HorarisActivity extends AppCompatActivity {
     private void setButton() {
         BT_sendHoraris.setVisibility(View.VISIBLE);
         BT_sendHoraris.setOnClickListener(v -> {
+            if(canvis == 0) {
+                finish();
+                return;
+            }
+
             int checkedId = chipGroup.getCheckedChipId();
 
             List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
@@ -335,7 +363,8 @@ public class HorarisActivity extends AppCompatActivity {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    if (response.isSuccessful()) finish();
+                    if (response.isSuccessful())
+                        finish();
                     else
                         Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
                 }
