@@ -102,22 +102,29 @@ public class RestartEventsWorker extends Worker {
 
         // Si existeixen HORARISNIT
         if(horarisNitList != null && !horarisNitList.isEmpty()){
-            HorarisNit avui = horarisNitList.stream().filter(horarisNit -> horarisNit.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get();
+            HorarisNit avui = horarisNitList.stream()
+                    .filter(horarisNit -> horarisNit.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)))
+                    .findAny()
+                    .get();
             long now = DateTime.now().getMillisOfDay();
 
             Log.d(TAG,"Now=" + now + " | Despertar=" + avui.despertar + " | Dormir=" + avui.dormir);
 
-            if(now < avui.despertar){
+            boolean horarisNit_actiu = false;
+
+            if(avui.despertar != -1 && now < avui.despertar){
+                horarisNit_actiu = true;
                 Funcions.runDespertarWorker(getApplicationContext(),avui.despertar - now);
+                if(avui.dormir != -1)
+                    Funcions.runDormirWorker(getApplicationContext(), avui.dormir - now);
+            }
+            else if(avui.dormir != -1 && now < avui.dormir)
                 Funcions.runDormirWorker(getApplicationContext(), avui.dormir - now);
-            }
-            else if(now < avui.dormir){
-                Funcions.runDormirWorker(getApplicationContext(), avui.dormir - now);
-            }
-            else {
-                assert sharedPreferences != null;
-                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,true).apply();
-            }
+
+            else if(avui.dormir != -1 && avui.despertar != -1)
+                horarisNit_actiu = true;
+
+            sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,horarisNit_actiu).apply();
         }
 
         return Result.success();

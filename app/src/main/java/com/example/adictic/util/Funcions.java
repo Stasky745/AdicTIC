@@ -253,11 +253,16 @@ public class Funcions {
         return new Pair<>(hores, Math.round(minuts));
     }
 
+    // retorna -1 si no hi ha hora establerta
     public static int string2MillisOfDay(String time){
+        if(time == null || time.equals(""))
+            return -1;
+
         String[] time2 = time.split(":");
         DateTime dateTime = new DateTime()
                 .withHourOfDay(Integer.parseInt(time2[0]))
                 .withMinuteOfHour(Integer.parseInt(time2[1]));
+
         return dateTime.getMillisOfDay();
     }
 
