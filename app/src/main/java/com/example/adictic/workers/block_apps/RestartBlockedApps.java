@@ -35,6 +35,9 @@ public class RestartBlockedApps extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
+        // Netegem el fitxer de les apps bloquejades ara mateix
+        Funcions.clearFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS);
+
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,false);
 
         // Cancelem tots els workers que hi pugui haver
@@ -50,17 +53,21 @@ public class RestartBlockedApps extends Worker {
             return Result.success();
         }
 
-        permanentBlockedApps = blockedApps.stream().filter(blockedApp -> blockedApp.timeLimit == 0)
+        permanentBlockedApps = blockedApps.stream()
+                .filter(blockedApp -> blockedApp.timeLimit == 0)
                 .map(blockedApp -> blockedApp.pkgName)
                 .collect(Collectors.toList());
-        Funcions.write2File(getApplicationContext(),permanentBlockedApps);
+        Funcions.write2File(getApplicationContext(), permanentBlockedApps);
 
-        long delay = 0;
+        //long delay = 0;
 
         // Si el dispositiu està bloquejat durant la nit, afegim al delay el temps fins que s'hagi de despertar
-        List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
-        if(horarisNits != null && !horarisNits.isEmpty())
-            delay = Math.max(horarisNits.stream().filter(obj -> obj.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))).findAny().get().despertar - DateTime.now().getMillisOfDay(), delay);
+//        List<HorarisNit> horarisNits = Funcions.readFromFile(getApplicationContext(),Constants.FILE_HORARIS_NIT,false);
+//        if(horarisNits != null && !horarisNits.isEmpty())
+//            delay = Math.max(horarisNits.stream()
+//                    .filter(obj -> obj.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)))
+//                    .findAny()
+//                    .get().despertar - DateTime.now().getMillisOfDay(), delay);
 
 //        // Afegim al delay el temps mínim fins que es pugui bloquejar una app
 //        long minTimeAllowed = Constants.TOTAL_MILLIS_IN_DAY;
@@ -70,7 +77,7 @@ public class RestartBlockedApps extends Worker {
 //        }
 //        delay += minTimeAllowed;
 
-        Funcions.runBlockAppsWorker(getApplicationContext(),delay);
+        Funcions.runBlockAppsWorker(getApplicationContext(),0);
 
         return Result.success();
     }

@@ -35,9 +35,10 @@ import retrofit2.Response;
 // This is the Login fragment where the user enters the username and password and
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
-    static Login login;
-    TodoApi mTodoService;
+    private static Login login;
+    private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
+    private final String TAG = "Login";
 
     public static Login getInstance() {
         return login;
@@ -84,7 +85,6 @@ public class Login extends AppCompatActivity {
             noTypeDevice.setVisibility(View.GONE);
 
             // Firebase token
-            final String TAG = "Firebase Token: ";
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(task -> {
                         if (!task.isSuccessful()) {

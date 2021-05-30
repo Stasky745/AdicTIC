@@ -21,8 +21,6 @@ import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -213,6 +211,7 @@ public class GraphsFragment extends Fragment {
     private void setBarChart(List<BarEntry> entries) {
         BarDataSet barDataSet = new BarDataSet(entries, getResources().getString(R.string.daily_usage));
         barDataSet.setColors(Constants.GRAPH_COLORS);
+        barDataSet.setDrawValues(false);
 
         BarData barData = new BarData(barDataSet);
 

@@ -18,6 +18,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight">
@@ -47,7 +48,7 @@
         android:id="@+id/last_time_used"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="24dp"
         android:maxLines="1"
         android:paddingStart="12dip"
         android:paddingEnd="6dip"
@@ -55,7 +56,8 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/package_name" />
+        app:layout_constraintTop_toBottomOf="@+id/package_name"
+        tools:text="27/04/2020" />
 
     <TextView
         android:id="@+id/usage_time"
@@ -97,11 +99,15 @@
 
     <TextView
         android:id="@+id/TV_LastTimeUsed"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:text="@string/last_time_used"
         app:layout_constraintBottom_toBottomOf="@+id/last_time_used"
+        app:layout_constraintEnd_toStartOf="@+id/last_time_used"
         app:layout_constraintStart_toStartOf="@+id/package_name"
         app:layout_constraintTop_toTopOf="@+id/last_time_used" />
 
