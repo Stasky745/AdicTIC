@@ -34,15 +34,14 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Botó de \"Temps Lliure\" ja funciona com cal",
-            "Ja es sincronitza bé per veure l'aplicació actual del fill en tot moment",
-            "La geolocalització POTSER funciona (cal provar)",
-            "El total d'hores de l'informe i l'informe diari ja corresponen",
-            "Ara ja desbloqueja apps al moment"
+            "Desbloquejar apps correctament.",
+            "Descans nocturn no peta quan s'apreta el botó sense res dins",
+            "Data i text d'ús d'aplicacions ja no es solapa",
+            "Geolocalització ensenya el mapa buit si no rep res del servidor, no ensenya mapa si no connecta amb servidor"
     };
 
     public static String[] changes = {
-            "Ja no es veuen els valors sobre les barres de l'informe"
+            "Ús d'aplicacions ensenya hora en comptes de data de l'últim cop utilitzat si fa menys de 24h"
     };
 
     @Override

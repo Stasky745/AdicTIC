@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,17 +53,17 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
     private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
-    TodoApi mTodoService;
-    SharedPreferences sharedPreferences;
-    PackageManager mPm;
+    private TodoApi mTodoService;
+    private SharedPreferences sharedPreferences;
+    private PackageManager mPm;
 
-    List<String> blockedApps;
+    private List<String> blockedApps;
 
     private View floatyView;
     private WindowManager windowManager;
 
-    String lastActivity;
-    String lastPackage;
+    private String lastActivity;
+    private String lastPackage;
 
     @Override
     protected void onServiceConnected() {
@@ -140,7 +141,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // Si és FreeUse, tornem sense fer res
             if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE,false)){
-                Log.d(TAG, "Not FreeUse, return.");
+                Log.d(TAG, "FreeUse, return.");
                 return;
             }
 
@@ -154,7 +155,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false) || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+            boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
+                    || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
 
             int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
 
@@ -307,6 +309,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
             List<BlockedApp> llista = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,true);
             if(llista == null)
                 blockedApps = new ArrayList<>();
+            else
+                blockedApps = llista.stream()
+                        .map(blockedApp -> blockedApp.pkgName)
+                        .collect(Collectors.toList());
         }
     }
 

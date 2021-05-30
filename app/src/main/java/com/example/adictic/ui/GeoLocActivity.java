@@ -127,11 +127,12 @@ public class GeoLocActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<GeoFill>> call, @NonNull Response<List<GeoFill>> response) {
                 if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
-                    setMap();
 
                 } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    fills = new ArrayList<>();
                 }
+                setMap();
             }
 
             @Override
@@ -177,7 +178,8 @@ public class GeoLocActivity extends AppCompatActivity {
                 markers.add(marker);
                 map.getOverlays().add(marker);
 
-                if (fill.id == idChild) posicio = i;
+                if (fill.id == idChild)
+                    posicio = i;
                 i++;
             }
         }

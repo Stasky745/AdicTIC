@@ -31,7 +31,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -103,7 +102,11 @@ public class ClosedChatActivity extends AppCompatActivity {
 
     public void getMessages() {
         mMessageAdapter.clear();
-        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(adminProfile.idUser.toString());
+        long idChild = -1L;
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(idChild, adminProfile.idUser);
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
@@ -137,7 +140,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         public int getItemViewType(int position) {
             UserMessage message = mMessageList.get(position);
 
-            if (message.senderId.equals(myId)) {
+            if (message.userSenderId.equals(myId)) {
                 // If the current user is the sender of the message
                 return VIEW_TYPE_MESSAGE_SENT;
             } else {

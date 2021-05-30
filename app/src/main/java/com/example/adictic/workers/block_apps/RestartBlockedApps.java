@@ -35,6 +35,9 @@ public class RestartBlockedApps extends Worker {
 
         Log.d(TAG, "Starting Worker");
 
+        // Netegem el fitxer de les apps bloquejades ara mateix
+        Funcions.clearFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS);
+
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_BLOCKED_APPS,false);
 
         // Cancelem tots els workers que hi pugui haver
@@ -54,7 +57,7 @@ public class RestartBlockedApps extends Worker {
                 .filter(blockedApp -> blockedApp.timeLimit == 0)
                 .map(blockedApp -> blockedApp.pkgName)
                 .collect(Collectors.toList());
-        Funcions.write2File(getApplicationContext(),permanentBlockedApps);
+        Funcions.write2File(getApplicationContext(), permanentBlockedApps);
 
         //long delay = 0;
 
