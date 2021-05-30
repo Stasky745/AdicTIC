@@ -176,20 +176,20 @@ public interface TodoApi {
     //Chat
     ///////////////////////////////////
 
-    @POST("/message/access")
-    Call<String> giveAccess(@Body Boolean access);
+    @POST("/message/{childId}/access")
+    Call<String> giveAccess(@Path("childId") Long idChild, @Body Boolean access);
 
-    @GET("/message/me/info")
-    Call<ChatsMain> getChatsInfo();
+    @GET("/message/client/{childId}/info")
+    Call<ChatsMain> getChatsInfo(@Path("childId") Long childId);
 
-    @POST("/message/me/{id}/close")
-    Call<String> closeChat(@Path("id") Long idUserAdmin);
+    @POST("/message/client/{childId}/{adminId}/close")
+    Call<String> closeChat(@Path("adminId") Long idUserAdmin, @Path("childId") Long idChild);
 
-    @GET("/message/me/{id}")
-    Call<List<UserMessage>> getMyMessagesWithUser(@Path("id") String id);
+    @GET("/message/client/{childId}/{adminId}")
+    Call<List<UserMessage>> getMyMessagesWithUser(@Path("childId") Long childId, @Path("adminId") Long adminId);
 
-    @POST("/message/me/{id}")
-    Call<String> sendMessageToUser(@Path("id") String id, @Body UserMessage value);
+    @POST("/message/client/{childId}/{adminId}")
+    Call<String> sendMessageToUser(@Path("childId") Long childId, @Path("adminId") Long adminId, @Body UserMessage value);
 
     ///////////////////////////////////
 
