@@ -64,7 +64,7 @@ public class ChatFragment extends Fragment {
             UserMessage um = new UserMessage();
             um.message = intent.getStringExtra("message");
             um.createdAt = new Date();
-            um.senderId = intent.getLongExtra("senderId", 0);
+            um.userSenderId = intent.getLongExtra("senderId", 0);
             mMessageAdapter.add(um);
             if (!active) {
                 EditText chatbox = view.findViewById(R.id.edittext_chatbox);
@@ -133,7 +133,7 @@ public class ChatFragment extends Fragment {
                 UserMessage um = new UserMessage();
                 um.createdAt = new Date();
                 um.message = chatbox.getText().toString();
-                um.senderId = myId;
+                um.userSenderId = myId;
                 chatbox.setText("");
                 long adminId = chatInfo.admin.idUser;
                 long idChild = -1L;
@@ -347,7 +347,7 @@ public class ChatFragment extends Fragment {
         public int getItemViewType(int position) {
             UserMessage message = mMessageList.get(position);
 
-            if (message.senderId.equals(myId)) {
+            if (message.userSenderId.equals(myId)) {
                 // If the current user is the sender of the message
                 return VIEW_TYPE_MESSAGE_SENT;
             } else {

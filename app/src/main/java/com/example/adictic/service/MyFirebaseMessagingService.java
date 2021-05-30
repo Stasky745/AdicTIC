@@ -253,6 +253,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         MyNotificationManager.getInstance(this).displayNotification(title, body, null);
                         break;
                     case "1":  //Message with Chat
+                        body = remoteMessage.getData().get("body");
                         Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
                         Long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
                         if (ChatFragment.adminUserId.equals(userID)) {
@@ -279,7 +280,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         break;
                     case "2":
-                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userId")));
+                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
                         if (ChatFragment.adminUserId.equals(userId)) {
                             Intent intent = new Intent("CloseChat");
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
