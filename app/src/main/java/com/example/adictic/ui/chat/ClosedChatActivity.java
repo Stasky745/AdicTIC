@@ -31,7 +31,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -141,7 +140,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         public int getItemViewType(int position) {
             UserMessage message = mMessageList.get(position);
 
-            if (message.senderId.equals(myId)) {
+            if (message.userSenderId.equals(myId)) {
                 // If the current user is the sender of the message
                 return VIEW_TYPE_MESSAGE_SENT;
             } else {
