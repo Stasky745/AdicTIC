@@ -34,7 +34,8 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Desbloquejar apps correctament.","Descans nocturn no peta quan s'apreta el botó sense res dins",
+            "Desbloquejar apps correctament.",
+            "Descans nocturn no peta quan s'apreta el botó sense res dins",
             "Data i text d'ús d'aplicacions ja no es solapa",
             "Geolocalització ensenya el mapa buit si no rep res del servidor, no ensenya mapa si no connecta amb servidor"
     };

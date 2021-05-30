@@ -57,6 +57,7 @@ public class ChatFragment extends Fragment {
     private ChatInfo chatInfo;
     private Long myId;
     private View view;
+    private SharedPreferences sharedPreferences;
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -84,7 +85,7 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.chat_layout, container, false);
         Activity activity = getActivity();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
 
         assert getArguments() != null;
         access = getArguments().getBoolean("access");
@@ -134,8 +135,12 @@ public class ChatFragment extends Fragment {
                 um.message = chatbox.getText().toString();
                 um.senderId = myId;
                 chatbox.setText("");
-                long userId = chatInfo.admin.idUser;
-                Call<String> postCall = mTodoService.sendMessageToUser(Long.toString(userId), um);
+                long adminId = chatInfo.admin.idUser;
+                long idChild = -1L;
+                if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+                    idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+                Call<String> postCall = mTodoService.sendMessageToUser(idChild, adminId, um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> postCall, @NonNull Response<String> response) {
@@ -174,7 +179,11 @@ public class ChatFragment extends Fragment {
                         .setTitle(R.string.treure_acces_titol)
                         .setMessage(R.string.treure_acces_desc)
                         .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
-                            Call<String> call = mTodoService.giveAccess(false);
+                            long idChild = -1L;
+                            if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+                                idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+                            Call<String> call = mTodoService.giveAccess(idChild, false);
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -198,7 +207,11 @@ public class ChatFragment extends Fragment {
                         .setTitle(R.string.donar_acces_titol)
                         .setMessage(R.string.donar_acces_desc)
                         .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
-                            Call<String> call = mTodoService.giveAccess(true);
+                            long idChild = -1L;
+                            if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+                                idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+                            Call<String> call = mTodoService.giveAccess(idChild, true);
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -244,7 +257,11 @@ public class ChatFragment extends Fragment {
                 .setTitle(R.string.close_chat)
                 .setMessage(R.string.chat_close_desc)
                 .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
-                    Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser);
+                    long idChild = -1L;
+                    if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+                        idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+                    Call<String> call = mTodoService.closeChat(chatInfo.admin.idUser, idChild);
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -289,7 +306,11 @@ public class ChatFragment extends Fragment {
 
     public void getMessages() {
         mMessageAdapter.clear();
-        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(chatInfo.admin.idUser.toString());
+        long idChild = -1L;
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+        Call<List<UserMessage>> call = mTodoService.getMyMessagesWithUser(idChild, chatInfo.admin.idUser);
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
