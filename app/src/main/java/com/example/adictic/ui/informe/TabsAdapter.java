@@ -47,7 +47,8 @@ public class TabsAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        if (position == 0) return new GraphsFragment(childId, genericAppUsage);
+        if (position == 0)
+            return new GraphsFragment(childId, genericAppUsage);
         else
             return new ResumFragment(genericAppUsage, totalUsageTime, age, timesBlockedMap);
     }

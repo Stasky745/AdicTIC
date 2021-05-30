@@ -66,6 +66,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Instance ID token to your app server.
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
+
+        if (Objects.equals(Crypt.getAES(token), sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "")))
+            return;
+
         long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
         if(idUser!=-1) {
             if (sharedPreferences.getBoolean("isTutor", false))
@@ -177,11 +181,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Funcions.checkHoraris(getApplicationContext());
                 title = getString(R.string.horaris_notification);
             }
+            else if (messageMap.containsKey("events")) {
+                Funcions.checkHoraris(getApplicationContext());
+            }
             else if (messageMap.containsKey("geolocActive")) {
                 long now = Calendar.getInstance().getTimeInMillis();
                 long minute = 1000*60;
                 if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                    Funcions.runGeoLocWorker(getApplicationContext());
+                    Funcions.runGeoLocWorkerOnce(getApplicationContext());
                     updateGeoloc = now;
                 }
             }
@@ -246,6 +253,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         MyNotificationManager.getInstance(this).displayNotification(title, body, null);
                         break;
                     case "1":  //Message with Chat
+                        body = remoteMessage.getData().get("body");
                         Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
                         Long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
                         if (ChatFragment.adminUserId.equals(userID)) {
@@ -272,7 +280,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         break;
                     case "2":
-                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userId")));
+                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
                         if (ChatFragment.adminUserId.equals(userId)) {
                             Intent intent = new Intent("CloseChat");
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
