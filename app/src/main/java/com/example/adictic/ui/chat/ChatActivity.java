@@ -1,6 +1,7 @@
 package com.example.adictic.ui.chat;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -11,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.adictic.R;
 import com.example.adictic.entity.ChatsMain;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
@@ -37,7 +39,12 @@ public class ChatActivity extends AppCompatActivity {
         _vpChats = findViewById(R.id.VP_chats);
         _tabChat = findViewById(R.id.TABL_chats);
 
-        Call<ChatsMain> call = mTodoService.getChatsInfo();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChatActivity.this);
+        long idChild = -1L;
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+        Call<ChatsMain> call = mTodoService.getChatsInfo(idChild);
         call.enqueue(new Callback<ChatsMain>() {
             @Override
             public void onResponse(@NonNull Call<ChatsMain> call, @NonNull Response<ChatsMain> response) {
