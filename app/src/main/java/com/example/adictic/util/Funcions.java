@@ -154,6 +154,33 @@ public class Funcions {
                 .into(d);
     }
 
+    public static void checkEvents(Context ctx) {
+        Log.d(TAG,"Check Events");
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+
+        TodoApi mTodoService = ((TodoApp) (ctx.getApplicationContext())).getAPI();
+
+        assert sharedPreferences != null;
+
+        // Agafem els horaris de la nit i Events
+        Call<EventsAPI> call = mTodoService.getEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
+        call.enqueue(new Callback<EventsAPI>() {
+            @Override
+            public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    write2File(ctx, response.body().events);
+
+                    // Engeguem els workers
+                    runRestartEventsWorkerOnce(ctx,0);
+                    startRestartEventsWorker24h(ctx);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) { }
+        });
+    }
+
     public static void checkHoraris(Context ctx) {
         Log.d(TAG,"Check Horaris");
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
@@ -163,20 +190,12 @@ public class Funcions {
         assert sharedPreferences != null;
 
         // Agafem els horaris de la nit i Events
-        Call<HorarisEvents> call = mTodoService.getHorarisEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
-        call.enqueue(new Callback<HorarisEvents>() {
+        Call<HorarisAPI> call = mTodoService.getHoraris(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
+        call.enqueue(new Callback<HorarisAPI>() {
             @Override
-            public void onResponse(@NonNull Call<HorarisEvents> call, @NonNull Response<HorarisEvents> response) {
+            public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    if(response.body().horarisNit != null && !response.body().horarisNit.isEmpty())
-                        write2File(ctx, response.body().horarisNit);
-                    else
-                        clearFile(ctx,Constants.FILE_HORARIS_NIT);
-
-                    if(response.body().events != null && !response.body().events.isEmpty())
-                        write2File(ctx, response.body().events);
-                    else
-                        clearFile(ctx,Constants.FILE_EVENT_BLOCK);
+                    write2File(ctx, response.body().horarisNit);
 
                     // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
@@ -185,7 +204,7 @@ public class Funcions {
             }
 
             @Override
-            public void onFailure(@NonNull Call<HorarisEvents> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) { }
         });
     }
 
@@ -253,11 +272,16 @@ public class Funcions {
         return new Pair<>(hores, Math.round(minuts));
     }
 
+    // retorna -1 si no hi ha hora establerta
     public static int string2MillisOfDay(String time){
+        if(time == null || time.equals(""))
+            return -1;
+
         String[] time2 = time.split(":");
         DateTime dateTime = new DateTime()
                 .withHourOfDay(Integer.parseInt(time2[0]))
                 .withMinuteOfHour(Integer.parseInt(time2[1]));
+
         return dateTime.getMillisOfDay();
     }
 
