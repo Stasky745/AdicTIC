@@ -51,26 +51,25 @@ import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.EventBlock;
 import com.example.adictic.entity.EventsAPI;
-import com.example.adictic.entity.FreeUseApp;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.HorarisAPI;
-import com.example.adictic.entity.HorarisEvents;
 import com.example.adictic.entity.HorarisNit;
 import com.example.adictic.entity.LimitedApps;
 import com.example.adictic.entity.MonthEntity;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.service.WindowChangeDetectingService;
 import com.example.adictic.workers.AppUsageWorker;
+import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
 import com.example.adictic.workers.block_apps.RestartBlockedApps;
-import com.example.adictic.workers.event_workers.DespertarWorker;
-import com.example.adictic.workers.event_workers.DormirWorker;
 import com.example.adictic.workers.event_workers.FinishBlockEventWorker;
-import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.event_workers.RestartEventsWorker;
 import com.example.adictic.workers.event_workers.StartBlockEventWorker;
-import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.workers.horaris_workers.DespertarWorker;
+import com.example.adictic.workers.horaris_workers.DormirWorker;
+import com.example.adictic.workers.horaris_workers.RestartHorarisWorker;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -95,7 +94,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,7 +102,6 @@ import retrofit2.Response;
 import static com.example.adictic.util.Constants.KEY_SIZE;
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS;
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK;
-import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_FREE_USE_APPS;
 import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
@@ -194,12 +191,15 @@ public class Funcions {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    write2File(ctx, response.body().horarisNit);
+                if (response.isSuccessful()) {
+                    if(response.body() == null)
+                        clearFile(ctx, Constants.FILE_HORARIS_NIT);
+                    else
+                        write2File(ctx, response.body().horarisNit);
 
                     // Engeguem els workers
-                    runRestartEventsWorkerOnce(ctx,0);
-                    startRestartEventsWorker24h(ctx);
+                    runRestartHorarisWorkerOnce(ctx,0);
+                    startRestartHorarisWorker24h(ctx);
                 }
             }
 
@@ -389,7 +389,7 @@ public class Funcions {
 
         WorkManager.getInstance(mCtx)
                 .enqueueUniquePeriodicWork("24h_eventBlock",
-                        ExistingPeriodicWorkPolicy.KEEP,
+                        ExistingPeriodicWorkPolicy.REPLACE,
                         myWork);
 
         Log.d(TAG,"Worker RestartEvents 24h Configurat");
@@ -441,11 +441,42 @@ public class Funcions {
         Log.d(TAG,"Worker FinishBlockEvent Configurat - ID=" + id + " | delay=" + delay);
     }
 
+    // Horaris Worker
+
+    public static void startRestartHorarisWorker24h(Context mCtx){
+        long now = DateTime.now().getMillisOfDay();
+        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
+
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(RestartHorarisWorker.class, 24, TimeUnit.HOURS)
+                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("24h_horarisWorker",
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        myWork);
+
+        Log.d(TAG,"Worker RestartEvents 24h Configurat");
+    }
+
+    public static void runRestartHorarisWorkerOnce(Context mContext, long delay){
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(RestartHorarisWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork("HorarisWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker RestartEvents (únic) Començat");
+    }
+
     public static void runDespertarWorker(Context mContext, long delay){
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(DespertarWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
+                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -458,7 +489,7 @@ public class Funcions {
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(DormirWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
+                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -480,7 +511,7 @@ public class Funcions {
 
         WorkManager.getInstance(mCtx)
                 .enqueueUniquePeriodicWork("24h_blockApps",
-                        ExistingPeriodicWorkPolicy.KEEP,
+                        ExistingPeriodicWorkPolicy.REPLACE,
                         myWork);
 
         Log.d(TAG,"Worker RestartBlockedApps 24h Configurat");
@@ -641,76 +672,6 @@ public class Funcions {
         }
 
         return appUsages;
-    }
-
-    public static void updateLimitedAppsList(Context mContext) {
-        // Desactivem el "freeUse"
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
-        assert sharedPreferences != null;
-        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE,false).apply();
-
-        // Agafem les dades d'ús d'avui
-        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
-        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
-
-        // Agafem totes les FreeUseApps
-        List<FreeUseApp> freeUseApps = readFromFile(mContext,Constants.FILE_FREE_USE_APPS,false);
-
-        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
-        assert freeUseApps != null;
-        for(FreeUseApp app : freeUseApps){
-            if(appUsage.stream().anyMatch(appUsage1 -> appUsage1.app.pkgName.equals(app.pkgName))) {
-                AppUsage au = appUsage.stream()
-                        .filter(appUsage1 -> appUsage1.app.pkgName.equals(app.pkgName))
-                        .findFirst()
-                        .get();
-                app.millisUsageEnd = au.totalTime;
-            }
-        }
-
-        write2File(mContext,freeUseApps);
-    }
-
-    public static void startFreeUseLimitList(Context mContext) {
-        // Activem el "freeUse"
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
-        assert sharedPreferences != null;
-        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE,true).apply();
-
-        // Agafem les dades d'ús d'avui
-        List<GeneralUsage> generalUsages = getGeneralUsages(mContext,-1, -1);
-        List<AppUsage> appUsage = new ArrayList<>(generalUsages.get(0).usage);
-
-        // Inicialitzem la taula de FreeUseApps i agafem totes les BlockedApps que no han sobrepassat el límit
-        List<BlockedApp> blockedApps = readFromFile(mContext,Constants.FILE_BLOCKED_APPS,false);
-        List<String> nowBlockedApps = readFromFile(mContext, Constants.FILE_CURRENT_BLOCKED_APPS, false);
-
-        assert blockedApps != null;
-        assert nowBlockedApps != null;
-        List<String> notBlockedApps = blockedApps.stream()
-                .filter(blockedApp -> nowBlockedApps.contains(blockedApp.pkgName))
-                .map(blockedApp -> blockedApp.pkgName)
-                .collect(Collectors.toList());
-
-        List<FreeUseApp> freeUseApps = new ArrayList<>();
-
-        // Per cada blockedApp -> creem un FreeUseApp amb el temps total d'ús de l'app en aquest moment
-        for(String app : notBlockedApps){
-            FreeUseApp freeUseApp = new FreeUseApp();
-            if(appUsage.stream().anyMatch(obj -> obj.app.pkgName.equals(app))){
-                AppUsage au = appUsage.stream().filter(obj -> obj.app.pkgName.equals(app)).findFirst().get();
-                freeUseApp.millisUsageStart = au.totalTime;
-            }
-            else{
-                freeUseApp.millisUsageStart = 0;
-            }
-            freeUseApp.pkgName = app;
-            freeUseApp.millisUsageEnd = 0;
-
-            freeUseApps.add(freeUseApp);
-        }
-
-        write2File(mContext,freeUseApps);
     }
 
     /**
@@ -971,9 +932,6 @@ public class Funcions {
             case Constants.FILE_EVENT_BLOCK:
                 return new TypeToken<ArrayList<EventBlock>>() {
                 }.getType();
-            case Constants.FILE_FREE_USE_APPS:
-                return new TypeToken<ArrayList<FreeUseApp>>() {
-                }.getType();
             case Constants.FILE_HORARIS_NIT:
                 return new TypeToken<ArrayList<HorarisNit>>() {
                 }.getType();
@@ -996,8 +954,6 @@ public class Funcions {
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
         else if (object instanceof EventBlock)
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
-        else if (object instanceof FreeUseApp)
-            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_FREE_USE_APPS,bool).apply();
         else if (object instanceof HorarisNit)
             getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
         else if (object instanceof String)
@@ -1016,8 +972,6 @@ public class Funcions {
             return getEncryptedFile(mCtx,Constants.FILE_BLOCKED_APPS, true);
         else if (object instanceof EventBlock)
             return getEncryptedFile(mCtx,Constants.FILE_EVENT_BLOCK, true);
-        else if (object instanceof FreeUseApp)
-            return getEncryptedFile(mCtx,Constants.FILE_FREE_USE_APPS, true);
         else if (object instanceof HorarisNit)
             return getEncryptedFile(mCtx,Constants.FILE_HORARIS_NIT, true);
         else if (object instanceof String)

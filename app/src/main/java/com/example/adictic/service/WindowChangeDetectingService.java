@@ -72,9 +72,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         assert sharedPreferences != null;
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             disableSelf();
-        }
         else {
             fetchDades();
 
@@ -115,6 +114,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
             });
 
+            Funcions.checkEvents(getApplicationContext());
             Funcions.checkHoraris(getApplicationContext());
 
             Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
