@@ -323,4 +323,6 @@
     <string name="problemes_arreglats">Arreglos</string>
     <string name="canvis">Cambios</string>
     <string name="select_apps_unlock">" Seleccionar las aplicaciones que quieres desbloquear"</string>
+    <string name="esborrar_horaris_title">Borrar Horarios</string>
+    <string name="esborrar_horaris_desc">Se borrarán todos los horarios programados. Seguro que quieres continuar?</string>
 </resources>

@@ -340,4 +340,6 @@
     <string name="problemes_arreglats">Problemes arreglats</string>
     <string name="canvis">Canvis</string>
     <string name="app_update_title">APLICACIÓ ACTUALITZADA</string>
+    <string name="esborrar_horaris_title">Esborrar Horaris</string>
+    <string name="esborrar_horaris_desc">S\'esborraran tots els horaris programats. Segur que vols continuar?</string>
 </resources>
