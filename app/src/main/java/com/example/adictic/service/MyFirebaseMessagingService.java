@@ -160,7 +160,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
                 boolean active = Boolean.parseBoolean(messageMap.get("bool"));
-                assert sharedPreferences != null;
                 sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
                 if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||

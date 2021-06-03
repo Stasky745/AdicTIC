@@ -2,7 +2,6 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -26,17 +25,15 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -55,7 +52,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
-    private PackageManager mPm;
 
     private List<String> blockedApps;
 
@@ -78,8 +74,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
             fetchDades();
 
             mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-            mPm = getPackageManager();
-
             blockedApps = new ArrayList<>();
 
             lastActivity = "";
@@ -328,7 +322,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onInterrupt() {
     }
 
-    @SuppressWarnings("deprecation")
     private void addOverlayView() {
 
         final WindowManager.LayoutParams params;

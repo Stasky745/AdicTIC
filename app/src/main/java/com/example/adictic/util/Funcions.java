@@ -876,6 +876,7 @@ public class Funcions {
             return new ArrayList<>();
 
         EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
+        assert encryptedFile != null;
 
         StringBuilder stringBuilder = new StringBuilder();
         try {
@@ -899,7 +900,8 @@ public class Funcions {
             inputStreamReader.close();
             fileInputStream.close();
 
-            if(storeChanges) updateSharedPrefsChange(mCtx,res.get(0),false);
+            if(storeChanges)
+                updateSharedPrefsChange(mCtx,res.get(0),false);
 
             return res;
 
@@ -951,13 +953,13 @@ public class Funcions {
     private static void updateSharedPrefsChange(Context mCtx, Object object, boolean bool) {
         // Mirem a quin sharedPrefs escriure
         if(object instanceof BlockedApp)
-            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
+            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
         else if (object instanceof EventBlock)
-            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
+            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
         else if (object instanceof HorarisNit)
-            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
+            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
         else if (object instanceof String)
-            getEncryptedSharedPreferences(mCtx).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
+            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
     }
 
     /**
