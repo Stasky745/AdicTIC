@@ -63,6 +63,7 @@ public class HorarisActivity extends AppCompatActivity {
     private TextView TV_info;
 
     private Button BT_sendHoraris;
+    private Button BT_clearHoraris;
 
     private HorarisAPI horarisNits;
 
@@ -163,6 +164,9 @@ public class HorarisActivity extends AppCompatActivity {
 
         BT_sendHoraris = findViewById(R.id.BT_sendHoraris);
         BT_sendHoraris.setVisibility(View.GONE);
+
+        BT_clearHoraris = findViewById(R.id.BT_clearHoraris);
+        BT_clearHoraris.setVisibility(View.GONE);
     }
 
     private void getHoraris() {
@@ -342,38 +346,76 @@ public class HorarisActivity extends AppCompatActivity {
 
     private void setButton() {
         BT_sendHoraris.setVisibility(View.VISIBLE);
-        BT_sendHoraris.setOnClickListener(v -> {
-            if(canvis == 0) {
-                finish();
-                return;
+        BT_sendHoraris.setOnClickListener(v -> sendHoraris());
+
+        BT_clearHoraris.setVisibility(View.VISIBLE);
+        BT_clearHoraris.setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.esborrar_horaris_title))
+                .setMessage(getString(R.string.esborrar_horaris_desc))
+                .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> clearHoraris())
+                .setNegativeButton(getString(R.string.no), null)
+                .show());
+    }
+
+    private void clearHoraris() {
+        ET_wakeMon.setText("");
+        ET_wakeTue.setText("");
+        ET_wakeWed.setText("");
+        ET_wakeThu.setText("");
+        ET_wakeFri.setText("");
+        ET_wakeSat.setText("");
+        ET_wakeSun.setText("");
+
+        ET_sleepMon.setText("");
+        ET_sleepTue.setText("");
+        ET_sleepWed.setText("");
+        ET_sleepThu.setText("");
+        ET_sleepFri.setText("");
+        ET_sleepSat.setText("");
+        ET_sleepSun.setText("");
+
+        ET_wakeGeneric.setText("");
+        ET_sleepGeneric.setText("");
+
+        ET_wakeWeekday.setText("");
+        ET_wakeWeekend.setText("");
+
+        ET_sleepWeekday.setText("");
+        ET_sleepWeekend.setText("");
+    }
+
+    private void sendHoraris() {
+        if(canvis == 0) {
+            finish();
+            return;
+        }
+
+        int checkedId = chipGroup.getCheckedChipId();
+
+        List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
+
+        HorarisAPI horaris = new HorarisAPI();
+
+        horaris.horarisNit = horarisNits;
+
+        horaris.tipus = chipGroup.getCheckedChipId();
+
+        Call<String> call = mTodoService.postHoraris(idChild, horaris);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful())
+                    finish();
+                else
+                    Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
             }
 
-            int checkedId = chipGroup.getCheckedChipId();
-
-            List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
-
-            HorarisAPI horaris = new HorarisAPI();
-
-            horaris.horarisNit = horarisNits;
-
-            horaris.tipus = chipGroup.getCheckedChipId();
-
-            Call<String> call = mTodoService.postHoraris(idChild, horaris);
-
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    if (response.isSuccessful())
-                        finish();
-                    else
-                        Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

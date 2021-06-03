@@ -338,4 +338,6 @@
     <string name="problemes_arreglats">Problemes arreglats</string>
     <string name="canvis">Canvis</string>
     <string name="select_apps_unlock">Selecciona les aplicacions que vols bloquejar</string>
+    <string name="esborrar_horaris_title">Esborrar Horaris</string>
+    <string name="esborrar_horaris_desc">S\'esborraran tots els horaris programats. Segur que vols continuar?</string>
 </resources>
