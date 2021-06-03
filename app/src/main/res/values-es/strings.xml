@@ -325,4 +325,8 @@
     <string name="select_apps_unlock">" Seleccionar las aplicaciones que quieres desbloquear"</string>
     <string name="esborrar_horaris_title">Borrar Horarios</string>
     <string name="esborrar_horaris_desc">Se borrarán todos los horarios programados. Seguro que quieres continuar?</string>
+    <string name="horaris_incorrectes">Horarios Incorrectos</string>
+    <string name="horaris_incorrectes_body">"\n        <![CDATA[
+            El horario <font color="#3c9df8"><b>%s</b></font> es incorrecto. La hora de despertar debe ser inferior a la de dormir.
+        ]]>\n    "</string>
 </resources>
