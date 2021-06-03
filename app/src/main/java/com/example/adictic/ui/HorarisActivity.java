@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.text.HtmlCompat;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.HorarisAPI;
@@ -29,6 +31,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -395,28 +398,28 @@ public class HorarisActivity extends AppCompatActivity {
 
         List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
 
-        HorarisAPI horaris = new HorarisAPI();
+        if (horarisNits != null) {
+            HorarisAPI horaris = new HorarisAPI();
+            horaris.horarisNit = horarisNits;
+            horaris.tipus = chipGroup.getCheckedChipId();
 
-        horaris.horarisNit = horarisNits;
+            Call<String> call = mTodoService.postHoraris(idChild, horaris);
 
-        horaris.tipus = chipGroup.getCheckedChipId();
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    if (response.isSuccessful())
+                        finish();
+                    else
+                        Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+                }
 
-        Call<String> call = mTodoService.postHoraris(idChild, horaris);
-
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if (response.isSuccessful())
-                    finish();
-                else
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                     Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }
+            });
+        }
     }
 
     private List<HorarisNit> setWakeSleepLists(int checkedId) {
@@ -523,9 +526,62 @@ public class HorarisActivity extends AppCompatActivity {
                     horari.dormir = Funcions.string2MillisOfDay(ET_sleepGeneric.getText().toString());
                 }
             }
+            if(horari.despertar > horari.dormir) {
+                errorHorarisDialog(i);
+                return null;
+            }
             res.add(horari);
         }
 
         return res;
     }
+
+    // Passem el dia de la setmana
+    private void errorHorarisDialog(int i) {
+        if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_DIARIS){
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_WEEK, i);
+            String day = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+        else if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_SETMANA){
+            String day;
+
+            if(i == 1 || i == 7)
+                day = getString(R.string.weekend);
+            else
+                day = getString(R.string.weekday);
+
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+        else if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_GENERICS){
+            String day = "";
+
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+    }
+
+
+
 }
