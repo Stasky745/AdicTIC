@@ -362,6 +362,7 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void clearHoraris() {
+        canvis = 1;
         ET_wakeMon.setText("");
         ET_wakeTue.setText("");
         ET_wakeWed.setText("");

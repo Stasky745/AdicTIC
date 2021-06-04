@@ -61,6 +61,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private String lastActivity;
     private String lastPackage;
 
+    private boolean estavaBloquejatAbans = false;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -144,13 +146,22 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-            if(myKM.isDeviceLocked()){
+            if(myKM.isDeviceLocked() && !estavaBloquejatAbans) {
+                estavaBloquejatAbans = true;
+                if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false))
+                    enviarLiveApp();
+
                 enviarLastApp();
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
             boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
                     || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+
+            if(!estaBloquejat)
+                estavaBloquejatAbans = myKM.isDeviceLocked();
+            else
+                estavaBloquejatAbans = true;
 
             int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
 
@@ -216,7 +227,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     private void enviarLiveApp() {
         LiveApp liveApp = new LiveApp();
-        liveApp.pkgName = lastPackage;
+        if(estavaBloquejatAbans)
+            liveApp.pkgName = "-1";
+        else
+            liveApp.pkgName = lastPackage;
+
         liveApp.appName = lastActivity;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 

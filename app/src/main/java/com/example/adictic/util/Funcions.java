@@ -164,8 +164,11 @@ public class Funcions {
         call.enqueue(new Callback<EventsAPI>() {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    write2File(ctx, response.body().events);
+                if (response.isSuccessful()) {
+                    if(response.body() != null && response.body().events.isEmpty())
+                        clearFile(ctx, Constants.FILE_EVENT_BLOCK);
+                    else
+                        write2File(ctx, response.body().events);
 
                     // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
@@ -192,7 +195,7 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
                 if (response.isSuccessful()) {
-                    if(response.body() == null)
+                    if(response.body() == null || response.body().horarisNit.isEmpty())
                         clearFile(ctx, Constants.FILE_HORARIS_NIT);
                     else
                         write2File(ctx, response.body().horarisNit);
