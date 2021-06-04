@@ -340,4 +340,12 @@
     <string name="problemes_arreglats">Problemes arreglats</string>
     <string name="canvis">Canvis</string>
     <string name="app_update_title">APLICACIÓ ACTUALITZADA</string>
+    <string name="esborrar_horaris_title">Esborrar Horaris</string>
+    <string name="esborrar_horaris_desc">S\'esborraran tots els horaris programats. Segur que vols continuar?</string>
+    <string name="horaris_incorrectes">Horaris Incorrectes</string>
+    <string name="horaris_incorrectes_body">
+        <![CDATA[
+            L\'horari <font color="#3c9df8"><b>%s</b></font> és incorrecte. L\'hora de despertar ha de ser inferior a la de dormir.
+        ]]>
+    </string>
 </resources>
