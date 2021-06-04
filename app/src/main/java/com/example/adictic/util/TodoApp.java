@@ -30,11 +30,14 @@ public class TodoApp extends Application {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-
+            "Ara es poden netejar els horaris nocturns"
     };
 
     public static String[] fixes = {
-
+            "Geolocalització funciona",
+            "Bloquejar dispositiu funciona",
+            "Horaris arreglats",
+            "Events arreglats"
     };
 
     public static String[] changes = {
