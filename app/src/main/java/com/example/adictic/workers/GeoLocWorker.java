@@ -38,7 +38,7 @@ public class GeoLocWorker extends Worker {
     private static final String TAG = GeoLocWorker.class.getSimpleName();
     private final Context mContext;
     private SharedPreferences sharedPreferences;
-    private final FusedLocationProviderClient fusedLocationClient;
+    private FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
     private float accuracy = 0;
@@ -57,6 +57,8 @@ public class GeoLocWorker extends Worker {
         int iterations = 0;
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
 
         if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext())){
             Log.d(TAG,"No hi ha permisos de localització");
@@ -83,6 +85,7 @@ public class GeoLocWorker extends Worker {
         }
         else if (isNetworkEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
+            Looper.prepare();
 
             float oldAccuracy = 100;
             while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
@@ -103,6 +106,7 @@ public class GeoLocWorker extends Worker {
             return Result.success();
         } else if (isGPSEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
+            Looper.prepare();
 
             float oldAccuracy = 100;
             while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {

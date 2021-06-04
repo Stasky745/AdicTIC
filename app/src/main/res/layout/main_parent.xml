@@ -48,13 +48,14 @@
     <ImageView
         android:id="@+id/IV_CurrentApp"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:adjustViewBounds="true"
         android:contentDescription="@string/google_storage_bucket"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/TV_CurrentApp"
+        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
         app:layout_constraintEnd_toStartOf="@+id/guideline24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/IV_mascot"
@@ -64,11 +65,12 @@
         android:id="@+id/TV_CurrentApp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="@string/disconnected"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
         app:layout_constraintEnd_toEndOf="@+id/IV_CurrentApp"
-        app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp" />
+        app:layout_constraintStart_toStartOf="@+id/IV_CurrentApp"
+        app:layout_constraintTop_toBottomOf="@+id/IV_CurrentApp" />
 
     <View
         android:id="@+id/divider"

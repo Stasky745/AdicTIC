@@ -1,8 +1,6 @@
 package com.example.adictic.ui.main;
 
 import android.content.SharedPreferences;
-import android.graphics.text.LineBreaker;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +45,7 @@ public class HomeParentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
-        parentActivity = (NavActivity) getActivity();
+        parentActivity = (NavActivity) requireActivity();
 
         if(parentActivity.homeParent_childs!=null && !parentActivity.homeParent_childs.isEmpty()) setupTabLayout(parentActivity.homeParent_childs);
         if(parentActivity.homeParent_childs==null || (parentActivity.homeParent_lastChildsUpdate+ parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
