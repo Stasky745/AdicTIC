@@ -9,10 +9,11 @@ import androidx.work.WorkerParameters;
 
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.FreeUseApp;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,6 @@ public class BlockAppWorker extends Worker {
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
         List<AppUsage> appUsageList = new ArrayList<>(gul.get(0).usage);
 
-        List<FreeUseApp> freeUseApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_FREE_USE_APPS,false);
-        if(freeUseApps == null)
-            freeUseApps = new ArrayList<>();
-
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_BLOCKED_APPS,false);
         if(blockedApps == null || blockedApps.isEmpty()) {
             Log.i(TAG,"BlockedAppList null o empty -> SUCCESS");
@@ -63,16 +60,13 @@ public class BlockAppWorker extends Worker {
         boolean canvis = false;
 
         for(BlockedApp blockedApp : notBlockedApps){
-            if(appUsageList.stream().anyMatch(appUsage -> appUsage.app.pkgName.equals(blockedApp.pkgName))){
-                AppUsage appUsage = appUsageList.stream().filter(appUsage2 -> appUsage2.app.pkgName.equals(blockedApp.pkgName)).findFirst().get();
+            AppUsage appUsage = appUsageList.stream()
+                    .filter(appUsage2 -> appUsage2.app.pkgName.equals(blockedApp.pkgName))
+                    .findAny()
+                    .orElse(null);
 
-                long freeUseUsage = 0;
-                if (freeUseApps.stream().anyMatch(obj -> obj.pkgName.equals(blockedApp.pkgName))) {
-                    FreeUseApp freeUseApp = freeUseApps.stream().filter(obj -> obj.pkgName.equals(blockedApp.pkgName)).findFirst().get();
-                    freeUseUsage = freeUseApp.millisUsageEnd - freeUseApp.millisUsageStart;
-                }
-
-                if (appUsage.totalTime >= blockedApp.timeLimit + freeUseUsage) {
+            if(appUsage != null){
+                if (appUsage.totalTime >= blockedApp.timeLimit) {
                     currentBlockedApps.add(blockedApp.pkgName);
                     canvis = true;
                 }
@@ -89,8 +83,10 @@ public class BlockAppWorker extends Worker {
             Funcions.write2File(getApplicationContext(), currentBlockedApps);
         }
 
-        if(delay < Constants.TOTAL_MILLIS_IN_DAY) {
-            Log.d(TAG,"El delay és inferior a 24h -> configurem BlockAppsWorker (Delay=" + delay + ")");
+        int now = DateTime.now().getMillisOfDay();
+
+        if(now + delay < Constants.TOTAL_MILLIS_IN_DAY) {
+            Log.d(TAG,"El delay és inferior a mitjanit -> configurem BlockAppsWorker (Delay=" + delay + ")");
             Funcions.runBlockAppsWorker(getApplicationContext(), delay);
         }
 

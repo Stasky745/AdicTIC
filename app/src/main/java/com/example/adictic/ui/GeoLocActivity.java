@@ -56,7 +56,6 @@ public class GeoLocActivity extends AppCompatActivity {
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            idChild =((GeoFill) ((Marker)SP_fills.getSelectedItem()).getRelatedObject()).id;
             fills.clear();
             markers.clear();
             posicio = 0;
@@ -208,6 +207,7 @@ public class GeoLocActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Marker marker = markers.get(i);
+                idChild = ((GeoFill) markers.get(i).getRelatedObject()).id;
                 InfoWindow.closeAllInfoWindowsOn(map);
                 map.getController().setCenter(marker.getPosition());
                 marker.showInfoWindow();

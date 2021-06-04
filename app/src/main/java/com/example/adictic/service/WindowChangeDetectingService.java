@@ -2,7 +2,6 @@ package com.example.adictic.service;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
-import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -26,17 +25,15 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.example.adictic.R;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -55,7 +52,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
     private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
-    private PackageManager mPm;
 
     private List<String> blockedApps;
 
@@ -65,6 +61,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
     private String lastActivity;
     private String lastPackage;
 
+    private boolean estavaBloquejatAbans = false;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -72,15 +70,12 @@ public class WindowChangeDetectingService extends AccessibilityService {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         assert sharedPreferences != null;
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             disableSelf();
-        }
         else {
             fetchDades();
 
             mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-            mPm = getPackageManager();
-
             blockedApps = new ArrayList<>();
 
             lastActivity = "";
@@ -115,6 +110,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
             });
 
+            Funcions.checkEvents(getApplicationContext());
             Funcions.checkHoraris(getApplicationContext());
 
             Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
@@ -150,13 +146,22 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-            if(myKM.isDeviceLocked()){
+            if(myKM.isDeviceLocked() && !estavaBloquejatAbans) {
+                estavaBloquejatAbans = true;
+                if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false))
+                    enviarLiveApp();
+
                 enviarLastApp();
             }
 
             // Bloquegem dispositiu si està bloquejat o té un event en marxa
             boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
                     || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
+
+            if(!estaBloquejat)
+                estavaBloquejatAbans = myKM.isDeviceLocked();
+            else
+                estavaBloquejatAbans = true;
 
             int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
 
@@ -222,7 +227,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
     private void enviarLiveApp() {
         LiveApp liveApp = new LiveApp();
-        liveApp.pkgName = lastPackage;
+        if(estavaBloquejatAbans)
+            liveApp.pkgName = "-1";
+        else
+            liveApp.pkgName = lastPackage;
+
         liveApp.appName = lastActivity;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
@@ -328,7 +337,6 @@ public class WindowChangeDetectingService extends AccessibilityService {
     public void onInterrupt() {
     }
 
-    @SuppressWarnings("deprecation")
     private void addOverlayView() {
 
         final WindowManager.LayoutParams params;

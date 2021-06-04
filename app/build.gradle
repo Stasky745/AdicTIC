@@ -104,6 +104,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.guava:guava:29.0-android'
+    implementation 'androidx.core:core:1.5.0'
 
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:27.1.0')

@@ -30,18 +30,18 @@ public class TodoApp extends Application {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-
+            "Ara es poden netejar els horaris nocturns"
     };
 
     public static String[] fixes = {
-            "Desbloquejar apps correctament.",
-            "Descans nocturn no peta quan s'apreta el botó sense res dins",
-            "Data i text d'ús d'aplicacions ja no es solapa",
-            "Geolocalització ensenya el mapa buit si no rep res del servidor, no ensenya mapa si no connecta amb servidor"
+            "Geolocalització funciona",
+            "Bloquejar dispositiu funciona",
+            "Horaris arreglats",
+            "Events arreglats"
     };
 
     public static String[] changes = {
-            "Ús d'aplicacions ensenya hora en comptes de data de l'últim cop utilitzat si fa menys de 24h"
+
     };
 
     @Override
