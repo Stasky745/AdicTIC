@@ -144,12 +144,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                         .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
                         .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
 
-                            EventBlock eventBlock = events.events.stream()
+                            events.events.stream()
                                     .filter(eventBlock1 -> eventBlock1.equals(selectedEvent))
                                     .findAny()
-                                    .get();
+                                    .ifPresent(eventBlock -> events.events.remove(eventBlock));
 
-                            events.events.remove(eventBlock);
                             selectedEvent = null;
                             canvis = 1;
                             RVadapter.refreshRV(events.events);
@@ -209,12 +208,11 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     @Override
     public void onSelectedData(EventBlock newEvent) {
-        if (newEvent.id != 0) {
-            if(events.events.stream().anyMatch(eventBlock -> eventBlock.id == newEvent.id)){
-                EventBlock eventBlock = events.events.stream().filter(eb -> eb.id == newEvent.id).findFirst().get();
-                events.events.remove(eventBlock);
-            }
-        }
+        events.events.stream()
+                .filter(eb -> eb.id == newEvent.id)
+                .findAny()
+                .ifPresent(eventBlock -> events.events.remove(eventBlock));
+
         events.events.add(newEvent);
 
         canvis = 1;
