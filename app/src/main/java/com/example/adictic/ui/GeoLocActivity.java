@@ -56,7 +56,9 @@ public class GeoLocActivity extends AppCompatActivity {
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            idChild =((GeoFill) ((Marker)SP_fills.getSelectedItem()).getRelatedObject()).id;
+            if(SP_fills != null && SP_fills.getSelectedItem() != null)
+                idChild =((GeoFill) ((Marker)SP_fills.getSelectedItem()).getRelatedObject()).id;
+
             fills.clear();
             markers.clear();
             posicio = 0;

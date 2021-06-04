@@ -72,6 +72,7 @@ public class MainParentFragment extends Fragment {
     private long idChildSelected = -1;
     private View root;
     private SharedPreferences sharedPreferences;
+    private FillNom fill;
 
     private ImageView IV_liveIcon;
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -82,19 +83,41 @@ public class MainParentFragment extends Fragment {
                 String pkgName = intent.getStringExtra("pkgName");
                 try {
                     Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
-                    currentApp.setText(intent.getStringExtra("appName"));
+                    String appName = intent.getStringExtra("appName");
+                    currentApp.setText(appName);
+
+                    if(!pkgName.equals("-1")) {
+                        LiveApp liveApp = new LiveApp();
+                        liveApp.pkgName = pkgName;
+                        liveApp.appName = appName;
+                        liveApp.time = Long.parseLong(intent.getStringExtra("time"));
+
+                        parentActivity.mainParent_lastAppUsed.put(idChildSelected, liveApp);
+                        parentActivity.mainParent_lastAppUsedUpdate.put(idChildSelected, Calendar.getInstance().getTimeInMillis());
+                    }
+                    else {
+                        LiveApp liveApp = parentActivity.mainParent_lastAppUsed.get(idChildSelected);
+                        if(liveApp != null) {
+                            liveApp.time = Long.parseLong(intent.getStringExtra("time"));
+                            parentActivity.mainParent_lastAppUsed.put(idChildSelected, liveApp);
+                        }
+                        setLastLiveApp();
+                    }
+
                 } catch (IllegalStateException e) {
                     e.printStackTrace();
                 }
             }
         }
     };
+
     private PieChart pieChart;
 
     public MainParentFragment() {    }
 
     public MainParentFragment(FillNom fill) {
         idChildSelected = fill.idChild;
+        this.fill = fill;
     }
 
     @Override
@@ -137,7 +160,7 @@ public class MainParentFragment extends Fragment {
             setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
         //Fer-ho si fa més de 5 minuts que no hem actualitzat.
         if(!parentActivity.mainParent_lastAppUsedUpdate.containsKey(idChildSelected) ||
-                (parentActivity.mainParent_lastAppUsedUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
+                (parentActivity.mainParent_lastAppUsedUpdate.get(idChildSelected)+parentActivity.tempsPerActuLiveApp)<Calendar.getInstance().getTimeInMillis()) {
             Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
             call.enqueue(new Callback<LiveApp>() {
                 @Override
@@ -166,7 +189,7 @@ public class MainParentFragment extends Fragment {
         DateTime hora = new DateTime(liveApp.time);
         String liveAppText;
         DateTimeFormatter fmt;
-        if (hora.getDayOfYear() == DateTime.now().getDayOfYear()) {
+        if (DateTime.now().getMillis() - hora.getMillis() < Constants.TOTAL_MILLIS_IN_DAY) {
             fmt = DateTimeFormat.forPattern("HH:mm");
         } else {
             fmt = DateTimeFormat.forPattern("dd/MM");
@@ -236,11 +259,17 @@ public class MainParentFragment extends Fragment {
 
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             blockButton.setVisibility(View.VISIBLE);
+
+            if(fill.blocked)
+                blockButton.setText(getString(R.string.unblock_device));
+
             blockButton.setOnClickListener(v -> {
                 Call<String> call;
-                if (blockButton.getText().equals(getString(R.string.block_device))) {
+                if (blockButton.getText().equals(getString(R.string.block_device)))
                     call = mTodoService.blockChild(idChildSelected);
-                } else call = mTodoService.unblockChild(idChildSelected);
+                else
+                    call = mTodoService.unblockChild(idChildSelected);
+
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -271,6 +300,11 @@ public class MainParentFragment extends Fragment {
         BT_FreeTime.setVisibility(View.GONE);
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
+
+            if(fill.freeuse) {
+                BT_FreeTime.setText(getString(R.string.stop_free_time));
+            }
+
             BT_FreeTime.setOnClickListener(v -> {
                 Call<String> call;
                 if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
