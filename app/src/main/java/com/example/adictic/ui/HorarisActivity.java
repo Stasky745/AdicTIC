@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.text.HtmlCompat;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.HorarisAPI;
@@ -29,6 +31,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,6 +66,7 @@ public class HorarisActivity extends AppCompatActivity {
     private TextView TV_info;
 
     private Button BT_sendHoraris;
+    private Button BT_clearHoraris;
 
     private HorarisAPI horarisNits;
 
@@ -163,6 +167,9 @@ public class HorarisActivity extends AppCompatActivity {
 
         BT_sendHoraris = findViewById(R.id.BT_sendHoraris);
         BT_sendHoraris.setVisibility(View.GONE);
+
+        BT_clearHoraris = findViewById(R.id.BT_clearHoraris);
+        BT_clearHoraris.setVisibility(View.GONE);
     }
 
     private void getHoraris() {
@@ -342,20 +349,59 @@ public class HorarisActivity extends AppCompatActivity {
 
     private void setButton() {
         BT_sendHoraris.setVisibility(View.VISIBLE);
-        BT_sendHoraris.setOnClickListener(v -> {
-            if(canvis == 0) {
-                finish();
-                return;
-            }
+        BT_sendHoraris.setOnClickListener(v -> sendHoraris());
 
-            int checkedId = chipGroup.getCheckedChipId();
+        BT_clearHoraris.setVisibility(View.VISIBLE);
+        BT_clearHoraris.setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.esborrar_horaris_title))
+                .setMessage(getString(R.string.esborrar_horaris_desc))
+                .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> clearHoraris())
+                .setNegativeButton(getString(R.string.no), null)
+                .show());
+    }
 
-            List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
+    private void clearHoraris() {
+        canvis = 1;
+        ET_wakeMon.setText("");
+        ET_wakeTue.setText("");
+        ET_wakeWed.setText("");
+        ET_wakeThu.setText("");
+        ET_wakeFri.setText("");
+        ET_wakeSat.setText("");
+        ET_wakeSun.setText("");
 
+        ET_sleepMon.setText("");
+        ET_sleepTue.setText("");
+        ET_sleepWed.setText("");
+        ET_sleepThu.setText("");
+        ET_sleepFri.setText("");
+        ET_sleepSat.setText("");
+        ET_sleepSun.setText("");
+
+        ET_wakeGeneric.setText("");
+        ET_sleepGeneric.setText("");
+
+        ET_wakeWeekday.setText("");
+        ET_wakeWeekend.setText("");
+
+        ET_sleepWeekday.setText("");
+        ET_sleepWeekend.setText("");
+    }
+
+    private void sendHoraris() {
+        if(canvis == 0) {
+            finish();
+            return;
+        }
+
+        int checkedId = chipGroup.getCheckedChipId();
+
+        List<HorarisNit> horarisNits = setWakeSleepLists(checkedId);
+
+        if (horarisNits != null) {
             HorarisAPI horaris = new HorarisAPI();
-
             horaris.horarisNit = horarisNits;
-
             horaris.tipus = chipGroup.getCheckedChipId();
 
             Call<String> call = mTodoService.postHoraris(idChild, horaris);
@@ -374,7 +420,7 @@ public class HorarisActivity extends AppCompatActivity {
                     Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
                 }
             });
-        });
+        }
     }
 
     private List<HorarisNit> setWakeSleepLists(int checkedId) {
@@ -481,9 +527,62 @@ public class HorarisActivity extends AppCompatActivity {
                     horari.dormir = Funcions.string2MillisOfDay(ET_sleepGeneric.getText().toString());
                 }
             }
+            if(horari.despertar > horari.dormir) {
+                errorHorarisDialog(i);
+                return null;
+            }
             res.add(horari);
         }
 
         return res;
     }
+
+    // Passem el dia de la setmana
+    private void errorHorarisDialog(int i) {
+        if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_DIARIS){
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.DAY_OF_WEEK, i);
+            String day = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+        else if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_SETMANA){
+            String day;
+
+            if(i == 1 || i == 7)
+                day = getString(R.string.weekend);
+            else
+                day = getString(R.string.weekday);
+
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+        else if(chipGroup.getCheckedChipId() == TIPUS_HORARIS_GENERICS){
+            String day = "";
+
+            Spanned body = HtmlCompat.fromHtml(getString(R.string.horaris_incorrectes_body, day), HtmlCompat.FROM_HTML_MODE_LEGACY);
+
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle(R.string.horaris_incorrectes)
+                    .setMessage(body)
+                    .setNeutralButton(getString(R.string.accept), null)
+                    .show();
+        }
+    }
+
+
+
 }
