@@ -103,6 +103,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
 
         Map<String, String> messageMap = remoteMessage.getData();
 
@@ -131,7 +132,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             // ************* Accions del dispositiu fill *************
             if (messageMap.containsKey("blockDevice")) {
-                assert  sharedPreferences != null;
                 if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
@@ -142,11 +142,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             else if (messageMap.containsKey("freeUse")) {
                 if (Objects.equals(messageMap.get("freeUse"), "1")) {
-                    Funcions.startFreeUseLimitList(getApplicationContext());
+                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
 
                     title = getString(R.string.free_use_activation);
                 } else {
-                    Funcions.updateLimitedAppsList(getApplicationContext());
+                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
+
                     title = getString(R.string.free_use_deactivation);
                 }
             }
@@ -159,7 +160,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if (messageMap.containsKey("liveApp")) {
                 String s = messageMap.get("liveApp");
                 boolean active = Boolean.parseBoolean(messageMap.get("bool"));
-                assert sharedPreferences != null;
                 sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
                 if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
@@ -182,7 +182,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 title = getString(R.string.horaris_notification);
             }
             else if (messageMap.containsKey("events")) {
-                Funcions.checkHoraris(getApplicationContext());
+                Funcions.checkEvents(getApplicationContext());
             }
             else if (messageMap.containsKey("geolocActive")) {
                 long now = Calendar.getInstance().getTimeInMillis();

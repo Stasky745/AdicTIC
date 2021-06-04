@@ -7,4 +7,5 @@ public class FillNom implements Serializable {
     public String deviceName;
     public boolean blocked;
     public String birthday;
+    public boolean freeuse;
 }
