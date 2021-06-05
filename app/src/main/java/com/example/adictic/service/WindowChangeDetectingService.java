@@ -35,6 +35,7 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,11 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 public class WindowChangeDetectingService extends AccessibilityService {
 
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
-    private final List<String> blackListLiveApp = Collections.singletonList("com.google.android.apps.nexuslauncher");
+    private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
+            "com.google.android.apps.nexuslauncher",
+            "com.android.systemui",
+            "com.miui.aod"
+    ));
     private TodoApi mTodoService;
     private SharedPreferences sharedPreferences;
 
@@ -119,6 +124,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
+                        Funcions.endFreeUse(getApplicationContext());
                     }
                 }
 
@@ -128,118 +134,145 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 }
             });
         }
+
+        Funcions.checkHoraris(getApplicationContext());
+        Funcions.checkEvents(getApplicationContext());
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-            if (myKM.isDeviceLocked() && !estavaBloquejatAbans) {
-                estavaBloquejatAbans = true;
-                if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false))
-                    enviarLiveApp();
+            boolean liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
+            boolean blockedDevice = estaBloquejat();
+            boolean freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
+            boolean changedBlockedApps = sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false);
 
-                enviarLastApp();
+            // Agafem info de l'Event
+            ComponentName componentName = new ComponentName(
+                    event.getPackageName().toString(),
+                    event.getClassName().toString()
+            );
+
+            ActivityInfo activityInfo = tryGetActivity(componentName);
+            boolean isActivity = activityInfo != null;
+
+            // Si estem al mateix pkg i no hi ha hagut canvis a bloquejos d'apps i l'app no està bloquejada sortim
+            if(lastPackage.equals(event.getPackageName().toString()) && !changedBlockedApps) {
+                if (!freeUse && blockedDevice) {
+                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                    assert mDPM != null;
+                    mDPM.lockNow();
+
+                    if (liveApp) {
+                        enviarLiveApp(lastPackage, lastActivity);
+                    }
+                    enviarLastApp();
+                }
+                return;
             }
 
-            // Bloquegem dispositiu si està bloquejat o té un event en marxa
-            boolean estaBloquejat = estaBloquejat(myKM);
+            Log.d(TAG, "Nou 'package' sense canvis en bloquejos");
 
-            int currentActiveEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0);
+            // --- LIVE APP ---
+            // Enviem l'última app oberta a la mare si el dispositiu s'ha bloquejat
+            if (myKM.isDeviceLocked() && !estavaBloquejatAbans) {
+                estavaBloquejatAbans = true;
+                if (liveApp) {
+                    enviarLiveApp(lastPackage, lastActivity);
+                }
+                enviarLastApp();
+            }
+            else if (liveApp && !blockedDevice) {
+                String pkgName = lastPackage;
+                String appName = lastActivity;
+                if(!blackListLiveApp.contains(event.getPackageName().toString())) {
+                    pkgName = event.getPackageName().toString();
+                    try {
+                        ApplicationInfo appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
+                        appName = appInfo.loadLabel(getPackageManager()).toString();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        appName = componentName.getPackageName();
+                    }
+                }
+                enviarLiveApp(pkgName, appName);
+            }
 
-            if (estaBloquejat || currentActiveEvents > 0) {
+            // --- FREE USE ---
+            // Si és FreeUse, tornem sense fer res
+            if (freeUse) {
+                Log.d(TAG, "FreeUse Activat");
+                return;
+            }
+
+            // --- BLOCK DEVICE ---
+            // Actualitzem variable estavaBloquejatAbans
+            if(!blockedDevice)
+                estavaBloquejatAbans = myKM.isDeviceLocked();
+            else
+                estavaBloquejatAbans = true;
+
+            if (blockedDevice) {
                 if (!myKM.isDeviceLocked()) {
+                    Log.d(TAG, "Dispositiu bloquejat");
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
                     mDPM.lockNow();
                 }
+                return;
             }
 
+            // --- TRACTAR APP ACTUAL ---
             // Només entrem a fer coses si s'han canviat les apps bloquejades o el pkgName és diferent a l'anterior (per evitar activitats) I dispositiu no està bloquejat
-            boolean blockedAppChanges = sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false);
-            if(!estaBloquejat && (blockedAppChanges || (!event.getPackageName().toString().equals(lastPackage)))) {
+            if(isActivity && (changedBlockedApps || !event.getPackageName().toString().equals(lastPackage))) {
                 lastPackage = event.getPackageName().toString();
                 Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
-                // Si és FreeUse, tornem sense fer res
-                if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
-                    Log.d(TAG, "FreeUse, return.");
-                    return;
-                }
-
-                if (blockedAppChanges)
+                if (changedBlockedApps)
                     blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, true);
 
                 //
                 if (event.getPackageName() != null && event.getClassName() != null) {
                     Log.d(TAG, "L'event no és null - Entra a 'else if'");
 
-                    // Agafem info de l'Event
-                    ComponentName componentName = new ComponentName(
-                            event.getPackageName().toString(),
-                            event.getClassName().toString()
-                    );
+                    Log.d(TAG, "L'event és una activitat");
+                    ApplicationInfo appInfo;
 
-                    ActivityInfo activityInfo = tryGetActivity(componentName);
-                    boolean isActivity = activityInfo != null;
+                    try {
+                        appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
+                        lastActivity = appInfo.loadLabel(getPackageManager()).toString();
+                    } catch (PackageManager.NameNotFoundException e) {
+                        lastActivity = componentName.getPackageName();
+                    }
+                    Log.d(TAG, "Llista Apps Bloquejades : " + blockedApps);
+                    Log.d(TAG, "CurrentActivity : " + componentName.flattenToShortString());
+                    Log.d(TAG, "CurrentPackage : " + lastPackage);
 
-                    if (isActivity) {
-                        Log.d(TAG, "L'event és una activitat");
-                        ApplicationInfo appInfo;
+                    //Mirem si l'app està bloquejada
+                    boolean isBlocked = blockedApps.contains(lastPackage);
 
-                        if (!blackListLiveApp.contains(componentName.getPackageName())) {
-                            Log.d(TAG, "L'event no està a 'blackListLiveApp'");
-
-                            try {
-                                appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                                lastActivity = appInfo.loadLabel(getPackageManager()).toString();
-                            } catch (PackageManager.NameNotFoundException e) {
-                                lastActivity = componentName.getPackageName();
-                            }
-                            Log.d(TAG, "Llista Apps Bloquejades : " + blockedApps);
-                            Log.d(TAG, "CurrentActivity : " + componentName.flattenToShortString());
-                            Log.d(TAG, "CurrentPackage : " + lastPackage);
-
-                            //Mirem si l'app està bloquejada
-                            boolean isBlocked = blockedApps.contains(lastPackage);
-
-                            if (isBlocked) {
-                                ensenyarBlockScreenActivity();
-                            }
-
-                            Log.i("LiveApp", sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false) +
-                                    "   idChild: " + sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1));
-
-                            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false)) {
-                                enviarLiveApp();
-                            }
-                        }
+                    if (isBlocked) {
+                        ensenyarBlockScreenActivity();
                     }
                 }
             }
         }
     }
 
-    private boolean estaBloquejat(KeyguardManager myKM) {
-        boolean estaBloquejat = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
-                || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false);
-
-        if(!estaBloquejat)
-            estavaBloquejatAbans = myKM.isDeviceLocked();
-        else
-            estavaBloquejatAbans = true;
-        return estaBloquejat;
+    private boolean estaBloquejat() {
+        return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
+                || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false)
+                || sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0;
     }
 
-    private void enviarLiveApp() {
+    private void enviarLiveApp(String pkgName, String appName) {
         LiveApp liveApp = new LiveApp();
         if(estavaBloquejatAbans)
             liveApp.pkgName = "-1";
         else
-            liveApp.pkgName = lastPackage;
+            liveApp.pkgName = pkgName;
 
-        liveApp.appName = lastActivity;
+        liveApp.appName = appName;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
         Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
@@ -284,16 +317,14 @@ public class WindowChangeDetectingService extends AccessibilityService {
         liveApp.appName = lastActivity;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-        if (!blackListLiveApp.contains(lastPackage)) {
-            Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+        Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
 
-                @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
-            });
-        }
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+        });
     }
 
     private ActivityInfo tryGetActivity(ComponentName componentName) {

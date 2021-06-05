@@ -149,6 +149,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 } else {
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
+                    Funcions.endFreeUse(getApplicationContext());
+
                     title = getString(R.string.free_use_deactivation);
                 }
             }

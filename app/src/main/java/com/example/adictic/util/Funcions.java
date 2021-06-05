@@ -884,8 +884,11 @@ public class Funcions {
     }
 
     public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
-        if(fileEmpty(mCtx,filename))
+        if(fileEmpty(mCtx,filename)) {
+            if(storeChanges)
+                Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, false).apply();
             return new ArrayList<>();
+        }
 
         EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
         assert encryptedFile != null;
@@ -954,5 +957,18 @@ public class Funcions {
                 }.getType();
         }
         return null;
+    }
+
+    public static void endFreeUse(Context mCtx) {
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+        boolean isBlocked = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
+                sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
+                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false);
+        if(isBlocked) {
+            DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            assert mDPM != null;
+            mDPM.lockNow();
+        }
     }
 }
