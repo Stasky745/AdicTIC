@@ -80,7 +80,7 @@ public class BlockAppWorker extends Worker {
 
         if(canvis) {
             Log.d(TAG,"Hi ha hagut canvis a BlockedApps - Escrivim a fitxer");
-            Funcions.write2File(getApplicationContext(), currentBlockedApps);
+            Funcions.write2File(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, currentBlockedApps);
         }
 
         int now = DateTime.now().getMillisOfDay();
