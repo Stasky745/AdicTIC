@@ -165,10 +165,10 @@ public class Funcions {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
                 if (response.isSuccessful()) {
-                    if(response.body() != null && response.body().events.isEmpty())
-                        clearFile(ctx, Constants.FILE_EVENT_BLOCK);
+                    if(response.body() == null)
+                        write2File(ctx, Constants.FILE_EVENT_BLOCK, null);
                     else
-                        write2File(ctx, response.body().events);
+                        write2File(ctx, Constants.FILE_EVENT_BLOCK, response.body().events);
 
                     // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
@@ -196,9 +196,9 @@ public class Funcions {
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
                 if (response.isSuccessful()) {
                     if(response.body() == null || response.body().horarisNit.isEmpty())
-                        clearFile(ctx, Constants.FILE_HORARIS_NIT);
+                        write2File(ctx, Constants.FILE_HORARIS_NIT, null);
                     else
-                        write2File(ctx, response.body().horarisNit);
+                        write2File(ctx, Constants.FILE_HORARIS_NIT, response.body().horarisNit);
 
                     // Engeguem els workers
                     runRestartHorarisWorkerOnce(ctx,0);
@@ -212,7 +212,6 @@ public class Funcions {
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
-    @SuppressWarnings("deprecation")
     public static boolean isAppUsagePermissionOn(Context mContext) {
         boolean granted;
         AppOpsManager appOps = (AppOpsManager) mContext
@@ -335,7 +334,7 @@ public class Funcions {
             llista.add(blockedApp);
         }
 
-        write2File(ctx,llista);
+        write2File(ctx, Constants.FILE_BLOCKED_APPS,llista);
 
         runRestartBlockedAppsWorkerOnce(ctx,0);
         startRestartBlockedAppsWorker24h(ctx);
@@ -824,10 +823,15 @@ public class Funcions {
         File file = new File(mCtx.getFilesDir(),fileName);
 
         try {
+            boolean wasSuccessful = true;
             if(write && file.exists())
-                file.delete();
-//            else if(!file.exists() && !write)
-//                crearFitxerPerLlegir(mCtx, fileName);
+                wasSuccessful = file.delete();
+
+            if(!wasSuccessful) {
+                String TAG = "Funcions (getEncryptedFile)";
+                Log.i(TAG, "No s'ha pogut esborrar el fitxer: " + fileName);
+                return null;
+            }
 
             return new EncryptedFile.Builder(
                     mCtx,
@@ -841,22 +845,18 @@ public class Funcions {
         return null;
     }
 
-    public static void clearFile(Context mCtx, String filename){
-        File file = new File(mCtx.getFilesDir(), filename);
-        file.delete();
-    }
+    public static <T> void write2File(Context mCtx, String filename, List<T> list){
+        // Mirem a quin fitxer escriure
+        Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, true).apply();
 
-    public static <T> void write2File(Context mCtx, List<T> list){
-        if(!list.isEmpty()){
+        EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, true);
+        if(encryptedFile == null) return;
+
+        if(list != null && !list.isEmpty()){
             Set<T> setList = new HashSet<>(list);
 
             // Agafem el JSON de la llista i inicialitzem EncryptedFile
             String json = new Gson().toJson(setList);
-
-            // Mirem a quin fitxer escriure
-            EncryptedFile encryptedFile = inicialitzarFitxer(mCtx,list.get(0));
-
-            if(encryptedFile == null) return;
 
             // Escrivim al fitxer
             try {
@@ -865,13 +865,22 @@ public class Funcions {
                 fileOutputStream.flush();
                 fileOutputStream.close();
 
-                updateSharedPrefsChange(mCtx,list.get(0), true);
 
             } catch (GeneralSecurityException | IOException e) {
                 e.printStackTrace();
 
             }
         }
+        else{
+            File file = new File(mCtx.getFilesDir(), filename);
+            if(file.exists()){
+                if(file.delete())
+                    Log.d(TAG, "write2File: fitxer \"" + filename + "\" s'ha esborrat correctament");
+                else
+                    Log.d(TAG, "write2File: fitxer \"" + filename + "\" no s'ha pogut esborrar");
+            }
+        }
+
     }
 
     public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
@@ -904,7 +913,7 @@ public class Funcions {
             fileInputStream.close();
 
             if(storeChanges)
-                updateSharedPrefsChange(mCtx,res.get(0),false);
+                Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, false).apply();
 
             return res;
 
@@ -946,42 +955,4 @@ public class Funcions {
         }
         return null;
     }
-
-    /**
-     * Actualitzar els valors a SharedPrefs per si hi ha hagut canvis en els fitxers
-     * @param mCtx El Context de l'activitat
-     * @param object Per saber quin valor tocar
-     * @param bool El valor a donar
-     */
-    private static void updateSharedPrefsChange(Context mCtx, Object object, boolean bool) {
-        // Mirem a quin sharedPrefs escriure
-        if(object instanceof BlockedApp)
-            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
-        else if (object instanceof EventBlock)
-            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_EVENT_BLOCK,bool).apply();
-        else if (object instanceof HorarisNit)
-            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_HORARIS_NIT,bool).apply();
-        else if (object instanceof String)
-            Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(SHARED_PREFS_CHANGE_BLOCKED_APPS,bool).apply();
-    }
-
-    /**
-     * Retorna el fitxer adient
-     * @param mCtx Context de l'activitat
-     * @param object Per saber quin fitxer agafar
-     * @return El fitxer o "null" si han passat un objecte dolent
-     */
-    private static EncryptedFile inicialitzarFitxer(Context mCtx, Object object){
-        // Mirem a quin fitxer escriure
-        if(object instanceof BlockedApp)
-            return getEncryptedFile(mCtx,Constants.FILE_BLOCKED_APPS, true);
-        else if (object instanceof EventBlock)
-            return getEncryptedFile(mCtx,Constants.FILE_EVENT_BLOCK, true);
-        else if (object instanceof HorarisNit)
-            return getEncryptedFile(mCtx,Constants.FILE_HORARIS_NIT, true);
-        else if (object instanceof String)
-            return getEncryptedFile(mCtx,Constants.FILE_CURRENT_BLOCKED_APPS, true);
-        else return null;
-    }
-
 }

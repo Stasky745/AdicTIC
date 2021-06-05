@@ -293,7 +293,7 @@ public class HorarisActivity extends AppCompatActivity {
             }
         }
 
-        Funcions.write2File(getApplicationContext(),list);
+        Funcions.write2File(getApplicationContext(), Constants.FILE_HORARIS_NIT, list);
     }
 
     public void timeDialog(View v) {

@@ -91,7 +91,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             list.add(blockedApp);
         }
 
-        Funcions.write2File(getApplicationContext(),list);
+        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS,list);
+
         Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
         Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
