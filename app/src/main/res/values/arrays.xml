@@ -53,4 +53,23 @@
         <item>follow_system</item>
     </string-array>
 
+    <string-array name="permis_permet">
+        <item>- Conèixer el temps d’ús diari del dispositiu mòbil</item>
+        <item>- Veure les aplicacions utilitzades i el temps dedicat a aquestes</item>
+        <item>- Establir límits en el temps d’ús del dispositiu mòbil</item>
+        <item>- Controlar l’ús de les aplicacions instal·lades</item>
+        <item>-	Bloquejar el dispositiu en moments en què sigui convenient evitar-ne l’ús com l’estudi o el descans nocturn</item>
+        <item>-	Localitzar el dispositiu</item>
+    </string-array>
+
+    <string-array name="permis_no_permet">
+        <item>-	Veure el contingut de la teva pantalla de forma remota</item>
+        <item>-	Veure el teu historial de navegació</item>
+        <item>-	Veure o canviar les teves contrasenyes</item>
+        <item>-	Llegir els teus missatges</item>
+        <item>-	Escoltar les teves trucades</item>
+        <item>-	Esborrar les teves dades</item>
+        <item>-	Bloquejar les trucades d’emergències</item>
+    </string-array>
+
 </resources>

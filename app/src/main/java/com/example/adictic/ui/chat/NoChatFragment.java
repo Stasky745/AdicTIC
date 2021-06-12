@@ -1,6 +1,7 @@
 package com.example.adictic.ui.chat;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.DubteLocalitzacions;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.rest.TodoApi;
+import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
@@ -114,7 +116,13 @@ public class NoChatFragment extends Fragment {
     }
 
     private void getInfo() {
-        Call<DubteLocalitzacions> call = mTodoService.getLocalitzacionsAndOpenDubte();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
+        assert sharedPreferences != null;
+        long idChild = -1L;
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+
+        Call<DubteLocalitzacions> call = mTodoService.getLocalitzacionsAndOpenDubte(idChild);
         call.enqueue(new Callback<DubteLocalitzacions>() {
             @Override
             public void onResponse(@NonNull Call<DubteLocalitzacions> call, @NonNull Response<DubteLocalitzacions> response) {
@@ -123,7 +131,8 @@ public class NoChatFragment extends Fragment {
                         TIET_dubteTitol.setText(response.body().dubte.titol);
                         TIET_dubteDesc.setText(response.body().dubte.descripcio);
                         setLocalitzacions(response.body().localitzacions, response.body().dubte.localitzacio);
-                    } else setLocalitzacions(response.body().localitzacions, Collections.emptyList());
+                    }
+                    else setLocalitzacions(response.body().localitzacions, Collections.emptyList());
                 }
                 else {
                     Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
