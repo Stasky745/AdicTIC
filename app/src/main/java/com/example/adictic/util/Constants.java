@@ -20,9 +20,9 @@ public class Constants {
     public static final String FILE_HORARIS_NIT = "horaris_nit";
     public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
-    public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "blocked_apps_change";
-    public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block_change";
-    public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit_change";
+    public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "current_blocked_apps";
+    public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block";
+    public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit";
 
     public static final String SHARED_PREFS_USERNAME = "username";
     public static final String SHARED_PREFS_PASSWORD = "password";
@@ -34,6 +34,7 @@ public class Constants {
     public static final String SHARED_PREFS_FREEUSE = "freeuse";
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
+    public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
 
     public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
 
@@ -50,6 +51,7 @@ public class Constants {
     public static final String WORKER_TAG_BLOCK_APPS = "blocked_apps_worker_tag";
     public static final String WORKER_TAG_EVENT_BLOCK = "event_block_worker_tag";
     public static final String WORKER_TAG_HORARIS_BLOCK = "horaris_worker_tag";
+    public static final String WORKER_TAG_GEOLOC_PERIODIC = "geoloc_worker_periodic_tag";
 
     public static final int[] GRAPH_COLORS = {
             Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),

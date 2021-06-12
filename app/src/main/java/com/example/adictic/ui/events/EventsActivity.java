@@ -143,7 +143,6 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                         .setTitle(getString(R.string.esborrar_event))
                         .setMessage(getString(R.string.esborrar_event_text, selectedEvent.name))
                         .setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
-
                             events.events.stream()
                                     .filter(eventBlock1 -> eventBlock1.equals(selectedEvent))
                                     .findAny()
@@ -152,18 +151,6 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                             selectedEvent = null;
                             canvis = 1;
                             RVadapter.refreshRV(events.events);
-
-//                            boolean trobat = false;
-//                            int count = 0;
-//                            while (count < events.events.size() && !trobat) {
-//                                if (events.events.get(count).name.equals(selectedEvent.name)) {
-//                                    trobat = true;
-//                                    events.events.remove(count);
-//                                    selectedEvent = null;
-//                                    RVadapter.refreshRV(events.events);
-//                                } else
-//                                    count++;
-//                            }
                         })
                         .setNegativeButton(getString(R.string.no), null)
                         .show();

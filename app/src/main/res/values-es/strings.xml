@@ -329,4 +329,23 @@
     <string name="horaris_incorrectes_body">"\n        <![CDATA[
             El horario <font color="#3c9df8"><b>%s</b></font> es incorrecto. La hora de despertar debe ser inferior a la de dormir.
         ]]>\n    "</string>
+    <string name="permis_titol">¿Quieres vincular tu dispositivo móvil a AdicTIC?</string>
+    <string name="permis_1">Si permites la vinculación, tu padre, madre o tutor/a podrán supervisar tu dispositivo móvil.</string>
+    <string name="permis_2">
+        <![CDATA[
+            <u>AdicTIC te protege manteniendo tu <font color="#3c9df8"><b>privacidad</b></font>.</u>
+        ]]>
+    </string>
+    <string name="permis_3">
+        <![CDATA[
+           El uso de AdicTIC <font color="#3c9df8"><b>permite</b></font>:
+        ]]>
+    </string>
+    <string name="permis_4">"Conocer el tiempo de uso diario del dispositivo móvil \nVer las aplicaciones utilizadas y el tiempo dedicado a estas\nEstablecer límites en el tiempo de uso del dispositivo móvil\nControlar el uso de las aplicaciones instaladas\nBloquear el dispositivo en momentos en qué sea conveniente evitar su uso como el estudio o el descanso nocturno\nLocalizar el dispositivo"</string>
+    <string name="permis_5">
+        <![CDATA[
+            El uso de d’AdicTIC <font color="#3c9df8"><b>NO permite</b></font>:
+        ]]>
+    </string>
+    <string name="permis_6">"Ver el contenido de tu pantalla de forma remota\nVer tu historial de navegación\nVer o cambiar tus contraseñas\nLeer tus mensajes\nEscuchar tus llamadas\nBorrar tus datos\nBloquear las llamadas de emergencias"</string>
 </resources>
