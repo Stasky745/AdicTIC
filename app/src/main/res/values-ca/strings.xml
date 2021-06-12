@@ -348,15 +348,21 @@
     </string>
     <string name="permis_titol">Vols vincular el teu dispositiu mòbil a AdicTIC?</string>
     <string name="permis_1">Si permets la vinculació, el teu pare, mare o tutor/a podran supervisar el teu dispositiu mòbil.</string>
-    <string name="permis_2">"\n        <![CDATA[
+    <string name="permis_2">
+        <![CDATA[
             <u>AdicTIC et protegeix mantenint la teva <font color="#3c9df8"><b>privacitat</b></font>.</u>
-        ]]>\n    "</string>
-    <string name="permis_3">"\n        <![CDATA[
+        ]]>
+    </string>
+    <string name="permis_3">
+        <![CDATA[
             L’ús d’AdicTIC <font color="#3c9df8"><b>permet</b></font>:
-        ]]>\n    "</string>
-    <string name="permis_4">"\n        Conèixer el temps d’ús diari del dispositiu mòbil\nVeure les aplicacions utilitzades i el temps dedicat a aquestes\nEstablir límits en el temps d’ús del dispositiu mòbil\nControlar l’ús de les aplicacions instal·lades\nBloquejar el dispositiu en moments en què sigui convenient evitar-ne l’ús com l’estudi o el descans nocturn\nLocalitzar el dispositiu\n    "</string>
-    <string name="permis_5">"\n        <![CDATA[
+        ]]>
+    </string>
+    <string name="permis_4">"Conèixer el temps d’ús diari del dispositiu mòbil\nVeure les aplicacions utilitzades i el temps dedicat a aquestes\nEstablir límits en el temps d’ús del dispositiu mòbil\nControlar l’ús de les aplicacions instal·lades\nBloquejar el dispositiu en moments en què sigui convenient evitar-ne l’ús com l’estudi o el descans nocturn\nLocalitzar el dispositiu"</string>
+    <string name="permis_5">
+        <![CDATA[
             L’ús d’AdicTIC <font color="#3c9df8"><b>NO permet</b></font>:
-        ]]>\n    "</string>
-    <string name="permis_6">"\n        Veure el contingut de la teva pantalla de forma remota\nVeure el teu historial de navegació\nVeure o canviar les teves contrasenyes\nLlegir els teus missatges\nEscoltar les teves trucades\nEsborrar les teves dades\nBloquejar les trucades d’emergències\n    "</string>
+        ]]>
+    </string>
+    <string name="permis_6">"Veure el contingut de la teva pantalla de forma remota\nVeure el teu historial de navegació\nVeure o canviar les teves contrasenyes\nLlegir els teus missatges\nEscoltar les teves trucades\nEsborrar les teves dades\nBloquejar les trucades d’emergències"</string>
 </resources>
