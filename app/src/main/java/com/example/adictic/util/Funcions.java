@@ -550,6 +550,7 @@ public class Funcions {
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(GeoLocWorker.class, 1, TimeUnit.HOURS)
                         .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_GEOLOC_PERIODIC)
                         .build();
 
         WorkManager.getInstance(mContext)
@@ -589,6 +590,7 @@ public class Funcions {
 
     /**
      * pre: si fTime = -1, agafa valors del dia actual inacabat
+     * post: retorna la llista amb els mesos ja adaptats pel servidor (+1)
      **/
     public static List<GeneralUsage> getGeneralUsages(Context mContext, int iTime, int fTime) {
         List<GeneralUsage> gul = new ArrayList<>();

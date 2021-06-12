@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -42,8 +41,8 @@ public class HomeParentFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        //super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
+        super.onResume();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         parentActivity = (NavActivity) requireActivity();
 
@@ -64,22 +63,28 @@ public class HomeParentFragment extends Fragment {
                         parentActivity.homeParent_childs = new ArrayList<>(response.body());
                         parentActivity.homeParent_lastChildsUpdate = Calendar.getInstance().getTimeInMillis();
                         setupTabLayout(parentActivity.homeParent_childs);
-                        TextView error = view.findViewById(R.id.TV_noFills);
+                        TextView error = root.findViewById(R.id.TV_noFills);
                         error.setVisibility(View.GONE);
                     } else {
-                        TextView error = view.findViewById(R.id.TV_noFills);
+                        TextView error = root.findViewById(R.id.TV_noFills);
                         error.setVisibility(View.VISIBLE);
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
-                    TextView error = view.findViewById(R.id.TV_noFills);
+                    TextView error = root.findViewById(R.id.TV_noFills);
                     error.setVisibility(View.VISIBLE);
                 }
             });
         }
     }
+
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        //super.onViewCreated(view, savedInstanceState);
+//
+//    }
 
     private void setupTabLayout(ArrayList<FillNom> fills){
         ViewPager2 viewPager = root.findViewById(R.id.ViewPager);

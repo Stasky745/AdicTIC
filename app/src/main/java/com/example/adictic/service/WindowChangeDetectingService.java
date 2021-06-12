@@ -25,7 +25,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
@@ -37,9 +36,7 @@ import com.example.adictic.util.TodoApp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -182,8 +179,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     enviarLiveApp(lastPackage, lastActivity);
                 }
                 enviarLastApp();
+
+                // També actualitzem les dades d'ús al servidor
+                Funcions.runUniqueAppUsageWorker(getApplicationContext());
             }
-            else if (liveApp && !blockedDevice) {
+            else if (isActivity && liveApp && !blockedDevice) {
                 String pkgName = lastPackage;
                 String appName = lastActivity;
                 if(!blackListLiveApp.contains(event.getPackageName().toString())) {

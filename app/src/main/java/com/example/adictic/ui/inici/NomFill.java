@@ -2,14 +2,22 @@ package com.example.adictic.ui.inici;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.BulletSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +31,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
 
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
@@ -40,6 +49,9 @@ import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -148,41 +160,165 @@ public class NomFill extends AppCompatActivity {
         Button b_log = findViewById(R.id.BT_fillNou);
 
         b_log.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(NomFill.this);
+            ViewGroup viewGroup = findViewById(android.R.id.content);
+            View dialog = LayoutInflater.from(this).inflate(R.layout.permisos_dispositiu_menor, viewGroup, false);
+            builder.setView(dialog);
+            AlertDialog alertDialog = builder.create();
 
-            TextView TV_errorNoName = findViewById(R.id.TV_errorNoName);
-            TextView TV_errorNoBday = findViewById(R.id.TV_errorNoBday);
+            setDialogTexts(dialog);
 
-            TV_errorNoBday.setVisibility(GONE);
-            TV_errorNoName.setVisibility(GONE);
+            Button BT_permisAccept = dialog.findViewById(R.id.BT_acceptPermis);
+            BT_permisAccept.setOnClickListener(v1 -> login(token, idParent, llista, tv_nom));
 
-            if (tv_nom.getText().toString().equals("")) {
-                TV_errorNoName.setVisibility(VISIBLE);
-            } else {
-                long id = 0;
-                boolean existeix = false;
-                int i = 0;
+            Button BT_permisCancel = dialog.findViewById(R.id.BT_cancelPermis);
+            BT_permisCancel.setOnClickListener(v12 -> alertDialog.dismiss());
 
-                while (!existeix && i < llista.size()) {
-                    if (tv_nom.getText().toString().equals(llista.get(i).deviceName)) {
-                        id = llista.get(i).idChild;
-                        existeix = true;
-                    }
-                    i++;
+            alertDialog.show();
+
+        });
+    }
+
+    private void setDialogTexts(View dialog) {
+        TextView TV_permis1 = dialog.findViewById(R.id.TV_permis1);
+        TextView TV_permis2 = dialog.findViewById(R.id.TV_permis2);
+        TextView TV_permis3 = dialog.findViewById(R.id.TV_permis3);
+        TextView TV_permis4 = dialog.findViewById(R.id.TV_permis4);
+        TextView TV_permis5 = dialog.findViewById(R.id.TV_permis5);
+        TextView TV_permis6 = dialog.findViewById(R.id.TV_permis6);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            TV_permis1.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_permis2.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_permis3.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_permis4.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_permis5.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            TV_permis6.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+        }
+
+        // Posem estil a les frases que cal
+        Spanned body;
+
+        body = HtmlCompat.fromHtml(getString(R.string.permis_2), HtmlCompat.FROM_HTML_MODE_LEGACY);
+        TV_permis2.setText(body);
+
+        body = HtmlCompat.fromHtml(getString(R.string.permis_3), HtmlCompat.FROM_HTML_MODE_LEGACY);
+        TV_permis3.setText(body);
+
+        body = HtmlCompat.fromHtml(getString(R.string.permis_5), HtmlCompat.FROM_HTML_MODE_LEGACY);
+        TV_permis5.setText(body);
+
+        // Fem llistes amb punts
+        CharSequence text = "";
+        String[] fullText = getString(R.string.permis_4).split("\n");
+        for(String item : fullText){
+            SpannableString spannableString = new SpannableString(item + "\n");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                spannableString.setSpan(new BulletSpan(BulletSpan.STANDARD_GAP_WIDTH, getColor(R.color.colorPrimary), 5), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            else
+                spannableString.setSpan(new BulletSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            text = TextUtils.concat(text, spannableString);
+        }
+        TV_permis4.setText(text);
+
+        text = "";
+        fullText = getString(R.string.permis_6).split("\n");
+        for(String item : fullText){
+            SpannableString spannableString = new SpannableString(item + "\n");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                spannableString.setSpan(new BulletSpan(16, getColor(R.color.colorPrimary), 5), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            else
+                spannableString.setSpan(new BulletSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            text = TextUtils.concat(text, spannableString);
+        }
+        TV_permis6.setText(text);
+    }
+
+    private void login(String token, long idParent, List<FillNom> llista, EditText tv_nom) {
+        TextView TV_errorNoName = findViewById(R.id.TV_errorNoName);
+        TextView TV_errorNoBday = findViewById(R.id.TV_errorNoBday);
+
+        TV_errorNoBday.setVisibility(GONE);
+        TV_errorNoName.setVisibility(GONE);
+
+        if (tv_nom.getText().toString().equals("")) {
+            TV_errorNoName.setVisibility(VISIBLE);
+        } else {
+            long id = 0;
+            boolean existeix = false;
+            int i = 0;
+
+            while (!existeix && i < llista.size()) {
+                if (tv_nom.getText().toString().equals(llista.get(i).deviceName)) {
+                    id = llista.get(i).idChild;
+                    existeix = true;
                 }
+                i++;
+            }
 
-                if (existeix) { /* Canviar token d'un fill que existeix **/
-                    final VellFillLogin fillVell = new VellFillLogin();
-                    fillVell.deviceName = tv_nom.getText().toString();
-                    fillVell.idChild = id;
-                    fillVell.token = Crypt.getAES(token);
+            if (existeix) { /* Canviar token d'un fill que existeix **/
+                final VellFillLogin fillVell = new VellFillLogin();
+                fillVell.deviceName = tv_nom.getText().toString();
+                fillVell.idChild = id;
+                fillVell.token = Crypt.getAES(token);
 
-                    Call<String> call = mTodoService.sendOldName(idParent, fillVell);
+                Call<String> call = mTodoService.sendOldName(idParent, fillVell);
 
-                    call.enqueue(new Callback<String>() {
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        if (response.isSuccessful()) {
+                            sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
+                            if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
+                                NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
+                                NomFill.this.finish();
+                            } else {
+                                Funcions.startAppUsageWorker24h(getApplicationContext());
+                                if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
+                                    NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
+                                    NomFill.this.finish();
+                                } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
+                                    NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
+                                    NomFill.this.finish();
+                                }
+                                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
+                                    NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
+                                else {
+                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
+                                    NomFill.this.finish();
+                                }
+                            }
+                        } else {
+                            Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                });
+            } else { /* Crear un fill nou **/
+
+                if (birthday == null) {
+                    TV_errorNoBday.setVisibility(VISIBLE);
+                } else {
+                    NouFillLogin fillNou = new NouFillLogin();
+                    fillNou.deviceName = tv_nom.getText().toString();
+                    fillNou.token = Crypt.getAES(token);
+                    fillNou.birthday = birthday;
+
+                    Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
+
+                    call.enqueue(new Callback<Long>() {
                         @Override
-                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            if (response.isSuccessful()) {
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
+                        public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
                                 if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
                                     NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
                                     NomFill.this.finish();
@@ -209,63 +345,14 @@ public class NomFill extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        public void onFailure(@NonNull Call<Long> call, @NonNull Throwable t) {
                             Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                             toast.show();
                         }
                     });
-                } else { /* Crear un fill nou **/
-
-                    if (birthday == null) {
-                        TV_errorNoBday.setVisibility(VISIBLE);
-                    } else {
-                        NouFillLogin fillNou = new NouFillLogin();
-                        fillNou.deviceName = tv_nom.getText().toString();
-                        fillNou.token = Crypt.getAES(token);
-                        fillNou.birthday = birthday;
-
-                        Call<Long> call = mTodoService.sendNewName(idParent, fillNou);
-
-                        call.enqueue(new Callback<Long>() {
-                            @Override
-                            public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
-                                if (response.isSuccessful() && response.body() != null) {
-                                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
-                                    if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-                                        NomFill.this.finish();
-                                    } else {
-                                        Funcions.startAppUsageWorker24h(getApplicationContext());
-                                        if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-                                            NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                            NomFill.this.finish();
-                                        } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-                                            NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                            NomFill.this.finish();
-                                        }
-                                        else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-                                            NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
-                                        else {
-                                            NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                            NomFill.this.finish();
-                                        }
-                                    }
-                                } else {
-                                    Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                                    toast.show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<Long> call, @NonNull Throwable t) {
-                                Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-                    }
                 }
             }
-        });
+        }
     }
 
     private void setBirthdayButton() {

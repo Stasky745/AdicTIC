@@ -30,11 +30,14 @@ public class TodoApp extends Application {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-
+            "S'ha afegit un text al vincular el dispositiu d'un menor"
     };
 
     public static String[] fixes = {
-            "Ara ja es poden bloquejar i desbloquejar apps correctament"
+            "Ara ja es poden bloquejar i desbloquejar apps correctament",
+            "Hauria d'actualitzar més sovint les dades de la pàgina inicial",
+            "Geolocalització va bé a nosaltres, a veure si amb aquesta nova us funciona bé",
+            "Ja es poden enviar dubtes"
     };
 
     public static String[] changes = {
