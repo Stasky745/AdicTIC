@@ -180,9 +180,14 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setLiveAppMenu(LiveApp liveApp){
-        try {
-            Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
-        } catch (IllegalStateException ex) { ex.printStackTrace(); return; }
+        if(!liveApp.pkgName.equals("-1")) {
+            try {
+                Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
+            } catch (IllegalStateException ex) {
+                ex.printStackTrace();
+                return;
+            }
+        }
 
         TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
 
