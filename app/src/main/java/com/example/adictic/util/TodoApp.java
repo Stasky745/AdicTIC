@@ -34,7 +34,8 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Gràfica i ús d'aplicacions diàries ja funcionen"
+            "Gràfica i ús d'aplicacions diàries ja funcionen",
+            "Ja es poden enviar consultes"
     };
 
     public static String[] changes = {
