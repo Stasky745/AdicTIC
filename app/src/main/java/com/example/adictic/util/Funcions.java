@@ -611,7 +611,7 @@ public class Funcions {
             gu.year = finalTime.get(Calendar.YEAR);
             gu.usage = appUsages;
 
-            gu.totalTime = Long.parseLong("0");
+            gu.totalTime = 0L;
             for (AppUsage au : appUsages) {
                 gu.totalTime += au.totalTime;
             }
@@ -638,6 +638,11 @@ public class Funcions {
                 gu.month = finalTime.get(Calendar.MONTH) + 1;
                 gu.year = finalTime.get(Calendar.YEAR);
                 gu.usage = appUsages;
+
+                gu.totalTime = 0L;
+                for (AppUsage au : appUsages) {
+                    gu.totalTime += au.totalTime;
+                }
 
                 gul.add(gu);
             }

@@ -90,7 +90,15 @@ public class NoChatFragment extends Fragment {
                 for (Integer idInt : CG_localitats.getCheckedChipIds())
                     newDubte.localitzacio.add(Long.valueOf(idInt));
 
-                Call<String> call = mTodoService.postDubte(newDubte);
+                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
+                assert sharedPreferences != null;
+                long idChild;
+                if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+                    idChild = -1;
+                else
+                    idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -2);
+
+                Call<String> call = mTodoService.postDubte(idChild, newDubte);
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -98,14 +106,14 @@ public class NoChatFragment extends Fragment {
                             Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_LONG).show();
                             getActivity().finish();
                         } else {
-                            Toast toast = Toast.makeText(getContext(), R.string.error_local, Toast.LENGTH_SHORT);
+                            Toast toast = Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT);
                             toast.show();
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT);
                         toast.show();
                     }
                 });
