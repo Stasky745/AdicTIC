@@ -81,6 +81,9 @@ public interface TodoApi {
     @GET("/users/{id}/child")
     Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
 
+    @GET("/users/{idTutor}/{idChild}")
+    Call<Collection<FillNom>> getChildInfo(@Path("idTutor") Long idTutor, @Path("idChild") Long idChild);
+
     @POST("/users/{id}/callBlockedApp")
     Call<String> callBlockedApp(@Path("id") Long childId, @Body String packageName);
 

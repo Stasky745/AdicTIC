@@ -51,10 +51,18 @@ public class HomeParentFragment extends Fragment {
             TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
             long idTutor;
-            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            Call<Collection<FillNom>> call;
+
+            //Si es tutor
+            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
                 idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-            else idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
-            Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
+                call = mTodoService.getUserChilds(idTutor);
+            }
+            else {
+                idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
+                long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+                call = mTodoService.getChildInfo(idTutor,idChild);
+            }
 
             call.enqueue(new Callback<Collection<FillNom>>() {
                 @Override
@@ -89,20 +97,6 @@ public class HomeParentFragment extends Fragment {
     private void setupTabLayout(ArrayList<FillNom> fills){
         ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
         TabLayout tabLayout = root.findViewById(R.id.TabLayout);
-        // Si és l'app fill només ensenyem el fill actual
-        if (!sharedPreferences.getBoolean("isTutor",false)) {
-            boolean trobat = false;
-            int i = 0;
-            while (!trobat && i < fills.size()) {
-                if (fills.get(i).idChild == sharedPreferences.getLong("idUser",-1)) {
-                    trobat = true;
-                    FillNom fill = fills.get(i);
-                    fills.clear();
-                    fills.add(fill);
-                }
-                i++;
-            }
-        }
 
         TabFillsAdapter adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
 
