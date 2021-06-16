@@ -40,6 +40,7 @@ public class ChatActivity extends AppCompatActivity {
         _tabChat = findViewById(R.id.TABL_chats);
 
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChatActivity.this);
+        assert sharedPreferences != null;
         long idChild = -1L;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
             idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);

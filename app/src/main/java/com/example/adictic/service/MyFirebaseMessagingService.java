@@ -91,7 +91,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             list.add(blockedApp);
         }
 
-        Funcions.write2File(getApplicationContext(),list);
+        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS,list);
+
         Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
         Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
@@ -147,6 +148,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     title = getString(R.string.free_use_activation);
                 } else {
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
+
+                    Funcions.endFreeUse(getApplicationContext());
 
                     title = getString(R.string.free_use_deactivation);
                 }

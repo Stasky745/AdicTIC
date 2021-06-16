@@ -166,11 +166,11 @@ public interface TodoApi {
     @GET("/poblacions")
     Call<Collection<Localitzacio>> getLocalitzacions();
 
-    @GET("/users/dubtes/poblacions")
-    Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte();
+    @GET("/users/dubtes/{childId}/poblacions")
+    Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte(@Path("childId") Long childId);
 
-    @POST("/users/dubtes")
-    Call<String> postDubte(@Body Dubte dubte);
+    @POST("/users/dubtes/{childId}")
+    Call<String> postDubte(@Path("childId") Long childId, @Body Dubte dubte);
 
     ////////////////////////////////////
     //Chat
