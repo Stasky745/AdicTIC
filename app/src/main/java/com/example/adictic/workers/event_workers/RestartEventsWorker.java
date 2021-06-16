@@ -1,5 +1,6 @@
 package com.example.adictic.workers.event_workers;
 
+import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -28,6 +29,8 @@ public class RestartEventsWorker extends Worker {
     @Override
     public Result doWork() {
         Log.d(TAG,"Worker començat");
+
+        boolean blockedDevice = false;
 
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
@@ -71,6 +74,14 @@ public class RestartEventsWorker extends Worker {
                     int currentBlockedEvents = sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS,0);
                     sharedPreferences.edit().putInt(Constants.SHARED_PREFS_ACTIVE_EVENTS,currentBlockedEvents+1).apply();
                     Funcions.runFinishBlockEventWorker(getApplicationContext(), eventBlock.id, delayEnd);
+
+                    // Bloquegem el dispositiu si no ho està
+                    if(!blockedDevice){
+                        blockedDevice = true;
+                        DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        assert mDPM != null;
+                        mDPM.lockNow();
+                    }
                 }
                 // Si l'event encara ha de començar
                 else if(delayStart > 0) {
