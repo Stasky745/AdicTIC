@@ -32,6 +32,7 @@ public class HomeParentFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private NavActivity parentActivity;
     private View root;
+    private TabFillsAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -95,15 +96,18 @@ public class HomeParentFragment extends Fragment {
 //    }
 
     private void setupTabLayout(ArrayList<FillNom> fills){
-        ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
-        TabLayout tabLayout = root.findViewById(R.id.TabLayout);
+        if(adapter == null) {
+            ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
+            TabLayout tabLayout = root.findViewById(R.id.TabLayout);
+            adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
+            viewPager.setAdapter(adapter);
+            new TabLayoutMediator(tabLayout, viewPager,
+                    (tab, position) -> tab.setText(adapter.getPageTitle(position))
+            ).attach();
+        }
+        else{
+            adapter.updateFills(fills);
+        }
 
-        TabFillsAdapter adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
-
-        viewPager.setAdapter(adapter);
-
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(adapter.getPageTitle(position))
-        ).attach();
     }
 }
