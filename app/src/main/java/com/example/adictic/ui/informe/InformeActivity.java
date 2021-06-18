@@ -319,24 +319,6 @@ public class InformeActivity extends AppCompatActivity {
                 .show();
     }
 
-//    public void btnMonthYear(){
-//        Calendar cal = Calendar.getInstance();
-//
-//        int minYear = Collections.min(yearList);
-//        int minMonth = Collections.min(daysMap.get(minYear).keySet());
-//
-//        cal.set(Calendar.YEAR,minYear);
-//        cal.set(Calendar.MONTH,minMonth);
-//
-//        long minDate = cal.getTimeInMillis();
-//        long maxDate = Calendar.getInstance().getTimeInMillis();
-//
-//        MonthYearPickerDialogFragment dialogFragment = MonthYearPickerDialogFragment
-//                .getInstance(currentMonth,currentYear,minDate,maxDate,getString(R.string.choose_month));
-//
-//        dialogFragment.show(getSupportFragmentManager(),null);
-//    }
-
     private void getMonthYearLists() {
         Call<List<YearEntity>> call = mTodoService.getDaysWithData(idChild);
 

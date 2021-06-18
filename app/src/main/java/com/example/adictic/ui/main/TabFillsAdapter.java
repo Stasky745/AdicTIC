@@ -14,7 +14,7 @@ import com.example.adictic.util.Funcions;
 import java.util.ArrayList;
 
 public class TabFillsAdapter extends FragmentStateAdapter {
-    private final ArrayList<FillNom> fills;
+    private ArrayList<FillNom> fills;
     private final Context ctx;
     private long lastId;
 
@@ -28,6 +28,8 @@ public class TabFillsAdapter extends FragmentStateAdapter {
         ctx = context;
         lastId = -1;
     }
+
+    public void updateFills(ArrayList<FillNom> list) { fills = list; }
 
     @NonNull
     @Override
