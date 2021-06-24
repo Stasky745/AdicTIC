@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,18 +42,14 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     private Button BT_acceptarHoraris;
 
-    private ConstraintLayout CL_eventNou;
-
     private RecyclerView RV_eventList;
-
-    private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_event);
         mTodoService = ((TodoApp) getApplication()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         idChild = getIntent().getLongExtra("idChild", -1);
         events = null;
@@ -92,17 +87,6 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         events = response.body();
-//                        if(events.events == null) {
-//                            events.events = new ArrayList<>();
-//                            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
-//                                CL_eventNou.setVisibility(View.VISIBLE);
-//                            RV_eventList.setVisibility(View.GONE);
-//                        }
-//                        else{
-//                            CL_eventNou.setVisibility(View.GONE);
-//                            RV_eventList.setVisibility(View.INVISIBLE);
-//                        }
-
                         RVadapter = new RV_Adapter(EventsActivity.this, events.events);
 
                         RV_eventList.setAdapter(RVadapter);
@@ -140,9 +124,6 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     private void setLayouts() {
         BT_acceptarHoraris = findViewById(R.id.BT_acceptarHoraris);
         BT_acceptarHoraris.setVisibility(View.GONE);
-
-        CL_eventNou = findViewById(R.id.CL_nouEvent);
-        CL_eventNou.setVisibility(View.GONE);
 
         RV_eventList = findViewById(R.id.RV_events);
         RV_eventList.setLayoutManager(new LinearLayoutManager(this));
