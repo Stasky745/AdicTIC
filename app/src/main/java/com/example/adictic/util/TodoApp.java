@@ -34,12 +34,11 @@ public class TodoApp extends Application {
     };
 
     public static String[] fixes = {
-            "Gràfica i ús d'aplicacions diàries ja funcionen",
-            "Ja es poden enviar consultes"
+
     };
 
     public static String[] changes = {
-
+            "Canvis en l'activitat de moments lliures de tecnologies"
     };
 
     @Override

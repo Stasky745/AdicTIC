@@ -22,6 +22,7 @@ import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -33,6 +34,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static java.lang.Thread.sleep;
+
 public class GeoLocWorker extends Worker {
 
     private static final String TAG = GeoLocWorker.class.getSimpleName();
@@ -42,6 +45,7 @@ public class GeoLocWorker extends Worker {
     private GeoPoint currentLocation = null;
     private TodoApi mTodoService;
     private float accuracy = 0;
+    private volatile Boolean success = null;
 
     public GeoLocWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -54,8 +58,6 @@ public class GeoLocWorker extends Worker {
     @Override
     public Result doWork() {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        int iterations = 0;
-
         sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
@@ -65,9 +67,6 @@ public class GeoLocWorker extends Worker {
             return Result.failure();
         }
 
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
         mTodoService = ((TodoApp) getApplicationContext()).getAPI();
 
         fusedLocationClient.getLastLocation()
@@ -75,20 +74,37 @@ public class GeoLocWorker extends Worker {
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         currentLocation = new GeoPoint(location);
+                        Log.d(TAG,"Google Location OK - Enviant Localització");
+                        enviarLoc();
                     }
-                });
+                    else success = false;
+                })
+                .addOnFailureListener(e -> getLocationWithoutGoogle(locationManager));
 
-        if (currentLocation != null) {
-            Log.d(TAG,"Google Location OK - Enviant Localització");
-            enviarLoc();
-            return Result.success();
+        while(success == null){
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        else if (isNetworkEnabled) {
+
+        Log.i(TAG, "Success = " + success);
+        return success ? Result.success() : Result.failure();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getLocationWithoutGoogle(LocationManager locationManager) {
+        int iterations = 0;
+        boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        if (isNetworkEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
             Looper.prepare();
 
             float oldAccuracy = 100;
-            while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
+            while(iterations <10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
                 iterations++;
             }
@@ -103,13 +119,12 @@ public class GeoLocWorker extends Worker {
             }
 
             enviarLoc();
-            return Result.success();
         } else if (isGPSEnabled) {
             MyLocationListener myLocationListener = new MyLocationListener();
             Looper.prepare();
 
             float oldAccuracy = 100;
-            while(iterations<10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
+            while(iterations <10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
                 iterations++;
             }
@@ -124,8 +139,8 @@ public class GeoLocWorker extends Worker {
             }
 
             enviarLoc();
-            return Result.success();
-        } else return Result.failure();
+        }
+        else success = false;
     }
 
     private void enviarLoc() {
@@ -141,10 +156,12 @@ public class GeoLocWorker extends Worker {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                success = response.isSuccessful();
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                success = false;
             }
         });
 

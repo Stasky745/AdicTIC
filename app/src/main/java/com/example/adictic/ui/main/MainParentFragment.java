@@ -82,7 +82,7 @@ public class MainParentFragment extends Fragment {
             if(intent.getStringExtra("idChild").equals(String.valueOf(idChildSelected))) {
                 String pkgName = intent.getStringExtra("pkgName");
                 try {
-                    Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                    Funcions.setIconDrawable(requireActivity(), pkgName, IV_liveIcon);
                     String appName = intent.getStringExtra("appName");
                     currentApp.setText(appName);
 
