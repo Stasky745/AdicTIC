@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/TV_eventDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/event_desc"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_eventLabel" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_events"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/BT_acceptarHoraris"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/BT_modificarEvent" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_eventDesc"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/BT_acceptarHoraris"
@@ -31,47 +46,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/BT_modificarEvent"
-        style="@style/ButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="32dp"
-        android:text="@string/edit"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_eventLabel" />
-
-    <Button
-        android:id="@+id/BT_afegirEvent"
-        style="@style/ButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/afegir"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/BT_modificarEvent"
-        app:layout_constraintEnd_toStartOf="@+id/BT_modificarEvent"
-        app:layout_constraintStart_toEndOf="@+id/BT_esborrarEvent"
-        app:layout_constraintTop_toTopOf="@+id/BT_modificarEvent" />
-
-    <Button
-        android:id="@+id/BT_esborrarEvent"
-        style="@style/ButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:text="@string/esborrar"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/BT_afegirEvent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/BT_afegirEvent" />
-
     <TextView
         android:id="@+id/TV_eventLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/events"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -81,5 +62,196 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CL_nouEvent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/BT_acceptarHoraris"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TV_eventDesc">
+
+        <TextView
+            android:id="@+id/TV_eventNameTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/name_tag"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ET_eventName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ET_eventName" />
+
+        <EditText
+            android:id="@+id/ET_eventName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:hint="@string/event_name"
+            android:inputType="textPersonName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/TV_eventNameTag"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/TV_eventStartTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_tag"
+            android:textAlignment="textEnd"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ET_eventStart"
+            app:layout_constraintEnd_toEndOf="@+id/TV_eventNameTag"
+            app:layout_constraintTop_toTopOf="@+id/ET_eventStart" />
+
+        <EditText
+            android:id="@+id/ET_eventStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:focusable="false"
+            android:hint="@string/start_event_hint"
+            android:inputType="time"
+            app:layout_constraintStart_toStartOf="@+id/ET_eventName"
+            app:layout_constraintTop_toBottomOf="@+id/ET_eventName" />
+
+        <EditText
+            android:id="@+id/ET_eventEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:focusable="false"
+            android:hint="@string/end_event_hint"
+            android:inputType="time"
+            app:layout_constraintStart_toStartOf="@+id/ET_eventStart"
+            app:layout_constraintTop_toBottomOf="@+id/ET_eventStart" />
+
+        <TextView
+            android:id="@+id/TV_eventEndTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/end_tag"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/ET_eventEnd"
+            app:layout_constraintEnd_toEndOf="@+id/TV_eventStartTag"
+            app:layout_constraintTop_toTopOf="@+id/ET_eventEnd" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/CG_eventDays"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            app:chipSpacingVertical="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/BT_accept"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ET_eventEnd"
+            app:layout_constraintVertical_bias="0.0">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_monday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/monday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_tuesday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tuesday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_wednesday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/wednesday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_thursday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/thursday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_friday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/friday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_saturday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/saturday"
+                android:theme="@style/ChipStyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/CH_sunday"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sunday"
+                android:theme="@style/ChipStyle" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <Button
+            android:id="@+id/BT_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/background_activity"
+            android:text="@string/accept"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/BT_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/background_activity"
+            android:text="@android:string/cancel"
+            android:textAllCaps="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

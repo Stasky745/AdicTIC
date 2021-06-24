@@ -169,6 +169,20 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
+        android:id="@+id/BT_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/background_activity"
+        android:text="@string/esborrar"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/BT_cancel"
+        app:layout_constraintEnd_toStartOf="@id/BT_accept"/>
+
+    <Button
         android:id="@+id/BT_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

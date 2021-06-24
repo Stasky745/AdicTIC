@@ -34,7 +34,7 @@ public class EventFragment extends DialogFragment {
     private ChipGroup CG_eventDays;
     private Chip CH_Monday, CH_Tuesday, CH_Wednesday, CH_Thursday, CH_Friday, CH_Saturday, CH_Sunday;
 
-    private Button BT_accept, BT_cancel;
+    private Button BT_accept, BT_cancel, BT_delete;
 
     private IEventDialog mCallback;
 
@@ -94,6 +94,7 @@ public class EventFragment extends DialogFragment {
 
         BT_accept = view.findViewById(R.id.BT_accept);
         BT_cancel = view.findViewById(R.id.BT_cancel);
+        BT_delete = view.findViewById(R.id.BT_delete);
 
         setButtons();
 
@@ -186,7 +187,7 @@ public class EventFragment extends DialogFragment {
             } else {
                 event.name = ET_eventName.getText().toString();
 
-                mCallback.onSelectedData(event);
+                mCallback.onSelectedData(event, false);
                 dismiss();
             }
         });
@@ -205,6 +206,14 @@ public class EventFragment extends DialogFragment {
             dismiss();
         });
 
-
+        if(oldEvent.id > 0) {
+            BT_delete.setVisibility(View.VISIBLE);
+            BT_delete.setOnClickListener(v -> {
+                mCallback.onSelectedData(event, true);
+                dismiss();
+            });
+        }
+        else
+            BT_delete.setVisibility(View.GONE);
     }
 }
