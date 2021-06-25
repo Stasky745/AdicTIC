@@ -66,9 +66,6 @@ public class AdviceFragment extends Fragment {
         BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
         BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(), OficinesActivity.class)));
 
-        Button BT_oficines2 = root.findViewById(R.id.BT_oficines2);
-        BT_oficines2.setOnClickListener(view -> startActivity(new Intent(getActivity(), MainActivity.class)));
-
         return root;
     }
 }
