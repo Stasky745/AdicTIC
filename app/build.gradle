@@ -52,6 +52,12 @@ android {
         checkReleaseBuilds true
         abortOnError false
     }
+    packagingOptions {
+        exclude("META-INF/kotlinx-io.kotlin_module")
+        exclude("META-INF/atomicfu.kotlin_module")
+        exclude("META-INF/kotlinx-coroutines-io.kotlin_module")
+        exclude("META-INF/kotlinx-coroutines-core.kotlin_module")
+    }
 }
 
 def getCustomVersionCode() {
@@ -107,16 +113,16 @@ dependencies {
     implementation 'androidx.core:core:1.5.0'
 
     // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:27.1.0')
+    implementation platform('com.google.firebase:firebase-bom:28.1.0')
 
     // When using the BoM, you don't specify versions in Firebase library dependencies
     // Declare the dependencies for the desired Firebase products
     implementation 'com.google.firebase:firebase-core'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-crash'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-firestore'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'

@@ -3,47 +3,50 @@ package com.developerspace.webrtcsample
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.developerspace.webrtcsample.databinding.WebrtcStartBinding
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_start.*
 
 class MainActivity : AppCompatActivity() {
 
     val db = Firebase.firestore
+    private lateinit var binding: WebrtcStartBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start)
+        binding = WebrtcStartBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         Constants.isIntiatedNow = true
         Constants.isCallEnded = true
-        start_meeting.setOnClickListener {
-            if (meeting_id.text.toString().trim().isNullOrEmpty())
-                meeting_id.error = "Please enter meeting id"
+        binding.startMeeting.setOnClickListener {
+            if (binding.meetingId.text.toString().trim().isNullOrEmpty())
+                binding.meetingId.error = "Please enter meeting id"
             else {
                 db.collection("calls")
-                        .document(meeting_id.text.toString())
+                        .document(binding.meetingId.text.toString())
                         .get()
                         .addOnSuccessListener {
                             if (it["type"]=="OFFER" || it["type"]=="ANSWER" || it["type"]=="END_CALL") {
-                                meeting_id.error = "Please enter new meeting ID"
+                                binding.meetingId.error = "Please enter new meeting ID"
                             } else {
                                 val intent = Intent(this@MainActivity, RTCActivity::class.java)
-                                intent.putExtra("meetingID",meeting_id.text.toString())
+                                intent.putExtra("meetingID",binding.meetingId.text.toString())
                                 intent.putExtra("isJoin",false)
                                 startActivity(intent)
                             }
                         }
                         .addOnFailureListener {
-                            meeting_id.error = "Please enter new meeting ID"
+                            binding.meetingId.error = "Please enter new meeting ID"
                         }
             }
         }
-        join_meeting.setOnClickListener {
-            if (meeting_id.text.toString().trim().isNullOrEmpty())
-                meeting_id.error = "Please enter meeting id"
+        binding.joinMeeting.setOnClickListener {
+            if (binding.meetingId.text.toString().trim().isNullOrEmpty())
+                binding.meetingId.error = "Please enter meeting id"
             else {
                 val intent = Intent(this@MainActivity, RTCActivity::class.java)
-                intent.putExtra("meetingID",meeting_id.text.toString())
+                intent.putExtra("meetingID",binding.meetingId.text.toString())
                 intent.putExtra("isJoin",true)
                 startActivity(intent)
             }
