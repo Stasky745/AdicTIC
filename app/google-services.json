@@ -34,6 +34,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:667013344400:android:a0069b7a8d16a6173b3c15",
+        "android_client_info": {
+          "package_name": "com.example.adictic_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "667013344400-3ptbmq7sh40ebl72m3mgbhlrgkqkfces.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqrPuKtOslsEfFxcP30cnvhy616P45W-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "667013344400-3ptbmq7sh40ebl72m3mgbhlrgkqkfces.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
