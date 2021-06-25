@@ -32,8 +32,6 @@ import static java.lang.Math.round;
 
 public class ResumFragment extends Fragment {
 
-    private final long HORA_EN_MILLIS = 60 * 60 * 1000;
-
     private final List<GeneralUsage> appList;
 
     private TextView TV_intro, TV_appUsageInfo, TV_clickedBlockedApps, TV_resum;

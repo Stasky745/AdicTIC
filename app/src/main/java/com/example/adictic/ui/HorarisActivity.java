@@ -87,10 +87,13 @@ public class HorarisActivity extends AppCompatActivity {
             TV_info.setVisibility(View.VISIBLE);
             setViewsTutor(true);
 
-            setChipGroup();
+            setChipGroup(true);
             setButton();
         }
-        else setViewsTutor(false);
+        else {
+            setViewsTutor(false);
+            setChipGroup(false);
+        }
 
         getHoraris();
     }
@@ -324,8 +327,11 @@ public class HorarisActivity extends AppCompatActivity {
         timePicker.show();
     }
 
-    private void setChipGroup() {
-        chipGroup.setVisibility(View.VISIBLE);
+    private void setChipGroup(boolean bool) {
+        if (bool)
+            chipGroup.setVisibility(View.VISIBLE);
+        else
+            chipGroup.setVisibility(View.GONE);
 
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == CH_horariDiari.getId()) {
@@ -582,7 +588,4 @@ public class HorarisActivity extends AppCompatActivity {
                     .show();
         }
     }
-
-
-
 }
