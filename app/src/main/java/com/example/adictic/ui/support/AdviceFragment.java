@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.developerspace.webrtcsample.MainActivity;
 import com.example.adictic.R;
 import com.example.adictic.ui.chat.ChatActivity;
 
@@ -64,6 +65,9 @@ public class AdviceFragment extends Fragment {
         BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
         BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
         BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(), OficinesActivity.class)));
+
+        Button BT_oficines2 = root.findViewById(R.id.BT_oficines2);
+        BT_oficines2.setOnClickListener(view -> startActivity(new Intent(getActivity(), MainActivity.class)));
 
         return root;
     }
