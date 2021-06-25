@@ -1,5 +1,6 @@
 package com.developerspace.webrtcsample
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -189,6 +190,7 @@ class RTCAudioManager(context: Context) {
         Log.d(TAG, "AudioManager started")
     }
 
+    @SuppressLint("WrongConstant")
     fun stop() {
         Log.d(TAG, "stop")
         ThreadUtils.checkIsOnMainThread()

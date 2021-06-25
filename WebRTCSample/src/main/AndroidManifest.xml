@@ -17,11 +17,6 @@
         <activity android:name="com.developerspace.webrtcsample.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.FullScreen">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name="com.developerspace.webrtcsample.RTCActivity"
             android:screenOrientation="portrait"
