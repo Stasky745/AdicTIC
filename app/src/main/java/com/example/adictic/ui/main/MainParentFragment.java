@@ -397,7 +397,8 @@ public class MainParentFragment extends Fragment {
         else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected))
             setUsageMenu();
 
-        if(!parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
+        if(parentActivity.mainParent_usageChart.get(idChildSelected) == null || parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty() ||
+                !parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
                 (parentActivity.mainParent_lastUsageChartUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
             getUsageFromServer();
         }
@@ -432,6 +433,8 @@ public class MainParentFragment extends Fragment {
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
             parentActivity.mainParent_usageChart.put(idChildSelected, Collections.emptyMap());
         } else {
+            root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
+            root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
             long totalUsageTime = 0;
 
             Map<String, Long> mapUsage = new HashMap<>();
