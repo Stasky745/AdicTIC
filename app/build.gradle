@@ -150,6 +150,8 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$versions_glide"
     // Glide's OkHttp3 integration.
     implementation "com.github.bumptech.glide:okhttp3-integration:$versions_glide"
+
+    implementation project(path: ':WebRTCSample')
 }
 
 task downloadDrivers(type: Copy) {
