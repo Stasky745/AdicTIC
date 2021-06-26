@@ -153,6 +153,7 @@ dependencies {
 
     //Modules
     implementation project(path: ':libraries:webRTC')
+    implementation project(path: ':libraries:persistentcookie')
 }
 
 task downloadDrivers(type: Copy) {

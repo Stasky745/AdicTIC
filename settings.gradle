@@ -1,3 +1,4 @@
 include ':app', ':admin'
 rootProject.name='AdicTIC'
 include ':libraries:common', ':libraries:webRTC'
+include ':libraries:persistentcookie'
