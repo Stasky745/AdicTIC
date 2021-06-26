@@ -8,9 +8,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
-import com.example.adictic_admin.util.Crypt;
 import com.example.adictic_admin.util.Funcions;
 
 import retrofit2.Call;

@@ -1,8 +1,9 @@
-package com.example.adictic_admin.util;
+package com.adictic.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
+// Global variables (yes, I'm evil)
 public class Global {
     public static final String tz = TimeZone.getDefault().getDisplayName();
     public static final SimpleDateFormat DATE_ONLY_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -22,9 +23,10 @@ public class Global {
     // https://developer.chrome.com/devtools/docs/remote-debugging?hl=de#port-forwarding
 
     //public static final String BASE_URL_PORTFORWARDING = "http://localhost:8080";
-//    public static final String BASE_URL_PORTFORWARDING = "https://192.168.1.4:8443";
+    //public static final String BASE_URL_PORTFORWARDING = "https://192.168.1.130:8443";
     public static final String BASE_URL_RELEASE = "https://adictic-app.herokuapp.com/";
     public static final String BASE_URL_DEBUG = "https://adictic-test.herokuapp.com/";
     //public static final String BASE_URL_PORTFORWARDING = "https://private-8a27bb-adictic.apiary-mock.com/";
     public static final String BASE_URL_GENYMOTION = "http://10.0.3.2:8080";
+
 }

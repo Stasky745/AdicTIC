@@ -1,7 +1,6 @@
 package com.example.adictic.workers;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -15,9 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.entity.GeoFill;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;

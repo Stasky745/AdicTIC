@@ -12,11 +12,11 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.entity.LiveApp;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;

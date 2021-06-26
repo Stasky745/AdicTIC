@@ -12,13 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.TimesAccessedDay;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;

@@ -11,9 +11,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 

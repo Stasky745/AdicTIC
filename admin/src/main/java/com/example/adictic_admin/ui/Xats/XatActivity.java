@@ -24,6 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.util.Constants;
 import com.developerspace.webrtcsample.RTCActivity;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
@@ -31,7 +32,6 @@ import com.example.adictic_admin.entity.ChatInfo;
 import com.example.adictic_admin.entity.UserMessage;
 import com.example.adictic_admin.rest.Api;
 import com.example.adictic_admin.ui.Usuari.MainUserActivity;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.google.firebase.firestore.FirebaseFirestore;
 

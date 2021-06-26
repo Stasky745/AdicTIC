@@ -1,22 +1,17 @@
 package com.example.adictic_admin.ui.Usuari;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -25,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AppInfo;
@@ -32,14 +28,10 @@ import com.example.adictic_admin.entity.AppUsage;
 import com.example.adictic_admin.entity.GeneralUsage;
 import com.example.adictic_admin.entity.YearEntity;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AppUsage;
@@ -23,7 +24,6 @@ import com.example.adictic_admin.entity.FillNom;
 import com.example.adictic_admin.entity.GeneralUsage;
 import com.example.adictic_admin.rest.Api;
 import com.example.adictic_admin.ui.Usuari.informe.InformeActivity;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
