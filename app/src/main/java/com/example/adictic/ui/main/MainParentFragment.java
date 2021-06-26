@@ -22,6 +22,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.FillNom;
@@ -34,7 +35,6 @@ import com.example.adictic.ui.GeoLocActivity;
 import com.example.adictic.ui.HorarisActivity;
 import com.example.adictic.ui.events.EventsActivity;
 import com.example.adictic.ui.informe.InformeActivity;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.github.mikephil.charting.charts.PieChart;

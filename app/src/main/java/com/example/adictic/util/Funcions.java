@@ -41,6 +41,8 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Global;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.adictic.BuildConfig;
@@ -98,11 +100,6 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.example.adictic.util.Constants.KEY_SIZE;
-import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS;
-import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_EVENT_BLOCK;
-import static com.example.adictic.util.Constants.SHARED_PREFS_CHANGE_HORARIS_NIT;
 
 public class Funcions {
     private final static String TAG = "Funcions";
@@ -796,7 +793,7 @@ public class Funcions {
                     KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                    .setKeySize(KEY_SIZE)
+                    .setKeySize(Constants.KEY_SIZE)
                     .build();
 
             return new MasterKey.Builder(mCtx)

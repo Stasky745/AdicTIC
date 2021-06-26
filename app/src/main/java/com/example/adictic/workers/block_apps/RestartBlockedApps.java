@@ -8,15 +8,10 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.HorarisNit;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 

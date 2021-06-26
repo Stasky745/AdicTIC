@@ -133,10 +133,11 @@ dependencies {
     implementation "com.github.bumptech.glide:okhttp3-integration:$versions_glide" // Glide's OkHttp3 integration.
 
     //Local files
-    implementation files('libs/joda-time-2.10.10.jar')
+    implementation(name:'joda-time-2.10.10', ext:'jar')
     implementation(name:'monthandyearpicker-1.3.0', ext:'aar')
 
     //Modules
     implementation project(path: ':libraries:webRTC')
     implementation project(path: ':libraries:persistentcookie')
+    implementation project(path: ':libraries:common')
 }

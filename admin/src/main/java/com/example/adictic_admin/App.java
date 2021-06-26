@@ -4,10 +4,10 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Global;
 import com.example.adictic_admin.entity.UserLogin;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
-import com.example.adictic_admin.util.Global;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;

@@ -1,4 +1,4 @@
-package com.example.adictic.util;
+package com.adictic.common.util;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;

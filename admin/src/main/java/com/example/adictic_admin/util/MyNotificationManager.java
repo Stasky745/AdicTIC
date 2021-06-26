@@ -9,9 +9,9 @@ import android.graphics.BitmapFactory;
 
 import androidx.core.app.NotificationCompat;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.ui.Xats.XatActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 

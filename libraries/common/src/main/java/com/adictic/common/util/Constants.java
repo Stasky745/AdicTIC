@@ -1,4 +1,4 @@
-package com.example.adictic.util;
+package com.adictic.common.util;
 
 import android.graphics.Color;
 
@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
-import static java.lang.Math.round;
 
 public class Constants {
     public static final long HOUR_IN_MILLIS = 3600000;
@@ -20,13 +19,16 @@ public class Constants {
     public static final String FILE_HORARIS_NIT = "horaris_nit";
     public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
+    public static final String SHARED_PREFS_ID_USER = "userId";
+    public static final String SHARED_PREFS_ID_ADMIN = "adminId";
+    public static final String SHARED_PREFS_USERNAME = "username";
+    public static final String SHARED_PREFS_PASSWORD = "password";
+    public static final String SHARED_PREFS_TOKEN = "firebaseToken";
+
     public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "current_blocked_apps";
     public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit";
 
-    public static final String SHARED_PREFS_USERNAME = "username";
-    public static final String SHARED_PREFS_PASSWORD = "password";
-    public static final String SHARED_PREFS_TOKEN = "firebaseToken";
     public static final String SHARED_PREFS_IDUSER = "idUser";
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";
@@ -44,6 +46,11 @@ public class Constants {
     public static final String SHARED_PREFS_ACTIVE_EVENTS = "current_active_events";
     public static final String SHARED_PREFS_ACTIVE_HORARIS_NIT = "blockedDeviceNit";
 
+    public static final int[] GRAPH_COLORS = {
+            Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
+            Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
+    };
+
     public static final String CHANNEL_ID = "my_channel_01";
     public static final String CHANNEL_NAME = "Standard Notification";
     public static final String CHANNEL_DESCRIPTION = "Trying out notifications";
@@ -52,11 +59,6 @@ public class Constants {
     public static final String WORKER_TAG_EVENT_BLOCK = "event_block_worker_tag";
     public static final String WORKER_TAG_HORARIS_BLOCK = "horaris_worker_tag";
     public static final String WORKER_TAG_GEOLOC_PERIODIC = "geoloc_worker_periodic_tag";
-
-    public static final int[] GRAPH_COLORS = {
-            Color.parseColor("#3c9df8"), Color.parseColor("#deefff"), Color.parseColor("#76b3ec"),
-            Color.parseColor("#2390F5"), Color.parseColor("#1b62a5")
-    };
 
     public static int CORRECT_USAGE_DAY = 3;
     public static int DANGEROUS_USAGE_DAY = 5;

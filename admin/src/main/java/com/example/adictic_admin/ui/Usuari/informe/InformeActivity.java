@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AppTimesAccessed;
@@ -19,7 +20,6 @@ import com.example.adictic_admin.entity.GeneralUsage;
 import com.example.adictic_admin.entity.TimesAccessedDay;
 import com.example.adictic_admin.entity.YearEntity;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.whiteelephant.monthpicker.MonthPickerDialog;

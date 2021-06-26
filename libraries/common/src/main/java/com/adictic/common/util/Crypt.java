@@ -1,4 +1,4 @@
-package com.example.adictic.util;
+package com.adictic.common.util;
 
 import android.os.Build;
 

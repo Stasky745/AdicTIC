@@ -1,11 +1,8 @@
 package com.example.adictic_admin;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,10 +12,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.entity.AdminProfile;
 import com.example.adictic_admin.entity.WebLink;
 import com.example.adictic_admin.ui.profile.ISubmitWeblink;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

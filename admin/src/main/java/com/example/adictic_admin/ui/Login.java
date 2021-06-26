@@ -10,14 +10,14 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AdminLogin;
 import com.example.adictic_admin.entity.UserLogin;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
-import com.example.adictic_admin.util.Crypt;
 import com.example.adictic_admin.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessaging;
 

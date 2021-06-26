@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AppUsage;
 import com.example.adictic_admin.entity.GeneralUsage;
 import com.example.adictic_admin.ui.Usuari.DayUsageActivity;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;

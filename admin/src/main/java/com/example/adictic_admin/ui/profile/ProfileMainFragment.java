@@ -11,12 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AdminProfile;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;

@@ -27,12 +27,12 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.AdminProfile;
 import com.example.adictic_admin.entity.WebLink;
 import com.example.adictic_admin.rest.Api;
-import com.example.adictic_admin.util.Constants;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.textfield.TextInputEditText;
 
