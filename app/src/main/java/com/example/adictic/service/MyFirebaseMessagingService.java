@@ -2,6 +2,7 @@ package com.example.adictic.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -15,21 +16,20 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.work.Data;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
+import com.developerspace.webrtcsample.RTCActivity;
 import com.example.adictic.R;
-import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.BlockAppsActivity;
 import com.example.adictic.ui.chat.ChatFragment;
-import com.example.adictic.util.Constants;
-import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
-import com.example.adictic.workers.event_workers.StartBlockEventWorker;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -39,8 +39,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.AbstractExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -48,6 +46,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.adictic.common.util.Constants.CHANNEL_ID;
 
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -122,7 +122,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                 int importance = NotificationManager.IMPORTANCE_HIGH;
 
-                NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
                 mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
                 mChannel.enableLights(true);
                 mChannel.setLightColor(Color.RED);
@@ -244,7 +244,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                             int importance = NotificationManager.IMPORTANCE_HIGH;
 
-                            NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
                             mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
                             mChannel.enableLights(true);
                             mChannel.setLightColor(Color.RED);
@@ -270,7 +270,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 int importance = NotificationManager.IMPORTANCE_HIGH;
 
-                                NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
                                 mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
                                 mChannel.enableLights(true);
                                 mChannel.setLightColor(Color.RED);
@@ -289,6 +289,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         }
                         break;
+                }
+            }
+            else if(messageMap.containsKey("callVideochat")) {
+                String meetingId = messageMap.get("chatId");
+                if (meetingId==null || meetingId.trim().isEmpty())
+                    Log.e(TAG,"Error en el meetingId");
+                else {
+                    Intent callIntent = new Intent(this, RTCActivity.class);
+                    callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    callIntent.putExtra("meetingID",meetingId);
+                    callIntent.putExtra("isJoin",true);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, callIntent, 0);
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                            .setSmallIcon(R.drawable.adictic_nolletra)
+                            .setContentTitle("Trucant")
+                            .setContentText("Test test")
+                            .setPriority(NotificationCompat.PRIORITY_MAX)
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true);
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                    //notificationManager.cancelAll();
+                    notificationManager.notify(251, builder.build());
                 }
             }
         }

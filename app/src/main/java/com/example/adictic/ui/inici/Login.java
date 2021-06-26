@@ -15,13 +15,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
 import com.example.adictic.entity.User;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.main.NavActivity;
-import com.example.adictic.util.Constants;
-import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
