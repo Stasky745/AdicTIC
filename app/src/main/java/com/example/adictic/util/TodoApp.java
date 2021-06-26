@@ -3,6 +3,8 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Global;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
