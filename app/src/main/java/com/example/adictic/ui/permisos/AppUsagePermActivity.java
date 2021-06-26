@@ -1,6 +1,5 @@
 package com.example.adictic.ui.permisos;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
