@@ -25,11 +25,11 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockAppEntity;
 import com.example.adictic.entity.BlockList;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 

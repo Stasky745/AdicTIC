@@ -13,11 +13,11 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.ui.DayUsageActivity;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;

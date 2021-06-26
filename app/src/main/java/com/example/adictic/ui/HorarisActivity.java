@@ -18,11 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.text.HtmlCompat;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.HorarisAPI;
-import com.example.adictic.rest.TodoApi;
 import com.example.adictic.entity.HorarisNit;
-import com.example.adictic.util.Constants;
+import com.example.adictic.rest.TodoApi;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;

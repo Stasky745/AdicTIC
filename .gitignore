@@ -7,5 +7,6 @@
 /captures
 .externalNativeBuild
 .cxx
-*/Global.java
-/app/release/*
+/app/release
+/app/debug
+/app/keystore.properties

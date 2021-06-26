@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.adictic.entity.FillNom;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;

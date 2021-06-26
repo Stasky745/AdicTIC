@@ -11,10 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;

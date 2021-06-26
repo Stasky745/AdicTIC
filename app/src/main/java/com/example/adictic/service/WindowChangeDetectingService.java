@@ -24,12 +24,12 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedLimitedLists;
 import com.example.adictic.entity.LiveApp;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.BlockScreenActivity;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 

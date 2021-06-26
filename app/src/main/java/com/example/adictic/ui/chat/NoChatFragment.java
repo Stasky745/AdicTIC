@@ -17,7 +17,7 @@ import com.example.adictic.entity.Dubte;
 import com.example.adictic.entity.DubteLocalitzacions;
 import com.example.adictic.entity.Localitzacio;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
+import com.adictic.common.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;

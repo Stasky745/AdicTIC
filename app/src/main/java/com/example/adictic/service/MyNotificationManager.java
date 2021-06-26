@@ -9,10 +9,10 @@ import android.graphics.BitmapFactory;
 
 import androidx.core.app.NotificationCompat;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.ui.chat.ChatActivity;
 import com.example.adictic.ui.main.NavActivity;
-import com.example.adictic.util.Constants;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
