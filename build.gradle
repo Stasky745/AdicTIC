@@ -3,6 +3,13 @@
 buildscript {
     ext.kotlin_version = "1.5.20"
     ext.ktor_version = '1.6.0'
+
+    ext.firebase_version = '28.1.0'
+    ext.osmdroid_version = "6.1.8"
+    ext.versions_glide = "4.12.0"
+    ext.okhttp_version = "4.9.0"
+    ext.retrofit_version = "2.9.0"
+
     repositories {
         google()
         mavenCentral()
