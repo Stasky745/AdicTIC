@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">AdicTIC_Admin</string>
+    <string name="dra">Dra.</string>
+    <string name="name">Nom i Cognoms</string>
+    <string name="desc">Descripció</string>
+    <string name="links">Enllaços</string>
+    <string name="add_links">Afegir Enllaç</string>
+    <string name="accept">Acceptar</string>
+    <string name="profile">Perfil</string>
+    <string name="oficina">Oficina</string>
+    <string name="honorific">Honorífic</string>
+
+    <string name="profile_pic">Foto de Perfil</string>
+
+    <string name="error_connect">"No s'ha pogut connectar amb el servidor."</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="professio">Professió</string>
+    <string name="previsualitzar">Previsualitzar</string>
+    <string name="titol">Títol</string>
+    <string name="url">URL</string>
+    <string name="new_weblink">Afegeix un enllaç nou</string>
+    <string name="delete_weblink">Esborrar Link</string>
+    <string name="confirm_delete_link">Vols esborrar \"%s\"?</string>
+    <string name="cancel">Cancel·la</string>
+    <string name="weblink_edit">Editar Link</string>
+    <string name="previsualitzar_titol">Previsualització</string>
+    <string name="guardar_continuar">Se\'t guardaran tots els canvis que has fet. Vols continuar?</string>
+    <string name="enter_message">Escriu un missatge</string>
+    <string name="enviar">Envia</string>
+    <string name="closed_chat">El xat està tancat</string>
+    <string name="error_server_read">No s\'ha pogut connectar amb el servidor</string>
+
+    <string name="other">"Altres"</string>
+    <string name="hrs">"%d h."</string>
+    <string name="hours_endl_minutes">"%d h.\n%d min."</string>
+    <string name="mins">"%d min."</string>
+    <string name="search_app_category">"Cerca per app/categoria"</string>
+    <string name="press_pie_chart">"Prem a la gràfica per saber més informació."</string>
+    <string name="dades_del_dispositiu">Dades del dispositiu</string>
+    <string name="app_usage">Ús d\'aplicacions</string>
+    <string name="informe">Informe</string>
+    <string name="limit">Límits</string>
+    <string name="block_apps">Bloqueig d\'aplicacions</string>
+    <string name="horaris">"Horaris"</string>
+    <string name="descans_nocturn">Descans Nocturn</string>
+    <string name="hours_minutes">"%d h. %d m."</string>
+    <string name="daily_usage">"Ús diari del dispositiu"</string>
+    <string name="percentage_info">"Aquest usuari ha utilitzat el dispositiu %s de les %s possibles. Això vol dir que ha estat un %s%% del temps utilitzant-lo."</string>
+    <string name="ok">"D'acord"</string>
+    <string name="percentage">"%d%%"</string>
+    <string name="comp">"%s / %s"</string>
+    <string name="choose_year">Escull l\'any</string>
+    <string name="choose_month">Escull el mes per veure l\'informe</string>
+
+    <!-- Resum Informe -->
+    <string name="intro_bona">"Per una persona de %d anys, la quantitat d'ús d'un dispositiu recomanada és de %s hores al dia. Aquest mes s'ha aconseguit mantenir una mitjana de %s hores al dia, inferior a la recomanada!"</string>
+    <string name="intro_dolenta">"Per una persona de %d anys, la quantitat d'ús d'un dispositiu recomanada és de %s hores al dia. Aquest mes s'ha aconseguit mantenir una mitjana de %s hores al dia, superior a la recomanada. S'hauria de procurar baixar aquesta mitjana per sota els valors suggerits."</string>
+    <string name="us_apps_buit">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes s'ha mantingut aquest ideal! Enhorabona!"</string>
+    <string name="us_apps">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes hi ha hagut algunes aplicacions que han superat aquesta pauta. S'hauria de procurar reduir l'ús d'aquestes."</string>
+    <string name="intents_acces_buit">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. Aquest mes no s'ha intentat accedir amb una mitjana de més de 5 cops diaris a cap aplicació bloquejada, la xifra que triem que pot presentar un problema d'addicció a la persona. Felicitats!"</string>
+    <string name="intents_acces">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. A continuació es llisten totes les aplicacions que s'han intentat accedir més de 5 cops diaris, la xifra que hem escollit com a marca de possible addicció."</string>
+    <string name="resum_bo">"Aquest mes s'han seguit les pautes i recomanacions al peu de la lletra, continua així!"</string>
+    <string name="resum">"No s'han seguit adequadament les pautes recomanades durant aquest mes. De cares al següent s'hauria de mirar de:"</string>
+    <string name="resum_us_device">"\n    - Reduir l'ús del dispositiu"</string>
+    <string name="resum_us_apps">"\n    - Reduir i limitar l'ús disponible de les aplicacions massa utilitzades."</string>
+    <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
+
+
+    <string name="date_format">"%d  %s  %d"</string>
+    <string name="date">"Data:"</string>
+    <string name="initial_date">"Data inicial:"</string>
+    <string name="final_date">"Data final:"</string>
+    <string name="informal_date_format">"%d-%d-%d"</string>
+    <string name="days">" dies "</string>
+    <string name="hours">" hores "</string>
+    <string name="minutes">" minuts"</string>
+
+    <string name="days_tag">"d "</string>
+    <string name="hours_tag">"h "</string>
+    <string name="minutes_tag">"m"</string>
+
+    <string name="monday">Dilluns</string>
+    <string name="tuesday">Dimarts</string>
+    <string name="wednesday">Dimecres</string>
+    <string name="thursday">Dijous</string>
+    <string name="friday">Divendres</string>
+    <string name="saturday">Dissabte</string>
+    <string name="sunday">Diumenge</string>
+
+
+    <string name="error_noData">"No s'ha pogut extreure informació del servidor"</string>
+
+    <string name="wake_up">Despertar:</string>
+    <string name="sleep">Adormir:</string>
+
+    <string name="wake_up_hint">Hora de despertar</string>
+    <string name="sleep_hint">"Hora de bloquejar"</string>
+
+    <string name="weekday">Entre setmana</string>
+    <string name="weekend">Cap de setmana</string>
+
+
+
+    <string name="emptyList">No hi ha informació</string>
+    <string name="display_order_text">Ordenat per:</string>
+    <string name="total_use">Temps total: </string>
+    <string name="chip_single_date">"Una sola data"</string>
+    <string name="chip_range_dates">"Entre dues dates"</string>
+    <string name="app_icon">"Logo de l'app"</string>
+
+    <string name="spanish">Castellà</string>
+    <string name="catalan">Català</string>
+    <string name="theme_light">Tema clar</string>
+    <string name="theme_dark">Tema fosc</string>
+    <string name="theme_default">Tema per defecte</string>
+
+    <string name="informe_graphs">"Gràfiques"</string>
+    <string name="informe_resum">"Resum"</string>
+    <string name="device_usage">"Ús total del dispositiu:"</string>
+    <string name="the_image_of_the_other_app">The image of the other app.</string>
+    <string name="last_time_used">"Oberta últim cop: "</string>
+    <string name="time_span">"Temps d'ús: "</string>
+    <string name="block_app">Bloquejada</string>
+
+    <string name="overused_apps">"Aplicacions massa utilitzades"</string>
+    <string name="access_intents">"Intents d'accés"</string>
+    <string name="access_intents_label">"Intents d'accés a aplicacions bloquejades"</string>
+    <string name="nom_app">"Nom"</string>
+    <string name="categoria_app">"Categoria"</string>
+    <string name="events">"Events"</string>
+
+    <string name="no_user">No tens usuari? </string>
+    <string name="login">Iniciar\nSessió</string>
+    <string name="userDoesntExists">L\'usuari no existeix</string>
+    <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
+    <string name="hint_password">Contrasenya</string>
+    <string name="hint_username">Nom d\'usuari</string>
+    <string name="forgetPassword"><u>Has oblidat la contrasenya? </u></string>
+    <string name="admin">Admin</string>
+    <string name="adictic_splash">AdicTIC Splash Screen</string>
+
+    <string name="copied_address">Adreça copiada</string>
+    <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
+    <string name="error_getOffices">No s\'han pogut actualitzar les oficines des del servidor.</string>
+    <string name="previsualitzar_desc">Vols veure una previsualització?</string>
+    <string name="alfabeticament">Alfabèticament</string>
+    <string name="choose_date_range">Escull les dates</string>
+    <string name="escull_dates">Escull dates</string>
+    <string name="app_update_title">APLICACIÓ ACTUALITZADA</string>
+    <string name="noves_implementacions">Noves implementacions</string>
+    <string name="problemes_arreglats">Problemes arreglats</string>
+    <string name="canvis">Canvis</string>
+
+    <string name="trucar_confirmacio">Trucar?</string>
+    <string name="trucar_desc"> </string>
+</resources>
