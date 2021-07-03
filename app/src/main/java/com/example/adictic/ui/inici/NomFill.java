@@ -164,7 +164,10 @@ public class NomFill extends AppCompatActivity {
             setDialogTexts(dialog);
 
             Button BT_permisAccept = dialog.findViewById(R.id.BT_acceptPermis);
-            BT_permisAccept.setOnClickListener(v1 -> login(token, idParent, llista, tv_nom));
+            BT_permisAccept.setOnClickListener(v1 -> {
+                login(token, idParent, llista, tv_nom);
+                alertDialog.dismiss();
+            });
 
             Button BT_permisCancel = dialog.findViewById(R.id.BT_cancelPermis);
             BT_permisCancel.setOnClickListener(v12 -> alertDialog.dismiss());
