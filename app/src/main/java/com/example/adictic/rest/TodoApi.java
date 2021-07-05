@@ -81,6 +81,9 @@ public interface TodoApi {
     @GET("/users/{id}/child")
     Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
 
+    @GET("/users/{idTutor}/{idChild}")
+    Call<Collection<FillNom>> getChildInfo(@Path("idTutor") Long idTutor, @Path("idChild") Long idChild);
+
     @POST("/users/{id}/callBlockedApp")
     Call<String> callBlockedApp(@Path("id") Long childId, @Body String packageName);
 
@@ -169,8 +172,8 @@ public interface TodoApi {
     @GET("/users/dubtes/{childId}/poblacions")
     Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte(@Path("childId") Long childId);
 
-    @POST("/users/dubtes")
-    Call<String> postDubte(@Body Dubte dubte);
+    @POST("/users/dubtes/{childId}")
+    Call<String> postDubte(@Path("childId") Long childId, @Body Dubte dubte);
 
     ////////////////////////////////////
     //Chat

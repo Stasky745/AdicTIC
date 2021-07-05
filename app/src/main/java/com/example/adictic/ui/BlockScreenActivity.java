@@ -1,6 +1,5 @@
 package com.example.adictic.ui;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.Bundle;

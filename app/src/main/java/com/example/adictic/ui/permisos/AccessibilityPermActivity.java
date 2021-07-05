@@ -1,8 +1,5 @@
 package com.example.adictic.ui.permisos;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -16,12 +13,10 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.example.adictic.R;
-import com.example.adictic.workers.event_workers.RestartEventsWorker;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.workers.event_workers.RestartEventsWorker;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 

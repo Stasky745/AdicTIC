@@ -16,10 +16,10 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.entity.AppInfo;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 

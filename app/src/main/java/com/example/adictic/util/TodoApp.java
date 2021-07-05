@@ -3,6 +3,8 @@ package com.example.adictic.util;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Global;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.entity.UserLogin;
 import com.example.adictic.rest.TodoApi;
@@ -30,14 +32,12 @@ public class TodoApp extends Application {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-            "S'ha afegit un text al vincular el dispositiu d'un menor"
+
     };
 
     public static String[] fixes = {
-            "Ara ja es poden bloquejar i desbloquejar apps correctament",
-            "Hauria d'actualitzar més sovint les dades de la pàgina inicial",
-            "Geolocalització va bé a nosaltres, a veure si amb aquesta nova us funciona bé",
-            "Ja es poden enviar dubtes"
+            "Gràfica i ús d'aplicacions diàries ja funcionen",
+            "Ja es poden enviar consultes"
     };
 
     public static String[] changes = {

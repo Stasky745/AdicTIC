@@ -12,14 +12,14 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.rest.TodoApi;
 import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.SplashScreen;
-import com.example.adictic.util.Constants;
-import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
