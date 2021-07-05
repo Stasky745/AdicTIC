@@ -22,6 +22,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.FillNom;
@@ -34,7 +35,6 @@ import com.example.adictic.ui.GeoLocActivity;
 import com.example.adictic.ui.HorarisActivity;
 import com.example.adictic.ui.events.EventsActivity;
 import com.example.adictic.ui.informe.InformeActivity;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.github.mikephil.charting.charts.PieChart;
@@ -393,31 +393,38 @@ public class MainParentFragment extends Fragment {
         if (parentActivity.mainParent_usageChart.containsKey(idChildSelected) && parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty()) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
-        } else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected)) setUsageMenu();
+        }
+        else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected))
+            setUsageMenu();
 
-        if(!parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
+        if(parentActivity.mainParent_usageChart.get(idChildSelected) == null || parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty() ||
+                !parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
                 (parentActivity.mainParent_lastUsageChartUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
-            String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
-            Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
-            call.enqueue(new Callback<Collection<GeneralUsage>>() {
-                @Override
-                public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Collection<GeneralUsage> collection = response.body();
-                        Funcions.canviarMesosDeServidor(collection);
-                        makeGraph(collection);
-                        parentActivity.mainParent_lastUsageChartUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
-                    } else {
-                        Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-                    }
-                }
+            getUsageFromServer();
+        }
+    }
 
-                @Override
-                public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+    private void getUsageFromServer() {
+        String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
+        Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
+        call.enqueue(new Callback<Collection<GeneralUsage>>() {
+            @Override
+            public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Collection<GeneralUsage> collection = response.body();
+                    Funcions.canviarMesosDeServidor(collection);
+                    makeGraph(collection);
+                    parentActivity.mainParent_lastUsageChartUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
+                } else {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+                Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void makeGraph(Collection<GeneralUsage> genericAppUsage) {
@@ -426,6 +433,8 @@ public class MainParentFragment extends Fragment {
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
             parentActivity.mainParent_usageChart.put(idChildSelected, Collections.emptyMap());
         } else {
+            root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
+            root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
             long totalUsageTime = 0;
 
             Map<String, Long> mapUsage = new HashMap<>();

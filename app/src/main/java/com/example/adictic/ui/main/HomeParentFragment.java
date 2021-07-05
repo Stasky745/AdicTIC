@@ -11,10 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.FillNom;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
@@ -32,6 +32,7 @@ public class HomeParentFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private NavActivity parentActivity;
     private View root;
+    private TabFillsAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,10 +52,18 @@ public class HomeParentFragment extends Fragment {
             TodoApi mTodoService = ((TodoApp) requireActivity().getApplicationContext()).getAPI();
 
             long idTutor;
-            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            Call<Collection<FillNom>> call;
+
+            //Si es tutor
+            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
                 idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-            else idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
-            Call<Collection<FillNom>> call = mTodoService.getUserChilds(idTutor);
+                call = mTodoService.getUserChilds(idTutor);
+            }
+            else {
+                idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
+                long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+                call = mTodoService.getChildInfo(idTutor,idChild);
+            }
 
             call.enqueue(new Callback<Collection<FillNom>>() {
                 @Override
@@ -87,29 +96,18 @@ public class HomeParentFragment extends Fragment {
 //    }
 
     private void setupTabLayout(ArrayList<FillNom> fills){
-        ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
-        TabLayout tabLayout = root.findViewById(R.id.TabLayout);
-        // Si és l'app fill només ensenyem el fill actual
-        if (!sharedPreferences.getBoolean("isTutor",false)) {
-            boolean trobat = false;
-            int i = 0;
-            while (!trobat && i < fills.size()) {
-                if (fills.get(i).idChild == sharedPreferences.getLong("idUser",-1)) {
-                    trobat = true;
-                    FillNom fill = fills.get(i);
-                    fills.clear();
-                    fills.add(fill);
-                }
-                i++;
-            }
+        if(adapter == null) {
+            ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
+            TabLayout tabLayout = root.findViewById(R.id.TabLayout);
+            adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
+            viewPager.setAdapter(adapter);
+            new TabLayoutMediator(tabLayout, viewPager,
+                    (tab, position) -> tab.setText(adapter.getPageTitle(position))
+            ).attach();
+        }
+        else{
+            adapter.updateFills(fills);
         }
 
-        TabFillsAdapter adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
-
-        viewPager.setAdapter(adapter);
-
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(adapter.getPageTitle(position))
-        ).attach();
     }
 }

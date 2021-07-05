@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.adictic.util.Constants;
+import com.adictic.common.util.Constants;
 import com.example.adictic.util.Funcions;
 
 public class DespertarWorker extends Worker {

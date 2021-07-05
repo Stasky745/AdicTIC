@@ -14,25 +14,20 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppUsage;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.ui.support.AdviceFragment;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Math.round;
-
 public class ResumFragment extends Fragment {
-
-    private final long HORA_EN_MILLIS = 60 * 60 * 1000;
 
     private final List<GeneralUsage> appList;
 

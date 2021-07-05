@@ -12,10 +12,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
 import com.example.adictic.entity.UserRegister;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Crypt;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 

@@ -12,13 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.AppTimesAccessed;
 import com.example.adictic.entity.GeneralUsage;
 import com.example.adictic.entity.TimesAccessedDay;
 import com.example.adictic.entity.YearEntity;
 import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.Constants;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.TodoApp;
 import com.google.android.material.tabs.TabLayout;
@@ -318,24 +318,6 @@ public class InformeActivity extends AppCompatActivity {
                 .build()
                 .show();
     }
-
-//    public void btnMonthYear(){
-//        Calendar cal = Calendar.getInstance();
-//
-//        int minYear = Collections.min(yearList);
-//        int minMonth = Collections.min(daysMap.get(minYear).keySet());
-//
-//        cal.set(Calendar.YEAR,minYear);
-//        cal.set(Calendar.MONTH,minMonth);
-//
-//        long minDate = cal.getTimeInMillis();
-//        long maxDate = Calendar.getInstance().getTimeInMillis();
-//
-//        MonthYearPickerDialogFragment dialogFragment = MonthYearPickerDialogFragment
-//                .getInstance(currentMonth,currentYear,minDate,maxDate,getString(R.string.choose_month));
-//
-//        dialogFragment.show(getSupportFragmentManager(),null);
-//    }
 
     private void getMonthYearLists() {
         Call<List<YearEntity>> call = mTodoService.getDaysWithData(idChild);
