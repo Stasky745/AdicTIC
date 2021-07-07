@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.adictic_admin.App;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatsMain;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -24,14 +24,14 @@ import retrofit2.Response;
 
 public class XatsFragment extends Fragment {
 
-    private Api mService;
+    private AdminApi mService;
     private ViewPager2 _vpChats;
     private TabLayout _tabChat;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.chat_dashboard, container, false);
-        mService = ((App) requireActivity().getApplicationContext()).getAPI();
+        mService = ((AdminApp) requireActivity().getApplicationContext()).getAPI();
 
         _vpChats = root.findViewById(R.id.VP_chats);
         _tabChat = root.findViewById(R.id.TABL_chats);

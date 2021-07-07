@@ -20,16 +20,16 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.developerspace.webrtcsample.RTCActivity;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.BlockAppsActivity;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.chat.ChatFragment;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -53,7 +53,7 @@ import static com.adictic.common.util.Constants.CHANNEL_ID;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private final String TAG = "Firebase: ";
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
 
     private long updateGeoloc = -1;
 
@@ -102,7 +102,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
 

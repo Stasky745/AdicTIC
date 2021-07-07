@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.ChatsMain;
+import com.adictic.common.entity.ChatsMain;
 
 import java.util.ArrayList;
 

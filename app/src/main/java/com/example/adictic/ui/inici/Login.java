@@ -15,15 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.entity.User;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
-import com.example.adictic.entity.User;
-import com.example.adictic.entity.UserLogin;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.main.NavActivity;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
@@ -36,7 +36,7 @@ import retrofit2.Response;
 // then a RESTResponder_RF is called to check the authentication
 public class Login extends AppCompatActivity {
     private static Login login;
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
     private final String TAG = "Login";
 
@@ -53,7 +53,7 @@ public class Login extends AppCompatActivity {
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((TodoApp) this.getApplication()).getAPI();
+        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
 
         Button b_log = findViewById(R.id.login_button);
         TextView b_reg = findViewById(R.id.TV_register);

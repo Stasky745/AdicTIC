@@ -14,14 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Constants;
-import com.example.adictic.entity.GeoFill;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -42,7 +41,7 @@ public class GeoLocWorker extends Worker {
     private SharedPreferences sharedPreferences;
     private FusedLocationProviderClient fusedLocationClient;
     private GeoPoint currentLocation = null;
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private float accuracy = 0;
     private volatile Boolean success = null;
 
@@ -66,7 +65,7 @@ public class GeoLocWorker extends Worker {
             return Result.failure();
         }
 
-        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
 
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {

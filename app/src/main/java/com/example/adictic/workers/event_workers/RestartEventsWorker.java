@@ -11,7 +11,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.common.util.Constants;
-import com.example.adictic.entity.EventBlock;
+import com.adictic.common.entity.EventBlock;
 import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;

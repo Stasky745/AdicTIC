@@ -16,13 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.adictic_admin.App;
+import com.adictic.common.entity.Dubte;
+import com.adictic.common.entity.Localitzacio;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatInfo;
-import com.example.adictic_admin.entity.Dubte;
-import com.example.adictic_admin.entity.Localitzacio;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
 import com.example.adictic_admin.ui.Xats.XatActivity;
+import com.example.adictic_admin.util.AdminApp;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +46,7 @@ public class ConsultesFragment extends Fragment {
     private Button BT_filter;
     private RecyclerView RV_consultes;
     private View root;
-    private Api api;
+    private AdminApi adminApi;
     private ArrayList<Dubte> dubtesList;
     private RV_Adapter RVadapter;
 
@@ -58,7 +58,7 @@ public class ConsultesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.consultes_layout, container, false);
-        api = ((App) requireActivity().getApplication()).getAPI();
+        adminApi = ((AdminApp) requireActivity().getApplication()).getAPI();
         
         return root;
     }
@@ -72,7 +72,7 @@ public class ConsultesFragment extends Fragment {
     }
 
     private void getConsultes() {
-        Call<List<Dubte>> call = api.getDubtes();
+        Call<List<Dubte>> call = adminApi.getDubtes();
         call.enqueue(new Callback<List<Dubte>>() {
             @Override
             public void onResponse(@NotNull Call<List<Dubte>> call, @NotNull Response<List<Dubte>> response) {
@@ -207,8 +207,8 @@ public class ConsultesFragment extends Fragment {
                         .setTitle(dubteItem.titol)
                         .setMessage(dubteItem.descripcio.concat("\n").concat(finalLocalitzacions))
                         .setPositiveButton("Acceptar Consulta", (dialogInterface, i) -> {
-                            Api api = ((App) mContext.getApplicationContext()).getAPI();
-                            Call<ChatInfo> call = api.getUserChatInfo(dubteItem.id);
+                            AdminApi adminApi = ((AdminApp) mContext.getApplicationContext()).getAPI();
+                            Call<ChatInfo> call = adminApi.getUserChatInfo(dubteItem.id);
                             call.enqueue(new Callback<ChatInfo>() {
                                 @Override
                                 public void onResponse(@NotNull Call<ChatInfo> call, @NotNull Response<ChatInfo> response) {

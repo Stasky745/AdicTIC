@@ -17,11 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.adictic_admin.App;
+import com.adictic.common.entity.Oficina;
+import com.adictic.common.ui.OficinesActivity;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.Oficina;
-import com.example.adictic_admin.entity.OficinaNova;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -34,7 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OfficeFragment extends Fragment {
-    private Api mService;
+    private AdminApi mService;
     private View root;
     private Oficina oficina;
     private final Context mCtx;
@@ -54,7 +54,7 @@ public class OfficeFragment extends Fragment {
         root = inflater.inflate(R.layout.oficina_layout, container, false);
         Funcions.closeKeyboard(root.findViewById(R.id.main_parent), requireActivity());
 
-        mService = ((App) mCtx.getApplicationContext()).getAPI();
+        mService = ((AdminApp) mCtx.getApplicationContext()).getAPI();
 
         setViews();
 
@@ -100,9 +100,9 @@ public class OfficeFragment extends Fragment {
             }
             else {
                 // Si no existeix l'oficina la creem
+                Oficina novaOficina = new Oficina();
                 if(oficina == null) {
-                    OficinaNova novaOficina = new OficinaNova();
-                    asignarValorsOficina(novaOficina);
+                    asignarValorsOficinaNova(novaOficina);
 
                     if(oficina.hiHaCanvis(novaOficina)) {
                         Call<Long> call = mService.crearOficina(novaOficina);
@@ -129,7 +129,6 @@ public class OfficeFragment extends Fragment {
                 }
                 // Si existeix l'editem
                 else {
-                    Oficina novaOficina = new Oficina();
                     asignarValorsOficina(novaOficina);
 
                     if(oficina.hiHaCanvis(novaOficina)) {
@@ -163,7 +162,7 @@ public class OfficeFragment extends Fragment {
         builder.setTitle(R.string.previsualitzar_titol);
         builder.setMessage(R.string.previsualitzar_desc);
         builder.setPositiveButton(getString(R.string.accept), (dialogInterface, i) -> {
-            Intent intent = new Intent(getContext(), OficinesMapActivity.class);
+            Intent intent = new Intent(getContext(), OficinesActivity.class);
             intent.putExtra("idOficina", oficina.id);
             startActivity(intent);
             dialogInterface.dismiss();
@@ -184,7 +183,7 @@ public class OfficeFragment extends Fragment {
         novaOficina.website = Objects.requireNonNull(TIET_oficinaWeb.getText()).toString();
     }
 
-    private void asignarValorsOficina(OficinaNova novaOficina) {
+    private void asignarValorsOficinaNova(Oficina novaOficina) {
         novaOficina.name = Objects.requireNonNull(TIET_oficinaNom.getText()).toString();
         novaOficina.address = Objects.requireNonNull(TIET_oficinaDireccio.getText()).toString();
         novaOficina.ciutat = Objects.requireNonNull(TIET_oficinaPoblacio.getText()).toString();

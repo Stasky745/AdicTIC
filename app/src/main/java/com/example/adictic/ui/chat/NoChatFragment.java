@@ -12,14 +12,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.adictic.R;
-import com.example.adictic.entity.Dubte;
-import com.example.adictic.entity.DubteLocalitzacions;
-import com.example.adictic.entity.Localitzacio;
-import com.example.adictic.rest.TodoApi;
+import com.adictic.common.entity.Dubte;
+import com.adictic.common.entity.DubteLocalitzacions;
+import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.util.Constants;
+import com.example.adictic.R;
+import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -36,11 +36,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NoChatFragment extends Fragment {
-
-    TodoApi mTodoService;
-    TextInputEditText TIET_dubteTitol, TIET_dubteDesc;
-    ChipGroup CG_localitats;
-    Boolean hasDubte;
+    private HashMap<Long,Localitzacio> localitzacioMap;
+    private AdicticApi mTodoService;
+    private TextInputEditText TIET_dubteTitol, TIET_dubteDesc;
+    private ChipGroup CG_localitats;
+    private Boolean hasDubte;
 
     public NoChatFragment() {
         // Required empty public constructor
@@ -52,7 +52,7 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
-        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
+        mTodoService = ((AdicticApp) requireActivity().getApplication()).getAPI();
 
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
