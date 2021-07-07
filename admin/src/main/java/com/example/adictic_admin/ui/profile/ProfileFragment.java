@@ -27,12 +27,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.entity.WebLink;
+import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Constants;
-import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.AdminProfile;
-import com.example.adictic_admin.entity.WebLink;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -61,7 +62,7 @@ public class ProfileFragment extends Fragment{
     private RV_Adapter RVadapter;
 
     private final Context mCtx;
-    private final AdminProfile adminProfile;
+    private AdminProfile adminProfile;
 
     private String nomOriginal;
     private String descOriginal;
@@ -75,7 +76,7 @@ public class ProfileFragment extends Fragment{
 
     private ImageView IV_profilePic;
 
-    private Api mService;
+    private AdminApi mService;
 
     private SharedPreferences sharedPreferences;
 
@@ -126,7 +127,7 @@ public class ProfileFragment extends Fragment{
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.profile_edit, container, false);
 
-        mService = ((App) requireActivity().getApplication()).getAPI();
+        mService = ((AdminApp) requireActivity().getApplication()).getAPI();
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getContext());
 
@@ -213,6 +214,7 @@ public class ProfileFragment extends Fragment{
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
                 if(response.isSuccessful()) {
                     Toast.makeText(mCtx, "S'ha pujat la informació al servidor.", Toast.LENGTH_SHORT).show();
+                    adminProfile = profile;
                     if (imageChange)
                         postImage();
                     else
@@ -258,7 +260,7 @@ public class ProfileFragment extends Fragment{
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
                 if(response.isSuccessful()){
                     Toast.makeText(mCtx, "S'ha pujat la imatge al servidor.", Toast.LENGTH_SHORT).show();
-                    App.setAdminPic(IV_profilePic.getDrawable());
+                    AdminApp.setAdminPic(IV_profilePic.getDrawable());
                     imageChange = false;
                     previewProfile();
                 }
@@ -280,7 +282,9 @@ public class ProfileFragment extends Fragment{
         builder.setTitle(R.string.previsualitzar_titol);
         builder.setMessage(R.string.previsualitzar_desc);
         builder.setPositiveButton(getString(R.string.accept), (dialogInterface, i) -> {
-            startActivity(new Intent(getContext(), PreviewProfile.class));
+            Intent intent = new Intent(getContext(), AdminProfileActivity.class);
+            intent.putExtra("adminProfile", adminProfile);
+            startActivity(intent);
             dialogInterface.dismiss();
         });
         builder.setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss());

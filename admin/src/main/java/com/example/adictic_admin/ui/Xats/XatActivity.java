@@ -24,14 +24,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.entity.UserMessage;
 import com.adictic.common.util.Constants;
 import com.developerspace.webrtcsample.RTCActivity;
-import com.example.adictic_admin.App;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatInfo;
-import com.example.adictic_admin.entity.UserMessage;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
 import com.example.adictic_admin.ui.Usuari.MainUserActivity;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -51,7 +51,7 @@ public class XatActivity extends AppCompatActivity {
     public static ChatInfo userProfile;
     private RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
-    private Api mService;
+    private AdminApi mService;
     private boolean active;
     private TextView TV_profileName;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -93,7 +93,7 @@ public class XatActivity extends AppCompatActivity {
         userProfile = getIntent().getParcelableExtra("chat");
         active = getIntent().getBooleanExtra("active",true);
 
-        mService = ((App) getApplication()).getAPI();
+        mService = ((AdminApp) getApplication()).getAPI();
 
         setViews();
         setRecyclerView();

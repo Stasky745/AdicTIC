@@ -101,8 +101,8 @@ public class Funcions {
         if(idAdmin==-1)
             return;
 
-        if(App.getAdminPic() != null) {
-            d.setImageDrawable(App.getAdminPic());
+        if(AdminApp.getAdminPic() != null) {
+            d.setImageDrawable(AdminApp.getAdminPic());
             return;
         }
 
@@ -121,7 +121,7 @@ public class Funcions {
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(d);
 
-        App.setAdminPic(d.getDrawable());
+        AdminApp.setAdminPic(d.getDrawable());
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {
