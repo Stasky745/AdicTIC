@@ -36,28 +36,6 @@ public class XatsFragment extends Fragment {
         _vpChats = root.findViewById(R.id.VP_chats);
         _tabChat = root.findViewById(R.id.TABL_chats);
 
-//        Call<ChatsMain> call = mService.getAllChats();
-//        call.enqueue(new Callback<ChatsMain>() {
-//            @Override
-//            public void onResponse(@NotNull Call<ChatsMain> call, @NotNull Response<ChatsMain> response) {
-//                if(response.isSuccessful() && response.body() != null){
-//                    ChatsMain chatsMain = response.body();
-//                    ChatsAdapter chatsAdapter = new ChatsAdapter(requireActivity(), chatsMain);
-//
-//                    _vpChats.setAdapter(chatsAdapter);
-//
-//                    new TabLayoutMediator(_tabChat, _vpChats,
-//                            (tab, position) -> tab.setText(chatsAdapter.getPageTitle(position))
-//                    ).attach();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NotNull Call<ChatsMain> call, @NotNull Throwable t) {
-//
-//            }
-//        });
-
         return root;
     }
 

@@ -68,9 +68,9 @@ import static android.content.Intent.ACTION_VIEW;
 public class OficinesActivity extends AppCompatActivity {
     private static final String TAG = OficinesActivity.class.getSimpleName();
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
-    MyLocationListener locationListener;
-    LocationManager locationManager;
-    ArrayList<Marker> markers = new ArrayList<>();
+    private MyLocationListener locationListener;
+    private LocationManager locationManager;
+    private ArrayList<Marker> markers = new ArrayList<>();
     private MapView map = null;
     private Spinner SP_oficines;
     private Long idOficinaInicial;

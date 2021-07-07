@@ -3,4 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.adictic.common">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application>
+        <activity android:name=".ui.main.MainActivityAbstractClass" />
+        <activity android:name=".ui.OficinesActivity" />
+        <activity android:name=".ui.informe.InformeActivity" />
+        <activity android:name=".ui.DayUsageActivity" />
+        <activity android:name=".ui.GeoLocActivity" />
+        <activity android:name=".ui.HorarisActivity" />
+        <activity android:name=".ui.AdminProfileActivity" />
+        <activity android:name=".ui.events.EventsActivity" />
+        <activity android:name=".ui.BlockAppsActivity" />
+    </application>
 </manifest>

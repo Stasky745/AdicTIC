@@ -88,7 +88,7 @@ public class NoChatFragment extends Fragment {
                 newDubte.localitzacio = new ArrayList<>();
 
                 for (Integer idInt : CG_localitats.getCheckedChipIds())
-                    newDubte.localitzacio.add(Long.valueOf(idInt));
+                    newDubte.localitzacio.add(localitzacioMap.get(idInt));
 
                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
                 assert sharedPreferences != null;
@@ -156,8 +156,8 @@ public class NoChatFragment extends Fragment {
         });
     }
 
-    private void setLocalitzacions(Collection<Localitzacio> localitzacions, List<Long> enabledLocations) {
-        HashMap<Long,Localitzacio> localitzacioMap = new HashMap<>();
+    private void setLocalitzacions(Collection<Localitzacio> localitzacions, List<Localitzacio> enabledLocations) {
+        localitzacioMap = new HashMap<>();
         for(Localitzacio loc : localitzacions){
             localitzacioMap.put(loc.id,loc);
         }
@@ -174,7 +174,8 @@ public class NoChatFragment extends Fragment {
             CG_localitats.getChildAt(0).performClick();
         else{
             try {
-                for (Long locIds : enabledLocations) {
+                for (Localitzacio loc : enabledLocations) {
+                    Long locIds = loc.id;
                     CG_localitats.getChildAt(((Long)(locIds-1)).intValue()).performClick();
                 }
             } catch(IndexOutOfBoundsException ex){ ex.printStackTrace(); }
