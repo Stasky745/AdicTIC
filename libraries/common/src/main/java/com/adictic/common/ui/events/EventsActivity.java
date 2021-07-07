@@ -226,7 +226,10 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
         @Override
         public int getItemCount() {
-            return eventAdapterList.size() + 1;
+            if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+                return eventAdapterList.size() + 1;
+            else
+                return eventAdapterList.size();
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {

@@ -300,8 +300,10 @@ public class XatActivity extends AppCompatActivity {
     }
 
     public void getMessages() {
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences!=null;
         long childId = userProfile.childId != null ? userProfile.childId : -1;
-        Call<List<UserMessage>> call = mService.getMyMessagesWithUser(userProfile.userId, childId);
+        Call<List<UserMessage>> call = mService.getMyMessagesWithUser(childId, sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN,-1));
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {

@@ -1,0 +1,370 @@
+<resources>
+
+    <string name="ok">"D'acord"</string>
+
+    <string name="admin_pem_title">"Permisos d'administrador"</string>
+    <string name="admin_pem_info">"Aquesta aplicació requereix de permisos d'administrador a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Bloquejar el dispositiu. \n\n  • Evitar que l'aplicació es desinstali sense permís"</string>
+    <string name="admin_pem_intent">"Donar permisos d'administrador a aquesta aplicació permet el següent:"</string>
+
+    <string name="accessibility_pem_title">"Permisos d'accessibilitat"</string>
+    <string name="accessibility_pem_info">"Aquesta aplicació requereix de permisos d'accessibilitat a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Bloquejar aplicacions. \n\n  • Detectar activitat al moment."</string>
+
+    <string name="appusage_pem_title">"Permisos d'ús de dades"</string>
+    <string name="appusage_pem_info">"Aquesta aplicació requereix de permisos d'ús de dades a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Extreure informació de les aplicacions."</string>
+
+    <!-- Strings in DevicePolicyAdmin -->
+    <string name="device_admin">AdicTIC Device Admin</string>
+    <string name="device_admin_description">"AdicTIC necessita permissos d'administrador per evitar que es desinstal·li l'aplicació, i poder bloquejar el dispositiu quan es requereixi."</string>
+
+    <string name="app_name">AdicTIC</string>
+    <string name="last_time_used">"Oberta últim cop: "</string>
+    <string name="time_span">"Temps d'ús: "</string>
+    <string name="lastXDays">"Veure activitat dels últims: "</string>
+
+    <string name="display_order_text">Ordenat per:</string>
+    <!-- label for usage time -->
+    <string name="total_use">Temps total: </string>
+
+    <string name="days">" dies "</string>
+    <string name="hours">" hores "</string>
+    <string name="minutes">" minuts"</string>
+
+    <string name="days_tag">"d "</string>
+    <string name="hours_tag">"h "</string>
+    <string name="minutes_tag">"m"</string>
+
+    <string name="block_app">Bloquejada</string>
+    <string name="block_warning">Aquesta aplicació està bloquejada</string>
+    <string name="sortir">Sortir</string>
+
+    <string name="username">Nom d\'usuari:</string>
+    <string name="password">Contrasenya:</string>
+    <string name="password2">Repeteix la contrasenya:</string>
+    <string name="email">Correu electrònic:</string>
+    <string name="hint_username">Nom d\'usuari</string>
+    <string name="hint_password">Contrasenya</string>
+    <string name="hint_email">Correu electrònic</string>
+    <string name="no_user">No tens usuari? </string>
+    <string name="have_account">Ja tens compte? </string>
+    <string name="register">Registra\'t </string>
+    <string name="go_login">Inicia sessió</string>
+    <string name="tipus">Aquest dispositiu és de:</string>
+
+    <string name="tutor">Pare / Mare / Tutor</string>
+    <string name="tutelat">Adolescent</string>
+
+    <string name="login">Iniciar\nSessió</string>
+
+    <string name="hint_nomDisp">Nom del dispositiu</string>
+
+    <string name="title_activity_splash_screen">AdicTIC</string>
+    <string name="good_register">Registre correcte!</string>
+
+    <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
+    <string name="error_noTipus">Camp de tipus de dispositiu buit.</string>
+    <string name="error_noValidEmail">Format de correu no vàlid.</string>
+    <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
+    <string name="error_noRegister">ERROR: No s\'ha pogut registrar.</string>
+    <string name="error_noLogin">ERROR: No s\'ha trobat usuari al servidor amb les dades entrades.</string>
+    <string name="error_noUsername">Escriu un nom d\'usuari.</string>
+    <string name="error_password">Contrasenya no vàlida.</string>
+    <string name="error_noData">"No s'ha pogut extreure informació del servidor"</string>
+
+    <string name="the_image_of_the_other_app">The image of the other app.</string>
+
+    <string name="current_names">Els noms que tens assignats fins ara són:</string>
+    <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
+    <string name="accessibility_service_name">\"Adictic Accessibility Service\"</string>
+    <string name="accessibility_service_description">\"Aquest servei s\'utilitza per bloquejar aplicacions\"</string>
+    <string name="nomfill_enter">Entrar</string>
+
+    <string name="emptyList">No hi ha informació</string>
+
+    <string name="title_activity_nav">NavActivity</string>
+
+    <string name="menu">MENÚ</string>
+    <string name="menu_home">Inici</string>
+    <string name="menu_settings">Configuració</string>
+    <string name="menu_advice">Assessorament</string>
+    <string name="menu_help">Ajuda</string>
+
+    <string name="free_time">"Temps lliure"</string>
+    <string name="stop_free_time">"Aturar temps lliure"</string>
+    <string name="block_device">"Bloquejar dispositiu"</string>
+    <string name="disconnected">"Desconnectat"</string>
+    <string name="informe">Informe</string>
+    <string name="horaris">"Horaris"</string>
+    <string name="app_usage">Ús d\'aplicacions</string>
+    <string name="block_apps">Bloqueig d\'aplicacions</string>
+    <string name="home_second">Home Second</string>
+
+    <string name="advice_infoContent">Contingut informatiu</string>
+    <string name="advice_mostAskQuest">Preguntes freqüents</string>
+    <string name="advice_recommendations">Recomanacions</string>
+    <string name="advice_onlineChat">Chat online</string>
+    <string name="advice_privateConsult">Consulta privada</string>
+    <string name="advice_OurCenters">Els nostres centres</string>
+
+    <string name="forgetPassword"><u>Has oblidat la contrasenya? </u></string>
+
+    <string name="logout">Tancar Sessió</string>
+
+    <string name="chip_single_date">"Una sola data"</string>
+    <string name="chip_range_dates">"Entre dues dates"</string>
+
+    <string name="date">"Data:"</string>
+    <string name="initial_date">"Data inicial:"</string>
+    <string name="final_date">"Data final:"</string>
+
+    <string name="date_format">"%d  %s  %d"</string>
+
+    <string name="daily_usage">"Ús diari del dispositiu"</string>
+    <string name="device_usage">"Ús total del dispositiu:"</string>
+    <string name="press_pie_chart">"Prem a la gràfica per saber més informació."</string>
+
+    <string name="hours_minutes">"%d h. %d m."</string>
+    <string name="hrs">"%d h."</string>
+    <string name="hours_endl_minutes">"%d h.\n%d min."</string>
+    <string name="mins">"%d min."</string>
+    <string name="comp">"%s / %s"</string>
+    <string name="percentage">"%d%%"</string>
+    <string name="informal_date_format">"%d-%d-%d"</string>
+
+    <string name="percentage_info">Aquest usuari ha utilitzat el dispositiu %s de les %s recomanades. Això vol dir que ha estat un %s%% del temps recomanat utilitzant-lo.</string>
+    <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
+    <string name="unblock_device">"Desbloquejar dispositiu"</string>
+
+    <string name="nom_app">"Nom"</string>
+    <string name="categoria_app">"Categoria"</string>
+
+    <string name="editar_horari">"Editar horaris"</string>
+    <string name="horari_generic">"Genèric"</string>
+    <string name="horari_diari">"Diari"</string>
+    <string name="horari_setmanal">"Setmanal"</string>
+    <string name="horari_intro">"Escull les hores que el dispositiu estarà actiu:"</string>
+    <string name="horari_actual">"El %s va a dormir a les %s\nEl %s es desperta a les %s"</string>
+    <string name="error_no_event_name">"Escriu un nom per l'event"</string>
+    <string name="error_no_event_days">"Escull quins dies passa aquest event"</string>
+    <string name="error_incorrect_times">"Tria una hora final superior a la inicial"</string>
+    <string name="error_no_fills">"Actualment no hi ha cap fill/a registrat.\nPer a fer-ho només cal:\n\n1. Instal·lar l'app AdicTIC al dispositiu mòbil del vostre/a fill/a.\n\n2. Iniciar sessió amb el mateix usuari i contrasenya però prement l'opció \"adolescent\".\n\n3. Gaudir dels avantatges que us proporcionarà AdicTIC."</string>
+
+    <string name="monday">Dilluns</string>
+    <string name="tuesday">Dimarts</string>
+    <string name="wednesday">Dimecres</string>
+    <string name="thursday">Dijous</string>
+    <string name="friday">Divendres</string>
+    <string name="saturday">Dissabte</string>
+    <string name="sunday">Diumenge</string>
+
+    <string name="weekday">Entre setmana</string>
+    <string name="weekend">Cap de setmana</string>
+
+    <string name="wake_up">Despertar:</string>
+    <string name="sleep">Dormir:</string>
+
+    <string name="wake_up_hint">Hora de despertar</string>
+    <string name="sleep_hint">"Hora de bloquejar"</string>
+
+    <string name="accept">"Acceptar"</string>
+
+    <string name="successful_entry">"S'ha guardat correctament!"</string>
+
+    <string name="block_now">"Bloqueja"</string>
+    <string name="set_limit">"Límit diari"</string>
+    <string name="unlock">"Desbloqueja"</string>
+
+    <string name="search_app_category">"Cerca per app/categoria"</string>
+
+    <string name="per_day">"/dia"</string>
+    <string name="other">"Altres"</string>
+
+    <string name="app_icon">"Logo de l'app"</string>
+
+    <string name="select_apps_lock">"Selecciona les aplicacions que vols bloquejar"</string>
+
+    <string name="free_use_activation">"Tens ús il·limitat d'aquest dispositiu"</string>
+    <string name="free_use_deactivation">"S'ha acabat l'ús il·limitat d'aquest dispositiu"</string>
+
+    <string name="update_blocked_apps">"S'ha actualitzat la llista d'apps bloquejades"</string>
+
+    <string name="horaris_notification">"S'han actualitzat els horaris"</string>
+
+    <string name="informe_graphs">"Gràfiques"</string>
+    <string name="informe_resum">"Resum"</string>
+
+    <string name="overused_apps">"Aplicacions massa utilitzades"</string>
+    <string name="access_intents">"Intents d'accés"</string>
+    <string name="access_intents_label">"Intents d'accés a aplicacions bloquejades"</string>
+
+    <!-- FAQ -->
+    <string name="que_es_addiccio">"Què és una addicció?"</string>
+    <string name="def_noves_tecn">"De què parlem quan diem addicció a les noves tecnologies?"</string>
+    <string name="causes_addiccio">"Quines són les causes de l'addicció a les noves tecnologies?"</string>
+    <string name="consequencies_us">"Quines són les conseqüències d'un ús problemàtic de les noves tecnologies?"</string>
+    <string name="prevenir_problemes">"Com prevenir els problemes relacionats amb les noves tecnologies?"</string>
+    <string name="actuacio">"Com actuar davant del dubte de conducta problemàtica amb les noves tecnologies?"</string>
+    <string name="tractament_addiccio">"Quin és el tractament de l'addicció a les noves tecnologies?"</string>
+    <string name="riscos_noves_tec">"Quins són els riscos de les noves tecnologies?"</string>
+
+    <string name="birthday">"Escull la data de naixement"</string>
+    <string name="error_no_bday">"Falta la data de naixement"</string>
+
+    <!-- Resum Informe -->
+    <string name="intro_bona">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, inferior a la recomanada!</string>
+    <string name="intro_dolenta">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, superior a la recomanada. S\'hauria de procurar baixar aquesta mitjana per sota els valors suggerits.</string>
+    <string name="us_apps_buit">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes s'ha mantingut aquest ideal! Enhorabona!"</string>
+    <string name="us_apps">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes hi ha hagut algunes aplicacions que han superat aquesta pauta. S'hauria de procurar reduir l'ús d'aquestes."</string>
+    <string name="intents_acces_buit">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. Aquest mes no s'ha intentat accedir amb una mitjana de més de 5 cops diaris a cap aplicació bloquejada, la xifra que triem que pot presentar un problema d'addicció a la persona. Felicitats!"</string>
+    <string name="intents_acces">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. A continuació es llisten totes les aplicacions que s'han intentat accedir més de 5 cops diaris, la xifra que hem escollit com a marca de possible addicció."</string>
+    <string name="resum_bo">"Aquest mes s'han seguit les pautes i recomanacions al peu de la lletra, continua així!"</string>
+    <string name="resum">"No s'han seguit adequadament les pautes recomanades durant aquest mes. De cares al següent s'hauria de mirar de:"</string>
+    <string name="resum_us_device">"\n    - Reduir l'ús del dispositiu"</string>
+    <string name="resum_us_apps">"\n    - Reduir i limitar l'ús disponible de les aplicacions massa utilitzades."</string>
+    <string name="resum_intents_acces">"\n    - Vigilar l'ús de les aplicacions a les quals s'ha intentat accedir un nombre massa elevat de cops, i procurar determinar si això és degut a una possible addicció."</string>
+
+    <string name="go_information">"Vés a la documentació"</string>
+
+    <string name="edit">"Editar"</string>
+    <string name="afegir">"Afegir"</string>
+    <string name="esborrar">"Esborrar"</string>
+    <string name="events">Moments lliures de tecnologies</string>
+
+    <string name="closing_activity">"Sortint de l'activitat"</string>
+    <string name="exit_without_save">"Vols sortir sense guardar?"</string>
+
+    <string name="yes">"Sí"</string>
+    <string name="no">"No"</string>
+
+    <string name="esborrar_event">"Esborrar event"</string>
+    <string name="esborrar_event_text">"Vols esborrar l'event %s?"</string>
+
+    <string name="no_event_selected">"No has seleccionat cap event"</string>
+
+    <string name="name_tag">"Nom:"</string>
+    <string name="event_name">"Escriu el nom de l'event"</string>
+
+    <string name="start_tag">"Inici:"</string>
+    <string name="start_event_hint">"Hora d'inici"</string>
+    <string name="end_tag">"Fi:"</string>
+    <string name="end_event_hint">"Hora de fi"</string>
+
+    <string name="geoloc">Mapa</string>
+
+    <string name="address">"Adreça"</string>
+
+    <string name="unable_location">"No s'ha pogut trobar la localització"</string>
+
+    <string name="need_permission">"Es necessiten permisos d'emmagatzament i localització per veure el mapa."</string>
+
+    <string name="estadistiques">"Informació i Estadístiques"</string>
+    <string name="settings">Configuració</string>
+    <string name="titol">Títol</string>
+    <string name="desc">Descripció</string>
+    <string name="escriu_el_teu_dubte">Escriu el teu dubte</string>
+    <string name="localitat_oficina_desitjada">Localitat d\'oficina desitjada</string>
+    <string name="enviar">Enviar</string>
+    <string name="error_local">No s\'han pogut llegir les localitzacions</string>
+    <string name="error_server_read">No s\'ha pogut llegir del servidor</string>
+    <string name="control_de_dispositiu">Control de Dispositiu</string>
+    <string name="geolocalitzacio">Geolocalització</string>
+    <string name="copied_address">Adreça copiada</string>
+
+    <string name="title_activity_dubte">Dubte</string>
+    <string name="no_chat_dubte">"Si tens cap consulta, escriu aquí el teu dubte i se t'obrirà un xat amb un dels nostres professionals quan abans ens sigui possible."</string>
+    <string name="enviar_dubte">Enviar dubte</string>
+
+    <string name="crear_dbute">Crear nou dubte</string>
+    <string name="chats_tancats">Xats tancats</string>
+    <string name="chat_obert">Xat obert</string>
+
+    <string name="limit">Límits</string>
+    <string name="dades_del_dispositiu">Dades del dispositiu</string>
+    <string name="descans_nocturn">Descans Nocturn</string>
+    <string name="error_sending_data">Error enviant dades al servidor.</string>
+    <string name="error_getOffices">No s\'han pogut actualitzar les oficines des del servidor.</string>
+    <string name="informacio">Informació</string>
+    <string name="suport_professional">Suport Professional</string>
+    <string name="choose_month">Escull el mes per veure l\'informe</string>
+    <string name="choose_year">Escull l\'any</string>
+
+    <string name="tancar_sessio">Tancar sessió</string>
+    <string name="change_language">Canviar idioma</string>
+
+    <string name="spanish">Castellà</string>
+    <string name="catalan">Català</string>
+    <string name="send">Enviar</string>
+    <string name="enter_message">Escriu un missatge</string>
+    <string name="tancar_xat">Tancar xat.</string>
+    <string name="menu_permisos">Donar permisos per veure les dades.</string>
+    <string name="close_chat">Tancar Xat</string>
+    <string name="chat_close_desc">Si acceptes es tancarà aquest xat. Un cop tancat no es podrà tornar a obrir i s\'haurà de crear un nou dubte. Estàs segur que vols continuar?</string>
+    <string name="cancel">Cancel·lar</string>
+    <string name="treure_acces_titol">Treure Accés</string>
+    <string name="treure_acces_desc">Vols deixar de donar accés a les dades al professional amb qui estàs parlant? Per tornar a donar accés només caldrà tornar apretar aquest botó.</string>
+    <string name="donar_acces_titol">Donar Accés</string>
+    <string name="donar_acces_desc">Vols donar accés a les dades al professional amb qui estàs parlant? Per treure l\'accés només caldrà tornar apretar aquest botó.</string>
+    <string name="localitat_professional">En quina localitat t\'agradaria que fos el professional que t\'atendrà?</string>
+    <string name="send_dubte">Enviar Consulta</string>
+    <string name="dubte_overwrite">Ja tens una consulta entrada, si en fas una altra sobreescriurà la que ja existeix. Vols enviar aquesta consulta?</string>
+    <string name="dubte_send">Enviar la consulta entrada? Només en pots tenir una activa en cada moment, si n\'envies una altra sobreescriurà aquesta. Vols continuar?</string>
+    <string name="dubte_success">Consulta enviada correctament.</string>
+    <string name="links">Enllaços</string>
+    <string name="profile_pic">Foto de Perfil</string>
+    <string name="closed_chat">La conversa ha finalitzat.</string>
+    <string name="veure_oficina">Veure l\'oficina en el mapa</string>
+    <string name="usernameAlreadyExists">El nom d\'usuari ja existeix</string>
+    <string name="emailAlreadyExists">El correu electrònic ja existeix</string>
+    <string name="userDoesntExists">L\'usuari no existeix</string>
+    <string name="passwordDoesntMatch">La contrasenya no coincideix amb aquest usuari</string>
+    <string name="changePassword">Canviar contrasenya</string>
+    <string name="actualPassword">Contrasenya actual:</string>
+    <string name="newPassword">Nova contrasenya:</string>
+    <string name="repeatNewPassword">Repeteix la nova contrasenya:</string>
+    <string name="change_theme">Canviar tema</string>
+    <string name="theme_light">Tema clar</string>
+    <string name="theme_dark">Tema fosc</string>
+    <string name="theme_default">Tema per defecte</string>
+    <string name="title_installed_app">%s ha instal·lat una nova app</string>
+    <string name="title_uninstalled_app">%s ha desinstal·lat una app</string>
+    <string name="perm_background_loc_title">Permís de localització</string>
+    <string name="perm_back_location_desc">Aquesta aplicació requereix de permisos de localització en tot moment a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n · Saber la geolocalització del dispositiu.</string>
+    <string name="dialog_title_perm_loc">Continuar sense permís de Localització?</string>
+    <string name="dialog_body_perm_loc">Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d\'aquest dispositiu, segur que vols continuar?</string>
+    <string name="alfabeticament">Alfabèticament</string>
+    <string name="choose_date_range">Escull les dates</string>
+    <string name="escull_dates">Escull dates</string>
+    <string name="app_update_title">APLICACIÓ ACTUALITZADA</string>
+    <string name="noves_implementacions">Noves implementacions</string>
+    <string name="problemes_arreglats">Problemes arreglats</string>
+    <string name="canvis">Canvis</string>
+    <string name="select_apps_unlock">Selecciona les aplicacions que vols bloquejar</string>
+    <string name="esborrar_horaris_title">Esborrar Horaris</string>
+    <string name="esborrar_horaris_desc">S\'esborraran tots els horaris programats. Segur que vols continuar?</string>
+    <string name="horaris_incorrectes">Horaris Incorrectes</string>
+    <string name="horaris_incorrectes_body">
+        <![CDATA[
+        L\'horari <font color="#3c9df8"><b>%s</b></font> és incorrecte. L\'hora de despertar ha de ser inferior a la de dormir.
+        ]]>
+    </string>
+    <string name="permis_titol">Vols vincular el teu dispositiu mòbil a AdicTIC?</string>
+    <string name="permis_1">Si permets la vinculació, el teu pare, mare o tutor/a podran supervisar el teu dispositiu mòbil.</string>
+    <string name="permis_2">
+        <![CDATA[
+            <u>AdicTIC et protegeix mantenint la teva <font color="#3c9df8"><b>privacitat</b></font>.</u>
+        ]]>
+    </string>
+    <string name="permis_3">
+        <![CDATA[
+            L’ús d’AdicTIC <font color="#3c9df8"><b>permet</b></font>:
+        ]]>
+    </string>
+    <string name="permis_4">"Conèixer el temps d’ús diari del dispositiu mòbil\nVeure les aplicacions utilitzades i el temps dedicat a aquestes\nEstablir límits en el temps d’ús del dispositiu mòbil\nControlar l’ús de les aplicacions instal·lades\nBloquejar el dispositiu en moments en què sigui convenient evitar-ne l’ús com l’estudi o el descans nocturn\nLocalitzar el dispositiu"</string>
+    <string name="permis_5">
+        <![CDATA[
+            L’ús d’AdicTIC <font color="#3c9df8"><b>NO permet</b></font>:
+        ]]>
+    </string>
+    <string name="permis_6">"Veure el contingut de la teva pantalla de forma remota\nVeure el teu historial de navegació\nVeure o canviar les teves contrasenyes\nLlegir els teus missatges\nEscoltar les teves trucades\nEsborrar les teves dades\nBloquejar les trucades d’emergències"</string>
+    <string name="event_desc">Aquesta funció permet programar franges horàries en què l\'usuari no pot fer ús del dispositiu mòbil.</string>
+    <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
+</resources>

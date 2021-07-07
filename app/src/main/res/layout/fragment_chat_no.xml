@@ -9,7 +9,6 @@
     android:verticalScrollbarPosition="defaultPosition">
 
     <ScrollView
-        android:id="@+id/SV_Opcions"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

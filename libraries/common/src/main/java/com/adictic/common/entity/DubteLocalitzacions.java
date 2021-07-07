@@ -1,4 +1,4 @@
-package com.example.adictic.entity;
+package com.adictic.common.entity;
 
 import java.util.Collection;
 

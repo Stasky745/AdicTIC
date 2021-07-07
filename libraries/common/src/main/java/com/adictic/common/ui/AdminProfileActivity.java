@@ -2,8 +2,7 @@ package com.adictic.common.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,13 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.adictic.R;
-import com.example.adictic.entity.AdminProfile;
-import com.example.adictic.entity.WebLink;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.support.OficinesActivity;
-import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
+import com.adictic.common.R;
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.entity.WebLink;
+import com.adictic.common.util.Constants;
+import com.adictic.common.util.Funcions;
 
 import java.util.ArrayList;
 
@@ -43,7 +40,7 @@ public class AdminProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_profile);
 
-        todoApi = ((TodoApp) this.getApplication()).getAPI();
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         adminProfile = getIntent().getExtras().getParcelable("adminProfile");
 
         setDades();
@@ -85,22 +82,7 @@ public class AdminProfileActivity extends AppCompatActivity {
 
     private void setFoto(){
         ImageView IV_profilePic = findViewById(R.id.IV_profilePic);
-
-        Call<ResponseBody> call = todoApi.getAdminPicture(adminProfile.idAdmin);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Bitmap bmp = BitmapFactory.decodeStream(response.body().byteStream());
-                    IV_profilePic.setImageBitmap(bmp);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-
-            }
-        });
+        Funcions.setAdminPhoto(AdminProfileActivity.this, sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN,-1), IV_profilePic);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
