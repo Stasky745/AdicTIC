@@ -46,6 +46,9 @@ public interface AdminApi extends Api {
     @GET("/admins/pictures/{id}")
     Call<ResponseBody> getPicture(@Path("id") Long id);
 
+    @GET("/message/admin/{clientId}/{childId}")
+    Call<List<UserMessage>> getMyMessagesWithUser(@Path("clientId") Long clientId, @Path("childId") Long childId);
+
     @POST("/offices")
     Call<String> actualitzarOficina(@Body Oficina oficina);
 
