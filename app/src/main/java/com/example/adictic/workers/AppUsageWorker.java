@@ -16,12 +16,12 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.entity.AppInfo;
+import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.util.Constants;
-import com.example.adictic.entity.AppInfo;
-import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,9 +33,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AppUsageWorker extends Worker {
-    Boolean ok;
-
-    SharedPreferences sharedPreferences;
+    private Boolean ok;
+    private AdicticApi mTodoService;
+    private SharedPreferences sharedPreferences;
 
     public AppUsageWorker(
             @NonNull Context context,
@@ -47,6 +47,8 @@ public class AppUsageWorker extends Worker {
     @Override
     public Result doWork() {
         String TAG = "AppUsageWorker";
+
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
 
         Log.d(TAG, "Starting Worker");
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
@@ -78,8 +80,6 @@ public class AppUsageWorker extends Worker {
         if(totalTime > lastTotalUsage && totalTime < lastTotalUsage + (Constants.HOUR_IN_MILLIS / 2))
             return Result.success();
 
-        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
-
         ok = null;
 
         Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
@@ -102,8 +102,6 @@ public class AppUsageWorker extends Worker {
     private void checkInstalledApps() {
 //        if(!sharedPreferences.contains("installedApps") || !sharedPreferences.getBoolean("installedApps",false)) {
             final List<AppInfo> listInstalledPkgs = getLaunchableApps();
-
-            TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
             Call<String> call = mTodoService.postInstalledApps(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1), listInstalledPkgs);
 
             call.enqueue(new Callback<String>() {

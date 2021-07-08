@@ -21,8 +21,8 @@ import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
-import com.example.adictic.entity.User;
-import com.example.adictic.rest.TodoApi;
+import com.adictic.common.entity.User;
+import com.adictic.common.rest.Api;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
@@ -30,7 +30,7 @@ import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.LocaleHelper;
-import com.example.adictic.util.TodoApp;
+import com.example.adictic.util.AdicticApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
@@ -49,13 +49,13 @@ public class SplashScreen extends AppCompatActivity {
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
     private String token = "";
-    private TodoApi todoApi;
+    private Api api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        todoApi = ((TodoApp) this.getApplication()).getAPI();
+        api = ((AdicticApp) this.getApplication()).getAPI();
         checkForUpdates();
     }
 
@@ -78,7 +78,7 @@ public class SplashScreen extends AppCompatActivity {
                     Log.d(TAG,"Firebase Token: " + token);
                     Log.d(TAG,"Firebase Token (Encrypted): " + Crypt.getAES(token));
 
-                    Call<User> call = todoApi.checkWithToken(Crypt.getAES(token));
+                    Call<User> call = api.checkWithToken(Crypt.getAES(token));
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
@@ -189,7 +189,7 @@ public class SplashScreen extends AppCompatActivity {
             startApp();
             return;
         }
-        Call<String> call = todoApi.checkForUpdates(BuildConfig.VERSION_NAME);
+        Call<String> call = api.checkForUpdates(BuildConfig.VERSION_NAME);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -231,7 +231,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void getUpdateFromServer() {
-        Call<ResponseBody> call = todoApi.getLatestVersion();
+        Call<ResponseBody> call = api.getLatestVersion();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
