@@ -15,7 +15,6 @@
         android:maxWidth="240dp"
         android:padding="8dp"
         android:text="hi man, how are you?"
-        android:textColor="#ffffff"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
