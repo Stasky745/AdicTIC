@@ -13,10 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
-import com.example.adictic.entity.ChangePassword;
-import com.example.adictic.rest.TodoApi;
+import com.adictic.common.entity.ChangePassword;
+import com.adictic.common.rest.Api;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
+import com.example.adictic.util.AdicticApp;
 
 import org.json.JSONObject;
 
@@ -26,13 +26,13 @@ import retrofit2.Response;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
-    TodoApi todoApi;
+    Api api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
-        todoApi = ((TodoApp) this.getApplication()).getAPI();
+        api = ((AdicticApp) this.getApplication()).getAPI();
 
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
 
@@ -56,7 +56,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 ChangePassword changePassword = new ChangePassword();
                 changePassword.oldPassword = Crypt.getSHA256(pOld.getText().toString().trim());
                 changePassword.newPassword = Crypt.getSHA256(p1.getText().toString().trim());
-                Call<String> call = todoApi.changePassword(changePassword);
+                Call<String> call = api.changePassword(changePassword);
 
                 call.enqueue(new Callback<String>() {
                     @Override
@@ -90,7 +90,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         toast.show();
                     }
                 });
-                todoApi.changePassword(changePassword);
+                api.changePassword(changePassword);
             }
         });
 

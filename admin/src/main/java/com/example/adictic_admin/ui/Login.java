@@ -10,14 +10,14 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.entity.User;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic_admin.App;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.AdminLogin;
-import com.example.adictic_admin.entity.UserLogin;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -48,7 +48,7 @@ public class Login extends AppCompatActivity {
                     // Get new Instance ID token
                     String token = task.getResult();
 
-                    Api api = ((App) getApplicationContext()).getAPI();
+                    AdminApi adminApi = ((AdminApp) getApplicationContext()).getAPI();
 
                     EditText ET_username = findViewById(R.id.login_username);
                     EditText ET_password = findViewById(R.id.login_password);
@@ -58,12 +58,12 @@ public class Login extends AppCompatActivity {
                     userLogin.password = Crypt.getSHA256(ET_password.getText().toString());
                     userLogin.token = Crypt.getAES(token);
 
-                    Call<AdminLogin> call = api.login(userLogin);
-                    call.enqueue(new Callback<AdminLogin>() {
+                    Call<User> call = adminApi.login(userLogin);
+                    call.enqueue(new Callback<User>() {
                         @Override
-                        public void onResponse(@NotNull Call<AdminLogin> call, @NotNull Response<AdminLogin> response) {
+                        public void onResponse(@NotNull Call<User> call, @NotNull Response<User> response) {
                             if(response.isSuccessful() && response.body() != null){
-                                AdminLogin adminLogin = response.body();
+                                User adminLogin = response.body();
                                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
                                 assert sharedPreferences != null;
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_USER,adminLogin.id).apply();
@@ -78,7 +78,7 @@ public class Login extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(@NotNull Call<AdminLogin> call, @NotNull Throwable t) {
+                        public void onFailure(@NotNull Call<User> call, @NotNull Throwable t) {
 
                         }
                     });

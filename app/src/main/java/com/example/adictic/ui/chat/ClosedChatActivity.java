@@ -17,14 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.entity.UserMessage;
+import com.adictic.common.rest.Api;
+import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
-import com.example.adictic.entity.AdminProfile;
-import com.example.adictic.entity.UserMessage;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -40,7 +40,7 @@ import retrofit2.Response;
 public class ClosedChatActivity extends AppCompatActivity {
     AdminProfile adminProfile;
     private SharedPreferences sharedPreferences;
-    TodoApi mTodoService;
+    Api mTodoService;
     RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
     private Long myId;
@@ -49,7 +49,7 @@ public class ClosedChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
-        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Agafem la nostra id
