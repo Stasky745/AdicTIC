@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.adictic">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
@@ -75,7 +77,8 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
-        </service> <!-- DEVICE ADMIN POLICIES -->
+        </service>
+        <service android:name=".service.ForegroundService" /> <!-- DEVICE ADMIN POLICIES -->
         <activity android:name=".ui.permisos.DevicePolicyAdmin" />
         <activity android:name="com.adictic.common.ui.HorarisActivity" />
         <activity android:name="com.adictic.common.ui.BlockAppsActivity" />
