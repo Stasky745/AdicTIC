@@ -8,7 +8,9 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,15 +18,18 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.AdicticApp;
+import com.example.adictic.util.Funcions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -32,6 +37,14 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import org.joda.time.DateTime;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 //https://github.com/android/location-samples/blob/432d3b72b8c058f220416958b444274ddd186abd/LocationUpdatesForegroundService/app/src/main/java/com/google/android/gms/location/sample/locationupdatesforegroundservice/LocationUpdatesService.java
 public class ForegroundService extends Service {
@@ -58,7 +71,7 @@ public class ForegroundService extends Service {
 
         mLocationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
+            public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
                 onNewLocation(locationResult.getLastLocation());
             }
@@ -78,7 +91,12 @@ public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
+        createNotification();
+        return START_STICKY;
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void createNotification() {
         createNotificationChannel();
 
         Intent notificationIntent = new Intent(this, NavActivity.class);
@@ -95,10 +113,10 @@ public class ForegroundService extends Service {
                         .build();
 
 // Notification ID cannot be 0.
-        startForeground(1, notification);
-
-        return START_STICKY;
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+        else
+            startForeground(1, notification);
     }
 
     private void getLastLocation() {
@@ -107,6 +125,7 @@ public class ForegroundService extends Service {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
                             mLocation = task.getResult();
+                            sendLocation();
                         } else {
                             Log.w(TAG, "Failed to get location.");
                         }
@@ -131,14 +150,36 @@ public class ForegroundService extends Service {
         Log.i(TAG, "New location: " + location);
         mLocation = location;
         if(DateTime.now().getMillis() - lastUpdate > Constants.HOUR_IN_MILLIS / 2){
-            lastUpdate = DateTime.now().getMillis();
             sendLocation();
         }
     }
 
     private void sendLocation(){
         AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
+        GeoFill fill = new GeoFill();
+        fill.longitud = mLocation.getLongitude();
+        fill.latitud = mLocation.getLatitude();
+
+        String CURRENT_TIME_FORMAT = "HH:mm dd/MM/yyyy";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(CURRENT_TIME_FORMAT, Locale.getDefault());
+        fill.hora = dateFormat.format(Calendar.getInstance().getTime());
+
+        assert sharedPreferences != null;
+        Call<String> call = api.postCurrentLocation(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1), fill);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful())
+                    lastUpdate = DateTime.now().getMillis();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+
+            }
+        });
     }
 
     private void createNotificationChannel() {

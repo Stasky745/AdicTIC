@@ -66,7 +66,7 @@ public class Login extends AppCompatActivity {
                                 User adminLogin = response.body();
                                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
                                 assert sharedPreferences != null;
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_USER,adminLogin.id).apply();
+                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,adminLogin.id).apply();
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN,adminLogin.adminId).apply();
 
                                 sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME, userLogin.username).apply();

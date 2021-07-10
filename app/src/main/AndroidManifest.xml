@@ -78,7 +78,9 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
         </service>
-        <service android:name=".service.ForegroundService" /> <!-- DEVICE ADMIN POLICIES -->
+        <service android:name=".service.ForegroundService" android:foregroundServiceType="location"/>
+
+        <!-- DEVICE ADMIN POLICIES -->
         <activity android:name=".ui.permisos.DevicePolicyAdmin" />
         <activity android:name="com.adictic.common.ui.HorarisActivity" />
         <activity android:name="com.adictic.common.ui.BlockAppsActivity" />

@@ -228,7 +228,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         WorkManager.getInstance(mCtx)
                 .enqueueUniquePeriodicWork("serviceWorker",
-                        ExistingPeriodicWorkPolicy.KEEP,
+                        ExistingPeriodicWorkPolicy.REPLACE,
                         myWork);
 
         Log.d(TAG,"Worker Service Configurat");
