@@ -30,7 +30,7 @@ public class BackgroundLocationPerm extends AppCompatActivity {
         setContentView(R.layout.perm_background_location);
 
         if(Funcions.isBackgroundLocationPermissionOn(getApplicationContext())){
-            Funcions.runGeoLocWorker(getApplicationContext());
+//            Funcions.runGeoLocWorker(getApplicationContext());
             startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
             finish();
         }
@@ -63,7 +63,7 @@ public class BackgroundLocationPerm extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1){
             if(Funcions.isBackgroundLocationPermissionOn(getApplicationContext())){
-                Funcions.runGeoLocWorker(getApplicationContext());
+//                Funcions.runGeoLocWorker(getApplicationContext());
                 startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
                 finish();
             }
@@ -93,6 +93,7 @@ public class BackgroundLocationPerm extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             boolean permissionsGranted = true;
             int i = 0;
@@ -106,7 +107,7 @@ public class BackgroundLocationPerm extends AppCompatActivity {
             }
 
             if (permissionsGranted) {
-                Funcions.runGeoLocWorker(getApplicationContext());
+//                Funcions.runGeoLocWorker(getApplicationContext());
                 startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
                 finish();
             } else {
@@ -141,7 +142,7 @@ public class BackgroundLocationPerm extends AppCompatActivity {
                     permissionsToRequest.toArray(new String[0]),
                     1);
         } else {
-            Funcions.runGeoLocWorker(getApplicationContext());
+//            Funcions.runGeoLocWorker(getApplicationContext());
             startActivity(new Intent(BackgroundLocationPerm.this, NavActivity.class));
             finish();
         }

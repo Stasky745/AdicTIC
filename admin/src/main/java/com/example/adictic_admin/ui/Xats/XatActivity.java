@@ -129,7 +129,7 @@ public class XatActivity extends AppCompatActivity {
                 UserMessage um = new UserMessage();
                 um.createdAt = new Date();
                 um.message = chatbox.getText().toString();
-                um.userSenderId = sharedPreferences.getLong(Constants.SHARED_PREFS_ID_USER,-1);
+                um.userSenderId = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
                 chatbox.setText("");
                 long userId = userProfile.userId;
                 long childId = userProfile.childId;
@@ -346,7 +346,7 @@ public class XatActivity extends AppCompatActivity {
 
             UserMessage message = mMessageList.get(position);
 
-            if (message.userSenderId.equals(sharedPreferences.getLong(Constants.SHARED_PREFS_ID_USER,-1))) {
+            if (message.userSenderId.equals(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1))) {
                 // If the current user is the sender of the message
                 return VIEW_TYPE_MESSAGE_SENT;
             } else {

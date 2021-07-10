@@ -30,8 +30,6 @@ public class AdicticApp extends App {
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
-    public static final String FOREGROUND_CHANNEL_ID = "ForegroundServiceChannel";
-
     public static String[] newFeatures = {
 
     };

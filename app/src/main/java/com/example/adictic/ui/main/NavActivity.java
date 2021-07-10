@@ -48,7 +48,7 @@ public class NavActivity extends MainActivityAbstractClass {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
         assert sharedPreferences != null;
 
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
             Funcions.startForegroundServiceWorker(getApplicationContext());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
