@@ -375,4 +375,5 @@
     </string>
     <string name="event_desc">"Aquesta funció permet programar franges horàries en què l'usuari no pot fer ús del dispositiu mòbil."</string>
     <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
+    <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
 </resources>

@@ -39,10 +39,18 @@ public class NavActivity extends MainActivityAbstractClass {
     public ArrayList<FillNom> homeParent_childs = null;
     public Long homeParent_lastChildsUpdate = null;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
+        assert sharedPreferences != null;
+
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            Funcions.startForegroundServiceWorker(getApplicationContext());
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -61,8 +69,6 @@ public class NavActivity extends MainActivityAbstractClass {
     }
 
     private void openPatchNotes() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
-
         assert sharedPreferences != null;
         if(!BuildConfig.VERSION_NAME.equals(sharedPreferences.getString(Constants.SHARED_PREFS_PATCH_NOTES,""))){
             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PATCH_NOTES, BuildConfig.VERSION_NAME).apply();

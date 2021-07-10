@@ -36,7 +36,7 @@ public class AdminApp extends App {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-
+            "Es pot començar videotrucada des del xat"
     };
 
     public static String[] fixes = {
