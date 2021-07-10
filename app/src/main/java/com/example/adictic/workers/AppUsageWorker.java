@@ -11,8 +11,6 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.work.WorkInfo;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -26,7 +24,6 @@ import com.example.adictic.util.Funcions;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,17 +51,17 @@ public class AppUsageWorker extends Worker {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
         // Inicialitzem el GeoLocWorker si no existeix
-        try {
-
-            List<WorkInfo> list = WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_GEOLOC_PERIODIC).get();
-            if(list == null || list.isEmpty())
-                Funcions.runGeoLocWorker(getApplicationContext());
-            else
-                Funcions.runGeoLocWorkerOnce(getApplicationContext());
-
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//
+//            List<WorkInfo> list = WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_GEOLOC_PERIODIC).get();
+//            if(list == null || list.isEmpty())
+//                Funcions.runGeoLocWorker(getApplicationContext());
+//            else
+//                Funcions.runGeoLocWorkerOnce(getApplicationContext());
+//
+//        } catch (ExecutionException | InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         checkInstalledApps();
 

@@ -350,4 +350,5 @@
     <string name="permis_6">"Ver el contenido de tu pantalla de forma remota\nVer tu historial de navegación\nVer o cambiar tus contraseñas\nLeer tus mensajes\nEscuchar tus llamadas\nBorrar tus datos\nBloquear las llamadas de emergencias"</string>
     <string name="event_desc">Esta función permite programar horarios en los que el usuario no puede usar su dispositivo móvil.</string>
     <string name="afegir_event">Añadir un horario libre de tecnologías</string>
+    <string name="service_notification_message">AdicTIC está activo en este dispositivo</string>
 </resources>

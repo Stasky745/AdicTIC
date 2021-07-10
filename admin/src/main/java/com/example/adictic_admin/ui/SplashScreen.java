@@ -77,7 +77,7 @@ public class SplashScreen extends AppCompatActivity {
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                             if (response.isSuccessful() && response.body() != null) {
                                 User adminCheckWithToken = response.body();
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_USER, adminCheckWithToken.id).apply();
+                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN, adminCheckWithToken.adminId).apply();
                                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));
                             } else {
