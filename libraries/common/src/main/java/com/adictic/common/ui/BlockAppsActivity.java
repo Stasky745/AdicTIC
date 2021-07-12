@@ -214,6 +214,9 @@ public class BlockAppsActivity extends AppCompatActivity {
     private void filter(String s) {
         List<BlockAppEntity> filterList = new ArrayList<>();
 
+        if(blockAppList == null)
+            blockAppList = new ArrayList<>();
+
         for (BlockAppEntity blockedApp : blockAppList) {
             CharSequence cat = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

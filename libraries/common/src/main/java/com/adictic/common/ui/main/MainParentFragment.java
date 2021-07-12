@@ -265,7 +265,8 @@ public class MainParentFragment extends Fragment {
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             blockButton.setVisibility(View.VISIBLE);
 
-            if(fill.blocked)
+
+            if(fill != null && fill.blocked)
                 blockButton.setText(getString(R.string.unblock_device));
 
             blockButton.setOnClickListener(v -> {
