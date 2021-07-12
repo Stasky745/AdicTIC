@@ -15,6 +15,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -87,11 +88,14 @@ public class ForegroundService extends Service {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
-        createNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotification();
+
         return START_STICKY;
     }
 
@@ -216,6 +220,21 @@ public class ForegroundService extends Service {
         public void onLocationChanged(Location location)
         {
             Log.v(TAG, "location changes");
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
         }
     }
 }
