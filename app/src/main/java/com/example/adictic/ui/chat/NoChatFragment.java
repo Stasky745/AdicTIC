@@ -88,7 +88,7 @@ public class NoChatFragment extends Fragment {
                 newDubte.localitzacio = new ArrayList<>();
 
                 for (Integer idInt : CG_localitats.getCheckedChipIds())
-                    newDubte.localitzacio.add(localitzacioMap.get(idInt));
+                    newDubte.localitzacio.add(localitzacioMap.get((long)idInt));
 
                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
                 assert sharedPreferences != null;
