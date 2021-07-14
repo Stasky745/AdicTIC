@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
@@ -36,6 +37,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.example.adictic.receiver.checkInstalledApps;
 
 import org.joda.time.DateTime;
 
@@ -69,6 +71,13 @@ public class ForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Comencem el receiver
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        registerReceiver(new checkInstalledApps(), intentFilter);
 
         mLocationCallback = new LocationCallback() {
             @Override

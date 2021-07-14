@@ -139,7 +139,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     mDPM.lockNow();
                 }
                 else sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
-
             }
             else if (messageMap.containsKey("freeUse")) {
                 if (Objects.equals(messageMap.get("freeUse"), "1")) {
@@ -173,6 +172,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, Calendar.getInstance().getTimeInMillis()).apply();
                 }
 
+                long now = Calendar.getInstance().getTimeInMillis();
+                long minute = 1000*60;
+                if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                    Funcions.runGeoLocWorkerOnce(getApplicationContext());
+                    updateGeoloc = now;
+                }
+
                 Log.d(TAG, "Token liveApp: " + s);
             }
             else if (messageMap.containsKey("getIcon")) {
@@ -186,14 +192,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             else if (messageMap.containsKey("events")) {
                 Funcions.checkEvents(getApplicationContext());
-            }
-            else if (messageMap.containsKey("geolocActive")) {
-                long now = Calendar.getInstance().getTimeInMillis();
-                long minute = 1000*60;
-                if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                    Funcions.runGeoLocWorkerOnce(getApplicationContext());
-                    updateGeoloc = now;
-                }
             }
 
            // ************* Accions del dispositiu tutor *************
