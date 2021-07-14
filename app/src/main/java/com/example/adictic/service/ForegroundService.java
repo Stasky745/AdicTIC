@@ -73,6 +73,7 @@ public class ForegroundService extends Service {
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
+                Log.i(TAG, "LocationChanged");
                 super.onLocationResult(locationResult);
                 onNewLocation(locationResult.getLastLocation());
             }
@@ -87,8 +88,6 @@ public class ForegroundService extends Service {
             _locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, _locListener);
         }
     }
-
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -219,7 +218,8 @@ public class ForegroundService extends Service {
         @Override
         public void onLocationChanged(Location location)
         {
-            Log.v(TAG, "location changes");
+            Log.i(TAG, "LocationChanged");
+            onNewLocation(location);
         }
 
         @Override
