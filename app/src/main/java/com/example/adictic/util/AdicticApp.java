@@ -31,7 +31,7 @@ public class AdicticApp extends App {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-
+            "Ja s'avisa al pare quan hi ha una app que s'instal·la o desinstal·la"
     };
 
     public static String[] fixes = {
