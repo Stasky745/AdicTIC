@@ -25,14 +25,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
+import com.adictic.common.entity.ChatInfo;
+import com.adictic.common.entity.UserMessage;
+import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
-import com.example.adictic.entity.ChatInfo;
-import com.example.adictic.entity.UserMessage;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.ui.AdminProfileActivity;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
+import com.example.adictic.util.AdicticApp;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -49,9 +49,9 @@ import retrofit2.Response;
 public class ChatFragment extends Fragment {
 
     public static Long adminUserId;
-    RecyclerView mMessageRecycler;
+    private RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private boolean active;
     private boolean access;
     private ChatInfo chatInfo;
@@ -95,7 +95,7 @@ public class ChatFragment extends Fragment {
         adminUserId = chatInfo.admin.idUser;
 
         assert activity != null;
-        mTodoService = ((TodoApp) activity.getApplication()).getAPI();
+        mTodoService = ((AdicticApp) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
         assert sharedPreferences != null;

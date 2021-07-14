@@ -14,17 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.adictic.R;
-import com.example.adictic.entity.AdminProfile;
-import com.example.adictic.entity.ChatInfo;
-import com.example.adictic.rest.TodoApi;
-import com.example.adictic.util.TodoApp;
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.entity.ChatInfo;
+import com.adictic.common.rest.Api;
+import com.example.adictic.util.AdicticApp;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatsClosedFragment extends Fragment {
 
-    TodoApi mTodoService;
+    Api mTodoService;
 
     RecyclerView mRecyclerView;
     List<ChatInfo> chatsList;
@@ -40,7 +40,7 @@ public class ChatsClosedFragment extends Fragment {
     public void onStart() {
 
         super.onStart();
-        mTodoService = ((TodoApp) this.requireActivity().getApplication()).getAPI();
+        mTodoService = ((AdicticApp) this.requireActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
         chatsList = getArguments().getParcelableArrayList("list");

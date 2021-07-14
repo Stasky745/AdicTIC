@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.adictic.common.util.Constants;
-import com.example.adictic_admin.App;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.AdminProfile;
-import com.example.adictic_admin.rest.Api;
+import com.adictic.common.entity.AdminProfile;
+import com.example.adictic_admin.rest.AdminApi;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -26,7 +26,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileMainFragment extends Fragment {
-    private Api mService;
+    private AdminApi mService;
     private SharedPreferences sharedPreferences;
     private MainActivity parentActivity = null;
     private View root;
@@ -44,7 +44,7 @@ public class ProfileMainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
-        mService = ((App) requireActivity().getApplication()).getAPI();
+        mService = ((AdminApp) requireActivity().getApplication()).getAPI();
         root = view;
         getInfoFromServer();
     }

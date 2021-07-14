@@ -6,7 +6,6 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -43,7 +42,6 @@
         app:layout_constraintGuide_percent="0.7633379" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -155,7 +153,6 @@
         app:layout_constraintGuide_percent="0.86" />
 
     <TextView
-        android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

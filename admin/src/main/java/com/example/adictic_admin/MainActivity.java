@@ -12,10 +12,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.entity.WebLink;
 import com.adictic.common.util.Constants;
-import com.example.adictic_admin.entity.AdminProfile;
-import com.example.adictic_admin.entity.WebLink;
 import com.example.adictic_admin.ui.profile.ISubmitWeblink;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -56,44 +57,43 @@ public class MainActivity extends AppCompatActivity implements ISubmitWeblink {
     }
 
     private void setTexts(View dialogView) {
-        if(App.newFeatures.length == 0){
+        if(AdminApp.newFeatures.length == 0){
             dialogView.findViewById(R.id.TV_newFeatures).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_newFeaturesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + App.newFeatures[0];
-            for(int i = 1; i < App.newFeatures.length; i++){
-                string += "\n· " + App.newFeatures[i];
+            String string = "· " + AdminApp.newFeatures[0];
+            for(int i = 1; i < AdminApp.newFeatures.length; i++){
+                string += "\n· " + AdminApp.newFeatures[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_newFeaturesList)).setText(string);
         }
 
-        if(App.fixes.length == 0){
+        if(AdminApp.fixes.length == 0){
             dialogView.findViewById(R.id.TV_fixes).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_fixesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + App.fixes[0];
-            for(int i = 1; i < App.fixes.length; i++){
-                string += "\n· " + App.fixes[i];
+            String string = "· " + AdminApp.fixes[0];
+            for(int i = 1; i < AdminApp.fixes.length; i++){
+                string += "\n· " + AdminApp.fixes[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_fixesList)).setText(string);
         }
 
-        if(App.changes.length == 0){
+        if(AdminApp.changes.length == 0){
             dialogView.findViewById(R.id.TV_changes).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_changesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + App.changes[0];
-            for(int i = 1; i < App.changes.length; i++){
-                string += "\n· " + App.changes[i];
+            String string = "· " + AdminApp.changes[0];
+            for(int i = 1; i < AdminApp.changes.length; i++){
+                string += "\n· " + AdminApp.changes[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_changesList)).setText(string);
         }
     }
 
-    @Override
     public void onSelectedData(WebLink webLink) {
 
     }

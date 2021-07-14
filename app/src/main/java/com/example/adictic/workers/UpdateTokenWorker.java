@@ -10,9 +10,9 @@ import androidx.work.WorkerParameters;
 
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic.rest.TodoApi;
+import com.adictic.common.rest.Api;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
+import com.example.adictic.util.AdicticApp;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +32,7 @@ public class UpdateTokenWorker extends Worker {
 
         long idUser = getInputData().getLong("idUser", -1);
         String token = getInputData().getString("token");
-        TodoApi mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        Api mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
 
         Call<String> call = mTodoService.updateToken(idUser, Crypt.getAES(token));
         call.enqueue(new Callback<String>() {

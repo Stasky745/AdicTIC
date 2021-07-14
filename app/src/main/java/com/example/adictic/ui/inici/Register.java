@@ -12,12 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.entity.UserRegister;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
-import com.example.adictic.entity.UserRegister;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import org.json.JSONObject;
 
@@ -29,7 +29,7 @@ import static android.view.View.GONE;
 
 public class Register extends AppCompatActivity {
 
-    TodoApi mTodoService;
+    private AdicticApi mTodoService;
 
     public static boolean isValidEmail(CharSequence target) {
         return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
@@ -42,7 +42,7 @@ public class Register extends AppCompatActivity {
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((TodoApp) this.getApplication()).getAPI();
+        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
 
         Button b_reg = Register.this.findViewById(R.id.register_button);
         // This is the listener that will be used when the user presses the "Register" button

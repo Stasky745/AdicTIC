@@ -21,7 +21,6 @@
         app:srcCompat="@drawable/adictic_lletra" />
 
     <TextView
-        android:id="@+id/TV_admin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
