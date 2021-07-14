@@ -31,21 +31,21 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.text.HtmlCompat;
 
+import com.adictic.common.entity.FillNom;
+import com.adictic.common.entity.NouFillLogin;
+import com.adictic.common.entity.User;
+import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
-import com.example.adictic.entity.FillNom;
-import com.example.adictic.entity.NouFillLogin;
-import com.example.adictic.entity.User;
-import com.example.adictic.entity.VellFillLogin;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
 import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.Calendar;
 import java.util.List;
@@ -58,7 +58,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
-    TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
 
     ColorStateList oldColors;
@@ -81,7 +81,7 @@ public class NomFill extends AppCompatActivity {
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
-        mTodoService = ((TodoApp) this.getApplication()).getAPI();
+        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
 
         BT_birthday = findViewById(R.id.BT_birthday);
 
@@ -164,7 +164,10 @@ public class NomFill extends AppCompatActivity {
             setDialogTexts(dialog);
 
             Button BT_permisAccept = dialog.findViewById(R.id.BT_acceptPermis);
-            BT_permisAccept.setOnClickListener(v1 -> login(token, idParent, llista, tv_nom));
+            BT_permisAccept.setOnClickListener(v1 -> {
+                login(token, idParent, llista, tv_nom);
+                alertDialog.dismiss();
+            });
 
             Button BT_permisCancel = dialog.findViewById(R.id.BT_cancelPermis);
             BT_permisCancel.setOnClickListener(v12 -> alertDialog.dismiss());

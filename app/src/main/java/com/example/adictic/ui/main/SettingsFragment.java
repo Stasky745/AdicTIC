@@ -12,16 +12,16 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
-import com.example.adictic.entity.GeneralUsage;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.inici.Login;
 import com.example.adictic.ui.inici.SplashScreen;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Calendar;
@@ -33,13 +33,13 @@ import retrofit2.Response;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
 
     private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        mTodoService = ((TodoApp) requireActivity().getApplication()).getAPI();
+        mTodoService = ((AdicticApp) requireActivity().getApplication()).getAPI();
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {

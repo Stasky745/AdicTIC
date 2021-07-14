@@ -24,14 +24,14 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
-import com.example.adictic.entity.BlockedLimitedLists;
-import com.example.adictic.entity.LiveApp;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.BlockScreenActivity;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +52,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
             "com.android.systemui",
             "com.miui.aod"
     ));
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
 
     private List<String> blockedApps;
@@ -77,7 +77,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         else {
             fetchDades();
 
-            mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+            mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
             blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, true);
 
             lastActivity = "";
@@ -94,7 +94,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     }
 
     private void fetchDades() {
-        mTodoService = ((TodoApp) getApplicationContext()).getAPI();
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
             Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(idChild);
@@ -275,7 +275,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         liveApp.appName = appName;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-        Call<String> call = ((TodoApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
+        Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
@@ -317,7 +317,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
         liveApp.appName = lastActivity;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
 
-        Call<String> call = ((TodoApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
+        Call<String> call = ((AdicticApp) getApplication()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }

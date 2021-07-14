@@ -17,14 +17,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.adictic.common.entity.User;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic_admin.App;
 import com.example.adictic_admin.BuildConfig;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.AdminLogin;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -43,7 +43,7 @@ public class SplashScreen extends AppCompatActivity {
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
     private String token = "";
-    private Api api;
+    private AdminApi adminApi;
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class SplashScreen extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
-        api = ((App) this.getApplication()).getAPI();
+        adminApi = ((AdminApp) this.getApplication()).getAPI();
         checkForUpdates();
     }
 
@@ -71,13 +71,13 @@ public class SplashScreen extends AppCompatActivity {
                     Log.d(TAG,"Firebase Token: " + token);
                     Log.d(TAG,"Firebase Token (Encrypted): " + Crypt.getAES(token));
 
-                    Call<AdminLogin> call = api.checkWithToken(Crypt.getAES(token));
-                    call.enqueue(new Callback<AdminLogin>() {
+                    Call<User> call = adminApi.checkWithToken(Crypt.getAES(token));
+                    call.enqueue(new Callback<User>() {
                         @Override
-                        public void onResponse(@NonNull Call<AdminLogin> call, @NonNull Response<AdminLogin> response) {
+                        public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
                             if (response.isSuccessful() && response.body() != null) {
-                                AdminLogin adminCheckWithToken = response.body();
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_USER, adminCheckWithToken.id).apply();
+                                User adminCheckWithToken = response.body();
+                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN, adminCheckWithToken.adminId).apply();
                                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));
                             } else {
@@ -87,7 +87,7 @@ public class SplashScreen extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(@NonNull Call<AdminLogin> call, @NonNull Throwable t) {
+                        public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
                             Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                             toast.show();
                         }
@@ -101,7 +101,7 @@ public class SplashScreen extends AppCompatActivity {
             startApp();
             return;
         }
-        Call<String> call = api.checkForUpdates(BuildConfig.VERSION_NAME);
+        Call<String> call = adminApi.checkForUpdates(BuildConfig.VERSION_NAME);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -143,7 +143,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void getUpdateFromServer() {
-        Call<ResponseBody> call = api.getLatestVersion();
+        Call<ResponseBody> call = adminApi.getLatestVersion();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {

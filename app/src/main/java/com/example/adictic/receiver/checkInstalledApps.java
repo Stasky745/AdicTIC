@@ -11,11 +11,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Constants;
-import com.example.adictic.entity.AppInfo;
-import com.example.adictic.rest.TodoApi;
+import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,11 +23,11 @@ import retrofit2.Response;
 
 public class checkInstalledApps extends BroadcastReceiver {
     private final String TAG = "checkInstalledApps (BroadcastReceiver)";
-    private TodoApi mTodoService;
+    private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
     @Override
     public void onReceive(Context context, Intent intent) {
-        mTodoService = ((TodoApp) context.getApplicationContext()).getAPI();
+        mTodoService = ((AdicticApp) context.getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(context);
         if(intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)){
             String pkgName = intent.getDataString();

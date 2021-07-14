@@ -15,6 +15,6 @@
         android:label="@string/menu_settings" />
     <fragment
         android:id="@+id/nav_mainParent"
-        android:name="com.example.adictic.ui.main.HomeParentFragment"
+        android:name="com.adictic.common.ui.main.HomeParentFragment"
         android:label="@string/menu_home" />
 </navigation>

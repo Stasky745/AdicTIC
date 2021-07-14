@@ -1,36 +1,153 @@
 package com.adictic.common.rest;
 
-//TODO: Les entitats les hauriem de posar en aquesta llibreria
-/*import com.example.adictic_admin.entity.AdminLogin;
-import com.example.adictic_admin.entity.AdminProfile;
-import com.example.adictic_admin.entity.AppTimesAccessed;
-import com.example.adictic_admin.entity.BlockAppEntity;
-import com.example.adictic_admin.entity.ChatInfo;
-import com.example.adictic_admin.entity.ChatsMain;
-import com.example.adictic_admin.entity.Dubte;
-import com.example.adictic_admin.entity.EventsAPI;
-import com.example.adictic_admin.entity.FillNom;
-import com.example.adictic_admin.entity.GeneralUsage;
-import com.example.adictic_admin.entity.HorarisAPI;
-import com.example.adictic_admin.entity.Oficina;
-import com.example.adictic_admin.entity.OficinaNova;
-import com.example.adictic_admin.entity.UserLogin;
-import com.example.adictic_admin.entity.UserMessage;
-import com.example.adictic_admin.entity.YearEntity;
-*/
+import com.adictic.common.entity.AppTimesAccessed;
+import com.adictic.common.entity.BlockAppEntity;
+import com.adictic.common.entity.BlockList;
+import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.ChangePassword;
+import com.adictic.common.entity.ChatsMain;
+import com.adictic.common.entity.EventsAPI;
+import com.adictic.common.entity.FillNom;
+import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.entity.GeoFill;
+import com.adictic.common.entity.HorarisAPI;
+import com.adictic.common.entity.HorarisEvents;
+import com.adictic.common.entity.LiveApp;
+import com.adictic.common.entity.Localitzacio;
+import com.adictic.common.entity.Oficina;
+import com.adictic.common.entity.User;
+import com.adictic.common.entity.UserMessage;
+import com.adictic.common.entity.YearEntity;
+
 import java.util.Collection;
 import java.util.List;
 
-import okhttp3.MultipartBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface Api {
+    // Si és tutor -> idChild = -1
+    @POST("/users/token/{idChild}")
+    Call<String> updateToken(@Path("idChild") Long idChild, @Body String token);
+
+    @POST("/users/logout")
+    Call<String> logout(@Body String token);
+
+    @POST("/users/check")
+    Call<User> checkWithToken(@Body String token);
+
+    @GET("/usage/{id}/{xDays}")
+    Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
+
+    @POST("/usage/{id}/events")
+    Call<String> postEvents(@Path("id") Long childId, @Body EventsAPI horaris);
+
+    @POST("/usage/{id}/horaris")
+    Call<String> postHoraris(@Path("id") Long childId, @Body HorarisAPI horaris);
+
+    @POST("/usage/{idChild}/blockedApps")
+    Call<String> blockApps(@Path("idChild") Long childId, @Body List<String> bList);
+
+    @POST("/usage/{idChild}/unlockApps")
+    Call<String> unlockApps(@Path("idChild") Long childId, @Body List<String> bList);
+
+    @POST("/usage/{idChild}/limitedApps")
+    Call<String> limitApps(@Path("idChild") Long childId, @Body BlockList bList);
+
+    /**
+     * format {dd-mm-aaaa} o {mm-aaaa} per tot el mes
+     **/
+    @GET("/usage/{id}/{dataInicial}/{dataFinal}")
+    Call<Collection<GeneralUsage>> getGenericAppUsage(@Path("id") Long childId, @Path("dataInicial") String dataInicial, @Path("dataFinal") String dataFinal);
+
+    @GET("/users/{id}/blockedLists")
+    Call<BlockedLimitedLists> getBlockedLimitedLists(@Path("id") Long childId);
+
+    @GET("/users/{id}/child")
+    Call<Collection<FillNom>> getUserChilds(@Path("id") Long userId);
+
+    @GET("/users/{idTutor}/{idChild}")
+    Call<Collection<FillNom>> getChildInfo(@Path("idTutor") Long idTutor, @Path("idChild") Long idChild);
+
+    @GET("/usage/{id}/daysUsage")
+    Call<List<YearEntity>> getDaysWithData(@Path("id") Long childId);
+
+    @GET("/usage/{id}/horaris")
+    Call<HorarisAPI> getHoraris(@Path("id") Long childId);
+
+    @GET("/usage/{id}/events")
+    Call<EventsAPI> getEvents(@Path("id") Long childId);
+
+    @GET("/usage/{id}/horarisEvents")
+    Call<HorarisEvents> getHorarisEvents(@Path("id") Long childId);
+
+    @GET("/icons/{pkgName}")
+    Call<ResponseBody> getIcon(@Path("pkgName") String pkgName);
+
+    @GET("/usage/{idChild}/blockedApps")
+    Call<Collection<BlockAppEntity>> getBlockApps(@Path("idChild") Long childId);
+
+    @GET("/users/{idChild}/age")
+    Call<Integer> getAge(@Path("idChild") Long idChild);
+
+    @GET("/usage/{idChild}/timesTried")
+    Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
+
+    @POST("/users/{id}/block")
+    Call<String> blockChild(@Path("id") Long childId);
+
+    @POST("/users/{id}/unblock")
+    Call<String> unblockChild(@Path("id") Long childId);
+
+    @POST("/users/{idChild}/freeuse")
+    Call<String> freeUse(@Path("idChild") Long childId, @Body Boolean freeUse);
+
+    @GET("/offices")
+    Call<List<Oficina>> getOficines();
+
+    @GET("/users/geoloc")
+    Call<List<GeoFill>> getGeoLoc();
+
+    @POST("/usage/{id}/liveApp")
+    Call<String> askChildForLiveApp(@Path("id") Long childId, @Body Boolean liveApp);
+
+    @GET("/poblacions")
+    Call<Collection<Localitzacio>> getLocalitzacions();
+
+    ////////////////////////////////////
+    //Chat
+    ///////////////////////////////////
+
+    @GET("/message/client/{childId}/info")
+    Call<ChatsMain> getChatsInfo(@Path("childId") Long childId);
+
+    @POST("/message/client/{childId}/{adminId}/close")
+    Call<String> closeChat(@Path("adminId") Long idUserAdmin, @Path("childId") Long idChild);
+
+    @GET("/message/client/{childId}/{adminId}")
+    Call<List<UserMessage>> getMyMessagesWithUser(@Path("childId") Long childId, @Path("adminId") Long adminId);
+
+    @POST("/message/client/{childId}/{adminId}")
+    Call<String> sendMessageToUser(@Path("childId") Long childId, @Path("adminId") Long adminId, @Body UserMessage value);
+
+    ///////////////////////////////////
+
+    @GET("/admins/pictures/{id}")
+    Call<ResponseBody> getAdminPicture(@Path("id") Long id);
+
+    @GET("/usage/{idChild}/lastAppUsed")
+    Call<LiveApp> getLastAppUsed(@Path("idChild") Long idChild);
+
+    @POST("/users/changePassword")
+    Call<String> changePassword(@Body ChangePassword cp);
+
+    @POST("/update/adictic")
+    Call<String> checkForUpdates(@Body String version);
+
+    @GET("/update/adictic")
+    Call<ResponseBody> getLatestVersion();
 }

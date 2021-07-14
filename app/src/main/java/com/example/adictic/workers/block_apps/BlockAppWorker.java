@@ -8,9 +8,9 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.common.util.Constants;
-import com.example.adictic.entity.AppUsage;
+import com.adictic.common.entity.AppUsage;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.entity.GeneralUsage;
+import com.adictic.common.entity.GeneralUsage;
 import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;

@@ -6,13 +6,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.adictic_admin.App;
+import com.adictic.common.entity.FillNom;
+import com.adictic.common.ui.main.MainActivityAbstractClass;
+import com.adictic.common.ui.main.TabFillsAdapter;
 import com.example.adictic_admin.R;
-import com.example.adictic_admin.entity.FillNom;
-import com.example.adictic_admin.rest.Api;
+import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -23,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainUserActivity extends AppCompatActivity {
+public class MainUserActivity extends MainActivityAbstractClass {
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class MainUserActivity extends AppCompatActivity {
         ViewPager2 viewPager = findViewById(R.id.ViewPager);
         TabLayout tabLayout = findViewById(R.id.TabLayout);
 
-        Api mTodoService = ((App) getApplicationContext()).getAPI();
+        AdminApi mTodoService = ((AdminApp) getApplicationContext()).getAPI();
 
         long idTutor = getIntent().getLongExtra("idTutor", -1);
         long idChild = getIntent().getLongExtra("idChild", -1);

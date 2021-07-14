@@ -6,26 +6,26 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.adictic.common.entity.FillNom;
+import com.adictic.common.entity.LiveApp;
+import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Constants;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
-import com.example.adictic.entity.FillNom;
-import com.example.adictic.entity.LiveApp;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-import com.example.adictic.util.TodoApp;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class NavActivity extends AppCompatActivity {
+public class NavActivity extends MainActivityAbstractClass {
 
     public final Integer tempsPerActu = 5 * 60 * 1000; // 5 min
     public final Integer tempsPerActuLiveApp = 60 * 1000; // 1 minut
@@ -39,10 +39,18 @@ public class NavActivity extends AppCompatActivity {
     public ArrayList<FillNom> homeParent_childs = null;
     public Long homeParent_lastChildsUpdate = null;
 
+    private SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
+        sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
+        assert sharedPreferences != null;
+
+        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            Funcions.startForegroundServiceWorker(getApplicationContext());
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -61,8 +69,6 @@ public class NavActivity extends AppCompatActivity {
     }
 
     private void openPatchNotes() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
-
         assert sharedPreferences != null;
         if(!BuildConfig.VERSION_NAME.equals(sharedPreferences.getString(Constants.SHARED_PREFS_PATCH_NOTES,""))){
             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PATCH_NOTES, BuildConfig.VERSION_NAME).apply();
@@ -76,38 +82,38 @@ public class NavActivity extends AppCompatActivity {
     }
 
     private void setTexts(View dialogView) {
-        if(TodoApp.newFeatures.length == 0){
+        if(AdicticApp.newFeatures.length == 0){
             dialogView.findViewById(R.id.TV_newFeatures).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_newFeaturesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + TodoApp.newFeatures[0];
-            for(int i = 1; i < TodoApp.newFeatures.length; i++){
-                string += "\n· " + TodoApp.newFeatures[i];
+            String string = "· " + AdicticApp.newFeatures[0];
+            for(int i = 1; i < AdicticApp.newFeatures.length; i++){
+                string += "\n· " + AdicticApp.newFeatures[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_newFeaturesList)).setText(string);
         }
 
-        if(TodoApp.fixes.length == 0){
+        if(AdicticApp.fixes.length == 0){
             dialogView.findViewById(R.id.TV_fixes).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_fixesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + TodoApp.fixes[0];
-            for(int i = 1; i < TodoApp.fixes.length; i++){
-                string += "\n· " + TodoApp.fixes[i];
+            String string = "· " + AdicticApp.fixes[0];
+            for(int i = 1; i < AdicticApp.fixes.length; i++){
+                string += "\n· " + AdicticApp.fixes[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_fixesList)).setText(string);
         }
 
-        if(TodoApp.changes.length == 0){
+        if(AdicticApp.changes.length == 0){
             dialogView.findViewById(R.id.TV_changes).setVisibility(View.GONE);
             dialogView.findViewById(R.id.TV_changesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + TodoApp.changes[0];
-            for(int i = 1; i < TodoApp.changes.length; i++){
-                string += "\n· " + TodoApp.changes[i];
+            String string = "· " + AdicticApp.changes[0];
+            for(int i = 1; i < AdicticApp.changes.length; i++){
+                string += "\n· " + AdicticApp.changes[i];
             }
             ((TextView) dialogView.findViewById(R.id.TV_changesList)).setText(string);
         }

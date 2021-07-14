@@ -229,7 +229,7 @@
     <string name="edit">"Editar"</string>
     <string name="afegir">"Afegir"</string>
     <string name="esborrar">"Esborrar"</string>
-    <string name="events">"Events"</string>
+    <string name="events">"Moments lliures de tecnologies"</string>
 
     <string name="closing_activity">"Sortint de l'activitat"</string>
     <string name="exit_without_save">"Vols sortir sense guardar?"</string>
@@ -373,4 +373,7 @@
     <string name="permis_6">
         "Veure el contingut de la teva pantalla de forma remota\nVeure el teu historial de navegació\nVeure o canviar les teves contrasenyes\nLlegir els teus missatges\nEscoltar les teves trucades\nEsborrar les teves dades\nBloquejar les trucades d’emergències"
     </string>
+    <string name="event_desc">"Aquesta funció permet programar franges horàries en què l'usuari no pot fer ús del dispositiu mòbil."</string>
+    <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
+    <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
 </resources>
