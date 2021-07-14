@@ -35,11 +35,13 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-
+            "Ja es poden enviar consultes correctament",
+            "El dispositiu ja es bloqueja correctament quan es canvien horaris/events",
+            "Bloquejar dispositiu ja funciona"
     };
 
     public static String[] changes = {
-            "Canvis en l'activitat de moments lliures de tecnologies"
+
     };
 
     @Override
