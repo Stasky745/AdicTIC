@@ -60,7 +60,9 @@ public class RestartHorarisWorker extends Worker {
         long now = DateTime.now().getMillisOfDay();
 
         // Mirem si hem de programar el despertar
-        if(horarisAvui.despertar > now){
+        if(now >= horarisAvui.dormir && horarisAvui.dormir != -1)
+            bloquejat = true;
+        else if(horarisAvui.despertar > now){
             bloquejat = true;
             Funcions.runDespertarWorker(getApplicationContext(),horarisAvui.despertar - now);
             if(horarisAvui.dormir != -1)
@@ -68,8 +70,6 @@ public class RestartHorarisWorker extends Worker {
         }
         else if(now > horarisAvui.despertar && horarisAvui.dormir != -1)
             Funcions.runDormirWorker(getApplicationContext(), horarisAvui.dormir - now);
-        else if(now > horarisAvui.dormir && horarisAvui.dormir != -1)
-            bloquejat = true;
 
         // Si ha d'estar bloquejat ho bloquegem
         if(bloquejat){

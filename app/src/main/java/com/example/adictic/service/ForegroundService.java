@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
@@ -15,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -35,6 +37,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.example.adictic.receiver.checkInstalledApps;
 
 import org.joda.time.DateTime;
 
@@ -69,9 +72,17 @@ public class ForegroundService extends Service {
         super.onCreate();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        // Comencem el receiver
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        registerReceiver(new checkInstalledApps(), intentFilter);
+
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
+                Log.i(TAG, "LocationChanged");
                 super.onLocationResult(locationResult);
                 onNewLocation(locationResult.getLastLocation());
             }
@@ -87,11 +98,12 @@ public class ForegroundService extends Service {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
-        createNotification();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotification();
+
         return START_STICKY;
     }
 
@@ -215,7 +227,23 @@ public class ForegroundService extends Service {
         @Override
         public void onLocationChanged(Location location)
         {
-            Log.v(TAG, "location changes");
+            Log.i(TAG, "LocationChanged");
+            onNewLocation(location);
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {
+
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
         }
     }
 }
