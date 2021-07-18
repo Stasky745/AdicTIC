@@ -41,7 +41,8 @@ public class AdicticApp extends App {
     };
 
     public static String[] changes = {
-
+            "S'ha modificat el text d'alguns apartats en els dos idiomes (mirar en castellà que hi ha textos que no hi caben)",
+            "S'ha modificat el text del percentatge a l'informe mensual"
     };
 
     @Override
