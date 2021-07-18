@@ -81,7 +81,10 @@ public class InformeActivity extends AppCompatActivity {
             DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
             AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
-            dialog.setMessage(getString(R.string.percentage_info, deviceTime, totalTime, decimalFormat.format(percentage)));
+            if(percentage < 100)
+                dialog.setMessage(Funcions.getSpannedText(getString(R.string.percentage_info_bo, deviceTime, totalTime, decimalFormat.format(percentage))));
+            else
+                dialog.setMessage(Funcions.getSpannedText(getString(R.string.percentage_info_dolent, deviceTime, totalTime, decimalFormat.format(percentage))));
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), (dialog1, which) -> dialog1.dismiss());
             dialog.show();
         });

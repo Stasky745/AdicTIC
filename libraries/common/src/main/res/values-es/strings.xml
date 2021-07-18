@@ -89,11 +89,11 @@
     <string name="menu_advice"> Asesoramiento </string>
     <string name="menu_help"> Ayuda </string>
 
-    <string name="free_time"> "Tiempo libre" </string>
+    <string name="free_time">Uso ilimitado del dispositivo</string>
     <string name="block_device"> "Bloquear dispositivo" </string>
     <string name="disconnected"> "Desconectado" </string>
-    <string name="informe"> "Informe" </string>
-    <string name="horaris"> "Horarios" </string>
+    <string name="informe">Informe Mensual</string>
+    <string name="horaris">Momentos libres de tecnologías</string>
     <string name="app_usage"> "Uso de aplicaciones" </string>
     <string name="block_apps"> "Bloqueo de aplicaciones" </string>
     <string name="home_second"> Home Second </string>
@@ -130,7 +130,16 @@
     <string name="percentage"> "%d %%" </string>
     <string name="informal_date_format"> "%d-%d-%d" </string>
 
-    <string name="percentage_info">" Este usuario ha utilizado el dispositivo %s de las %s recomendadas. Esto quiere decir que ha estado un %s%% del tiempo recomendado utilizándolo. "</string>
+    <string name="percentage_info_bo">
+        <![CDATA[
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso de tecnologías, ha estado un <font color="#3c9df8"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Enhorabuena, seguid así!</b>
+        ]]>
+    </string>
+    <string name="percentage_info_dolent">
+        <![CDATA[
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso de tecnologías, ha estado un <font color="#F44336"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Alerta: seria conveniente reducir su uso!</b>
+        ]]>
+    </string>
     <string name="error_liveApp"> "No se pudo leer la aplicación actual del hijo" </string>
     <string name="unblock_device"> "Desbloquear dispositivo" </string>
 
@@ -225,7 +234,7 @@
     <string name="catalan">Catalan</string>
     <string name="send">Enviar</string>
     <string name="profile_pic">Foto de Perfil</string>
-    <string name="stop_free_time">Parar tiempo libre</string>
+    <string name="stop_free_time">Parar uso ilimitado</string>
     <string name="editar_horari">Editar horarios</string>
     <string name="horari_actual">El %s va a dormir a las %s\\nEl %s se despierta a las %s</string>
     <string name="error_no_event_name">Escribe un nombre para el evento</string>
@@ -271,7 +280,7 @@
     <string name="chats_tancats">Chats cerrados</string>
     <string name="chat_obert">Chat abierto</string>
     <string name="limit">Límites</string>
-    <string name="dades_del_dispositiu">Datos del dispositivo</string>
+    <string name="dades_del_dispositiu">Resumen de uso del dispositivo móvil</string>
     <string name="descans_nocturn">Descanso Nocturno</string>
     <string name="error_sending_data">Error enviando datos al servidor.</string>
     <string name="error_getOffices">No se han podido actualizar las oficinas desde el servidor.</string>
@@ -350,4 +359,5 @@
     <string name="permis_6">"Ver el contenido de tu pantalla de forma remota\nVer tu historial de navegación\nVer o cambiar tus contraseñas\nLeer tus mensajes\nEscuchar tus llamadas\nBorrar tus datos\nBloquear las llamadas de emergencias"</string>
     <string name="event_desc">Esta función permite programar horarios en los que el usuario no puede usar su dispositivo móvil.</string>
     <string name="afegir_event">Añadir un horario libre de tecnologías</string>
+    <string name="service_notification_message">AdicTIC está activo en este dispositivo</string>
 </resources>
