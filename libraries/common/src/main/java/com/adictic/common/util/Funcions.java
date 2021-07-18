@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.text.Spanned;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -458,5 +460,9 @@ public class Funcions {
                 .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
 
         Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
+    }
+
+    public static Spanned getSpannedText(String s){
+        return HtmlCompat.fromHtml(s, HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 }

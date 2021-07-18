@@ -87,11 +87,11 @@ public class NavActivity extends MainActivityAbstractClass {
             dialogView.findViewById(R.id.TV_newFeaturesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + AdicticApp.newFeatures[0];
+            StringBuilder string = new StringBuilder("· " + AdicticApp.newFeatures[0]);
             for(int i = 1; i < AdicticApp.newFeatures.length; i++){
-                string += "\n· " + AdicticApp.newFeatures[i];
+                string.append("\n· ").append(AdicticApp.newFeatures[i]);
             }
-            ((TextView) dialogView.findViewById(R.id.TV_newFeaturesList)).setText(string);
+            ((TextView) dialogView.findViewById(R.id.TV_newFeaturesList)).setText(string.toString());
         }
 
         if(AdicticApp.fixes.length == 0){
@@ -99,11 +99,11 @@ public class NavActivity extends MainActivityAbstractClass {
             dialogView.findViewById(R.id.TV_fixesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + AdicticApp.fixes[0];
+            StringBuilder string = new StringBuilder("· " + AdicticApp.fixes[0]);
             for(int i = 1; i < AdicticApp.fixes.length; i++){
-                string += "\n· " + AdicticApp.fixes[i];
+                string.append("\n· ").append(AdicticApp.fixes[i]);
             }
-            ((TextView) dialogView.findViewById(R.id.TV_fixesList)).setText(string);
+            ((TextView) dialogView.findViewById(R.id.TV_fixesList)).setText(string.toString());
         }
 
         if(AdicticApp.changes.length == 0){
@@ -111,11 +111,11 @@ public class NavActivity extends MainActivityAbstractClass {
             dialogView.findViewById(R.id.TV_changesList).setVisibility(View.GONE);
         }
         else{
-            String string = "· " + AdicticApp.changes[0];
+            StringBuilder string = new StringBuilder("· " + AdicticApp.changes[0]);
             for(int i = 1; i < AdicticApp.changes.length; i++){
-                string += "\n· " + AdicticApp.changes[i];
+                string.append("\n· ").append(AdicticApp.changes[i]);
             }
-            ((TextView) dialogView.findViewById(R.id.TV_changesList)).setText(string);
+            ((TextView) dialogView.findViewById(R.id.TV_changesList)).setText(string.toString());
         }
     }
 }

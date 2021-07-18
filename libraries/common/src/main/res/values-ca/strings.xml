@@ -88,12 +88,12 @@
     <string name="menu_advice">Assessorament</string>
     <string name="menu_help">Ajuda</string>
 
-    <string name="free_time">"Temps lliure"</string>
-    <string name="stop_free_time">"Aturar temps lliure"</string>
+    <string name="free_time">Ús il·limitat del dispositiu</string>
+    <string name="stop_free_time">Aturar ús il·limitat</string>
     <string name="block_device">"Bloquejar dispositiu"</string>
     <string name="disconnected">"Desconnectat"</string>
-    <string name="informe">Informe</string>
-    <string name="horaris">"Horaris"</string>
+    <string name="informe">Informe Mensual</string>
+    <string name="horaris">Moments lliures de tecnologies</string>
     <string name="app_usage">Ús d\'aplicacions</string>
     <string name="block_apps">Bloqueig d\'aplicacions</string>
     <string name="home_second">Home Second</string>
@@ -130,7 +130,16 @@
     <string name="percentage">"%d%%"</string>
     <string name="informal_date_format">"%d-%d-%d"</string>
 
-    <string name="percentage_info">Aquest usuari ha utilitzat el dispositiu %s de les %s recomanades. Això vol dir que ha estat un %s%% del temps recomanat utilitzant-lo.</string>
+    <string name="percentage_info_bo">
+        <![CDATA[
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús de tecnologies, ha estat un <font color="#3c9df8"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Enhorabona, seguiu així!</b>
+        ]]>
+    </string>
+    <string name="percentage_info_dolent">
+        <![CDATA[
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús de tecnologies, ha estat un <font color="#F44336"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Alerta: seria convenient reduir-ne l\'ús!</b>
+        ]]>
+    </string>
     <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
     <string name="unblock_device">"Desbloquejar dispositiu"</string>
 
@@ -278,7 +287,7 @@
     <string name="chat_obert">Xat obert</string>
 
     <string name="limit">Límits</string>
-    <string name="dades_del_dispositiu">Dades del dispositiu</string>
+    <string name="dades_del_dispositiu">Resum d\'ús del dispositiu mòbil</string>
     <string name="descans_nocturn">Descans Nocturn</string>
     <string name="error_sending_data">Error enviant dades al servidor.</string>
     <string name="error_getOffices">No s\'han pogut actualitzar les oficines des del servidor.</string>
@@ -367,4 +376,5 @@
     <string name="permis_6">"Veure el contingut de la teva pantalla de forma remota\nVeure el teu historial de navegació\nVeure o canviar les teves contrasenyes\nLlegir els teus missatges\nEscoltar les teves trucades\nEsborrar les teves dades\nBloquejar les trucades d’emergències"</string>
     <string name="event_desc">Aquesta funció permet programar franges horàries en què l\'usuari no pot fer ús del dispositiu mòbil.</string>
     <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
+    <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
 </resources>
