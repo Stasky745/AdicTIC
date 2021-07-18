@@ -50,19 +50,6 @@ public class AppUsageWorker extends Worker {
         Log.d(TAG, "Starting Worker");
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
-        // Inicialitzem el GeoLocWorker si no existeix
-//        try {
-//
-//            List<WorkInfo> list = WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_GEOLOC_PERIODIC).get();
-//            if(list == null || list.isEmpty())
-//                Funcions.runGeoLocWorker(getApplicationContext());
-//            else
-//                Funcions.runGeoLocWorkerOnce(getApplicationContext());
-//
-//        } catch (ExecutionException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
         checkInstalledApps();
 
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
