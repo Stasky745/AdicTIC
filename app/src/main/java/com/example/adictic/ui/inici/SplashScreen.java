@@ -17,20 +17,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.adictic.common.entity.User;
+import com.adictic.common.rest.Api;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
-import com.adictic.common.entity.User;
-import com.adictic.common.rest.Api;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.ui.permisos.AccessibilityPermActivity;
 import com.example.adictic.ui.permisos.AppUsagePermActivity;
 import com.example.adictic.ui.permisos.BackgroundLocationPerm;
 import com.example.adictic.ui.permisos.DevicePolicyAdmin;
+import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.LocaleHelper;
-import com.example.adictic.util.AdicticApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;

@@ -47,6 +47,7 @@ public class BlockAppWorker extends Worker {
         List<String> currentBlockedApps = Funcions.readFromFile(getApplicationContext(),Constants.FILE_CURRENT_BLOCKED_APPS,false);
         assert currentBlockedApps!=null;
 
+        // Agafem les que actualment no estan bloquejades
         List<BlockedApp> notBlockedApps = blockedApps.stream()
                 .filter(blockedApp -> !currentBlockedApps.contains(blockedApp.pkgName))
                 .collect(Collectors.toList());
