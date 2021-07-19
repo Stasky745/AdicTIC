@@ -6,13 +6,22 @@ import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.graphics.PixelFormat;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -32,8 +41,10 @@ import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Constants;
+import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.ServiceWorker;
@@ -72,8 +83,95 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
+
+    public static void ensenyarBlockScreenActivity(Context ctx, String lastPackage) {
+        // Si és MIUI
+        try {
+            if(Funcions.isXiaomi())
+                addOverlayView(ctx);
+            else{
+                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
+                Intent lockIntent = new Intent(ctx, BlockScreenActivity.class);
+                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.putExtra("pkgName",lastPackage);
+                ctx.startActivity(lockIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addOverlayView(Context ctx) {
+
+        final WindowManager.LayoutParams params;
+        int layoutParamsType;
+
+        WindowManager windowManager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }
+        else {
+            layoutParamsType = WindowManager.LayoutParams.TYPE_PHONE;
+        }
+
+        params = new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                layoutParamsType,
+                0,
+                PixelFormat.OPAQUE);
+
+        params.gravity = Gravity.CENTER | Gravity.START;
+        params.x = 0;
+        params.y = 0;
+
+        FrameLayout interceptorLayout = new FrameLayout(ctx) {
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent event) {
+
+                // Only fire on the ACTION_DOWN event, or you'll get two events (one for _DOWN, one for _UP)
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+
+                    // Check if the HOME button is pressed
+                    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+
+                        Log.v(TAG, "BACK Button Pressed");
+
+                        // As we've taken action, we'll return true to prevent other apps from consuming the event as well
+                        return true;
+                    }
+                }
+
+                // Otherwise don't intercept the event
+                return super.dispatchKeyEvent(event);
+            }
+        };
+
+        LayoutInflater inflater = ((LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+
+        if (inflater != null) {
+            View floatyView = inflater.inflate(R.layout.block_layout, interceptorLayout);
+            windowManager.addView(floatyView, params);
+
+            Button BT_sortir = floatyView.findViewById(R.id.btn_sortir);
+            BT_sortir.setOnClickListener(view -> {
+                Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
+                startHomescreen.addCategory(Intent.CATEGORY_HOME);
+                startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(startHomescreen);
+                windowManager.removeView(floatyView);
+            });
+        }
+        else {
+            Log.e("SAW-example", "Layout Inflater Service is null; can't inflate and display R.layout.floating_view");
+        }
+    }
 
     public static void checkEvents(Context ctx) {
         Log.d(TAG,"Check Events");

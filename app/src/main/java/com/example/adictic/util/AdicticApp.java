@@ -35,7 +35,8 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-            "Si el dispositiu fill està funcionant no surt l'hora a l'app actual"
+            "Si el dispositiu fill està funcionant no surt l'hora a l'app actual",
+            "Ara quan es bloqueja una app ja es tanca bé a la mínima acció"
     };
 
     public static String[] changes = {
