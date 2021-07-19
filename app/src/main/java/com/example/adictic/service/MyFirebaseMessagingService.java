@@ -1,5 +1,6 @@
 package com.example.adictic.service;
 
+import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -166,6 +167,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
                         Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
+
+                    //Si el dispositiu no està bloquejat enviem el nou liveapp
+                    KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
+                    if(!myKM.isDeviceLocked())
+                        WindowChangeDetectingService.instance.enviarLiveApp();
 
                     Funcions.runUniqueAppUsageWorker(getApplicationContext());
 
