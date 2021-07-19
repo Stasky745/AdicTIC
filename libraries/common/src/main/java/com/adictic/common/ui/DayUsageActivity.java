@@ -432,7 +432,7 @@ public class DayUsageActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             AppUsage pkgStats = mPackageStats.get(position);
-            if (pkgStats != null) {
+            if (pkgStats != null && pkgStats.totalTime > Constants.HOUR_IN_MILLIS / 60) {
                 Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
