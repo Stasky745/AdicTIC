@@ -46,6 +46,8 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class WindowChangeDetectingService extends AccessibilityService {
 
+    public static WindowChangeDetectingService instance;
+
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
             "com.google.android.apps.nexuslauncher",
@@ -68,6 +70,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        instance = this;
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
@@ -263,6 +266,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
         return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
                 || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false)
                 || sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0;
+    }
+
+    public void enviarLiveApp(){
+        enviarLiveApp(lastPackage, lastActivity);
     }
 
     private void enviarLiveApp(String pkgName, String appName) {

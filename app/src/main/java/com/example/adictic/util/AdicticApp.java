@@ -31,18 +31,15 @@ public class AdicticApp extends App {
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
     public static String[] newFeatures = {
-            "Ja s'avisa al pare quan hi ha una app que s'instal·la o desinstal·la"
+
     };
 
     public static String[] fixes = {
-            "Ja es poden enviar consultes correctament",
-            "El dispositiu ja es bloqueja correctament quan es canvien horaris/events",
-            "Bloquejar dispositiu ja funciona"
+            "Si el dispositiu fill està funcionant no surt l'hora a l'app actual"
     };
 
     public static String[] changes = {
-            "S'ha modificat el text d'alguns apartats en els dos idiomes (mirar en castellà que hi ha textos que no hi caben)",
-            "S'ha modificat el text del percentatge a l'informe mensual"
+
     };
 
     @Override
