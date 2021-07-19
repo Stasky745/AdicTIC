@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -215,6 +216,10 @@ public class DayUsageActivity extends AppCompatActivity {
                 }
             }
         }
+
+        appList = appList.stream()
+                .filter(appUsage -> appUsage.totalTime > Constants.HOUR_IN_MILLIS / 60)
+                .collect(Collectors.toList());
 
         // Actualitzem el TV
         updateTotalTimeTV(totalTime);
@@ -432,7 +437,7 @@ public class DayUsageActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             AppUsage pkgStats = mPackageStats.get(position);
-            if (pkgStats != null && pkgStats.totalTime > Constants.HOUR_IN_MILLIS / 60) {
+            if (pkgStats != null) {
                 Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
