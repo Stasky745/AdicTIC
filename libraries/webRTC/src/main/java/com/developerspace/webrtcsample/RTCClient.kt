@@ -248,6 +248,7 @@ class RTCClient(
                 }
 
         peerConnection?.close()
+        videoCapturer.stopCapture()
     }
 
     fun enableVideo(videoEnabled: Boolean) {
