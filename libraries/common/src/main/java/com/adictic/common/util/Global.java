@@ -25,8 +25,7 @@ public class Global {
     //public static final String BASE_URL_PORTFORWARDING = "http://localhost:8080";
     //public static final String BASE_URL_PORTFORWARDING = "https://192.168.1.130:8443";
     public static final String BASE_URL_RELEASE = "***REMOVED***/";
-    public static final String BASE_URL_DEBUG ="***REMOVED***/";
-    //public static final String BASE_URL_DEBUG = "***REMOVED***";
+    public static final String BASE_URL_DEBUG = "***REMOVED***";
     //public static final String BASE_URL_PORTFORWARDING = "***REMOVED***/";
     public static final String BASE_URL_GENYMOTION = "***REMOVED***";
 
