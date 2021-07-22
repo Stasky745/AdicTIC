@@ -1,5 +1,6 @@
 package com.example.adictic.service;
 
+import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -131,138 +132,124 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 mNotificationManager.createNotificationChannel(mChannel);
             }
 
-            // ************* Accions del dispositiu fill *************
-            if (messageMap.containsKey("blockDevice")) {
-                if (Objects.equals(messageMap.get("blockDevice"), "1")) {
-                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
-                    mDPM.lockNow();
-                }
-                else sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
+            if(!messageMap.containsKey("action")){
+                Log.e(TAG,"La consulta de firebase no té la clau 'action'");
+                return;
             }
-            else if (messageMap.containsKey("freeUse")) {
-                if (Objects.equals(messageMap.get("freeUse"), "1")) {
-                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
-
-                    title = getString(R.string.free_use_activation);
-                } else {
-                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
-
-                    Funcions.endFreeUse(getApplicationContext());
-
-                    title = getString(R.string.free_use_deactivation);
-                }
+            String action = messageMap.get("action");
+            if(action==null){
+                Log.e(TAG,"La clau 'action' de firebase és null");
+                return;
             }
-            else if (messageMap.containsKey("blockApp")) {
-                updateBlockedAppsList(messageMap);
+            switch(action){
+                // ************* Accions del dispositiu fill *************
+                case "blockDevice":
+                    if (Objects.equals(messageMap.get("blockDevice"), "1")) {
+                        DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
+                        mDPM.lockNow();
+                    }
+                    else sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
+                    break;
+                case "freeUse":
+                    if (Objects.equals(messageMap.get("freeUse"), "1")) {
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
 
-                title = getString(R.string.update_blocked_apps);
-                activitatIntent = BlockAppsActivity.class;
-            }
-            else if (messageMap.containsKey("liveApp")) {
-                String s = messageMap.get("liveApp");
-                boolean active = Boolean.parseBoolean(messageMap.get("bool"));
-                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
+                        title = getString(R.string.free_use_activation);
+                    } else {
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
-                if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
-                        Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
+                        Funcions.endFreeUse(getApplicationContext());
 
-                    Funcions.runUniqueAppUsageWorker(getApplicationContext());
+                        title = getString(R.string.free_use_deactivation);
+                    }
+                    break;
+                case "blockApp":
+                    updateBlockedAppsList(messageMap);
 
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, Calendar.getInstance().getTimeInMillis()).apply();
-                }
+                    title = getString(R.string.update_blocked_apps);
+                    activitatIntent = BlockAppsActivity.class;
+                    break;
+                case "liveApp":
+                    String s = messageMap.get("liveApp");
+                    boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
-                long now = Calendar.getInstance().getTimeInMillis();
-                long minute = 1000*60;
-                if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                    Funcions.runGeoLocWorkerOnce(getApplicationContext());
-                    updateGeoloc = now;
-                }
+                    if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
+                            Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
 
-                Log.d(TAG, "Token liveApp: " + s);
-            }
-            else if (messageMap.containsKey("getIcon")) {
-                messageMap.remove("getIcon");
-                List<String> list = new ArrayList<>(messageMap.keySet());
-                sendIcon(list);
-            }
-            else if (messageMap.containsKey("horaris")) {
-                Funcions.checkHoraris(getApplicationContext());
-                title = getString(R.string.horaris_notification);
-            }
-            else if (messageMap.containsKey("events")) {
-                Funcions.checkEvents(getApplicationContext());
-            }
+                        //Si el dispositiu no està bloquejat enviem el nou liveapp
+                        KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
+                        if(!myKM.isDeviceLocked())
+                            WindowChangeDetectingService.instance.enviarLiveApp();
 
-           // ************* Accions del dispositiu tutor *************
-            else if (messageMap.containsKey("currentAppUpdate")) {
-                String aux = messageMap.get("currentAppUpdate");
+                        Funcions.runUniqueAppUsageWorker(getApplicationContext());
 
-                Intent intent = new Intent("liveApp");
-                intent.putExtra("appName", messageMap.get("appName"));
-                intent.putExtra("pkgName", aux);
-                intent.putExtra("time", messageMap.get("time"));
-                intent.putExtra("idChild", messageMap.get("idChild"));
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, Calendar.getInstance().getTimeInMillis()).apply();
+                    }
 
-                Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
-            }
-            else if(messageMap.containsKey("installedApp")){
-                String appName = messageMap.get("installedApp");
-                String childName = messageMap.get("childName");
-                title = getString(R.string.title_installed_app,childName);
-                body = appName;
-                activitatIntent = BlockAppsActivity.class;
-            }
-            else if(messageMap.containsKey("uninstalledApp")){
-                String appName = messageMap.get("uninstalledApp");
-                String childName = messageMap.get("childName");
-                title = getString(R.string.title_uninstalled_app,childName);
-                body = appName;
-                activitatIntent = BlockAppsActivity.class;
-            }
-            else if(messageMap.containsKey("geolocFills")){
-                Intent intent = new Intent("actualitzarLoc");
-                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                    long now = Calendar.getInstance().getTimeInMillis();
+                    long minute = 1000*60;
+                    if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                        Funcions.runGeoLocWorkerOnce(getApplicationContext());
+                        updateGeoloc = now;
+                    }
 
-                Log.d(TAG,"Actualitzar fills");
-            }
+                    Log.d(TAG, "Token liveApp: " + s);
+                    break;
+                case "getIcon":
+                    messageMap.remove("getIcon");
+                    List<String> list = new ArrayList<>(messageMap.keySet());
+                    sendIcon(list);
+                    break;
+                case "horaris":
+                    Funcions.checkHoraris(getApplicationContext());
+                    title = getString(R.string.horaris_notification);
+                    break;
+                case "events":
+                    Funcions.checkEvents(getApplicationContext());
+                    break;
+                // ************* Accions del dispositiu tutor *************
+                case "currentAppUpdate":
+                    String aux = messageMap.get("currentAppUpdate");
 
-            //MyNotificationManager.getInstance(this).displayNotification(title, body);
-            else if (messageMap.containsKey("chat")) {
-                switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
-                    case "0":
-                        //if the message contains data payload
-                        //It is a map of custom keyvalues
-                        //we can read it easily
+                    Intent intentCurrApp = new Intent("liveApp");
+                    intentCurrApp.putExtra("appName", messageMap.get("appName"));
+                    intentCurrApp.putExtra("pkgName", aux);
+                    intentCurrApp.putExtra("time", messageMap.get("time"));
+                    intentCurrApp.putExtra("idChild", messageMap.get("idChild"));
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intentCurrApp);
 
-                        //then here we can use the title and body to build a notification
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            NotificationManager mNotificationManager =
-                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            int importance = NotificationManager.IMPORTANCE_HIGH;
+                    Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
+                    break;
+                case "installedApp":
+                    String appNameInsApp = messageMap.get("installedApp");
+                    String childNameInsApp = messageMap.get("childName");
+                    title = getString(R.string.title_installed_app, childNameInsApp);
+                    body = appNameInsApp;
+                    activitatIntent = BlockAppsActivity.class;
+                    break;
+                case "uninstalledApp":
+                    String appNameUninsApp = messageMap.get("uninstalledApp");
+                    String childNameUninsApp = messageMap.get("childName");
+                    title = getString(R.string.title_uninstalled_app, childNameUninsApp);
+                    body = appNameUninsApp;
+                    activitatIntent = BlockAppsActivity.class;
+                    break;
+                case "geolocFills":
+                    Intent intentGeoFill = new Intent("actualitzarLoc");
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intentGeoFill);
 
-                            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                            mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                            mChannel.enableLights(true);
-                            mChannel.setLightColor(Color.RED);
-                            mChannel.enableVibration(true);
-                            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                            mNotificationManager.createNotificationChannel(mChannel);
-                        }
+                    Log.d(TAG,"Actualitzar fills");
+                    break;
+                case "chat":
+                    switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
+                        case "0":
+                            //if the message contains data payload
+                            //It is a map of custom keyvalues
+                            //we can read it easily
 
-                        MyNotificationManager.getInstance(this).displayNotification(title, body, null);
-                        break;
-                    case "1":  //Message with Chat
-                        body = remoteMessage.getData().get("body");
-                        Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
-                        Long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
-                        if (ChatFragment.adminUserId.equals(userID)) {
-                            Intent intent = new Intent("NewMessage");
-                            intent.putExtra("message", body);
-                            intent.putExtra("senderId", userID);
-                            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                        } else {
+                            //then here we can use the title and body to build a notification
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                 NotificationManager mNotificationManager =
                                         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -277,39 +264,69 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 mNotificationManager.createNotificationChannel(mChannel);
                             }
 
-                            MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
-                        }
-                        break;
-                    case "2":
-                        Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
-                        if (ChatFragment.adminUserId.equals(userId)) {
-                            Intent intent = new Intent("CloseChat");
-                            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-                        }
-                        break;
-                }
-            }
-            else if(messageMap.containsKey("callVideochat")) {
-                String meetingId = messageMap.get("chatId");
-                if (meetingId==null || meetingId.trim().isEmpty())
-                    Log.e(TAG,"Error en el meetingId");
-                else {
-                    Intent callIntent = new Intent(this, RTCActivity.class);
-                    callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    callIntent.putExtra("meetingID",meetingId);
-                    callIntent.putExtra("isJoin",true);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, callIntent, 0);
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                            .setSmallIcon(R.drawable.adictic_nolletra)
-                            .setContentTitle("Trucant")
-                            .setContentText("Test test")
-                            .setPriority(NotificationCompat.PRIORITY_MAX)
-                            .setContentIntent(pendingIntent)
-                            .setAutoCancel(true);
-                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                    //notificationManager.cancelAll();
-                    notificationManager.notify(251, builder.build());
-                }
+                            MyNotificationManager.getInstance(this).displayNotification(title, body, null);
+                            break;
+                        case "1":  //Message with Chat
+                            body = remoteMessage.getData().get("body");
+                            Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
+                            Long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
+                            if (ChatFragment.adminUserId.equals(userID)) {
+                                Intent intent = new Intent("NewMessage");
+                                intent.putExtra("message", body);
+                                intent.putExtra("senderId", userID);
+                                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                            } else {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                    NotificationManager mNotificationManager =
+                                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    int importance = NotificationManager.IMPORTANCE_HIGH;
+
+                                    NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
+                                    mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
+                                    mChannel.enableLights(true);
+                                    mChannel.setLightColor(Color.RED);
+                                    mChannel.enableVibration(true);
+                                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                                    mNotificationManager.createNotificationChannel(mChannel);
+                                }
+
+                                MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                            }
+                            break;
+                        case "2":
+                            Long userId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
+                            if (ChatFragment.adminUserId.equals(userId)) {
+                                Intent intent = new Intent("CloseChat");
+                                LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                            }
+                            break;
+                    }
+                    break;
+                case "callVideochat":
+                    String meetingId = messageMap.get("chatId");
+                    if (meetingId==null || meetingId.trim().isEmpty())
+                        Log.e(TAG,"Error en el meetingId");
+                    else {
+                        Intent callIntent = new Intent(this, RTCActivity.class);
+                        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        callIntent.putExtra("meetingID",meetingId);
+                        callIntent.putExtra("isJoin",true);
+                        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, callIntent, 0);
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                                .setSmallIcon(R.drawable.adictic_nolletra)
+                                .setContentTitle("Trucant")
+                                .setContentText("Test test")
+                                .setPriority(NotificationCompat.PRIORITY_MAX)
+                                .setContentIntent(pendingIntent)
+                                .setAutoCancel(true);
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                        //notificationManager.cancelAll();
+                        notificationManager.notify(251, builder.build());
+                    }
+                    break;
+                default:
+                    Log.e(TAG,"Clau 'action' no reconeguda: "+action);
+                    break;
             }
         }
 
@@ -330,7 +347,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return bmp;
     }
 
-    @SuppressWarnings("deprecation")
     private void sendIcon(List<String> list) {
         for (String s : list) {
             try {

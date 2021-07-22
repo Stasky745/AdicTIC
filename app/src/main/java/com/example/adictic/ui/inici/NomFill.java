@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.text.HtmlCompat;
 
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.NouFillLogin;
@@ -195,16 +194,9 @@ public class NomFill extends AppCompatActivity {
         }
 
         // Posem estil a les frases que cal
-        Spanned body;
-
-        body = HtmlCompat.fromHtml(getString(R.string.permis_2), HtmlCompat.FROM_HTML_MODE_LEGACY);
-        TV_permis2.setText(body);
-
-        body = HtmlCompat.fromHtml(getString(R.string.permis_3), HtmlCompat.FROM_HTML_MODE_LEGACY);
-        TV_permis3.setText(body);
-
-        body = HtmlCompat.fromHtml(getString(R.string.permis_5), HtmlCompat.FROM_HTML_MODE_LEGACY);
-        TV_permis5.setText(body);
+        TV_permis2.setText(Funcions.getSpannedText(getString(R.string.permis_2)));
+        TV_permis3.setText(Funcions.getSpannedText(getString(R.string.permis_3)));
+        TV_permis5.setText(Funcions.getSpannedText(getString(R.string.permis_5)));
 
         // Fem llistes amb punts
         CharSequence text = "";
