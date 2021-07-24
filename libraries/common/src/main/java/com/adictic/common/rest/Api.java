@@ -4,6 +4,9 @@ import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
 import com.adictic.common.entity.BlockList;
 import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.CanvisAppBlock;
+import com.adictic.common.entity.CanvisEvents;
+import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.ChangePassword;
 import com.adictic.common.entity.ChatsMain;
 import com.adictic.common.entity.EventsAPI;
@@ -150,6 +153,16 @@ public interface Api {
 
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
+
+
+    @GET("/usage/{id}/horaris/{data}")
+    Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/events/{data}")
+    Call<Collection<CanvisHoraris>> getCanvisHoraris(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/blockedApps/{data}")
+    Call<Collection<CanvisAppBlock>> getCanvisApps(@Path("id") Long id, @Path("data") String data);
 
     /////////////// ACRA ///////////////
 
