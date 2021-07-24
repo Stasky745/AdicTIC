@@ -13,10 +13,8 @@
     <string name="appusage_pem_info">"Aquesta aplicació requereix de permisos d'ús de dades a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Extreure informació de les aplicacions."</string>
 
     <!-- Strings in DevicePolicyAdmin -->
-    <string name="device_admin">AdicTIC Device Admin</string>
     <string name="device_admin_description">"AdicTIC necessita permissos d'administrador per evitar que es desinstal·li l'aplicació, i poder bloquejar el dispositiu quan es requereixi."</string>
 
-    <string name="app_name">AdicTIC</string>
     <string name="last_time_used">"Oberta últim cop: "</string>
     <string name="time_span">"Temps d'ús: "</string>
     <string name="lastXDays">"Veure activitat dels últims: "</string>
@@ -57,7 +55,6 @@
 
     <string name="hint_nomDisp">Nom del dispositiu</string>
 
-    <string name="title_activity_splash_screen">AdicTIC</string>
     <string name="good_register">Registre correcte!</string>
 
     <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
@@ -74,13 +71,10 @@
 
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
     <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
-    <string name="accessibility_service_name">\"Adictic Accessibility Service\"</string>
     <string name="accessibility_service_description">\"Aquest servei s\'utilitza per bloquejar aplicacions\"</string>
     <string name="nomfill_enter">Entrar</string>
 
     <string name="emptyList">No hi ha informació</string>
-
-    <string name="title_activity_nav">NavActivity</string>
 
     <string name="menu">MENÚ</string>
     <string name="menu_home">Inici</string>
@@ -101,7 +95,7 @@
     <string name="advice_infoContent">Contingut informatiu</string>
     <string name="advice_mostAskQuest">Preguntes freqüents</string>
     <string name="advice_recommendations">Recomanacions</string>
-    <string name="advice_onlineChat">Chat online</string>
+    <string name="advice_onlineChat">Xat online</string>
     <string name="advice_privateConsult">Consulta privada</string>
     <string name="advice_OurCenters">Els nostres centres</string>
 
@@ -115,8 +109,6 @@
     <string name="date">"Data:"</string>
     <string name="initial_date">"Data inicial:"</string>
     <string name="final_date">"Data final:"</string>
-
-    <string name="date_format">"%d  %s  %d"</string>
 
     <string name="daily_usage">"Ús diari del dispositiu"</string>
     <string name="device_usage">"Ús total del dispositiu:"</string>
@@ -377,4 +369,9 @@
     <string name="event_desc">Aquesta funció permet programar franges horàries en què l\'usuari no pot fer ús del dispositiu mòbil.</string>
     <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
     <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
+    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Les cinc aplicacions més utilitzades han estat:</string>
+    <string name="l_mits_marcats">Límits marcats</string>
+    <string name="canvis_en_horaris_lliures_de_tecnologies">Canvis en horaris lliures de tecnologies</string>
+    <string name="gestio_dels_limits">Gestió dels límits</string>
+    <string name="canvis_de_bloqueig_d_aplicacions">Canvis en bloqueig d\'aplicacions</string>
 </resources>
