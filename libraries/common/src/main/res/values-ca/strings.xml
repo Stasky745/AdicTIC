@@ -374,4 +374,10 @@
     <string name="canvis_en_horaris_lliures_de_tecnologies">Canvis en horaris lliures de tecnologies</string>
     <string name="gestio_dels_limits">Gestió dels límits</string>
     <string name="canvis_de_bloqueig_d_aplicacions">Canvis en bloqueig d\'aplicacions</string>
+    <string name="cambios_en_horarios_nocturnos">Canvis en horaris nocturns</string>
+    <string name="new_event">S\'ha creat l\'event</string>
+    <string name="delete_event">S\'ha borrat l\'event</string>
+    <string name="active_event">Aquest event està actiu</string>
+    <string name="active_horaris">Aquest horari està actiu</string>
+    <string name="active_appBlock">Aquest bloqueig està actiu</string>
 </resources>
