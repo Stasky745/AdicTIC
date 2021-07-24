@@ -109,6 +109,23 @@ public class Funcions {
                 .into(d);
     }
 
+    public static String millis2horaString(long l){
+        Pair<Integer, Integer> temps = millisToString(l);
+        String hora = "";
+        String minuts = "";
+
+        if(temps.first > 0)
+            hora = temps.first.toString() + " " + R.string.hours;
+
+        if(temps.second > 0)
+            minuts = temps.second.toString() + " " + R.string.minutes;
+
+        if(!hora.equals("") && !minuts.equals(""))
+            return hora + " " + minuts;
+
+        return hora + minuts;
+    }
+
     public static Pair<Integer, Integer> millisToString(float l) {
         float minuts = l / (60000);
         int hores = 0;

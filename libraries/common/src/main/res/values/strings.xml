@@ -386,4 +386,12 @@
     <string name="canvis_en_horaris_lliures_de_tecnologies">Cambios en horarios libres de tecnologías</string>
     <string name="gestio_dels_limits">Gestión de límites</string>
     <string name="hours">horas</string>
+    <string name="cambios_en_horarios_nocturnos">Cambios en horarios nocturnos</string>
+
+    <string name="new_event">Se ha creado el evento</string>
+    <string name="delete_event">Se ha borrado el evento</string>
+
+    <string name="active_event">Este evento está activo</string>
+    <string name="active_horaris">Este horario está activo</string>
+    <string name="active_appBlock">Este bloqueo está activo</string>
 </resources>

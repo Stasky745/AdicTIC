@@ -131,7 +131,7 @@
         app:layout_constraintBottom_toTopOf="@+id/RG_Tipus"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/CL_login_password"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_loginTV" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_login_password"
@@ -217,7 +217,7 @@
         app:layout_constraintGuide_percent="0.86" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/TV_loginTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -225,7 +225,8 @@
         android:text="@string/forgetPassword"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
-        app:layout_constraintTop_toBottomOf="@+id/CL_login_password" />
+        app:layout_constraintTop_toBottomOf="@+id/CL_login_password"
+        android:focusable="true" />
 
     <ImageView
         android:layout_width="182dp"
