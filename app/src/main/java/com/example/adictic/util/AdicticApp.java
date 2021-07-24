@@ -35,13 +35,11 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-            "Si el dispositiu fill està funcionant no surt l'hora a l'app actual",
-            "Ara quan es bloqueja una app ja es tanca bé a la mínima acció",
             "No apareixen apps que no arriben a 1 minut a l'ús del dia"
     };
 
     public static String[] changes = {
-
+            "L'app és en castellà de base ara"
     };
 
     @Override
