@@ -140,6 +140,29 @@
                 app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisEvents" />
 
             <TextView
+                android:id="@+id/TV_informeCanvisHorarisNit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:text="@string/cambios_en_horarios_nocturnos"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/RV_informeEvents" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/RV_informeHorarisNit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisHorarisNit" />
+
+            <TextView
                 android:id="@+id/TV_informeGestioLimits"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -152,7 +175,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/RV_informeEvents" />
+                app:layout_constraintTop_toBottomOf="@+id/RV_informeHorarisNit" />
 
             <TextView
                 android:id="@+id/TV_intentsAccessDevice"
