@@ -17,6 +17,7 @@ import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.rest.Api;
 import com.adictic.common.ui.informe.adapters.EventsAdapter;
+import com.adictic.common.ui.informe.adapters.HorarisNitAdapter;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
@@ -47,8 +48,6 @@ public class InformeDetallatFragment extends Fragment {
 
     }
 
-
-
     @Nullable
     @org.jetbrains.annotations.Nullable
     @Override
@@ -66,8 +65,6 @@ public class InformeDetallatFragment extends Fragment {
     private void setLimitsMarcats(View root) {
         TextView TV_informeBlockDevice = root.findViewById(R.id.TV_informeBlockDevice);
         TextView TV_informeFreeUse = root.findViewById(R.id.TV_informeFreeUse);
-
-
 
         setBlockedApps(root);
         setEvents(root);
@@ -89,14 +86,25 @@ public class InformeDetallatFragment extends Fragment {
                         RV_informeHoraris.setVisibility(View.GONE);
                     }
                     else {
-                        // crear RV
+                        List<CanvisHoraris> horarisList = new ArrayList<>(response.body());
+                        HorarisNitAdapter eventsAdapter = new HorarisNitAdapter(horarisList, getContext());
+                        RV_informeHoraris.setAdapter(eventsAdapter);
                     }
+                }
+                else{
+                    TextView TV_informeCanvisHorarisNit = root.findViewById(R.id.TV_informeCanvisHorarisNit);
+                    String text = TV_informeCanvisHorarisNit.getText() + ": 0";
+                    TV_informeCanvisHorarisNit.setText(text);
+                    RV_informeHoraris.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Collection<CanvisHoraris>> call, @NonNull Throwable t) {
-
+                TextView TV_informeCanvisHorarisNit = root.findViewById(R.id.TV_informeCanvisHorarisNit);
+                String text = TV_informeCanvisHorarisNit.getText() + ": 0";
+                TV_informeCanvisHorarisNit.setText(text);
+                RV_informeHoraris.setVisibility(View.GONE);
             }
         });
     }
@@ -121,11 +129,20 @@ public class InformeDetallatFragment extends Fragment {
                         RV_informeEvents.setAdapter(eventsAdapter);
                     }
                 }
+                else {
+                    TextView TV_informeCanvisEvents = root.findViewById(R.id.TV_informeCanvisEvents);
+                    String text = TV_informeCanvisEvents.getText() + ": 0";
+                    TV_informeCanvisEvents.setText(text);
+                    RV_informeEvents.setVisibility(View.GONE);
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Collection<CanvisEvents>> call, @NonNull Throwable t) {
-
+                TextView TV_informeCanvisEvents = root.findViewById(R.id.TV_informeCanvisEvents);
+                String text = TV_informeCanvisEvents.getText() + ": 0";
+                TV_informeCanvisEvents.setText(text);
+                RV_informeEvents.setVisibility(View.GONE);
             }
         });
     }

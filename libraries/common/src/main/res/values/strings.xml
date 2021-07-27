@@ -394,4 +394,7 @@
     <string name="active_event">Este evento está activo</string>
     <string name="active_horaris">Este horario está activo</string>
     <string name="active_appBlock">Este bloqueo está activo</string>
+    <string name="canvis_horari">Cambios en el horario</string>
+    <string name="nou_horari">Nuevo horario creado</string>
+    <string name="borrat_horari">Horario borrado</string>
 </resources>
