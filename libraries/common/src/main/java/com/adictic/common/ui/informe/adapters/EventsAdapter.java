@@ -34,7 +34,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
         mInflater = LayoutInflater.from(c);
         eventsList = new ArrayList<>(list);
 
-        list.sort((o1, o2) -> o2.data.compareTo(o1.data));
+        eventsList.sort((o1, o2) -> o2.data.compareTo(o1.data));
     }
 
     @NonNull
