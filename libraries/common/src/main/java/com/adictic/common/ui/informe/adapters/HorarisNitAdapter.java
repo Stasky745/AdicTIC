@@ -43,6 +43,11 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
         CanvisHoraris canvisHoraris = horarisList.get(position);
         holder.TV_informeData.setText(dateFormatter.format(canvisHoraris.data));
 
+        if(canvisHoraris.actiu)
+            holder.TV_informeActiu.setVisibility(View.VISIBLE);
+        else
+            holder.TV_informeActiu.setVisibility(View.GONE);
+
         if(canvisHoraris.horariAntic == null)
             holder.TV_informeCanvis.setText(R.string.nou_horari);
         else if(canvisHoraris.horariNou == null)
@@ -64,7 +69,7 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
 
     public static class HorarisNitViewHolder extends RecyclerView.ViewHolder {
         View root;
-        TextView TV_informeData, TV_informeCanvis;
+        TextView TV_informeData, TV_informeCanvis, TV_informeActiu;
 
         public HorarisNitViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +77,7 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
             root = itemView;
             TV_informeCanvis = root.findViewById(R.id.TV_informe_item_canvis);
             TV_informeData = root.findViewById(R.id.TV_informe_item_data);
+            TV_informeActiu = root.findViewById(R.id.TV_informe_item_final);
         }
     }
 }
