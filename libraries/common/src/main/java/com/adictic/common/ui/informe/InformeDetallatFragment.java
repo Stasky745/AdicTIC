@@ -12,10 +12,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
+import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.rest.Api;
+import com.adictic.common.ui.informe.adapters.AppsAdapter;
 import com.adictic.common.ui.informe.adapters.EventsAdapter;
 import com.adictic.common.ui.informe.adapters.HorarisNitAdapter;
 import com.adictic.common.util.App;
@@ -148,7 +150,41 @@ public class InformeDetallatFragment extends Fragment {
     }
 
     private void setBlockedApps(View root) {
-        TextView TV_informeCanvisBlockApps = root.findViewById(R.id.TV_informeCanvisBlock);
+        RecyclerView RV_informeApps = root.findViewById(R.id.RV_informeBlockApps);
+
+        Call<Collection<CanvisAppBlock>> call = api.getCanvisApps(idChild, activeMonth);
+        call.enqueue(new Callback<Collection<CanvisAppBlock>>() {
+            @Override
+            public void onResponse(@NonNull Call<Collection<CanvisAppBlock>> call, @NonNull Response<Collection<CanvisAppBlock>> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    if(response.body().isEmpty()){
+                        TextView TV_informeCanvisApps = root.findViewById(R.id.TV_informeCanvisBlock);
+                        String text = TV_informeCanvisApps.getText() + ": 0";
+                        TV_informeCanvisApps.setText(text);
+                        RV_informeApps.setVisibility(View.GONE);
+                    }
+                    else{
+                        List<CanvisAppBlock> appBlockList = new ArrayList<>(response.body());
+                        AppsAdapter appsAdapter = new AppsAdapter(appBlockList, getContext());
+                        RV_informeApps.setAdapter(appsAdapter);
+                    }
+                }
+                else {
+                    TextView TV_informeCanvisApps = root.findViewById(R.id.TV_informeCanvisBlock);
+                    String text = TV_informeCanvisApps.getText() + ": 0";
+                    TV_informeCanvisApps.setText(text);
+                    RV_informeApps.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Collection<CanvisAppBlock>> call, @NonNull Throwable t) {
+                TextView TV_informeCanvisApps = root.findViewById(R.id.TV_informeCanvisBlock);
+                String text = TV_informeCanvisApps.getText() + ": 0";
+                TV_informeCanvisApps.setText(text);
+                RV_informeApps.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setIntro(View root) {
