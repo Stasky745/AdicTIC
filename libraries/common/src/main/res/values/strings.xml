@@ -397,4 +397,7 @@
     <string name="canvis_horari">Cambios en el horario</string>
     <string name="nou_horari">Nuevo horario creado</string>
     <string name="borrat_horari">Horario borrado</string>
+    <string name="canvi_app_block">Se ha configurado un nuevo bloqueo</string>
+    <string name="canvis_app_block_permanent">Bloqueo permanente</string>
+    <string name="canvis_app_unblock">Se ha desbloqueado esta aplicación</string>
 </resources>
