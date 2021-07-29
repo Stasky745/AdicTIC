@@ -1,6 +1,5 @@
 package com.adictic.common.ui.informe.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +14,10 @@ import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.util.Funcions;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsViewHolder> {
-    @SuppressLint("SimpleDateFormat")
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm");
-
     private final LayoutInflater mInflater;
     private final ArrayList<AppUsage> appUsages;
     private final Context mContext;
@@ -36,7 +31,7 @@ public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsV
     @NonNull
     @Override
     public TopAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.informe_apps_item, parent);
+        View view = mInflater.inflate(R.layout.informe_top_apps_item, parent, false);
 
         return new TopAppsViewHolder(view);
     }
@@ -55,10 +50,11 @@ public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsV
         return appUsages.size();
     }
 
-    public class TopAppsViewHolder extends RecyclerView.ViewHolder {
-        View root;
-        TextView TV_topAppTitle, TV_topApptime;
-        ImageView IV_topAppLogo;
+    public static class TopAppsViewHolder extends RecyclerView.ViewHolder {
+        protected View root;
+        private final TextView TV_topAppTitle;
+        private final TextView TV_topApptime;
+        private final ImageView IV_topAppLogo;
 
         TopAppsViewHolder(@NonNull View itemView) {
             super(itemView);
