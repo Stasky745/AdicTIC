@@ -1,5 +1,8 @@
 package com.example.adictic.ui.inici;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -52,9 +55,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
     private AdicticApi mTodoService;
@@ -194,9 +194,9 @@ public class NomFill extends AppCompatActivity {
         }
 
         // Posem estil a les frases que cal
-        TV_permis2.setText(Funcions.getSpannedText(getString(R.string.permis_2)));
-        TV_permis3.setText(Funcions.getSpannedText(getString(R.string.permis_3)));
-        TV_permis5.setText(Funcions.getSpannedText(getString(R.string.permis_5)));
+        TV_permis2.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_2)));
+        TV_permis3.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_3)));
+        TV_permis5.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_5)));
 
         // Fem llistes amb punts
         CharSequence text = "";
