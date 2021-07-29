@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- INFORMACIÓ -->
+    <string-array name="actuar_dubte">
+        <item>
+            <![CDATA[
+                De la mateixa manera que passa amb les addiccions a substàncies químiques, la persona que ho pateix no sol tenir prou <font color="#3c9df8"><b>consciència</b></font> de la situació real fins que no hi ha un esdeveniment de gran importància que fa que se n’adoni. Així doncs, és de vital importància i alhora el més freqüent que siguin les persones del seu <font color="#3c9df8"><b>entorn</b></font> més proper, generalment familiars, els que acabin consultant pel problema.
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                Prestar especial atenció en el comportament i l’actitud de la persona pot ser de gran ajuda. Especialment es recomana posar el focus en: l’evolució, les senyals d’alarma i els factors de risc i de protecció. Davant qualsevol dubte o possibles indicis d’addicció, contactar amb un professional especialitzat en l’àmbit permet entendre millor la situació i poder valorar diferents alternatives per fer-hi front.
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                És important recordar que una <font color="#3c9df8"><b>detecció primerenca</b></font> es relaciona amb un millor <font color="#3c9df8"><b>pronòstic</b></font> ja que la conducta no està tan enquistada i els canvis es poden aconseguir amb major facilitat. Així doncs, en el moment de sospita és important actuar amb rapidesa per no donar més peu a la conducta problemàtica.
+            ]]>
+        </item>
+    </string-array>
+
+    <string-array name="que_es_addiccio">
+        <item>
+            <![CDATA[
+                La Organització Mundial de la Salut (OMS) defineix <font color="#3c9df8"><b>addicció</b></font> com una malaltia física i psicoemocional que es basa en la dependència o necessitat cap a una substància, activitat o relació. Quan parlem d’addicció és important adoptar una perspectiva <font color="#3c9df8"><b>bio-psico-social</b></font> ja que s’hi veuen implicats factors biològics, psicològics i socials.
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                Per entendre millor el concepte, a continuació es presenten algunes de les <font color="#3c9df8"><b>característiques principals</b></font>:
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Importància:</b></font> la conducta de la qual es depèn és més important que la resta dels aspectes de la vida de la persona i controla els seus pensaments, sentiments i comportament
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Inestabilitat emocional:</b></font> canvis d’humor freqüents modulats per la conducta
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Tolerància:</b></font> s’augmenta la durada, freqüència i/o intensitat de la conducta per tal d’obtenir els mateixos efectes positius que abans. La persona cada cop necessita més
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Síndrome d’abstinència:</b></font> malestar físic i/o psicològic al interrompre o disminuir la conducta
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Conflictivitat:</b></font> la conducta cada cop genera majors conflictes amb l’entorn (relacions familiars, relació de parella, etc.), les activitats on està implicat/da (feina, amistats, aficions…) i amb un/a mateix/a. La conducta es manté malgrat la presència d’efectes perjudicials
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Recaiguda:</b></font> facilitat per reprendre funcionaments anteriors que potencien la dependència
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                L’addicció és una malaltia progressiva en què a mesura que va passant el temps, n’augmenten les seves conseqüències. Abans d’arribar fins al punt de parlar d’una addicció cal diferenciar varis conceptes que formen part d’un mateix contínuum (experimentació – ús – abús – addicció) i entre els quals hi ha un límit molt fi.
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Experimentació:</b></font> primer acostament al consum/conducta per curiositat i amb la possibilitat de continuar o interrompre
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Ús:</b></font> consum/conducta ocasional que té com a objectiu principal la cerca de sensacions. No hi ha deteriorament ni episodis d’intoxicació
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Abús:</b></font> consum/conducta regular amb episodis d’intoxicació i pèrdua progressiva del control. Afectacions quant a deteriorament i canvis en l’estat d’ànim
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Addicció:</b></font> dependència per manca de control que implica cerca compulsiva del consum/conducta, fort deteriorament i conductes de risc
+             ]]>
+        </item>
+        <item>
+
+        </item>
+        <item>
+            <![CDATA[
+                Griffiths, M.D. (2010). The role of context in online gaming excess and addiction: Some case study evidence. <i>Int J Ment Health Addict, 8</i> (1): 119-25.
+             ]]>
+        </item>
+    </string-array>
+</resources>

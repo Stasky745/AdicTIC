@@ -53,4 +53,99 @@
         <item>follow_system</item>
     </string-array>
 
+    <!-- INFORMACIÓ -->
+    <string-array name="actuar_dubte">
+        <item>
+            <![CDATA[
+                Del mismo modo que pasa con las adicciones a sustancias químicas, la persona que lo sufre no suele tener suficiente <font color="#3c9df8"><b>conciencia</b></font> de la situación real hasta que no hay un acontecimiento de gran importancia que hace que se dé cuenta. Así pues, es de vital importancia y a la vez el más frecuente que sean las personas de su <font color="#3c9df8"><b>entorno</b></font> más próximo, generalmente familiares, los que acaben consultando por el problema.
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                Prestar especial atención al comportamiento y la actitud de la persona puede ser de gran ayuda. Especialmente se recomienda poner el foco en: la evolución, las señales de alarma y los factores de riesgo y de protección. Ante cualquier duda o posibles indicios de adicción, contactar con un profesional especializado en el ámbito permite entender mejor la situación y poder valorar diferentes alternativas para hacerle frente.
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                Es importante recordar que una <font color="#3c9df8"><b>detección temprana</b></font> se relaciona con un mejor <font color="#3c9df8"><b>pronóstico</b></font> puesto que la conducta no está tan enquistada y los cambios se pueden conseguir con mayor facilidad. Así pues, en el momento de sospecha es importante actuar con rapidez para no dar más pie a la conducta problemática.
+            ]]>
+        </item>
+    </string-array>
+
+    <string-array name="que_es_addiccio">
+        <item>
+            <![CDATA[
+                La Organizaci&oacute;n Mundial de la Salud (OMS) define <font color="#3c9df8"><b>adicci&oacute;n </b></font>como una enfermedad f&iacute;sica y psicoemocional que se basa en la dependencia o necesidad hacia a una sustancia, actividad o relaci&oacute;n. Cuando hablamos de adicci&oacute;n es importante adoptar una perspectiva <font color="#3c9df8"><b>bio-psico-social </b></font>ya que se ven implicados factores biol&oacute;gicos, psicol&oacute;gicos y sociales.
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+                Para entender mejor el concepto, a continuaci&oacute;n se presentan algunas de las <font color="#3c9df8"><b>caracter&iacute;sticas principales</b></font>:
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Importancia:</b></font> la conducta de la cual se depende es m&aacute;s importante que el resto de los aspectos de la vida de la persona y controla sus pensamientos, sentimientos y comportamiento
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Inestabilidad emocional:</b></font> cambios de humor frecuentes modulados por la conducta<br />
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                - <font color="#3c9df8"><b>Tolerancia</b></font>: se aumenta la duraci&oacute;n, frecuencia y/o intensidad de la conducta para obtener los mismos efectos positivos que antes. La persona cada vez necesita m&aacute;s
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>S&iacute;ndrome de abstinencia:</b></font> malestar f&iacute;sico y/o psicol&oacute;gico al interrumpir o disminuir la conducta
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Conflictividad:</b></font> la conducta cada vez genera mayores conflictos en el entorno (relaciones familiares, relaci&oacute;n de pareja, etc), las actividades donde est&aacute; implicado/a (trabajo, amistades, aficiones…) y con uno/a mismo/a. La conducta se mantiene a pesar de la presencia de efectos perjudiciales
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Reca&iacute;da:</b></font> facilidad para retomar funcionamientos anteriores que potencian la dependencia
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+                La adicci&oacute;n es una enfermedad progresiva en que a medida que va pasando el tiempo, aumentan sus consecuencias. Antes de llegar a hablar de adicci&oacute;n hay que diferenciar varios conceptos que forman parte de un mismo <font color="#3c9df8"><b>cont&iacute;nuum</b></font> (experimentaci&oacute;n &ndash; uso &ndash; abuso &ndash; adicci&oacute;n) y entre los cuales hay un l&iacute;mite muy fino.
+             ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Experimentaci&oacute;n</b></font>: primer acercamiento al consumo/conducta por curiosidad y con la posibilidad de continuar o interrumpir
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Uso</b></font>: consumo/conducta ocasional que tiene como objetivo principal la b&uacute;squeda de sensaciones. No hay deterioro ni episodios de intoxicaci&oacute;n
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Abuso</b></font>: consumo/conducta regular con episodios de intoxicaci&oacute;n y p&eacute;rdida progresiva de control. Afectaciones cuanto a deterioro y cambios en el estado de &aacute;nimo
+            ]]>
+        </item>
+        <item>
+            <![CDATA[
+               - <font color="#3c9df8"><b>Adicci&oacute;n</b></font>: dependencia per p&eacute;rdida de control que implica b&uacute;squeda compulsiva del consumo/conducta, fuerte deterioro y conductas de riesgo
+            ]]>
+        </item>
+        <item>
+
+        </item>
+        <item>
+            <![CDATA[
+                Griffiths, M.D. (2010). The role of context in online gaming excess and addiction: Some case study evidence. <em>Int J Ment Health Addict</em>, <em>8</em> (1): 119-25.
+             ]]>
+        </item>
+    </string-array>
+
 </resources>

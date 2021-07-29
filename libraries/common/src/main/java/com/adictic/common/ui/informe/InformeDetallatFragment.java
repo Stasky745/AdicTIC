@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
+import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.CanvisHoraris;
@@ -20,13 +21,17 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.ui.informe.adapters.AppsAdapter;
 import com.adictic.common.ui.informe.adapters.EventsAdapter;
 import com.adictic.common.ui.informe.adapters.HorarisNitAdapter;
+import com.adictic.common.ui.informe.adapters.TopAppsAdapter;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,12 +45,15 @@ public class InformeDetallatFragment extends Fragment {
     private final long idChild;
     private final String activeMonth;
 
-    InformeDetallatFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, long id, int currentYear, int currentMonth){
+    InformeDetallatFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, long id){
         appList = new ArrayList<>(col);
         age = edat;
         mitjanaMillisDia = totalUsageT / appList.size();
         idChild = id;
 
+        GeneralUsage generalUsage = appList.get(0);
+        int currentMonth = generalUsage.month;
+        int currentYear = generalUsage.year;
         activeMonth = currentMonth +"-"+ currentYear;
 
     }
@@ -54,9 +62,9 @@ public class InformeDetallatFragment extends Fragment {
     @org.jetbrains.annotations.Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.informe_resum, container, false);
+        View root = inflater.inflate(R.layout.informe_detallat, container, false);
 
-        api = ((App) requireContext()).getAPI();
+        api = ((App) requireContext().getApplicationContext()).getAPI();
 
         setIntro(root);
         setLimitsMarcats(root);
@@ -193,12 +201,39 @@ public class InformeDetallatFragment extends Fragment {
         long millisRecomanats = Constants.AGE_TIMES_MILLIS[age];
 
         if(mitjanaMillisDia <= millisRecomanats)
-            intro = getString(R.string.intro_bona, age, Funcions.millis2horaString(millisRecomanats), Funcions.millis2horaString(mitjanaMillisDia));
+            intro = getString(R.string.intro_bona, age, Funcions.millis2horaString(getContext(), millisRecomanats), Funcions.millis2horaString(getContext(), mitjanaMillisDia));
         else
-            intro = getString(R.string.intro_dolenta, age, Funcions.millis2horaString(millisRecomanats), Funcions.millis2horaString(mitjanaMillisDia));
+            intro = getString(R.string.intro_dolenta, age, Funcions.millis2horaString(getContext(), millisRecomanats), Funcions.millis2horaString(getContext(), mitjanaMillisDia));
 
         TV_informeIntro.setText(intro);
 
+        setMostUsedApps(root);
+    }
 
+    private void setMostUsedApps(View root) {
+        RecyclerView RV_mostUsedApps = root.findViewById(R.id.RV_informeTopApps);
+
+        Map<String,AppUsage> appUsages = new HashMap<>();
+
+        for(GeneralUsage generalUsage : appList){
+            for(AppUsage appUsage : generalUsage.usage){
+                AppUsage mapAppUsage = appUsages.get(appUsage.app.pkgName);
+                if(mapAppUsage != null){
+                    mapAppUsage.totalTime += appUsage.totalTime;
+                    appUsages.put(appUsage.app.pkgName, mapAppUsage);
+                }
+                else
+                    appUsages.put(appUsage.app.pkgName, appUsage);
+            }
+        }
+
+        List<AppUsage> RV_list = new ArrayList<>(appUsages.values());
+        RV_list.sort((o1, o2) -> o2.totalTime.compareTo(o1.totalTime));
+        RV_list = RV_list.stream()
+                .limit(5)
+                .collect(Collectors.toList());
+
+        TopAppsAdapter topAppsAdapter = new TopAppsAdapter(getContext(), RV_list);
+        RV_mostUsedApps.setAdapter(topAppsAdapter);
     }
 }
