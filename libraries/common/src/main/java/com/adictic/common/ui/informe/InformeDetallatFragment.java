@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
@@ -83,6 +84,7 @@ public class InformeDetallatFragment extends Fragment {
 
     private void setHorarisNit(View root) {
         RecyclerView RV_informeHoraris = root.findViewById(R.id.RV_informeHorarisNit);
+        RV_informeHoraris.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Call<Collection<CanvisHoraris>> call = api.getCanvisHoraris(idChild, activeMonth);
         call.enqueue(new Callback<Collection<CanvisHoraris>>() {
@@ -121,6 +123,7 @@ public class InformeDetallatFragment extends Fragment {
 
     private void setEvents(View root) {
         RecyclerView RV_informeEvents = root.findViewById(R.id.RV_informeEvents);
+        RV_informeEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Call<Collection<CanvisEvents>> call = api.getCanvisEvents(idChild, activeMonth);
         call.enqueue(new Callback<Collection<CanvisEvents>>() {
@@ -159,6 +162,7 @@ public class InformeDetallatFragment extends Fragment {
 
     private void setBlockedApps(View root) {
         RecyclerView RV_informeApps = root.findViewById(R.id.RV_informeBlockApps);
+        RV_informeApps.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Call<Collection<CanvisAppBlock>> call = api.getCanvisApps(idChild, activeMonth);
         call.enqueue(new Callback<Collection<CanvisAppBlock>>() {
@@ -212,6 +216,7 @@ public class InformeDetallatFragment extends Fragment {
 
     private void setMostUsedApps(View root) {
         RecyclerView RV_mostUsedApps = root.findViewById(R.id.RV_informeTopApps);
+        RV_mostUsedApps.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Map<String,AppUsage> appUsages = new HashMap<>();
 
