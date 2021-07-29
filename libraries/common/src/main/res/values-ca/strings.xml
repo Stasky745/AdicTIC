@@ -211,8 +211,8 @@
     <string name="error_no_bday">"Falta la data de naixement"</string>
 
     <!-- Resum Informe -->
-    <string name="intro_bona">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, inferior a la recomanada!</string>
-    <string name="intro_dolenta">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, superior a la recomanada. S\'hauria de procurar baixar aquesta mitjana per sota els valors suggerits.</string>
+    <string name="intro_bona">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s al dia, inferior a la recomanada!</string>
+    <string name="intro_dolenta">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s al dia, superior a la recomanada. S\'hauria de procurar baixar aquesta mitjana per sota els valors suggerits.</string>
     <string name="us_apps_buit">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes s'ha mantingut aquest ideal! Enhorabona!"</string>
     <string name="us_apps">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes hi ha hagut algunes aplicacions que han superat aquesta pauta. S'hauria de procurar reduir l'ús d'aquestes."</string>
     <string name="intents_acces_buit">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. Aquest mes no s'ha intentat accedir amb una mitjana de més de 5 cops diaris a cap aplicació bloquejada, la xifra que triem que pot presentar un problema d'addicció a la persona. Felicitats!"</string>

@@ -45,27 +45,14 @@ public class TabsAdapter extends FragmentStateAdapter {
         totalUsageTime = tUT;
     }
 
-//    @NonNull
-//    @Override
-//    public Fragment getItem(int position) {
-//        if (position == 0)
-//            return new GraphsFragment(childId, genericAppUsage);
-//        else
-//            return new ResumFragment(genericAppUsage, totalUsageTime, age, timesBlockedMap);
-//    }
-//
-//    @Override
-//    public int getCount() {
-//        return 2;
-//    }
-
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0)
             return new GraphsFragment(childId, genericAppUsage);
         else
-            return new ResumFragment(genericAppUsage, totalUsageTime, age, timesBlockedMap);
+            return new InformeDetallatFragment(genericAppUsage, totalUsageTime, age, childId);
+            //return new ResumFragment(genericAppUsage, totalUsageTime, age, timesBlockedMap);
     }
 
     @Override

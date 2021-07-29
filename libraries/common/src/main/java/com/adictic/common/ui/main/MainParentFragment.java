@@ -307,7 +307,7 @@ public class MainParentFragment extends Fragment {
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
 
-            if(fill.freeuse) {
+            if(fill != null && fill.freeuse) {
                 BT_FreeTime.setText(getString(R.string.stop_free_time));
             }
 
