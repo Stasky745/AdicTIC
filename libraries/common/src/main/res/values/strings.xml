@@ -400,4 +400,11 @@
     <string name="canvi_app_block">Se ha configurado un nuevo bloqueo</string>
     <string name="canvis_app_block_permanent">Bloqueo permanente</string>
     <string name="canvis_app_unblock">Se ha desbloqueado esta aplicación</string>
+    <string name="info_disp_bloq">Bloqueo de dispositivo: %d veces (%s)</string>
+    <string name="info_freeuse">Tiempo libre sin límite: %d veces (%s)</string>
+    <string name="access_block_device">Intentos de acceso al dispositivo bloqueado: %d veces</string>
+    <string name="access_block_app">Intentos de acceso a aplicaciones bloqueadas: %d veces</string>
+
+    <string name="access_mitjana_bona">La media de intentos de incumplimiento de los límites ha sido de %d veces al día. Este número de intentos no es alarmante, ya que podría ser causa de olvido.</string>
+    <string name="access_mitjana_dolenta">La media de intentos de incumplimiento de los límites ha sido de %d veces al día. Este número de intentos es alarmante, ya que se ha intentado accedir de forma excesiva al dispositivo, aún con las restricciones.</string>
 </resources>
