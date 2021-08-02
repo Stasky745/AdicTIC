@@ -386,4 +386,10 @@
     <string name="canvi_app_block">S\'ha configurat un nou bloqueig</string>
     <string name="canvis_app_block_permanent">Bloqueig permanent</string>
     <string name="canvis_app_unblock">S\'ha desbloquejat aquesta aplicació</string>
+    <string name="info_disp_bloq">Bloqueig de dispositiu: %d vegades (%s)</string>
+    <string name="info_freeuse">Temps lliure sense límit: %d vegades (%s)</string>
+    <string name="access_block_device">Intents d\'accés al dispositiu bloquejat: %d vegades</string>
+    <string name="access_block_app">Intents d\'accés a aplicacions bloquejades: %d vegades</string>
+    <string name="access_mitjana_bona">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents no és alarmant ja que podria ser causa d’oblit.</string>
+    <string name="access_mitjana_dolenta">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents és alarmant ja que s’ha intentar accedir de forma excessiva al dispositiu malgrat les restriccions.</string>
 </resources>

@@ -2,6 +2,7 @@ package com.adictic.common.rest;
 
 import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
+import com.adictic.common.entity.BlockInfo;
 import com.adictic.common.entity.BlockList;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.CanvisAppBlock;
@@ -154,7 +155,6 @@ public interface Api {
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
 
-
     @GET("/usage/{id}/horaris/{data}")
     Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
 
@@ -163,6 +163,9 @@ public interface Api {
 
     @GET("/usage/{id}/blockedApps/{data}")
     Call<Collection<CanvisAppBlock>> getCanvisApps(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{idChild}/accessInfo/{data}")
+    Call<BlockInfo> getAccessInfo(@Path("idChild") Long idChild, @Path("data") String data);
 
     /////////////// ACRA ///////////////
 

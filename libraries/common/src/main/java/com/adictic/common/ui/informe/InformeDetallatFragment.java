@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
+import com.adictic.common.entity.BlockInfo;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.entity.TimeBlock;
+import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.rest.Api;
 import com.adictic.common.ui.informe.adapters.AppsAdapter;
 import com.adictic.common.ui.informe.adapters.EventsAdapter;
@@ -27,8 +31,11 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +51,9 @@ public class InformeDetallatFragment extends Fragment {
     private final long mitjanaMillisDia;
     private Api api;
     private final long idChild;
-    private final String activeMonth;
+    private final String activeDateString;
+    private final int activeMonth;
+    private final int activeYear;
 
     InformeDetallatFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, long id){
         appList = new ArrayList<>(col);
@@ -53,9 +62,9 @@ public class InformeDetallatFragment extends Fragment {
         idChild = id;
 
         GeneralUsage generalUsage = appList.get(0);
-        int currentMonth = generalUsage.month;
-        int currentYear = generalUsage.year;
-        activeMonth = currentMonth +"-"+ currentYear;
+        activeMonth = generalUsage.month;
+        activeYear = generalUsage.year;
+        activeDateString = activeMonth +"-"+ activeYear;
 
     }
 
@@ -74,19 +83,80 @@ public class InformeDetallatFragment extends Fragment {
     }
 
     private void setLimitsMarcats(View root) {
-        TextView TV_informeBlockDevice = root.findViewById(R.id.TV_informeBlockDevice);
-        TextView TV_informeFreeUse = root.findViewById(R.id.TV_informeFreeUse);
-
+        setAccessInfo(root);
         setBlockedApps(root);
         setEvents(root);
         setHorarisNit(root);
+    }
+
+    private void setAccessInfo(View root) {
+        Call<BlockInfo> call = api.getAccessInfo(idChild, activeDateString);
+        call.enqueue(new Callback<BlockInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<BlockInfo> call, @NonNull Response<BlockInfo> response) {
+                if(response.isSuccessful()){
+                    BlockInfo blockInfo = response.body();
+                    if(blockInfo == null)
+                        blockInfo = new BlockInfo();
+
+                    setAccessTexts(root, blockInfo);
+                }
+                else
+                    Toast.makeText(getContext(), response.code() + ":" + response.message(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BlockInfo> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setAccessTexts(View root, BlockInfo blockInfo) {
+        TextView TV_informeBlockDevice = root.findViewById(R.id.TV_informeBlockDevice);
+        TextView TV_informeFreeUse = root.findViewById(R.id.TV_informeFreeUse);
+        TextView TV_intentsAccessDevice = root.findViewById(R.id.TV_intentsAccessDevice);
+        TextView TV_intentsAccessApps = root.findViewById(R.id.TV_intentsAccessApps);
+
+        long tempsBloqueig = 0;
+        for(TimeBlock timeBlock : blockInfo.tempsBloqueig){
+            tempsBloqueig += (timeBlock.end - timeBlock.start);
+        }
+        TV_informeBlockDevice.setText(getString(R.string.info_disp_bloq, blockInfo.tempsBloqueig.size(), Funcions.millis2horaString(getContext(), tempsBloqueig)));
+
+        long tempsFreeUse = 0;
+        for(TimeFreeUse timeFreeUse : blockInfo.tempsFreeUse){
+            tempsFreeUse += timeFreeUse.end - timeFreeUse.start;
+        }
+        TV_informeFreeUse.setText(getString(R.string.info_freeuse, blockInfo.tempsFreeUse.size(), Funcions.millis2horaString(getContext(), tempsFreeUse)));
+
+        TV_intentsAccessDevice.setText(getString(R.string.access_block_device, blockInfo.intentsAccesDisps.size()));
+        TV_intentsAccessApps.setText(getString(R.string.access_block_app, blockInfo.intentsAccesApps.size()));
+
+        double mitjanaIntents;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            int daysInMonth = YearMonth.of(activeYear, activeMonth).lengthOfMonth();
+            mitjanaIntents = (blockInfo.intentsAccesApps.size() + blockInfo.intentsAccesDisps.size()) / (double) daysInMonth;
+        }
+        else{
+            Calendar calendar = new GregorianCalendar(activeYear, activeMonth, 1);
+            int daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+            mitjanaIntents = (blockInfo.intentsAccesApps.size() + blockInfo.intentsAccesDisps.size()) / (double) daysInMonth;
+        }
+
+        TextView TV_informeIntentsAcces = root.findViewById(R.id.TV_informeIntentsAcces);
+
+        if(mitjanaIntents > 9)
+            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_dolenta)); //Text dolent
+        else
+            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_bona)); //text bo
     }
 
     private void setHorarisNit(View root) {
         RecyclerView RV_informeHoraris = root.findViewById(R.id.RV_informeHorarisNit);
         RV_informeHoraris.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Call<Collection<CanvisHoraris>> call = api.getCanvisHoraris(idChild, activeMonth);
+        Call<Collection<CanvisHoraris>> call = api.getCanvisHoraris(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisHoraris>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisHoraris>> call, @NonNull Response<Collection<CanvisHoraris>> response) {
@@ -125,7 +195,7 @@ public class InformeDetallatFragment extends Fragment {
         RecyclerView RV_informeEvents = root.findViewById(R.id.RV_informeEvents);
         RV_informeEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Call<Collection<CanvisEvents>> call = api.getCanvisEvents(idChild, activeMonth);
+        Call<Collection<CanvisEvents>> call = api.getCanvisEvents(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisEvents>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisEvents>> call, @NonNull Response<Collection<CanvisEvents>> response) {
@@ -164,7 +234,7 @@ public class InformeDetallatFragment extends Fragment {
         RecyclerView RV_informeApps = root.findViewById(R.id.RV_informeBlockApps);
         RV_informeApps.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Call<Collection<CanvisAppBlock>> call = api.getCanvisApps(idChild, activeMonth);
+        Call<Collection<CanvisAppBlock>> call = api.getCanvisApps(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisAppBlock>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisAppBlock>> call, @NonNull Response<Collection<CanvisAppBlock>> response) {
