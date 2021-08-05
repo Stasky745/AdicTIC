@@ -48,13 +48,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
-            // body , title , userID , childID , myID
-            if (messageMap.containsKey("chat")) {
+            if(!messageMap.containsKey("action")){
+                Log.e(TAG,"La consulta de firebase no té la clau 'action'");
+                return;
+            }
+            String action = messageMap.get("action");
+            if(action==null){
+                Log.e(TAG,"La clau 'action' de firebase és null");
+                return;
+            }
+            if (action.equals("chat")) {
+                // body , title , userID , childID , myID
                 long userID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("userID")));
                 long childID = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("childID")));
                 Intent intent;
 
-                switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {  //Message with Chat
+                switch (Objects.requireNonNull(messageMap.get("chat"))) {  //Message with Chat
                     case "0": // Access
                         if (XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
                             intent = new Intent("chatAccess");
