@@ -16,11 +16,14 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 
 import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +37,9 @@ import retrofit2.Response;
 public class WindowChangeDetectingService extends AccessibilityService {
 
     public static WindowChangeDetectingService instance;
+
+    private final static int TOTAL_RETRIES = 10;
+    private int retryCount = 0;
 
     private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
@@ -193,13 +199,10 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // --- BLOCK DEVICE ---
-            // Actualitzem variable estavaBloquejatAbans
-            if(!blockedDevice)
-                estavaBloquejatAbans = myKM.isDeviceLocked();
-            else
-                estavaBloquejatAbans = true;
-
             if (blockedDevice) {
+                if(estavaBloquejatAbans)
+                    postIntentAccesDisp();
+                estavaBloquejatAbans = true;
                 if (!myKM.isDeviceLocked()) {
                     Log.d(TAG, "Dispositiu bloquejat");
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -241,24 +244,65 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         isBlocked = blockedApps.contains(lastPackage);
 
                     if (isBlocked) {
-                        addAccessBlockedApp();
+                        if(estavaBloquejatAbans)
+                            addAccessBlockedApp();
+                        Funcions.ensenyarBlockScreenActivity(getApplicationContext(), lastPackage);
                     }
                 }
             }
+
+            // Actualitzem variable estavaBloquejatAbans
+            estavaBloquejatAbans = myKM.isDeviceLocked();
         }
     }
 
-    private void addAccessBlockedApp(){
-        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), lastPackage);
+    private void postIntentAccesDisp() {
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+        if(idChild == -1)
+            return;
+
+        retryCount = 0;
+        long now = DateTime.now().getMillis();
+        Call<String> call = mTodoService.postIntentAccesDisp(idChild, now);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
         });
+    }
 
-        Funcions.ensenyarBlockScreenActivity(getApplicationContext(), lastPackage);
+    private void addAccessBlockedApp(){
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+        if(idChild == -1)
+            return;
+
+        IntentsAccesApp intentsAccesApp = new IntentsAccesApp();
+        intentsAccesApp.appName = lastActivity;
+        intentsAccesApp.pkgName = lastPackage;
+        intentsAccesApp.data = DateTime.now().getMillis();
+        retryCount = 0;
+        Call<String> call = mTodoService.postIntentAccesApp(idChild, intentsAccesApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
+        });
     }
 
     private boolean estaBloquejat() {
