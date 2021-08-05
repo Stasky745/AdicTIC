@@ -1,11 +1,11 @@
 package com.adictic.common.util;
 
+import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE;
+import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
+
 import android.graphics.Color;
 
 import java.util.Arrays;
-
-import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE;
-import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 public class Constants {
     public static final long HOUR_IN_MILLIS = 3600000;
@@ -32,7 +32,9 @@ public class Constants {
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";
     public static final String SHARED_PREFS_BLOCKEDDEVICE = "blockedDevice";
+    public static final String SHARED_PREFS_BLOCKEDDEVICE_START = "blockedDeviceStart";
     public static final String SHARED_PREFS_FREEUSE = "freeuse";
+    public static final String SHARED_PREFS_FREEUSE_START = "shared_prefs_freeuse_start";
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";

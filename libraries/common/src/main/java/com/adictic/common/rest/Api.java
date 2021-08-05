@@ -16,9 +16,12 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisEvents;
+import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.entity.Oficina;
+import com.adictic.common.entity.TimeBlock;
+import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.entity.YearEntity;
@@ -166,4 +169,16 @@ public interface Api {
 
     @GET("/usage/{idChild}/accessInfo/{data}")
     Call<BlockInfo> getAccessInfo(@Path("idChild") Long idChild, @Path("data") String data);
+
+    @POST("/usage/{idChild}/tempsFreeuse")
+    Call<String> postTempsFreeUse(@Path("idChild") Long idChild, @Body TimeFreeUse timeFreeUse);
+
+    @POST("/usage/{idChild}/tempsBloqueig")
+    Call<String> postTempsBloqueig(@Path("idChild") Long idChild, @Body TimeBlock timeBlock);
+
+    @POST("/usage/{idChild}/intentAccesApp")
+    Call<String> postIntentAccesApp(@Path("idChild") Long idChild, @Body IntentsAccesApp intentsAccesApp);
+
+    @POST("/usage/{idChild}/intentAccesDisp")
+    Call<String> postIntentAccesDisp(@Path("idChild") Long idChild, @Body Long data);
 }
