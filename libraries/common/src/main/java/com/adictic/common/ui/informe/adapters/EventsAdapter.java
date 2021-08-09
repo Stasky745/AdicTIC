@@ -40,7 +40,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
     @NonNull
     @Override
     public EventsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.informe_events_item, parent);
+        View view = mInflater.inflate(R.layout.informe_events_item, parent, false);
 
         return new EventsViewHolder(view);
     }

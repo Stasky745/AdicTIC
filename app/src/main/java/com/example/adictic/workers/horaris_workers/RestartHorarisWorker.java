@@ -72,7 +72,7 @@ public class RestartHorarisWorker extends Worker {
             Funcions.runDormirWorker(getApplicationContext(), horarisAvui.dormir - now);
 
         // Si ha d'estar bloquejat ho bloquegem
-        if(bloquejat){
+        if(bloquejat && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)){
             DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
             assert mDPM != null;
             mDPM.lockNow();

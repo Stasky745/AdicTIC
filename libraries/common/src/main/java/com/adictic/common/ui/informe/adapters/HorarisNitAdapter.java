@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
@@ -22,18 +24,19 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMMM yyyy");
     private final ArrayList<CanvisHoraris> horarisList;
     private final LayoutInflater mInflater;
+    private final Context mContext;
 
     public HorarisNitAdapter(List<CanvisHoraris> list, Context c){
         mInflater = LayoutInflater.from(c);
+        mContext = c;
         horarisList = new ArrayList<>(list);
-
         horarisList.sort((o1, o2) -> o2.data.compareTo(o1.data));
     }
 
     @NonNull
     @Override
     public HorarisNitViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.informe_item, parent);
+        View view = mInflater.inflate(R.layout.informe_item, parent, false);
 
         return new HorarisNitViewHolder(view);
     }
@@ -43,7 +46,7 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
         CanvisHoraris canvisHoraris = horarisList.get(position);
         holder.TV_informeData.setText(dateFormatter.format(canvisHoraris.data));
 
-        if(canvisHoraris.actiu)
+        if(canvisHoraris.horariNou != null && canvisHoraris.horariNou.actiu)
             holder.TV_informeActiu.setVisibility(View.VISIBLE);
         else
             holder.TV_informeActiu.setVisibility(View.GONE);
@@ -57,8 +60,10 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
 
         holder.root.setOnClickListener(v -> {
             // Obrir dialog amb canvis
-            TabbedDialog tabbedDialog = new TabbedDialog(horarisList.get(position));
-            tabbedDialog.show(tabbedDialog.getChildFragmentManager(), "TabbedDialog");
+            FragmentManager fragmentManager = ((FragmentActivity)mContext).getSupportFragmentManager();
+            CanvisHoraris canvisHoraris1 = horarisList.get(position);
+            TabbedDialog tabbedDialog = new TabbedDialog(canvisHoraris1);
+            tabbedDialog.show(fragmentManager, "TabbedDialog");
         });
     }
 

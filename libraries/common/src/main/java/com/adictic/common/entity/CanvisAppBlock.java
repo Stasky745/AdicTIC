@@ -4,7 +4,8 @@ import java.util.Date;
 
 public class CanvisAppBlock {
     public Date data;
-    public BlockAppEntity appAntic;
-    public BlockAppEntity appNou;
+    public AppInfo app;
+    public Long timeAntic;
+    public Long timeNou;
     public Boolean actiu;
 }
