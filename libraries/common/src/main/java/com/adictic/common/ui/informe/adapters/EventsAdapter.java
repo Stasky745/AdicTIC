@@ -3,6 +3,7 @@ package com.adictic.common.ui.informe.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +53,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
 
         if(canvisEvents.eventAntic == null){
             holder.TV_eventVellTitol.setVisibility(View.GONE);
-            holder.TV_eventVellDies.setVisibility(View.GONE);
-            holder.TV_eventVellHorari.setText(R.string.new_event);
-            holder.TV_eventVellHorari.setTextColor(Color.GREEN);
+            holder.TV_eventVellHorari.setVisibility(View.GONE);
+            holder.TV_eventVellDies.setText(R.string.new_event);
+            holder.TV_eventVellDies.setTextColor(Color.GREEN);
+            holder.TV_eventVellDies.setTypeface(null, Typeface.BOLD);
         }
         else{
             holder.TV_eventVellTitol.setText(canvisEvents.eventAntic.name);
@@ -70,9 +72,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
 
         if(canvisEvents.eventNou == null){
             holder.TV_eventNouTitol.setVisibility(View.GONE);
-            holder.TV_eventNouDies.setVisibility(View.GONE);
-            holder.TV_eventNouHorari.setText(R.string.delete_event);
-            holder.TV_eventNouHorari.setTextColor(Color.RED);
+            holder.TV_eventNouHorari.setVisibility(View.GONE);
+            holder.TV_eventNouDies.setText(R.string.delete_event);
+            holder.TV_eventNouDies.setTextColor(Color.RED);
+            holder.TV_eventNouDies.setTypeface(null, Typeface.BOLD);
         }
         else{
             holder.TV_eventNouTitol.setText(canvisEvents.eventNou.name);
