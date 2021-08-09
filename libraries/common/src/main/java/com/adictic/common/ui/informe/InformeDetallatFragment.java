@@ -256,12 +256,12 @@ public class InformeDetallatFragment extends Fragment {
                         RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
                         RV_informeApps.addItemDecoration(rvSpaceDecoration);
                         RV_informeApps.setAdapter(appsAdapter);
-                        if(appBlockList.size() > 3) {
-                            int RV_height = (RV_informeApps.getHeight() / appBlockList.size()) * 3;
-                            ViewGroup.LayoutParams params = RV_informeApps.getLayoutParams();
-                            params.height = RV_height;
-                            RV_informeApps.setLayoutParams(params);
-                        }
+//                        if(appBlockList.size() > 3) {
+//                            int RV_height = (RV_informeApps.getHeight() / appBlockList.size()) * 3;
+//                            ViewGroup.LayoutParams params = RV_informeApps.getLayoutParams();
+//                            params.height = RV_height;
+//                            RV_informeApps.setLayoutParams(params);
+//                        }
                     }
                 }
                 else {
