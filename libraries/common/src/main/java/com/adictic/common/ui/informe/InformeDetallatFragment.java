@@ -30,6 +30,7 @@ import com.adictic.common.ui.informe.adapters.TopAppsAdapter;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.RVSpaceDecoration;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class InformeDetallatFragment extends Fragment {
         GeneralUsage generalUsage = appList.get(0);
         activeMonth = generalUsage.month;
         activeYear = generalUsage.year;
-        activeDateString = activeMonth +"-"+ activeYear;
+        activeDateString = (activeMonth+1) +"-"+ activeYear;
 
     }
 
@@ -170,6 +171,8 @@ public class InformeDetallatFragment extends Fragment {
                     else {
                         List<CanvisHoraris> horarisList = new ArrayList<>(response.body());
                         HorarisNitAdapter eventsAdapter = new HorarisNitAdapter(horarisList, getContext());
+                        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+                        RV_informeHoraris.addItemDecoration(rvSpaceDecoration);
                         RV_informeHoraris.setAdapter(eventsAdapter);
                     }
                 }
@@ -209,6 +212,8 @@ public class InformeDetallatFragment extends Fragment {
                     else{
                         List<CanvisEvents> eventsList = new ArrayList<>(response.body());
                         EventsAdapter eventsAdapter = new EventsAdapter(eventsList, getContext());
+                        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+                        RV_informeEvents.addItemDecoration(rvSpaceDecoration);
                         RV_informeEvents.setAdapter(eventsAdapter);
                     }
                 }
@@ -248,7 +253,15 @@ public class InformeDetallatFragment extends Fragment {
                     else{
                         List<CanvisAppBlock> appBlockList = new ArrayList<>(response.body());
                         AppsAdapter appsAdapter = new AppsAdapter(appBlockList, getContext());
+                        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+                        RV_informeApps.addItemDecoration(rvSpaceDecoration);
                         RV_informeApps.setAdapter(appsAdapter);
+                        if(appBlockList.size() > 3) {
+                            int RV_height = (RV_informeApps.getHeight() / appBlockList.size()) * 3;
+                            ViewGroup.LayoutParams params = RV_informeApps.getLayoutParams();
+                            params.height = RV_height;
+                            RV_informeApps.setLayoutParams(params);
+                        }
                     }
                 }
                 else {

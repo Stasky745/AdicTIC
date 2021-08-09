@@ -1,5 +1,7 @@
 package com.example.adictic.util;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
@@ -82,8 +84,6 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
@@ -220,7 +220,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     if(response.body() == null || response.body().horarisNit.isEmpty())
                         write2File(ctx, Constants.FILE_HORARIS_NIT, null);
                     else
-                        write2File(ctx, Constants.FILE_HORARIS_NIT, response.body().horarisNit);
+                        write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
 
                     // Engeguem els workers
                     runRestartHorarisWorkerOnce(ctx,0);
@@ -725,8 +725,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
         assert sharedPreferences != null;
         boolean isBlocked = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
                 sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
-                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false);
-        if(isBlocked) {
+                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false) ||
+                !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
+        if(isBlocked && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
             DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
             assert mDPM != null;
             mDPM.lockNow();
