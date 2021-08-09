@@ -155,7 +155,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
-                        mDPM.lockNow();
+                        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
+                            mDPM.lockNow();
                     }
                     else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();

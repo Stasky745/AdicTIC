@@ -203,7 +203,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 if(estavaBloquejatAbans)
                     postIntentAccesDisp();
                 estavaBloquejatAbans = true;
-                if (!myKM.isDeviceLocked()) {
+                if (!myKM.isDeviceLocked() && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
                     Log.d(TAG, "Dispositiu bloquejat");
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;

@@ -107,11 +107,14 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeBlockApps"
+                style="@style/scrollbar_shape_style"
                 android:layout_width="0dp"
-                android:layout_height="168dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
+                android:scrollbarAlwaysDrawHorizontalTrack="false"
+                android:scrollbarAlwaysDrawVerticalTrack="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisBlock" />
@@ -130,6 +133,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeEvents"
+                style="@style/scrollbar_shape_style"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="24dp"
@@ -153,6 +157,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeHorarisNit"
+                style="@style/scrollbar_shape_style"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="24dp"

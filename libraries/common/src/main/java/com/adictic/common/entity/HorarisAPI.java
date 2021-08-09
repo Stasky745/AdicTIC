@@ -1,8 +1,9 @@
 package com.adictic.common.entity;
 
-import java.util.List;
+import java.util.Collection;
 
 public class HorarisAPI {
-    public int tipus;
-    public List<HorarisNit> horarisNit;
+    public Integer tipus;
+    public Collection<HorarisNit> horarisNit;
+    public Boolean actiu;
 }
