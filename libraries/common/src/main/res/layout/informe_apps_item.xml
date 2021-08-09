@@ -7,45 +7,58 @@
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_rectangle_received">
 
-    <ImageView
-        android:id="@+id/IV_app_logo"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CL_title_bar"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/TV_app_data"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/TV_app_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:textColor="@color/colorPrimary"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/IV_app_logo"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="WhatsApp" />
+        <ImageView
+            android:id="@+id/IV_app_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <TextView
-        android:id="@+id/TV_app_data"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/IV_app_logo"
-        app:layout_constraintTop_toBottomOf="@+id/TV_app_title"
-        tools:text="26 Junio 2021" />
+        <TextView
+            android:id="@+id/TV_app_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:textAlignment="textStart"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/IV_app_logo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="WhatsApp" />
+
+        <TextView
+            android:id="@+id/TV_app_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="textStart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/IV_app_logo"
+            app:layout_constraintTop_toBottomOf="@+id/TV_app_title"
+            tools:text="26 Junio 2021" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/divider2"
@@ -57,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IV_app_logo" />
+        app:layout_constraintTop_toBottomOf="@+id/CL_title_bar" />
 
     <TextView
         android:id="@+id/TV_app_abans"
@@ -73,7 +86,7 @@
         app:layout_constraintBottom_toTopOf="@+id/TV_app_actiu"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IV_app_logo"
+        app:layout_constraintTop_toBottomOf="@+id/CL_title_bar"
         tools:text="3 hores" />
 
     <TextView
@@ -90,7 +103,7 @@
         app:layout_constraintBottom_toTopOf="@+id/TV_app_actiu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/divider2"
-        app:layout_constraintTop_toBottomOf="@+id/TV_app_data"
+        app:layout_constraintTop_toBottomOf="@+id/CL_title_bar"
         tools:text="Permanente" />
 
     <TextView
