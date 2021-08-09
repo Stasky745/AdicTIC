@@ -148,9 +148,9 @@ public class InformeDetallatFragment extends Fragment {
         TextView TV_informeIntentsAcces = root.findViewById(R.id.TV_informeIntentsAcces);
 
         if(mitjanaIntents > 9)
-            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_dolenta)); //Text dolent
+            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_dolenta, (int) mitjanaIntents)); //Text dolent
         else
-            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_bona)); //text bo
+            TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_bona, (int) mitjanaIntents)); //text bo
     }
 
     private void setHorarisNit(View root) {
