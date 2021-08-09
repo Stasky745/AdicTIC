@@ -15,6 +15,7 @@ public class HorarisNit {
             return obj.equals(this.dia);
         if(obj instanceof HorarisNit)
             return this.dia.equals(((HorarisNit) obj).dia);
-        else return false;
+        else
+            return false;
     }
 }

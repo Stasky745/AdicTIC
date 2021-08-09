@@ -16,8 +16,6 @@ import com.adictic.common.R;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.util.Funcions;
 
-import org.joda.time.DateTime;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
     @NonNull
     @Override
     public AppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.informe_apps_item, parent);
+        View view = mInflater.inflate(R.layout.informe_apps_item, parent, false);
 
         return new AppsViewHolder(view);
     }
@@ -53,14 +51,9 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
         CanvisAppBlock canvisAppBlock = appsList.get(position);
         holder.TV_app_data.setText(dateFormatter.format(canvisAppBlock.data));
         String pkgName, appName;
-        if(canvisAppBlock.appAntic == null){
-            pkgName = canvisAppBlock.appNou.pkgName;
-            appName = canvisAppBlock.appNou.appName;
-        }
-        else{
-            pkgName = canvisAppBlock.appAntic.pkgName;
-            appName = canvisAppBlock.appAntic.appName;
-        }
+        pkgName = canvisAppBlock.app.pkgName;
+        appName = canvisAppBlock.app.appName;
+
         holder.TV_app_title.setText(appName);
         Funcions.setIconDrawable(mContext, pkgName, holder.IV_app_logo);
 
@@ -69,39 +62,47 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
         else
             holder.TV_app_actiu.setVisibility(View.GONE);
 
-        if(canvisAppBlock.appAntic == null){
+        if(canvisAppBlock.timeAntic == null){
             holder.TV_app_abans.setText(R.string.canvi_app_block);
             holder.TV_app_abans.setTextColor(Color.RED);
-            if(canvisAppBlock.appNou.appTime == 0)
+            if(canvisAppBlock.timeNou == 0) {
                 holder.TV_app_despres.setText(R.string.canvis_app_block_permanent);
+                holder.TV_app_despres.setTextColor(Color.GRAY);
+            }
             else{
-                DateTime dateTime = new DateTime().withMillisOfDay(Math.toIntExact(canvisAppBlock.appNou.appTime));
-                holder.TV_app_despres.setText(timeFormatter.format(dateTime));
+                String hora = Funcions.millis2horaString(mContext, canvisAppBlock.timeNou);
+                holder.TV_app_despres.setText(hora);
+                holder.TV_app_despres.setTextColor(Color.GRAY);
             }
         }
-        else if(canvisAppBlock.appNou == null){
+        else if(canvisAppBlock.timeNou == null){
             holder.TV_app_despres.setText(R.string.canvis_app_unblock);
             holder.TV_app_despres.setTextColor(Color.GREEN);
-            if(canvisAppBlock.appAntic.appTime == 0)
+            if(canvisAppBlock.timeAntic == 0) {
                 holder.TV_app_abans.setText(R.string.canvis_app_block_permanent);
+                holder.TV_app_abans.setTextColor(Color.GRAY);
+            }
             else{
-                DateTime dateTime = new DateTime().withMillisOfDay(Math.toIntExact(canvisAppBlock.appAntic.appTime));
-                holder.TV_app_abans.setText(timeFormatter.format(dateTime));
+                String hora = Funcions.millis2horaString(mContext, canvisAppBlock.timeAntic);
+                holder.TV_app_abans.setText(hora);
+                holder.TV_app_abans.setTextColor(Color.GRAY);
             }
         }
         else{
-            if(canvisAppBlock.appNou.appTime == 0)
+            holder.TV_app_despres.setTextColor(Color.GRAY);
+            holder.TV_app_abans.setTextColor(Color.GRAY);
+            if(canvisAppBlock.timeNou == 0)
                 holder.TV_app_despres.setText(R.string.canvis_app_block_permanent);
             else{
-                DateTime dateTime = new DateTime().withMillisOfDay(Math.toIntExact(canvisAppBlock.appNou.appTime));
-                holder.TV_app_despres.setText(timeFormatter.format(dateTime));
+                String hora = Funcions.millis2horaString(mContext, canvisAppBlock.timeNou);
+                holder.TV_app_despres.setText(hora);
             }
 
-            if(canvisAppBlock.appAntic.appTime == 0)
+            if(canvisAppBlock.timeAntic == 0)
                 holder.TV_app_abans.setText(R.string.canvis_app_block_permanent);
             else{
-                DateTime dateTime = new DateTime().withMillisOfDay(Math.toIntExact(canvisAppBlock.appAntic.appTime));
-                holder.TV_app_abans.setText(timeFormatter.format(dateTime));
+                String hora = Funcions.millis2horaString(mContext, canvisAppBlock.timeAntic);
+                holder.TV_app_abans.setText(hora);
             }
         }
     }
