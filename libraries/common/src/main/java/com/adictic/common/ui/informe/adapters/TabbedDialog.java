@@ -15,6 +15,8 @@ import com.adictic.common.entity.CanvisHoraris;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.Objects;
+
 public class TabbedDialog extends DialogFragment {
     private final CanvisHoraris canvisHoraris;
 
@@ -48,5 +50,18 @@ public class TabbedDialog extends DialogFragment {
 
         return rootView;
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        Objects.requireNonNull(getDialog()).getWindow().setLayout(width, height);
+
+//        WindowManager.LayoutParams params = Objects.requireNonNull(getDialog()).getWindow().getAttributes();
+//        params.width = width;
+//        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//        getDialog().getWindow().setAttributes(params);
     }
 }

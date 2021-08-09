@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.EventBlock;
-
-import org.joda.time.DateTime;
+import com.adictic.common.util.Funcions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,14 +24,14 @@ import java.util.List;
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsViewHolder>{
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMMM yyyy");
-    @SuppressLint("SimpleDateFormat")
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm");
 
     private final ArrayList<CanvisEvents> eventsList;
     private final LayoutInflater mInflater;
+    private final Context mContext;
 
     public EventsAdapter(List<CanvisEvents> list, Context c){
         mInflater = LayoutInflater.from(c);
+        mContext = c;
         eventsList = new ArrayList<>(list);
 
         eventsList.sort((o1, o2) -> o2.data.compareTo(o1.data));
@@ -51,12 +50,16 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
         CanvisEvents canvisEvents = eventsList.get(position);
         holder.TV_data.setText(dateFormatter.format(canvisEvents.data));
 
+        holder.TV_eventActiu.setVisibility(View.GONE);
+        if(canvisEvents.actiu && canvisEvents.eventNou != null)
+            holder.TV_eventActiu.setVisibility(View.VISIBLE);
+
         if(canvisEvents.eventAntic == null){
             holder.TV_eventVellTitol.setVisibility(View.GONE);
             holder.TV_eventVellHorari.setVisibility(View.GONE);
             holder.TV_eventVellDies.setText(R.string.new_event);
             holder.TV_eventVellDies.setTextColor(Color.GREEN);
-            holder.TV_eventVellDies.setTypeface(null, Typeface.BOLD);
+            holder.TV_eventVellDies.setTypeface(holder.TV_eventVellDies.getTypeface(), Typeface.BOLD);
         }
         else{
             holder.TV_eventVellTitol.setText(canvisEvents.eventAntic.name);
@@ -64,8 +67,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             String dies = crearStringDies(canvisEvents.eventAntic);
             holder.TV_eventVellDies.setText(dies);
 
-            String inici = timeFormatter.format(new DateTime().withMillisOfDay(canvisEvents.eventAntic.startEvent));
-            String fi = timeFormatter.format(new DateTime().withMillisOfDay(canvisEvents.eventAntic.endEvent));
+            String inici = Funcions.millis2horaString(mContext, canvisEvents.eventAntic.startEvent);
+            String fi = Funcions.millis2horaString(mContext, canvisEvents.eventAntic.endEvent);
             String horari = inici+" - "+fi;
             holder.TV_eventVellHorari.setText(horari);
         }
@@ -75,7 +78,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             holder.TV_eventNouHorari.setVisibility(View.GONE);
             holder.TV_eventNouDies.setText(R.string.delete_event);
             holder.TV_eventNouDies.setTextColor(Color.RED);
-            holder.TV_eventNouDies.setTypeface(null, Typeface.BOLD);
+            holder.TV_eventNouDies.setTypeface(holder.TV_eventNouDies.getTypeface(), Typeface.BOLD);
         }
         else{
             holder.TV_eventNouTitol.setText(canvisEvents.eventNou.name);
@@ -83,16 +86,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             String dies = crearStringDies(canvisEvents.eventNou);
             holder.TV_eventNouDies.setText(dies);
 
-            String inici = timeFormatter.format(new DateTime().withMillisOfDay(canvisEvents.eventNou.startEvent));
-            String fi = timeFormatter.format(new DateTime().withMillisOfDay(canvisEvents.eventNou.endEvent));
+            String inici = Funcions.millis2horaString(mContext, canvisEvents.eventNou.startEvent);
+            String fi = Funcions.millis2horaString(mContext, canvisEvents.eventNou.endEvent);
             String horari = inici+" - "+fi;
             holder.TV_eventNouHorari.setText(horari);
-
-            if(canvisEvents.actiu)
-                holder.TV_eventActiu.setVisibility(View.VISIBLE);
-            else
-                holder.TV_eventActiu.setVisibility(View.GONE);
-
         }
     }
 

@@ -46,10 +46,9 @@ public class HorarisNitAdapter extends RecyclerView.Adapter<HorarisNitAdapter.Ho
         CanvisHoraris canvisHoraris = horarisList.get(position);
         holder.TV_informeData.setText(dateFormatter.format(canvisHoraris.data));
 
-        if(canvisHoraris.horariNou != null && canvisHoraris.horariNou.actiu)
+        holder.TV_informeActiu.setVisibility(View.GONE);
+        if(canvisHoraris.horariNou != null && canvisHoraris.actiu)
             holder.TV_informeActiu.setVisibility(View.VISIBLE);
-        else
-            holder.TV_informeActiu.setVisibility(View.GONE);
 
         if(canvisHoraris.horariAntic == null)
             holder.TV_informeCanvis.setText(R.string.nou_horari);

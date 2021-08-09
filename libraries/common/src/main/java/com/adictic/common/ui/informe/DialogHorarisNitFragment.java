@@ -17,7 +17,6 @@ import com.adictic.common.R;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.util.Funcions;
-import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.Calendar;
@@ -27,11 +26,6 @@ public class DialogHorarisNitFragment extends Fragment {
     private final int TIPUS_HORARIS_DIARIS = 1;
     private final int TIPUS_HORARIS_SETMANA = 2;
     private final int TIPUS_HORARIS_GENERICS = 3;
-
-    private static ChipGroup chipGroup;
-    private static Chip CH_horariGeneric;
-    private static Chip CH_horariDiari;
-    private static Chip CH_horariSetmana;
 
     private ScrollView SV_horariDiari;
     private ConstraintLayout CL_horariGeneric;
@@ -72,7 +66,7 @@ public class DialogHorarisNitFragment extends Fragment {
         TV_info = root.findViewById(R.id.TV_tipusHorari);
         TV_info.setVisibility(View.GONE);
 
-        chipGroup = root.findViewById(R.id.CG_tipusHorari);
+        ChipGroup chipGroup = root.findViewById(R.id.CG_tipusHorari);
         chipGroup.setVisibility(View.GONE);
 
         SV_horariDiari = root.findViewById(R.id.SV_horariDiari);
