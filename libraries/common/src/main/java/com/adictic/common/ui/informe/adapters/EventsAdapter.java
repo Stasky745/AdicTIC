@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.EventBlock;
-import com.adictic.common.util.Funcions;
+
+import org.joda.time.DateTime;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,8 +68,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             String dies = crearStringDies(canvisEvents.eventAntic);
             holder.TV_eventVellDies.setText(dies);
 
-            String inici = Funcions.millis2horaString(mContext, canvisEvents.eventAntic.startEvent);
-            String fi = Funcions.millis2horaString(mContext, canvisEvents.eventAntic.endEvent);
+            DateTime iniciDate = new DateTime().withMillisOfDay(canvisEvents.eventAntic.startEvent);
+            DateTime fiDate = new DateTime().withMillisOfDay(canvisEvents.eventAntic.endEvent);
+
+            String inici = iniciDate.toString("HH:mm");
+            String fi = fiDate.toString("HH:mm");
             String horari = inici+" - "+fi;
             holder.TV_eventVellHorari.setText(horari);
         }
@@ -86,8 +90,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             String dies = crearStringDies(canvisEvents.eventNou);
             holder.TV_eventNouDies.setText(dies);
 
-            String inici = Funcions.millis2horaString(mContext, canvisEvents.eventNou.startEvent);
-            String fi = Funcions.millis2horaString(mContext, canvisEvents.eventNou.endEvent);
+            DateTime iniciDate = new DateTime().withMillisOfDay(canvisEvents.eventNou.startEvent);
+            DateTime fiDate = new DateTime().withMillisOfDay(canvisEvents.eventNou.endEvent);
+
+            String inici = iniciDate.toString("HH:mm");
+            String fi = fiDate.toString("HH:mm");
             String horari = inici+" - "+fi;
             holder.TV_eventNouHorari.setText(horari);
         }
@@ -96,13 +103,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
     private String crearStringDies(EventBlock event){
         StringBuilder eventDaysString = new StringBuilder();
 
-        if(event.monday) eventDaysString.append(R.string.monday).append(" ");
-        if(event.tuesday) eventDaysString.append(R.string.tuesday).append(" ");
-        if(event.wednesday) eventDaysString.append(R.string.wednesday).append(" ");
-        if(event.thursday) eventDaysString.append(R.string.thursday).append(" ");
-        if(event.friday) eventDaysString.append(R.string.friday).append(" ");
-        if(event.saturday) eventDaysString.append(R.string.saturday).append(" ");
-        if(event.sunday) eventDaysString.append(R.string.sunday).append(" ");
+        if(event.monday) eventDaysString.append(mContext.getString(R.string.monday)).append(" ");
+        if(event.tuesday) eventDaysString.append(mContext.getString(R.string.tuesday)).append(" ");
+        if(event.wednesday) eventDaysString.append(mContext.getString(R.string.wednesday)).append(" ");
+        if(event.thursday) eventDaysString.append(mContext.getString(R.string.thursday)).append(" ");
+        if(event.friday) eventDaysString.append(mContext.getString(R.string.friday)).append(" ");
+        if(event.saturday) eventDaysString.append(mContext.getString(R.string.saturday)).append(" ");
+        if(event.sunday) eventDaysString.append(mContext.getString(R.string.sunday)).append(" ");
 
         return eventDaysString.toString();
     }
