@@ -23,8 +23,6 @@ import java.util.List;
 public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder> {
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMMM yyyy");
-    @SuppressLint("SimpleDateFormat")
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm");
 
     private final LayoutInflater mInflater;
     private final ArrayList<CanvisAppBlock> appsList;
@@ -45,6 +43,8 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
 
         return new AppsViewHolder(view);
     }
+
+
 
     @Override
     public void onBindViewHolder(@NonNull AppsViewHolder holder, int position) {
