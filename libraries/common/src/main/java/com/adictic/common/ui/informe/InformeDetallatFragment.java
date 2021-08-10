@@ -47,6 +47,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class InformeDetallatFragment extends Fragment {
+    private final int RV_APPS_EVENTS_HEIGHT = 1300;
+    private final int RV_HORARIS_HEIGHT = 1000;
+
     private final List<GeneralUsage> appList;
     private final int age;
     private final long mitjanaMillisDia;
@@ -174,6 +177,12 @@ public class InformeDetallatFragment extends Fragment {
                         RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
                         RV_informeHoraris.addItemDecoration(rvSpaceDecoration);
                         RV_informeHoraris.setAdapter(eventsAdapter);
+
+                        if(horarisList.size() > 3) {
+                            ViewGroup.LayoutParams params = RV_informeHoraris.getLayoutParams();
+                            params.height = RV_HORARIS_HEIGHT;
+                            RV_informeHoraris.setLayoutParams(params);
+                        }
                     }
                 }
                 else{
@@ -215,6 +224,12 @@ public class InformeDetallatFragment extends Fragment {
                         RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
                         RV_informeEvents.addItemDecoration(rvSpaceDecoration);
                         RV_informeEvents.setAdapter(eventsAdapter);
+
+                        if(eventsList.size() > 3) {
+                            ViewGroup.LayoutParams params = RV_informeEvents.getLayoutParams();
+                            params.height = RV_APPS_EVENTS_HEIGHT;
+                            RV_informeEvents.setLayoutParams(params);
+                        }
                     }
                 }
                 else {
@@ -256,12 +271,12 @@ public class InformeDetallatFragment extends Fragment {
                         RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
                         RV_informeApps.addItemDecoration(rvSpaceDecoration);
                         RV_informeApps.setAdapter(appsAdapter);
-//                        if(appBlockList.size() > 3) {
-//                            int RV_height = (RV_informeApps.getHeight() / appBlockList.size()) * 3;
-//                            ViewGroup.LayoutParams params = RV_informeApps.getLayoutParams();
-//                            params.height = RV_height;
-//                            RV_informeApps.setLayoutParams(params);
-//                        }
+
+                        if(appBlockList.size() > 3) {
+                            ViewGroup.LayoutParams params = RV_informeApps.getLayoutParams();
+                            params.height = RV_APPS_EVENTS_HEIGHT;
+                            RV_informeApps.setLayoutParams(params);
+                        }
                     }
                 }
                 else {
