@@ -1,6 +1,8 @@
 package com.example.adictic.ui.main;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +19,7 @@ import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Constants;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
+import com.example.adictic.service.ForegroundService;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -49,7 +52,7 @@ public class NavActivity extends MainActivityAbstractClass {
         assert sharedPreferences != null;
 
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
-            Funcions.startForegroundServiceWorker(getApplicationContext());
+            startForegroundService();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -66,6 +69,16 @@ public class NavActivity extends MainActivityAbstractClass {
         NavigationUI.setupWithNavController(navView, navController);
 
         openPatchNotes();
+    }
+
+    private void startForegroundService() {
+        if(!ForegroundService.actiu) {
+            Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                getApplicationContext().startForegroundService(intent);
+            else
+                getApplicationContext().startService(intent);
+        }
     }
 
     private void openPatchNotes() {
