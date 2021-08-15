@@ -392,4 +392,20 @@
     <string name="access_block_app">Intents d\'accés a aplicacions bloquejades: %d vegades</string>
     <string name="access_mitjana_bona">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents no és alarmant ja que podria ser causa d’oblit.</string>
     <string name="access_mitjana_dolenta">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents és alarmant ja que s’ha intentar accedir de forma excessiva al dispositiu malgrat les restriccions.</string>
+
+    <!-- Permisos -->
+    <string name="permisos">Permisos</string>
+    <string name="desactivat">Desactivat</string>
+    <string name="activat">Activat</string>
+    <string name="permisos_desc">Aquesta aplicació requereix de varis permisos per funcionar correctament. Si us plau, activeu tots els permisos que es mostren a continuació. Per accedir a les opcions d\'aquests, podeu prémer sobre el nom de cadascun.</string>
+    <string name="battery_optimisation">Optimització de Bateria</string>
+    <string name="battery_optimisation_info">Pel correcte funcionament de l\'aplicació, aquesta no ha d\'estar optimitzada per Android. Si es deixa l\'optimització de bateria activada per l\'aplicació, Android pot aturar els processos quan ho cregui necessari. Si us plau, desactivi l\'optimització de bateria.</string>
+    <string name="auto_start">Auto-inici</string>
+    <string name="auto_start_info">Aquesta aplicació necessita poder iniciar-se automàticament pel seu funcionament. Si us plau, activi l\'opció d\'"auto-inici" (autostart) per a l\'aplicació.</string>
+    <string name="overlay_title">Sobreposar pantalles</string>
+    <string name="configurar">Configurar</string>
+    <string name="overlay_info">Aquest permís permet a l\'aplicació crear pantalles per sobre d\'altres aplicacions. S\'utilitza per bloquejar aplicacions o contingut no desitjat.</string>
+
+    <string name="falten_perm_titol">Falten Permisos</string>
+    <string name="falten_perm_desc">No s\'han acceptat tots els permisos necessaris. Segur que vols continuar?</string>
 </resources>

@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,10 +26,6 @@ import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.ui.main.NavActivity;
-import com.example.adictic.ui.permisos.AccessibilityPermActivity;
-import com.example.adictic.ui.permisos.AppUsagePermActivity;
-import com.example.adictic.ui.permisos.BackgroundLocationPerm;
-import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 import com.example.adictic.util.LocaleHelper;
@@ -142,25 +140,21 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void mirarPermisos(){
-        if (!Funcions.isAppUsagePermissionOn(SplashScreen.this)) {
-            SplashScreen.this.startActivity(new Intent(SplashScreen.this, AppUsagePermActivity.class));
-            SplashScreen.this.finish();
-        } else {
-            Funcions.startAppUsageWorker24h(getApplicationContext());
-            if (!Funcions.isAdminPermissionsOn(SplashScreen.this)) {
-                SplashScreen.this.startActivity(new Intent(SplashScreen.this, DevicePolicyAdmin.class));
-                SplashScreen.this.finish();
-            } else if (!Funcions.isAccessibilitySettingsOn(SplashScreen.this)) {
-                SplashScreen.this.startActivity(new Intent(SplashScreen.this, AccessibilityPermActivity.class));
-                SplashScreen.this.finish();
-            }
-            else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-                this.startActivity(new Intent(this, BackgroundLocationPerm.class));
+        PowerManager mPm = (PowerManager) getSystemService(POWER_SERVICE);
+
+        if (!Funcions.isAppUsagePermissionOn(SplashScreen.this) ||
+                !Funcions.isAdminPermissionsOn(SplashScreen.this) ||
+                !Funcions.isAccessibilitySettingsOn(SplashScreen.this) ||
+                !Funcions.isBackgroundLocationPermissionOn(getApplicationContext()) ||
+                !mPm.isIgnoringBatteryOptimizations(getPackageName()) ||
+                !Settings.canDrawOverlays(SplashScreen.this)) {
+
+            SplashScreen.this.startActivity(new Intent(this, Permisos.class));
+        }
             else {
                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
-                SplashScreen.this.finish();
-            }
         }
+        SplashScreen.this.finish();
     }
 
     @Override
