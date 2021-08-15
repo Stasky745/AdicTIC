@@ -339,7 +339,7 @@
     <string name="title_installed_app">%s ha instalado una nueva app</string>
     <string name="title_uninstalled_app">%s ha desinstalado una app</string>
     <string name="perm_background_loc_title">Permiso de localización</string>
-    <string name="perm_back_location_desc">Esta aplicación requiere de permisos de localización en todo momento en todos los dispositivos excepto el del tutor. \n\n Estos permisos permiten: \n\n · Saber la geolocalización del dispositivo.</string>
+    <string name="perm_back_location_desc">Esta aplicación requiere de permisos de localización en todo momento en todos los dispositivos excepto el del tutor. \n\n Estos permisos permiten: \n\n · Saber la geolocalización del dispositivo. \n\nLos demás permisos disponibles para activar son micrófono y cámara para consultas online; y almacenamiento para poder generar los mapas de la geolocalización. Por favor, acepte los permisos que le sean de interés.</string>
     <string name="dialog_title_perm_loc">Continuar sin el permiso de Localización?</string>
     <string name="dialog_body_perm_loc">Sin el permiso de localización no se podrá tener un seguimiento de la geolocalización de este dispositivo. Está seguro de querer continuar?</string>
     <string name="escull_dates">Escoge fechas</string>
