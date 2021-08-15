@@ -258,26 +258,6 @@ public class NomFill extends AppCompatActivity {
                             sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
                             NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
                             NomFill.this.finish();
-
-//                            if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
-//                                NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-//                                NomFill.this.finish();
-//                            } else {
-//                                Funcions.startAppUsageWorker24h(getApplicationContext());
-//                                if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-//                                    NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-//                                    NomFill.this.finish();
-//                                } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-//                                    NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-//                                    NomFill.this.finish();
-//                                }
-//                                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-//                                    NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
-//                                else {
-//                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-//                                    NomFill.this.finish();
-//                                }
-//                            }
                         } else {
                             Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                             toast.show();
@@ -309,25 +289,6 @@ public class NomFill extends AppCompatActivity {
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
                                 NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
                                 NomFill.this.finish();
-//                                if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
-//                                    NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-//                                    NomFill.this.finish();
-//                                } else {
-//                                    Funcions.startAppUsageWorker24h(getApplicationContext());
-//                                    if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-//                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-//                                        NomFill.this.finish();
-//                                    } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-//                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-//                                        NomFill.this.finish();
-//                                    }
-//                                    else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-//                                        NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
-//                                    else {
-//                                        NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-//                                        NomFill.this.finish();
-//                                    }
-//                                }
                             } else {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                 toast.show();
