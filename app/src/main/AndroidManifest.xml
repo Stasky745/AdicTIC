@@ -4,6 +4,7 @@
     package="com.example.adictic">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -61,7 +62,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.MyFirebaseMessagingService">
+        <service android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -69,7 +71,8 @@
         <service
             android:name=".service.WindowChangeDetectingService"
             android:label="@string/accessibility_service_name"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -99,7 +102,8 @@
             android:name=".ui.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"
             android:description="@string/device_admin_description"
             android:label="@string/device_admin"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_policies" />
@@ -112,14 +116,16 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.checkInstalledApps">
+        <receiver android:name=".receiver.checkInstalledApps"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver">
+        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.ACTION_TIMEZONE_CHANGED"/>
             </intent-filter>
@@ -136,6 +142,14 @@
                 <action android:name="android.intent.action.ACTION_TIME_CHANGED"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.StartServiceOnBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

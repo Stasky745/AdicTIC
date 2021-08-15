@@ -144,11 +144,20 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     event.getClassName().toString()
             );
 
+            String currentPackage = event.getPackageName().toString();
+            String currentAppName;
+            try {
+                ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
+                currentAppName = appInfo.loadLabel(getPackageManager()).toString();
+            } catch (PackageManager.NameNotFoundException e) {
+                currentAppName = event.getPackageName().toString();
+            }
+
             ActivityInfo activityInfo = tryGetActivity(componentName);
             boolean isActivity = activityInfo != null;
 
             // Si estem al mateix pkg i no hi ha hagut canvis a bloquejos d'apps i l'app no està bloquejada sortim
-            if(lastPackage.equals(event.getPackageName().toString()) && !changedBlockedApps) {
+            if(lastPackage.equals(currentPackage) && !changedBlockedApps) {
                 if (!freeUse && blockedDevice) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -180,13 +189,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 String pkgName = lastPackage;
                 String appName = lastActivity;
                 if(!blackListLiveApp.contains(event.getPackageName().toString())) {
-                    pkgName = event.getPackageName().toString();
-                    try {
-                        ApplicationInfo appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                        appName = appInfo.loadLabel(getPackageManager()).toString();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        appName = componentName.getPackageName();
-                    }
+                    pkgName = currentPackage;
+                    appName = currentAppName;
                 }
                 enviarLiveApp(pkgName, appName);
             }
@@ -200,7 +204,7 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // --- BLOCK DEVICE ---
             if (blockedDevice) {
-                if(estavaBloquejatAbans)
+                if(estavaBloquejatAbans && !currentPackage.equals(lastPackage))
                     postIntentAccesDisp();
                 estavaBloquejatAbans = true;
                 if (!myKM.isDeviceLocked() && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
@@ -214,8 +218,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // --- TRACTAR APP ACTUAL ---
             // Només entrem a fer coses si s'han canviat les apps bloquejades o el pkgName és diferent a l'anterior (per evitar activitats) I dispositiu no està bloquejat
-            if(changedBlockedApps || !event.getPackageName().toString().equals(lastPackage)) {
-                lastPackage = event.getPackageName().toString();
+            if(changedBlockedApps || !currentPackage.equals(lastPackage)) {
+                lastPackage = currentPackage;
                 Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
                 if (changedBlockedApps)
@@ -223,20 +227,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 //
                 if (event.getPackageName() != null && event.getClassName() != null) {
-                    Log.d(TAG, "L'event no és null - Entra a 'else if'");
-
                     Log.d(TAG, "L'event és una activitat");
-                    ApplicationInfo appInfo;
-
-                    try {
-                        appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                        lastActivity = appInfo.loadLabel(getPackageManager()).toString();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        lastActivity = componentName.getPackageName();
-                    }
-                    Log.d(TAG, "Llista Apps Bloquejades : " + blockedApps);
-                    Log.d(TAG, "CurrentActivity : " + componentName.flattenToShortString());
-                    Log.d(TAG, "CurrentPackage : " + lastPackage);
+                    lastActivity = currentAppName;
 
                     //Mirem si l'app està bloquejada
                     boolean isBlocked = false;

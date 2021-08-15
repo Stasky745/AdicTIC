@@ -114,5 +114,6 @@ public class DevicePolicyAdmin extends AppCompatActivity {
                     "MyDevicePolicyReciever Received: " + intent.getAction());
             super.onReceive(context, intent);
         }
+
     }
 }
