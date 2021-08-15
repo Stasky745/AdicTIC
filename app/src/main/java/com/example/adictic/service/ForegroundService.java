@@ -18,6 +18,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -57,8 +58,10 @@ public class ForegroundService extends Service {
 
     private long lastUpdate = 0;
 
+    private PowerManager.WakeLock wakeLock = null;
+
     /**
-     * Contains parameters used by {@link com.google.android.gms.location.FusedLocationProviderApi}.
+     * Contains parameters used by {@link com.google.android.gms.location.FusedLocationProviderClient}.
      */
     private LocationRequest mLocationRequest;
     private Location mLocation;
@@ -70,6 +73,13 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotification();
+        }
+    }
+
+    private void startLocationReceiver() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Comencem el receiver
@@ -101,8 +111,10 @@ public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            createNotification();
+
+        wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
+
+        startLocationReceiver();
 
         return START_STICKY;
     }
@@ -124,7 +136,7 @@ public class ForegroundService extends Service {
                         .setTicker(getText(R.string.service_notification_message))
                         .build();
 
-// Notification ID cannot be 0.
+        // Notification ID cannot be 0.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
         else

@@ -49,7 +49,6 @@ import com.example.adictic.service.WindowChangeDetectingService;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
-import com.example.adictic.workers.ServiceWorker;
 import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
 import com.example.adictic.workers.block_apps.RestartBlockedApps;
@@ -318,19 +317,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     // **************** WORKERS ****************
-
-    public static void startForegroundServiceWorker(Context mCtx){
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(ServiceWorker.class, 1, TimeUnit.HOURS)
-                        .build();
-
-        WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("serviceWorker",
-                        ExistingPeriodicWorkPolicy.REPLACE,
-                        myWork);
-
-        Log.d(TAG,"Worker Service Configurat");
-    }
 
     // AppUsageWorkers
 
