@@ -158,6 +158,13 @@ public interface Api {
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
 
+    /////////////// ACRA ///////////////
+
+    @POST("/crash/{appName}/{version}")
+    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
+
+    ///////////////////////////////////
+
     @GET("/usage/{id}/events/{data}")
     Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
 
