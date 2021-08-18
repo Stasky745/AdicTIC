@@ -71,6 +71,13 @@ dependencies {
     implementation "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
     //implementation "org.osmdroid:osmdroid-geopackage:$osmdroid_version"
 
+    //ACRA
+    implementation "ch.acra:acra-core:$acra_version"
+    implementation "ch.acra:acra-limiter:$acra_version"
+    //Used by ACRA
+    compileOnly "com.google.auto.service:auto-service-annotations:1.0"
+    annotationProcessor "com.google.auto.service:auto-service:1.0"
+
     implementation project(path: ':libraries:persistentcookie')
 
 }
