@@ -1,6 +1,7 @@
 package com.adictic.common.util;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 
@@ -13,6 +14,11 @@ import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.acra.ACRA;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.LimiterConfigurationBuilder;
+import org.acra.data.StringFormat;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -131,5 +137,19 @@ public class App extends Application {
             result++;
         }
         return result;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
+        builder.withBuildConfigClass(BuildConfig.class)
+                .withReportFormat(StringFormat.JSON);
+        builder.getPluginConfigurationBuilder(LimiterConfigurationBuilder.class)
+                .withDeleteReportsOnAppUpdate(true)
+                .withStacktraceLimit(1)
+                .withResetLimitsOnAppUpdate(true);
+        ACRA.init(this, builder);
     }
 }

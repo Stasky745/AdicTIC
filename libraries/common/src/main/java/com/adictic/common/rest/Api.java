@@ -150,4 +150,11 @@ public interface Api {
 
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
+
+    /////////////// ACRA ///////////////
+
+    @POST("/crash/{appName}/{version}")
+    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
+
+    ///////////////////////////////////
 }
