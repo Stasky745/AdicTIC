@@ -95,6 +95,7 @@
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity android:name=".ui.main.ChangePasswordActivity" />
         <activity android:name=".ui.inici.Permisos" />
+        <activity android:name=".ui.inici.AppLock" />
 
         <receiver android:name=".receiver.checkInstalledApps"
             android:exported="true">
