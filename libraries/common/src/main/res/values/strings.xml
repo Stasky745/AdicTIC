@@ -428,4 +428,8 @@
     
     <string name="lock_app_title">Bloquear Aplicación</string>
     <string name="lock_app_info">Para intentar evitar que Android pare la aplicación, es recomendable que se bloquee ésta. La mayoría de dispositivos permiten hacer esto desde el menú con todas las aplicaciones abiertas: manteniendo apretado encima de la aplicación o desplazándola en alguna dirección, y luego dándole al candado.</string>
+
+    <string name="locked_device">Este dispositivo está bloqueado</string>
+    <string name="locked_device_alert">Avisar Padres</string>
+    <string name="locked_device_call">Llamada de\nEmergencia</string>
 </resources>
