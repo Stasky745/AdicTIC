@@ -82,9 +82,9 @@ public class InformeActivity extends AppCompatActivity {
 
             AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
             if(percentage < 100)
-                dialog.setMessage(Funcions.getSpannedText(getString(R.string.percentage_info_bo, deviceTime, totalTime, decimalFormat.format(percentage))));
+                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_bo, deviceTime, totalTime, decimalFormat.format(percentage))));
             else
-                dialog.setMessage(Funcions.getSpannedText(getString(R.string.percentage_info_dolent, deviceTime, totalTime, decimalFormat.format(percentage))));
+                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_dolent, deviceTime, totalTime, decimalFormat.format(percentage))));
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), (dialog1, which) -> dialog1.dismiss());
             dialog.show();
         });
@@ -99,24 +99,6 @@ public class InformeActivity extends AppCompatActivity {
         getAge();
         getTimesBlockedMap();
 
-        //viewPager.setAdapter(tabsAdapter);
-//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                viewPager.setCurrentItem(position);
-//                tabLayout.selectTab(tabLayout.getTabAt(position));
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

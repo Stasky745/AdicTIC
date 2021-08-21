@@ -13,10 +13,8 @@
     <string name="appusage_pem_info">"Aquesta aplicació requereix de permisos d'ús de dades a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n  • Extreure informació de les aplicacions."</string>
 
     <!-- Strings in DevicePolicyAdmin -->
-    <string name="device_admin">AdicTIC Device Admin</string>
     <string name="device_admin_description">"AdicTIC necessita permissos d'administrador per evitar que es desinstal·li l'aplicació, i poder bloquejar el dispositiu quan es requereixi."</string>
 
-    <string name="app_name">AdicTIC</string>
     <string name="last_time_used">"Oberta últim cop: "</string>
     <string name="time_span">"Temps d'ús: "</string>
     <string name="lastXDays">"Veure activitat dels últims: "</string>
@@ -57,7 +55,6 @@
 
     <string name="hint_nomDisp">Nom del dispositiu</string>
 
-    <string name="title_activity_splash_screen">AdicTIC</string>
     <string name="good_register">Registre correcte!</string>
 
     <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
@@ -74,13 +71,10 @@
 
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
     <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
-    <string name="accessibility_service_name">\"Adictic Accessibility Service\"</string>
     <string name="accessibility_service_description">\"Aquest servei s\'utilitza per bloquejar aplicacions\"</string>
     <string name="nomfill_enter">Entrar</string>
 
     <string name="emptyList">No hi ha informació</string>
-
-    <string name="title_activity_nav">NavActivity</string>
 
     <string name="menu">MENÚ</string>
     <string name="menu_home">Inici</string>
@@ -101,7 +95,7 @@
     <string name="advice_infoContent">Contingut informatiu</string>
     <string name="advice_mostAskQuest">Preguntes freqüents</string>
     <string name="advice_recommendations">Recomanacions</string>
-    <string name="advice_onlineChat">Chat online</string>
+    <string name="advice_onlineChat">Xat online</string>
     <string name="advice_privateConsult">Consulta privada</string>
     <string name="advice_OurCenters">Els nostres centres</string>
 
@@ -115,8 +109,6 @@
     <string name="date">"Data:"</string>
     <string name="initial_date">"Data inicial:"</string>
     <string name="final_date">"Data final:"</string>
-
-    <string name="date_format">"%d  %s  %d"</string>
 
     <string name="daily_usage">"Ús diari del dispositiu"</string>
     <string name="device_usage">"Ús total del dispositiu:"</string>
@@ -219,8 +211,8 @@
     <string name="error_no_bday">"Falta la data de naixement"</string>
 
     <!-- Resum Informe -->
-    <string name="intro_bona">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, inferior a la recomanada!</string>
-    <string name="intro_dolenta">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s hores al dia, superior a la recomanada. S\'hauria de procurar baixar aquesta mitjana per sota els valors suggerits.</string>
+    <string name="intro_bona">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s al dia, inferior a la recomanada!</string>
+    <string name="intro_dolenta">Per una persona de %d anys, la quantitat d\'ús d\'un dispositiu recomanada és de %s al dia. Aquest mes s\'ha aconseguit mantenir una mitjana de %s al dia, superior a la recomanada. S\'hauria de procurar baixar aquesta mitjana per sota els valors suggerits.</string>
     <string name="us_apps_buit">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes s'ha mantingut aquest ideal! Enhorabona!"</string>
     <string name="us_apps">"Idealment, l'ús diari de cada aplicació hauria de ser inferior a l'ús diari total recomanat. Aquest mes hi ha hagut algunes aplicacions que han superat aquesta pauta. S'hauria de procurar reduir l'ús d'aquestes."</string>
     <string name="intents_acces_buit">"Un nombre excessiu d'intents a accedir a una aplicació bloquejada pot ser causa d'oblit que aquesta no està disponible, o una indicació que la persona intenta per tots els mitjans accedir a ella, i això podria ser degut a un problema d'addicció. Aquest mes no s'ha intentat accedir amb una mitjana de més de 5 cops diaris a cap aplicació bloquejada, la xifra que triem que pot presentar un problema d'addicció a la persona. Felicitats!"</string>
@@ -336,7 +328,7 @@
     <string name="title_installed_app">%s ha instal·lat una nova app</string>
     <string name="title_uninstalled_app">%s ha desinstal·lat una app</string>
     <string name="perm_background_loc_title">Permís de localització</string>
-    <string name="perm_back_location_desc">Aquesta aplicació requereix de permisos de localització en tot moment a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n · Saber la geolocalització del dispositiu.</string>
+    <string name="perm_back_location_desc">Aquesta aplicació requereix de permisos de localització en tot moment a tots els dispositius excepte el del tutor. \n\n Aquests permisos permeten: \n\n · Saber la geolocalització del dispositiu.\n\nEls altres permisos disponibles a activar són el micròfon i la càmera per les consultes online; i l\'emmagatzematge per poder generar els mapes de la geolocalització. Si us plau, activi els permisos que siguin d\'interès.</string>
     <string name="dialog_title_perm_loc">Continuar sense permís de Localització?</string>
     <string name="dialog_body_perm_loc">Sense el permís de localització no es podrà tenir un seguiment de la geolocalització d\'aquest dispositiu, segur que vols continuar?</string>
     <string name="alfabeticament">Alfabèticament</string>
@@ -377,4 +369,46 @@
     <string name="event_desc">Aquesta funció permet programar franges horàries en què l\'usuari no pot fer ús del dispositiu mòbil.</string>
     <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
     <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
+    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Les cinc aplicacions més utilitzades han estat:</string>
+    <string name="l_mits_marcats">Límits marcats</string>
+    <string name="canvis_en_horaris_lliures_de_tecnologies">Canvis en horaris lliures de tecnologies</string>
+    <string name="gestio_dels_limits">Gestió dels límits</string>
+    <string name="canvis_de_bloqueig_d_aplicacions">Canvis en bloqueig d\'aplicacions</string>
+    <string name="cambios_en_horarios_nocturnos">Canvis en horaris nocturns</string>
+    <string name="new_event">S\'ha creat l\'event</string>
+    <string name="delete_event">S\'ha borrat l\'event</string>
+    <string name="active_event">Aquest event està actiu</string>
+    <string name="active_horaris">Aquest horari està actiu</string>
+    <string name="active_appBlock">Aquest bloqueig està actiu</string>
+    <string name="canvis_horari">Canvis en l\'horari</string>
+    <string name="nou_horari">Nou horari creat</string>
+    <string name="borrat_horari">Horari borrat</string>
+    <string name="canvi_app_block">S\'ha configurat un nou bloqueig</string>
+    <string name="canvis_app_block_permanent">Bloqueig permanent</string>
+    <string name="canvis_app_unblock">S\'ha desbloquejat aquesta aplicació</string>
+    <string name="info_disp_bloq">Bloqueig de dispositiu: %d vegades (%s)</string>
+    <string name="info_freeuse">Temps lliure sense límit: %d vegades (%s)</string>
+    <string name="access_block_device">Intents d\'accés al dispositiu bloquejat: %d vegades</string>
+    <string name="access_block_app">Intents d\'accés a aplicacions bloquejades: %d vegades</string>
+    <string name="access_mitjana_bona">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents no és alarmant ja que podria ser causa d’oblit.</string>
+    <string name="access_mitjana_dolenta">La mitjana d’intents d’incompliment de límits ha estat de %d vegades al dia. Aquest nombre d’intents és alarmant ja que s’ha intentar accedir de forma excessiva al dispositiu malgrat les restriccions.</string>
+
+    <!-- Permisos -->
+    <string name="permisos">Permisos</string>
+    <string name="desactivat">Desactivat</string>
+    <string name="activat">Activat</string>
+    <string name="permisos_desc">Aquesta aplicació requereix de varis permisos per funcionar correctament. Si us plau, activeu tots els permisos que es mostren a continuació. Per accedir a les opcions d\'aquests, podeu prémer sobre el nom de cadascun.</string>
+    <string name="battery_optimisation">Optimització de Bateria</string>
+    <string name="battery_optimisation_info">Pel correcte funcionament de l\'aplicació, aquesta no ha d\'estar optimitzada per Android. Si es deixa l\'optimització de bateria activada per l\'aplicació, Android pot aturar els processos quan ho cregui necessari. Si us plau, desactivi l\'optimització de bateria.</string>
+    <string name="auto_start">Auto-inici</string>
+    <string name="auto_start_info">Aquesta aplicació necessita poder iniciar-se automàticament pel seu funcionament. Si us plau, activi l\'opció d\'"auto-inici" (autostart) per a l\'aplicació.</string>
+    <string name="overlay_title">Sobreposar pantalles</string>
+    <string name="configurar">Configurar</string>
+    <string name="overlay_info">Aquest permís permet a l\'aplicació crear pantalles per sobre d\'altres aplicacions. S\'utilitza per bloquejar aplicacions o contingut no desitjat.</string>
+
+    <string name="falten_perm_titol">Falten Permisos</string>
+    <string name="falten_perm_desc">No s\'han acceptat tots els permisos necessaris. Segur que vols continuar?</string>
+    <string name="permisos_battery_info">Android intenta que totes les aplicacions funcionin el mínim necessari. En el nostre cas, volem que l\'aplicació estigui funcionant en tot moment. Android no ens ho facilita, ja que pot parar la nostra aplicació quan decideixi que utilitza masses recursos. Els següents permisos intenten aconseguir que Android pari l\'aplicació el mínim possible.\\nSi en qualsevol moment sembla que algunes funcions deixen de funcionar, s\'hauria de tornar a accedir a l\'aplicació o reiniciar el dispositiu.</string>
+    <string name="lock_app_title">Bloquejar Aplicació</string>
+    <string name="lock_app_info">Per intentar evitar que Android aturi l\'aplicació, és recomanable que es bloquegi. La majoria de dispositius permeten fer això des del menú d\'aplicacions obertes: mantenint apretat sobre l\'aplicació o desplaçant-la en alguna direcció, i seguidament apretant al teclat.</string>
 </resources>

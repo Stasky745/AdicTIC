@@ -128,6 +128,9 @@ public class MainParentFragment extends Fragment {
         mTodoService = ((App) Objects.requireNonNull(parentActivity).getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
 
+        root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
+        root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         setButtons();
@@ -307,7 +310,7 @@ public class MainParentFragment extends Fragment {
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             BT_FreeTime.setVisibility(View.VISIBLE);
 
-            if(fill.freeuse) {
+            if(fill != null && fill.freeuse) {
                 BT_FreeTime.setText(getString(R.string.stop_free_time));
             }
 
@@ -391,14 +394,14 @@ public class MainParentFragment extends Fragment {
 
     private void getStats() {
 
-        if (parentActivity.mainParent_usageChart.containsKey(idChildSelected) && parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty()) {
+        if (parentActivity.mainParent_usageChart.containsKey(idChildSelected) && Objects.requireNonNull(parentActivity.mainParent_usageChart.get(idChildSelected)).isEmpty()) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
         }
         else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected))
             setUsageMenu();
 
-        if(parentActivity.mainParent_usageChart.get(idChildSelected) == null || parentActivity.mainParent_usageChart.get(idChildSelected).isEmpty() ||
+        if(parentActivity.mainParent_usageChart.get(idChildSelected) == null || Objects.requireNonNull(parentActivity.mainParent_usageChart.get(idChildSelected)).isEmpty() ||
                 !parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
                 (parentActivity.mainParent_lastUsageChartUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
             getUsageFromServer();
@@ -480,6 +483,8 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setPieChart(Map<String, Long> mapUsage, long totalUsageTime) {
+        root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
+        root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
         pieChart = root.findViewById(R.id.Ch_Pie);
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;

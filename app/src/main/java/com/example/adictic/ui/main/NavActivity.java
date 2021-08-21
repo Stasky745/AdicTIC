@@ -49,7 +49,7 @@ public class NavActivity extends MainActivityAbstractClass {
         assert sharedPreferences != null;
 
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
-            Funcions.startForegroundServiceWorker(getApplicationContext());
+            startForegroundService();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -66,6 +66,10 @@ public class NavActivity extends MainActivityAbstractClass {
         NavigationUI.setupWithNavController(navView, navController);
 
         openPatchNotes();
+    }
+
+    private void startForegroundService() {
+        Funcions.startServiceWorker(NavActivity.this);
     }
 
     private void openPatchNotes() {

@@ -1,5 +1,7 @@
 package com.example.adictic.service;
 
+import static com.adictic.common.util.Constants.CHANNEL_ID;
+
 import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -21,6 +23,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.common.entity.TimeBlock;
+import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
@@ -33,6 +37,8 @@ import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -48,8 +54,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.adictic.common.util.Constants.CHANNEL_ID;
-
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -57,6 +61,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private AdicticApi mTodoService;
 
     private long updateGeoloc = -1;
+
+    private int retryCount = 0;
+    private static final int TOTAL_RETRIES = 10;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -143,22 +150,31 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             switch(action){
                 // ************* Accions del dispositiu fill *************
+                case "geolocActive":
+                    Funcions.runGeoLocWorker(MyFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
-                        mDPM.lockNow();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
+                        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
+                            mDPM.lockNow();
                     }
-                    else sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
+                    else {
+                        sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
+                        sendBlockDeviceTime(sharedPreferences);
+                    }
                     break;
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
 
                         title = getString(R.string.free_use_activation);
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
+                        sendFreeUseTime(sharedPreferences);
                         Funcions.endFreeUse(getApplicationContext());
 
                         title = getString(R.string.free_use_deactivation);
@@ -181,7 +197,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
                         if(!myKM.isDeviceLocked())
-                            WindowChangeDetectingService.instance.enviarLiveApp();
+                            AccessibilityScreenService.instance.enviarLiveApp();
 
                         Funcions.runUniqueAppUsageWorker(getApplicationContext());
 
@@ -336,6 +352,72 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             MyNotificationManager.getInstance(this).displayNotification(title, body, activitatIntent);
         }
+    }
+
+    private void sendBlockDeviceTime(SharedPreferences sharedPreferences) {
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+
+        TimeBlock timeBlock = new TimeBlock();
+        timeBlock.start = sharedPreferences.getLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, -1);
+        if(timeBlock.start == -1 || idChild == -1)
+            return;
+        timeBlock.end = DateTime.now().getMillis();
+        retryCount = 0;
+        Call<String> call = mTodoService.postTempsBloqueig(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1), timeBlock);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else {
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, -1).apply();
+                    retryCount = 0;
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else {
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, -1).apply();
+                    retryCount = 0;
+                }
+            }
+        });
+    }
+
+    private void sendFreeUseTime(SharedPreferences sharedPreferences) {
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+
+        TimeFreeUse timeFreeUse = new TimeFreeUse();
+        timeFreeUse.start = sharedPreferences.getLong(Constants.SHARED_PREFS_FREEUSE_START, -1);
+        if(timeFreeUse.start == -1 || idChild == -1)
+            return;
+        timeFreeUse.end = DateTime.now().getMillis();
+        retryCount = 0;
+        Call<String> call = mTodoService.postTempsFreeUse(idChild, timeFreeUse);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else {
+                    retryCount = 0;
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, -1).apply();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else {
+                    retryCount = 0;
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, -1).apply();
+                }
+            }
+        });
     }
 
     @NonNull

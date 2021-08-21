@@ -2,8 +2,12 @@ package com.adictic.common.rest;
 
 import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
+import com.adictic.common.entity.BlockInfo;
 import com.adictic.common.entity.BlockList;
 import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.CanvisAppBlock;
+import com.adictic.common.entity.CanvisEvents;
+import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.ChangePassword;
 import com.adictic.common.entity.ChatsMain;
 import com.adictic.common.entity.EventsAPI;
@@ -12,9 +16,12 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisEvents;
+import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.entity.Oficina;
+import com.adictic.common.entity.TimeBlock;
+import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.entity.YearEntity;
@@ -157,4 +164,28 @@ public interface Api {
     Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
 
     ///////////////////////////////////
+
+    @GET("/usage/{id}/events/{data}")
+    Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/horaris/{data}")
+    Call<Collection<CanvisHoraris>> getCanvisHoraris(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/blockedApps/{data}")
+    Call<Collection<CanvisAppBlock>> getCanvisApps(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{idChild}/accessInfo/{data}")
+    Call<BlockInfo> getAccessInfo(@Path("idChild") Long idChild, @Path("data") String data);
+
+    @POST("/usage/{idChild}/tempsFreeuse")
+    Call<String> postTempsFreeUse(@Path("idChild") Long idChild, @Body TimeFreeUse timeFreeUse);
+
+    @POST("/usage/{idChild}/tempsBloqueig")
+    Call<String> postTempsBloqueig(@Path("idChild") Long idChild, @Body TimeBlock timeBlock);
+
+    @POST("/usage/{idChild}/intentAccesApp")
+    Call<String> postIntentAccesApp(@Path("idChild") Long idChild, @Body IntentsAccesApp intentsAccesApp);
+
+    @POST("/usage/{idChild}/intentAccesDisp")
+    Call<String> postIntentAccesDisp(@Path("idChild") Long idChild, @Body Long data);
 }

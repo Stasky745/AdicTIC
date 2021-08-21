@@ -1,5 +1,8 @@
 package com.example.adictic.ui.inici;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -38,11 +41,6 @@ import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
-import com.example.adictic.ui.main.NavActivity;
-import com.example.adictic.ui.permisos.AccessibilityPermActivity;
-import com.example.adictic.ui.permisos.AppUsagePermActivity;
-import com.example.adictic.ui.permisos.BackgroundLocationPerm;
-import com.example.adictic.ui.permisos.DevicePolicyAdmin;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 
@@ -52,9 +50,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class NomFill extends AppCompatActivity {
     private AdicticApi mTodoService;
@@ -194,9 +189,9 @@ public class NomFill extends AppCompatActivity {
         }
 
         // Posem estil a les frases que cal
-        TV_permis2.setText(Funcions.getSpannedText(getString(R.string.permis_2)));
-        TV_permis3.setText(Funcions.getSpannedText(getString(R.string.permis_3)));
-        TV_permis5.setText(Funcions.getSpannedText(getString(R.string.permis_5)));
+        TV_permis2.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_2)));
+        TV_permis3.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_3)));
+        TV_permis5.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_5)));
 
         // Fem llistes amb punts
         CharSequence text = "";
@@ -261,25 +256,8 @@ public class NomFill extends AppCompatActivity {
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         if (response.isSuccessful()) {
                             sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
-                            if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
-                                NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-                                NomFill.this.finish();
-                            } else {
-                                Funcions.startAppUsageWorker24h(getApplicationContext());
-                                if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                    NomFill.this.finish();
-                                } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                    NomFill.this.finish();
-                                }
-                                else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-                                    NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
-                                else {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                    NomFill.this.finish();
-                                }
-                            }
+                            NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
+                            NomFill.this.finish();
                         } else {
                             Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                             toast.show();
@@ -309,25 +287,8 @@ public class NomFill extends AppCompatActivity {
                         public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
                             if (response.isSuccessful() && response.body() != null) {
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
-                                if (!Funcions.isAppUsagePermissionOn(NomFill.this)) {
-                                    NomFill.this.startActivity(new Intent(NomFill.this, AppUsagePermActivity.class));
-                                    NomFill.this.finish();
-                                } else {
-                                    Funcions.startAppUsageWorker24h(getApplicationContext());
-                                    if (!Funcions.isAdminPermissionsOn(NomFill.this)) {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, DevicePolicyAdmin.class));
-                                        NomFill.this.finish();
-                                    } else if (!Funcions.isAccessibilitySettingsOn(NomFill.this)) {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, AccessibilityPermActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                    else if(!Funcions.isBackgroundLocationPermissionOn(getApplicationContext()))
-                                        NomFill.this.startActivity(new Intent(NomFill.this, BackgroundLocationPerm.class));
-                                    else {
-                                        NomFill.this.startActivity(new Intent(NomFill.this, NavActivity.class));
-                                        NomFill.this.finish();
-                                    }
-                                }
+                                NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
+                                NomFill.this.finish();
                             } else {
                                 Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                                 toast.show();

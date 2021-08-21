@@ -16,11 +16,14 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 
 import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +34,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class WindowChangeDetectingService extends AccessibilityService {
+public class AccessibilityScreenService extends AccessibilityService {
 
-    public static WindowChangeDetectingService instance;
+    public static AccessibilityScreenService instance;
 
-    private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
+    private final static int TOTAL_RETRIES = 10;
+    private int retryCount = 0;
+
+    private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
             "com.google.android.apps.nexuslauncher",
             "com.android.systemui",
@@ -138,11 +144,20 @@ public class WindowChangeDetectingService extends AccessibilityService {
                     event.getClassName().toString()
             );
 
+            String currentPackage = event.getPackageName().toString();
+            String currentAppName;
+            try {
+                ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
+                currentAppName = appInfo.loadLabel(getPackageManager()).toString();
+            } catch (PackageManager.NameNotFoundException e) {
+                currentAppName = event.getPackageName().toString();
+            }
+
             ActivityInfo activityInfo = tryGetActivity(componentName);
             boolean isActivity = activityInfo != null;
 
             // Si estem al mateix pkg i no hi ha hagut canvis a bloquejos d'apps i l'app no està bloquejada sortim
-            if(lastPackage.equals(event.getPackageName().toString()) && !changedBlockedApps) {
+            if(lastPackage.equals(currentPackage) && !changedBlockedApps) {
                 if (!freeUse && blockedDevice) {
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -174,13 +189,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
                 String pkgName = lastPackage;
                 String appName = lastActivity;
                 if(!blackListLiveApp.contains(event.getPackageName().toString())) {
-                    pkgName = event.getPackageName().toString();
-                    try {
-                        ApplicationInfo appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                        appName = appInfo.loadLabel(getPackageManager()).toString();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        appName = componentName.getPackageName();
-                    }
+                    pkgName = currentPackage;
+                    appName = currentAppName;
                 }
                 enviarLiveApp(pkgName, appName);
             }
@@ -193,14 +203,11 @@ public class WindowChangeDetectingService extends AccessibilityService {
             }
 
             // --- BLOCK DEVICE ---
-            // Actualitzem variable estavaBloquejatAbans
-            if(!blockedDevice)
-                estavaBloquejatAbans = myKM.isDeviceLocked();
-            else
-                estavaBloquejatAbans = true;
-
             if (blockedDevice) {
-                if (!myKM.isDeviceLocked()) {
+                if(estavaBloquejatAbans && !currentPackage.equals(lastPackage))
+                    postIntentAccesDisp();
+                estavaBloquejatAbans = true;
+                if (!myKM.isDeviceLocked() && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
                     Log.d(TAG, "Dispositiu bloquejat");
                     DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                     assert mDPM != null;
@@ -211,8 +218,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
             // --- TRACTAR APP ACTUAL ---
             // Només entrem a fer coses si s'han canviat les apps bloquejades o el pkgName és diferent a l'anterior (per evitar activitats) I dispositiu no està bloquejat
-            if(changedBlockedApps || !event.getPackageName().toString().equals(lastPackage)) {
-                lastPackage = event.getPackageName().toString();
+            if(changedBlockedApps || !currentPackage.equals(lastPackage)) {
+                lastPackage = currentPackage;
                 Log.d(TAG, "Window State Changed - Event: " + event.getPackageName());
 
                 if (changedBlockedApps)
@@ -220,20 +227,8 @@ public class WindowChangeDetectingService extends AccessibilityService {
 
                 //
                 if (event.getPackageName() != null && event.getClassName() != null) {
-                    Log.d(TAG, "L'event no és null - Entra a 'else if'");
-
                     Log.d(TAG, "L'event és una activitat");
-                    ApplicationInfo appInfo;
-
-                    try {
-                        appInfo = getPackageManager().getApplicationInfo(componentName.getPackageName(), 0);
-                        lastActivity = appInfo.loadLabel(getPackageManager()).toString();
-                    } catch (PackageManager.NameNotFoundException e) {
-                        lastActivity = componentName.getPackageName();
-                    }
-                    Log.d(TAG, "Llista Apps Bloquejades : " + blockedApps);
-                    Log.d(TAG, "CurrentActivity : " + componentName.flattenToShortString());
-                    Log.d(TAG, "CurrentPackage : " + lastPackage);
+                    lastActivity = currentAppName;
 
                     //Mirem si l'app està bloquejada
                     boolean isBlocked = false;
@@ -241,24 +236,65 @@ public class WindowChangeDetectingService extends AccessibilityService {
                         isBlocked = blockedApps.contains(lastPackage);
 
                     if (isBlocked) {
-                        addAccessBlockedApp();
+                        if(estavaBloquejatAbans)
+                            addAccessBlockedApp();
+                        Funcions.ensenyarBlockScreenActivity(getApplicationContext(), lastPackage);
                     }
                 }
             }
+
+            // Actualitzem variable estavaBloquejatAbans
+            estavaBloquejatAbans = myKM.isDeviceLocked();
         }
     }
 
-    private void addAccessBlockedApp(){
-        Call<String> call = mTodoService.callBlockedApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), lastPackage);
+    private void postIntentAccesDisp() {
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+        if(idChild == -1)
+            return;
+
+        retryCount = 0;
+        long now = DateTime.now().getMillis();
+        Call<String> call = mTodoService.postIntentAccesDisp(idChild, now);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
         });
+    }
 
-        Funcions.ensenyarBlockScreenActivity(getApplicationContext(), lastPackage);
+    private void addAccessBlockedApp(){
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
+        if(idChild == -1)
+            return;
+
+        IntentsAccesApp intentsAccesApp = new IntentsAccesApp();
+        intentsAccesApp.appName = lastActivity;
+        intentsAccesApp.pkgName = lastPackage;
+        intentsAccesApp.data = DateTime.now().getMillis();
+        retryCount = 0;
+        Call<String> call = mTodoService.postIntentAccesApp(idChild, intentsAccesApp);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                if(retryCount++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+            }
+        });
     }
 
     private boolean estaBloquejat() {

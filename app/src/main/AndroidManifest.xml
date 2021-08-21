@@ -4,6 +4,8 @@
     package="com.example.adictic">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -45,8 +47,6 @@
             android:noHistory="true" />
         <activity android:name=".ui.inici.Register" />
         <activity android:name=".ui.inici.NomFill" />
-        <activity android:name=".ui.permisos.AppUsagePermActivity" />
-        <activity android:name=".ui.permisos.AccessibilityPermActivity" />
         <activity android:name="com.adictic.common.ui.DayUsageActivity" />
         <activity
             android:name=".ui.inici.SplashScreen"
@@ -61,15 +61,17 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.MyFirebaseMessagingService">
+        <service android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".service.WindowChangeDetectingService"
+            android:name=".service.AccessibilityScreenService"
             android:label="@string/accessibility_service_name"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
@@ -78,10 +80,9 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
         </service>
-        <service android:name=".service.ForegroundService" android:foregroundServiceType="location"/>
+        <service android:name=".service.ForegroundService" android:foregroundServiceType="location" android:stopWithTask="false" />
 
         <!-- DEVICE ADMIN POLICIES -->
-        <activity android:name=".ui.permisos.DevicePolicyAdmin" />
         <activity android:name="com.adictic.common.ui.HorarisActivity" />
         <activity android:name="com.adictic.common.ui.BlockAppsActivity" />
         <activity android:name="com.adictic.common.ui.informe.InformeActivity" />
@@ -93,33 +94,19 @@
         <activity android:name=".ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity android:name=".ui.main.ChangePasswordActivity" />
-        <activity android:name=".ui.permisos.BackgroundLocationPerm" />
+        <activity android:name=".ui.inici.Permisos" />
+        <activity android:name=".ui.inici.AppLock" />
 
-        <receiver
-            android:name=".ui.permisos.DevicePolicyAdmin$MyDevicePolicyReceiver"
-            android:description="@string/device_admin_description"
-            android:label="@string/device_admin"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/device_policies" />
-
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
-                <action android:name="android.app.action." />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".receiver.checkInstalledApps">
+        <receiver android:name=".receiver.checkInstalledApps"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver">
+        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.ACTION_TIMEZONE_CHANGED"/>
             </intent-filter>
@@ -136,6 +123,31 @@
                 <action android:name="android.intent.action.ACTION_TIME_CHANGED"/>
             </intent-filter>
         </receiver>
+        <receiver android:name=".receiver.StartServiceOnBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".ui.inici.Permisos$MyDevicePolicyReceiver"
+            android:description="@string/device_admin_description"
+            android:label="@string/device_admin"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            android:exported="true">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_policies" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+                <action android:name="android.app.action." />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
