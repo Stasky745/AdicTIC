@@ -47,8 +47,6 @@ public class ResumFragment extends Fragment {
         appList = new ArrayList<>(col);
         mitjanaMillisDia = totalUsageT / appList.size();
 
-//        /* Assegurem que l'edat no surt de rang **/ JA ES FA A INFORMEACTIVITY
-//        age = Math.min(Math.abs(edat), 29);
         age = edat;
 
         intentsAcces = map;

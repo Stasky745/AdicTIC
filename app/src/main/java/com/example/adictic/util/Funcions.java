@@ -1,5 +1,7 @@
 package com.example.adictic.util;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.AppOpsManager;
@@ -43,7 +45,7 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.service.AccessibilityScreenService;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
@@ -82,8 +84,6 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
@@ -220,7 +220,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     if(response.body() == null || response.body().horarisNit.isEmpty())
                         write2File(ctx, Constants.FILE_HORARIS_NIT, null);
                     else
-                        write2File(ctx, Constants.FILE_HORARIS_NIT, response.body().horarisNit);
+                        write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
 
                     // Engeguem els workers
                     runRestartHorarisWorkerOnce(ctx,0);
@@ -263,12 +263,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         for (AccessibilityServiceInfo enabledService : enabledServices) {
             ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
-            if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(WindowChangeDetectingService.class.getName()))
+            if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(AccessibilityScreenService.class.getName()))
                 return true;
         }
 
         String prefString = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-        if(prefString!= null && prefString.contains(mContext.getPackageName() + "/" + WindowChangeDetectingService.class.getName())) {
+        if(prefString!= null && prefString.contains(mContext.getPackageName() + "/" + AccessibilityScreenService.class.getName())) {
             Log.e(TAG, "AccessibilityServiceInfo negatiu però prefString positiu");
             return true;
         }
@@ -319,17 +319,17 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
     // **************** WORKERS ****************
 
-    public static void startForegroundServiceWorker(Context mCtx){
+    // ForegroundService Worker
+
+    public static void startServiceWorker(Context mCtx){
         PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(ServiceWorker.class, 1, TimeUnit.HOURS)
-                        .build();
+                new PeriodicWorkRequest.Builder(ServiceWorker.class, 20, TimeUnit.MINUTES)
+                    .build();
 
         WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("serviceWorker",
+                .enqueueUniquePeriodicWork("ServiceWorker",
                         ExistingPeriodicWorkPolicy.REPLACE,
                         myWork);
-
-        Log.d(TAG,"Worker Service Configurat");
     }
 
     // AppUsageWorkers
@@ -723,9 +723,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void endFreeUse(Context mCtx) {
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
         assert sharedPreferences != null;
-        boolean isBlocked = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
+        boolean isBlocked = (sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
                 sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
-                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false);
+                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false)) &&
+                !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
         if(isBlocked) {
             DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
             assert mDPM != null;

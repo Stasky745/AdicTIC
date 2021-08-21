@@ -12,7 +12,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
+import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.style.BulletSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -107,6 +109,40 @@ public class Funcions {
                 .load(imageUri)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(d);
+    }
+
+    public static String millis2horaString(Context context, long l){
+        Pair<Integer, Integer> temps = millisToString(l);
+        String hora = "";
+        String minuts = "";
+
+        if(temps.first > 0)
+            hora = temps.first.toString() + " " + context.getString(R.string.hours);
+
+        if(temps.second > 0)
+            minuts = temps.second.toString() + " " + context.getString(R.string.minutes);
+
+        if(!hora.equals("") && !minuts.equals(""))
+            return hora + " " + minuts;
+
+        return hora + minuts;
+    }
+
+    public static String millis2horaString(Context context, int l){
+        Pair<Integer, Integer> temps = millisToString(l);
+        String hora = "";
+        String minuts = "";
+
+        if(temps.first > 0)
+            hora = temps.first.toString() + " " + context.getString(R.string.hours);
+
+        if(temps.second > 0)
+            minuts = temps.second.toString() + " " + context.getString(R.string.minutes);
+
+        if(!hora.equals("") && !minuts.equals(""))
+            return hora + " " + minuts;
+
+        return hora + minuts;
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {
@@ -403,6 +439,8 @@ public class Funcions {
         final int statCount = stats.size();
         for (int j = 0; j < statCount; j++) {
             final android.app.usage.UsageStats pkgStats = stats.get(j);
+            if(pkgStats.getPackageName().equals(mContext.getPackageName()))
+                break;
             ApplicationInfo appInfo = null;
             try {
                 appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
@@ -462,7 +500,20 @@ public class Funcions {
         Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
-    public static Spanned getSpannedText(String s){
-        return HtmlCompat.fromHtml(s, HtmlCompat.FROM_HTML_MODE_LEGACY);
+    public static Spanned getSpannedText(Context context, String string){
+        SpannableString spannableString;
+        if(string.startsWith("- ") ||
+            string.startsWith("* ") ||
+            string.startsWith("· ")){
+            spannableString = new SpannableString(string.substring(2));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                spannableString.setSpan(new BulletSpan(BulletSpan.STANDARD_GAP_WIDTH, context.getColor(R.color.colorPrimary)), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            else
+                spannableString.setSpan(new BulletSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        else
+            spannableString = new SpannableString(string);
+        return HtmlCompat.fromHtml(spannableString.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 }
