@@ -8,7 +8,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.text.LineBreaker;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -23,7 +25,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.adictic.R;
-import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.Funcions;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
@@ -54,6 +55,10 @@ public class Permisos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.permissions_layout);
 
+        TextView TV_permisosDesc = findViewById(R.id.TV_permisos_desc);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            TV_permisosDesc.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+
         Button BT_finish = findViewById(R.id.BT_permisos_continuar);
         BT_finish.setOnClickListener(view -> {
             if(totsPermisosActivats())
@@ -66,7 +71,6 @@ public class Permisos extends AppCompatActivity {
                         .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
                         .show();
             }
-
         });
     }
 
@@ -74,7 +78,7 @@ public class Permisos extends AppCompatActivity {
         if(usagePerm)
             Funcions.startAppUsageWorker24h(Permisos.this);
 
-        Permisos.this.startActivity(new Intent(Permisos.this, NavActivity.class));
+        Permisos.this.startActivity(new Intent(Permisos.this, AppLock.class));
         Permisos.this.finish();
     }
     
@@ -146,6 +150,7 @@ public class Permisos extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     @SuppressLint("BatteryLife") Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:"+getPackageName()));
 //                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())

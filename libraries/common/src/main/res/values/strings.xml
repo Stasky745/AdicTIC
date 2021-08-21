@@ -423,4 +423,9 @@
 
     <string name="falten_perm_titol">Faltan Permisos</string>
     <string name="falten_perm_desc">No se han aceptado todos los permisos. ¿Seguro que quieres continuar?</string>
+
+    <string name="permisos_battery_info">Android intenta siempre que todas las aplicaciones del dispositivo funcionen lo mínimo necesario. En nuestro caso, queremos que la aplicación esté funcionando en todo momento. Android no nos facilita eso, ya que puede parar nuestra aplicación cuando decida que usa demasiados recursos. Los siguientes permisos intentan conseguir que Android pare la aplicación lo más mínimo.\nSi en cualquier momento parece que ha dejado de funcionar, reiniciar el dispositivo o volver a entrar a la aplicación reiniciará todos los procesos.</string>
+    
+    <string name="lock_app_title">Bloquear Aplicación</string>
+    <string name="lock_app_info">Para intentar evitar que Android pare la aplicación, es recomendable que se bloquee ésta. La mayoría de dispositivos permiten hacer esto desde el menú con todas las aplicaciones abiertas: manteniendo apretado encima de la aplicación o desplazándola en alguna dirección, y luego dándole al candado.</string>
 </resources>
