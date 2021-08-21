@@ -1,5 +1,7 @@
 package com.example.adictic.service;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -13,8 +15,6 @@ import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.ui.chat.ChatActivity;
 import com.example.adictic.ui.main.NavActivity;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class MyNotificationManager {
 
@@ -37,10 +37,10 @@ public class MyNotificationManager {
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(mCtx, Constants.CHANNEL_ID)
                         .setAutoCancel(true)
-                        .setSmallIcon(R.mipmap.adictic_logo_round)
+                        .setSmallIcon(R.drawable.adictic_nolletra)
                         .setContentTitle(title)
                         .setContentText(body)
-                        .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.mipmap.ic_launcher_round));
+                        .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), R.drawable.adictic_nolletra));
 
 
         /*

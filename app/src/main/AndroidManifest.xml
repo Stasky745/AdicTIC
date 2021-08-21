@@ -68,7 +68,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".service.WindowChangeDetectingService"
+            android:name=".service.AccessibilityScreenService"
             android:label="@string/accessibility_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
@@ -80,7 +80,7 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
         </service>
-        <service android:name=".service.ForegroundService" android:foregroundServiceType="location"/>
+        <service android:name=".service.ForegroundService" android:foregroundServiceType="location" android:stopWithTask="false" />
 
         <!-- DEVICE ADMIN POLICIES -->
         <activity android:name="com.adictic.common.ui.HorarisActivity" />

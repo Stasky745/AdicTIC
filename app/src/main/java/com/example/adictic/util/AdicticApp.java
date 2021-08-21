@@ -36,7 +36,8 @@ public class AdicticApp extends App {
 
     public static String[] changes = {
             "L'app és en castellà de base ara",
-            "Nova pantalla de permisos"
+            "Nova pantalla de permisos",
+            "Nova pantalla d'informe mensual"
     };
 
     @Override
