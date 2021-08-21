@@ -411,4 +411,7 @@
     <string name="permisos_battery_info">Android intenta que totes les aplicacions funcionin el mínim necessari. En el nostre cas, volem que l\'aplicació estigui funcionant en tot moment. Android no ens ho facilita, ja que pot parar la nostra aplicació quan decideixi que utilitza masses recursos. Els següents permisos intenten aconseguir que Android pari l\'aplicació el mínim possible.\\nSi en qualsevol moment sembla que algunes funcions deixen de funcionar, s\'hauria de tornar a accedir a l\'aplicació o reiniciar el dispositiu.</string>
     <string name="lock_app_title">Bloquejar Aplicació</string>
     <string name="lock_app_info">Per intentar evitar que Android aturi l\'aplicació, és recomanable que es bloquegi. La majoria de dispositius permeten fer això des del menú d\'aplicacions obertes: mantenint apretat sobre l\'aplicació o desplaçant-la en alguna direcció, i seguidament apretant al teclat.</string>
+    <string name="locked_device">El dispositiu està bloquejat</string>
+    <string name="locked_device_alert">Avisar Pares</string>
+    <string name="locked_device_call">Trucada\nd\'Emergència</string>
 </resources>

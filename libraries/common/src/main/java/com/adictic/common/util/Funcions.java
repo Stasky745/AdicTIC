@@ -38,6 +38,7 @@ import com.adictic.common.BuildConfig;
 import com.adictic.common.R;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.AppUsage;
+import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.MonthEntity;
 import com.adictic.common.entity.YearEntity;
@@ -364,6 +365,30 @@ public class Funcions {
                 .into(d);
 
         App.setAdminPic(d.getDrawable());
+    }
+
+    public static boolean eventBlockIsActive(EventBlock eventBlock){
+        int now = new DateTime().getMillisOfDay();
+        if(eventBlock.startEvent > now || eventBlock.endEvent < now)
+            return false;
+
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        switch (dayOfWeek){
+            case 1:
+                return eventBlock.sunday;
+            case 2:
+                return eventBlock.monday;
+            case 3:
+                return eventBlock.tuesday;
+            case 4:
+                return eventBlock.wednesday;
+            case 5:
+                return eventBlock.thursday;
+            case 6:
+                return eventBlock.friday;
+            default:
+                return eventBlock.saturday;
+        }
     }
 
     /**
