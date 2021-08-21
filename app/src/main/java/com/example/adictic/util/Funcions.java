@@ -45,10 +45,11 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
-import com.example.adictic.service.WindowChangeDetectingService;
+import com.example.adictic.service.AccessibilityScreenService;
 import com.example.adictic.ui.BlockScreenActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
+import com.example.adictic.workers.ServiceWorker;
 import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
 import com.example.adictic.workers.block_apps.RestartBlockedApps;
@@ -262,12 +263,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         for (AccessibilityServiceInfo enabledService : enabledServices) {
             ServiceInfo enabledServiceInfo = enabledService.getResolveInfo().serviceInfo;
-            if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(WindowChangeDetectingService.class.getName()))
+            if (enabledServiceInfo.packageName.equals(mContext.getPackageName()) && enabledServiceInfo.name.equals(AccessibilityScreenService.class.getName()))
                 return true;
         }
 
         String prefString = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
-        if(prefString!= null && prefString.contains(mContext.getPackageName() + "/" + WindowChangeDetectingService.class.getName())) {
+        if(prefString!= null && prefString.contains(mContext.getPackageName() + "/" + AccessibilityScreenService.class.getName())) {
             Log.e(TAG, "AccessibilityServiceInfo negatiu però prefString positiu");
             return true;
         }
@@ -317,6 +318,19 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     // **************** WORKERS ****************
+
+    // ForegroundService Worker
+
+    public static void startServiceWorker(Context mCtx){
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(ServiceWorker.class, 20, TimeUnit.MINUTES)
+                    .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueueUniquePeriodicWork("ServiceWorker",
+                        ExistingPeriodicWorkPolicy.REPLACE,
+                        myWork);
+    }
 
     // AppUsageWorkers
 

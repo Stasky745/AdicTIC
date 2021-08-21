@@ -1,8 +1,6 @@
 package com.example.adictic.ui.main;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +17,6 @@ import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Constants;
 import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
-import com.example.adictic.service.ForegroundService;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -72,13 +69,7 @@ public class NavActivity extends MainActivityAbstractClass {
     }
 
     private void startForegroundService() {
-        if(!ForegroundService.actiu) {
-            Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                getApplicationContext().startForegroundService(intent);
-            else
-                getApplicationContext().startService(intent);
-        }
+        Funcions.startServiceWorker(NavActivity.this);
     }
 
     private void openPatchNotes() {

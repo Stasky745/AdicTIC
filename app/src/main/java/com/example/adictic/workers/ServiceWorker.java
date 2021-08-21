@@ -18,11 +18,14 @@ public class ServiceWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O || isMyServiceRunning())
+        if(isMyServiceRunning())
             return Result.success();
 
         Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
-        getApplicationContext().startForegroundService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            getApplicationContext().startForegroundService(intent);
+        else
+            getApplicationContext().startService(intent);
 
         return Result.success();
     }
