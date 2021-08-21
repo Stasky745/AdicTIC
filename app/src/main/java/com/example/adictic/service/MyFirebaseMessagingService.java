@@ -150,6 +150,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
             switch(action){
                 // ************* Accions del dispositiu fill *************
+                case "geolocActive":
+                    Funcions.runGeoLocWorker(MyFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
@@ -195,7 +197,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
                         if(!myKM.isDeviceLocked())
-                            WindowChangeDetectingService.instance.enviarLiveApp();
+                            AccessibilityScreenService.instance.enviarLiveApp();
 
                         Funcions.runUniqueAppUsageWorker(getApplicationContext());
 

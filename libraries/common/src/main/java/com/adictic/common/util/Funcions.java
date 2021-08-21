@@ -439,6 +439,8 @@ public class Funcions {
         final int statCount = stats.size();
         for (int j = 0; j < statCount; j++) {
             final android.app.usage.UsageStats pkgStats = stats.get(j);
+            if(pkgStats.getPackageName().equals(mContext.getPackageName()))
+                break;
             ApplicationInfo appInfo = null;
             try {
                 appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);

@@ -34,14 +34,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class WindowChangeDetectingService extends AccessibilityService {
+public class AccessibilityScreenService extends AccessibilityService {
 
-    public static WindowChangeDetectingService instance;
+    public static AccessibilityScreenService instance;
 
     private final static int TOTAL_RETRIES = 10;
     private int retryCount = 0;
 
-    private static final String TAG = WindowChangeDetectingService.class.getSimpleName();
+    private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
             "com.google.android.apps.nexuslauncher",
             "com.android.systemui",

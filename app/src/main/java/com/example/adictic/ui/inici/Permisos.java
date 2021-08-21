@@ -109,7 +109,7 @@ public class Permisos extends AppCompatActivity {
                     .setTitle(getString(R.string.auto_start))
                     .setMessage(getString(R.string.auto_start_info))
                     .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
-                        boolean autoStartSuccess = AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(this,true, true);
+                        boolean autoStartSuccess = AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(this,true, false);
                         if(autoStartSuccess){
                             TV_permiso_auto_start_status.setText(getText(R.string.activat));
                             TV_permiso_auto_start_status.setTextColor(Color.GREEN);
@@ -174,7 +174,7 @@ public class Permisos extends AppCompatActivity {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.setData(Uri.parse("package:" + getPackageName()));
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
@@ -201,7 +201,7 @@ public class Permisos extends AppCompatActivity {
                 .setMessage(getString(R.string.overlay_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
@@ -263,7 +263,7 @@ public class Permisos extends AppCompatActivity {
                 .setMessage(getString(R.string.appusage_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
@@ -290,7 +290,7 @@ public class Permisos extends AppCompatActivity {
                 .setMessage(getString(R.string.accessibility_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
@@ -321,6 +321,7 @@ public class Permisos extends AppCompatActivity {
                     "Received: " + intent.getAction());
             super.onReceive(context, intent);
         }
+
 
     }
 }
