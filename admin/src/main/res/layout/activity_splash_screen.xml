@@ -6,7 +6,7 @@
     android:background="#FFFFFF">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/IV_incom_admin_picture"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="60dp"
@@ -28,6 +28,6 @@
         android:textColor="@color/colorPrimary"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toEndOf="@+id/imageView" />
+        app:layout_constraintBottom_toBottomOf="@+id/IV_incom_admin_picture"
+        app:layout_constraintEnd_toEndOf="@+id/IV_incom_admin_picture" />
 </androidx.constraintlayout.widget.ConstraintLayout>

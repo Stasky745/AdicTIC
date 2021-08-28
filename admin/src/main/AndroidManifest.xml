@@ -22,7 +22,8 @@
         <activity
             android:name=".ui.SplashScreen"
             android:label="@string/app_name"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,9 +38,10 @@
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity android:name=".ui.Usuari.MainUserActivity" />
 
-        <service
-            android:name=".util.MyFirebaseMessagingService" >
+        <service android:name=".util.MyFirebaseMessagingService"
+            android:exported="true">
             <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>

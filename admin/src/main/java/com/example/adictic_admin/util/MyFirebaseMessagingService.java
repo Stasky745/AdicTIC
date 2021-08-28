@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.util.Constants;
+import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.example.adictic_admin.ui.Xats.XatActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -42,7 +43,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        Log.d(TAG, "Missatge nou amb data: " + remoteMessage.getData());
 
         Map<String, String> messageMap = remoteMessage.getData();
 
@@ -110,6 +111,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         }
                         break;
+                }
+            } else if (action.equals("callVideochat")) {
+                String type = messageMap.get("type");
+                if (type == null)
+                    Log.e(TAG, "Error en el missatge de firebase de callVideochat: No hi ha type");
+                else {
+                    if (type.equals("invitation")) {
+                        String meetingId = messageMap.get("chatId");
+                        Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
+                        intent.putExtra(
+                                "admin_name",
+                                messageMap.get("admin_name")
+                        );
+                        intent.putExtra(
+                                "admin_id",
+                                messageMap.get("admin_id")
+                        );
+                        intent.putExtra(
+                                com.adictic.jitsi.utilities.Constants.REMOTE_MSG_MEETING_ROOM,
+                                meetingId
+                        );
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    } else if (type.equals("invitationResponse")) {
+                        Intent intent = new Intent("invitationResponse");
+                        intent.putExtra(
+                                "invitationResponse",
+                                messageMap.get("invitationResponse")
+                        );
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    }
                 }
             }
         }
