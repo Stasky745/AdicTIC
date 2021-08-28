@@ -3,9 +3,7 @@ package com.example.adictic.service;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.KeyguardManager;
-import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -134,8 +132,8 @@ public class AccessibilityScreenService extends AccessibilityService {
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             boolean liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
-            boolean blockedDevice = estaBloquejat();
             boolean freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
+            boolean blockedDevice = !freeUse && estaBloquejat();
             boolean changedBlockedApps = sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false);
 
             // Agafem info de l'Event
@@ -158,10 +156,11 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             // Si estem al mateix pkg i no hi ha hagut canvis a bloquejos d'apps i l'app no està bloquejada sortim
             if(lastPackage.equals(currentPackage) && !changedBlockedApps) {
-                if (!freeUse && blockedDevice) {
-                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    assert mDPM != null;
-                    mDPM.lockNow();
+                if (blockedDevice) {
+//                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+//                    assert mDPM != null;
+//                    mDPM.lockNow();
+                    Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
 
                     if (liveApp) {
                         enviarLiveApp(lastPackage, lastActivity);
@@ -183,7 +182,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 enviarLastApp();
 
                 // També actualitzem les dades d'ús al servidor
-                Funcions.runUniqueAppUsageWorker(getApplicationContext());
+                Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.this);
             }
             else if (isActivity && liveApp && !blockedDevice) {
                 String pkgName = lastPackage;
@@ -209,9 +208,10 @@ public class AccessibilityScreenService extends AccessibilityService {
                 estavaBloquejatAbans = true;
                 if (!myKM.isDeviceLocked() && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)) {
                     Log.d(TAG, "Dispositiu bloquejat");
-                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
-                    assert mDPM != null;
-                    mDPM.lockNow();
+//                    DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+//                    assert mDPM != null;
+//                    mDPM.lockNow();
+                    Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
                 }
                 return;
             }
@@ -238,7 +238,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                     if (isBlocked) {
                         if(estavaBloquejatAbans)
                             addAccessBlockedApp();
-                        Funcions.ensenyarBlockScreenActivity(getApplicationContext(), lastPackage);
+                        Funcions.showBlockAppScreen(getApplicationContext(), lastPackage);
                     }
                 }
             }
@@ -260,13 +260,13 @@ public class AccessibilityScreenService extends AccessibilityService {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
+                    Funcions.retryFailedCall(this, call, 5000);
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 if(retryCount++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
+                    Funcions.retryFailedCall(this, call, 5000);
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.example.adictic.service;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -34,6 +36,7 @@ import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.receiver.checkInstalledApps;
 import com.example.adictic.rest.AdicticApi;
+import com.example.adictic.ui.BlockedDevice;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
@@ -120,10 +123,19 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
 
-        wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
-        wakeLock.acquire();
+        String action = intent.getAction() != null ? intent.getAction() : "-1";
 
-        startLocationReceiver();
+        switch (action) {
+            case Constants.FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN:
+                showBlockDeviceScreen();
+                break;
+            default:
+                wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
+                wakeLock.acquire();
+
+                startLocationReceiver();
+                break;
+        }
 
         return START_STICKY;
     }
@@ -250,6 +262,22 @@ public class ForegroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    public void showBlockDeviceScreen(){
+        // Si és MIUI
+        try {
+            if(Funcions.isXiaomi())
+                Funcions.addOverlayView(ForegroundService.this, true);
+            else{
+                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
+                Intent lockIntent = new Intent(ForegroundService.this, BlockedDevice.class);
+                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                ForegroundService.this.startActivity(lockIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     class MyLocationListener implements LocationListener {
