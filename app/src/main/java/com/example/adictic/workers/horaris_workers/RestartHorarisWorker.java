@@ -1,6 +1,5 @@
 package com.example.adictic.workers.horaris_workers;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -10,8 +9,8 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.adictic.common.util.Constants;
 import com.adictic.common.entity.HorarisNit;
+import com.adictic.common.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;
@@ -73,9 +72,10 @@ public class RestartHorarisWorker extends Worker {
 
         // Si ha d'estar bloquejat ho bloquegem
         if(bloquejat && !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false)){
-            DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
-            assert mDPM != null;
-            mDPM.lockNow();
+//            DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
+//            assert mDPM != null;
+//            mDPM.lockNow();
+            Funcions.showBlockDeviceScreen(getApplicationContext());
         }
 
         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, bloquejat).apply();

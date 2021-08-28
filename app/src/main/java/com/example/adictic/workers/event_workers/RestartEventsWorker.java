@@ -1,6 +1,5 @@
 package com.example.adictic.workers.event_workers;
 
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -10,8 +9,8 @@ import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.adictic.common.util.Constants;
 import com.adictic.common.entity.EventBlock;
+import com.adictic.common.util.Constants;
 import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;
@@ -78,9 +77,10 @@ public class RestartEventsWorker extends Worker {
                     // Bloquegem el dispositiu si no ho està
                     if(!blockedDevice){
                         blockedDevice = true;
-                        DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
-                        assert mDPM != null;
-                        mDPM.lockNow();
+//                        DevicePolicyManager mDPM = (DevicePolicyManager) getApplicationContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
+//                        assert mDPM != null;
+//                        mDPM.lockNow();
+                        Funcions.showBlockDeviceScreen(getApplicationContext());
                     }
                 }
                 // Si l'event encara ha de començar
