@@ -1,6 +1,7 @@
 package com.adictic.common.util;
 
 import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 
 import com.adictic.common.rest.Api;
@@ -26,7 +27,7 @@ public class AcraSender implements ReportSender {
     public void send(@NotNull Context context, @NotNull CrashReportData errorContent) throws ReportSenderException {
         try {
             Api api = ((App) context.getApplicationContext()).getAPI();
-            Call<String> callSendCrash = api.sendCrashACRA(errorContent.getString(ReportField.PACKAGE_NAME), errorContent.getString(ReportField.APP_VERSION_NAME), errorContent.toJSON().replace("\"","`"));
+            Call<String> callSendCrash = api.sendCrashACRA(errorContent.getString(ReportField.PACKAGE_NAME), errorContent.getString(ReportField.APP_VERSION_NAME), errorContent.getString(ReportField.STACK_TRACE));
             callSendCrash.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {

@@ -157,4 +157,14 @@ public interface Api {
     Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
 
     ///////////////////////////////////
+
+    /////////////// VIDEOCALL //////////////
+
+    @GET("/message/videochat/cancel/{otherUserId}/{childId}")
+    Call<String> cancelCallToUser(@Path("otherUserId") Long otherUserId, @Path("childId") Long childId);
+
+    @POST("/message/videochat/answer/{adminId}")
+    Call<String> answerCallOfAdmin(@Path("adminId") Long adminId, @Body String answer);
+
+    ///////////////////////////////////////
 }

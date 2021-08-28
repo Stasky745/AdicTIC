@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.adictic.common.ui.OficinesActivity;
+import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.ui.chat.ChatActivity;
 
@@ -65,6 +66,12 @@ public class AdviceFragment extends Fragment {
         BT_ContingutInformatiu.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
         BT_faqs.setOnClickListener(v -> startActivity(new Intent(getActivity(), PreguntesFrequents.class)));
         BT_oficines.setOnClickListener(v -> startActivity(new Intent(getActivity(), OficinesActivity.class)));
+
+        /*Button BT_debug = root.findViewById(R.id.BT_advice_debug);
+        if(BuildConfig.DEBUG) {
+            BT_debug.setVisibility(View.VISIBLE);
+            BT_debug.setOnClickListener(v -> startActivity(new Intent(getActivity(), JitsiMainActivity.class)));
+        }*/
 
         return root;
     }

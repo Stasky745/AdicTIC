@@ -20,12 +20,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    compileSdkVersion 30
+    compileSdkVersion 31
     def code = getCustomVersionCode()
     defaultConfig {
         applicationId "com.example.adictic"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode code
         versionName "1.0."+code
         signingConfig signingConfigs.AdicTIC
@@ -152,7 +152,7 @@ dependencies {
     implementation(name:'monthandyearpicker-1.3.0', ext:'aar')
 
     //Modules
-    implementation project(path: ':libraries:webRTC')
+    implementation project(path: ':libraries:jitsiVideocall')
     implementation project(path: ':libraries:persistentcookie')
     implementation project(path: ':libraries:common')
 }

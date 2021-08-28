@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.util.Constants;
-import com.developerspace.webrtcsample.RTCActivity;
+import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatInfo;
 import com.example.adictic_admin.rest.AdminApi;
@@ -197,21 +197,13 @@ public class XatActivity extends AppCompatActivity {
     }
 
     private void startCall(String chatId) {
-        db.collection("calls")
-                .document(chatId)
-                .get()
-                .addOnSuccessListener(it ->  {
-                    /*if (it.get("type") != null && (it.get("type").toString().equals("OFFER") || it.get("type").toString().equals("ANSWER") || it.get("type").toString().equals("END_CALL"))) {
-                        Toast.makeText(this, "Error, sala ja existeix", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Error, sala ja existeix");
-                    } else {*/
-                        Intent intent = new Intent(this, RTCActivity.class);
-                        intent.putExtra("meetingID",chatId);
-                        intent.putExtra("isJoin",false);
-                        startActivity(intent);
-                    //}
-                })
-                .addOnFailureListener(Throwable::printStackTrace);
+        Intent intent = new Intent(getApplicationContext(), OutgoingInvitationActivity.class);
+        intent.putExtra("userId", userProfile.userId);
+        intent.putExtra("childId", userProfile.childId);
+        intent.putExtra("username", userProfile.username);
+        intent.putExtra("meetingRoom", chatId);
+        intent.putExtra("type", "video");
+        startActivity(intent);
     }
 
     private void setAccess() {

@@ -1,9 +1,10 @@
 package com.example.adictic.service;
 
+import static com.adictic.common.util.Constants.CHANNEL_ID;
+
 import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -17,14 +18,12 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.developerspace.webrtcsample.RTCActivity;
+import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.rest.AdicticApi;
@@ -47,8 +46,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.adictic.common.util.Constants.CHANNEL_ID;
 
 //class extending FirebaseMessagingService
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -115,7 +112,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.d(TAG, "Message data payload: " + messageMap);
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
@@ -303,25 +300,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                     break;
                 case "callVideochat":
-                    String meetingId = messageMap.get("chatId");
-                    if (meetingId==null || meetingId.trim().isEmpty())
-                        Log.e(TAG,"Error en el meetingId");
+                    String type = messageMap.get("type");
+                    if (type == null)
+                        Log.e(TAG, "Error en el missatge de firebase de callVideochat: No hi ha type");
                     else {
-                        Intent callIntent = new Intent(this, RTCActivity.class);
-                        callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        callIntent.putExtra("meetingID",meetingId);
-                        callIntent.putExtra("isJoin",true);
-                        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, callIntent, 0);
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                                .setSmallIcon(R.drawable.adictic_nolletra)
-                                .setContentTitle("Trucant")
-                                .setContentText("Test test")
-                                .setPriority(NotificationCompat.PRIORITY_MAX)
-                                .setContentIntent(pendingIntent)
-                                .setAutoCancel(true);
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                        //notificationManager.cancelAll();
-                        notificationManager.notify(251, builder.build());
+                        if (type.equals("invitation")) {
+                            String meetingId = messageMap.get("chatId");
+                            Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
+                            intent.putExtra(
+                                    "admin_name",
+                                    messageMap.get("admin_name")
+                            );
+                            intent.putExtra(
+                                    "admin_id",
+                                    messageMap.get("admin_id")
+                            );
+                            intent.putExtra(
+                                    com.adictic.jitsi.utilities.Constants.REMOTE_MSG_MEETING_ROOM,
+                                    meetingId
+                            );
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        } else if (type.equals("invitationResponse")) {
+                            Intent intent = new Intent("invitationResponse");
+                            intent.putExtra(
+                                    "invitationResponse",
+                                    messageMap.get("invitationResponse")
+                            );
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                        }
                     }
                     break;
                 default:
