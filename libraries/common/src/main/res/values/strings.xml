@@ -432,4 +432,10 @@
     <string name="locked_device">Este dispositivo está bloqueado</string>
     <string name="locked_device_alert">Avisar Padres</string>
     <string name="locked_device_call">Llamada de\nEmergencia</string>
+
+    <string name="xiaomi" translatable="false">Xiaomi</string>
+    <string name="xiaomi_perm_desc">Los dispositivos de Xiaomi requieren de aceptar sus propios permisos para conseguir el buen funcionamiento de la aplicación. Por favor, presione el siguiente botón y, como mínimo, acepte los permisos de:\n\n - Muestra las ventanas emergentes\n\n - Muestra las ventanas emergentes mientras se ejecuta en segundo plano\n\n - Notificación permanente</string>
+    <string name="go_perm">Ir a los permisos</string>
+
+    <string name="permisos_pregunta">¿Has aceptado todos los permisos?</string>
 </resources>
