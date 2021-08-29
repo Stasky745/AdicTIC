@@ -4,6 +4,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -74,6 +75,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -711,7 +714,21 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static boolean isXiaomi(){
-        return Build.MANUFACTURER.toLowerCase().equals("xiaomi");
+        return Build.MANUFACTURER.equalsIgnoreCase("xiaomi");
+    }
+
+    public static boolean isMIUI(){
+        try {
+            @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            String miui = (String) get.invoke(c, "ro.miui.ui.version.code"); // maybe this one or any other
+
+            // if string miui is not empty, bingo
+            return miui != null && !miui.equals("");
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean fileEmpty(Context mCtx, String fileName){
@@ -778,7 +795,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void showBlockAppScreen(Context ctx, String lastPackage) {
         // Si és MIUI
         try {
-            if(Funcions.isXiaomi())
+            if(Funcions.isXiaomi() && false)
                 addOverlayView(ctx, false);
             else{
                 Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
@@ -791,4 +808,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
             e.printStackTrace();
         }
     }
+
+
 }

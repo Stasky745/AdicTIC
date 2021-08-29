@@ -1,5 +1,7 @@
 package com.example.adictic.ui;
 
+import static android.content.Intent.ACTION_DIAL;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -36,9 +38,9 @@ public class BlockedDevice extends AppCompatActivity {
     private void setCallButton() {
         ConstraintLayout CL_device_blocked_call = findViewById(R.id.CL_block_device_emergency_call);
         CL_device_blocked_call.setOnClickListener(view -> {
-            Uri number = Uri.parse("tel:" + 112);
-            Intent dial = new Intent(Intent.ACTION_CALL, number);
-            startActivity(dial);
+            Intent intent = new Intent(ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + 112));
+            startActivity(intent);
         });
     }
 

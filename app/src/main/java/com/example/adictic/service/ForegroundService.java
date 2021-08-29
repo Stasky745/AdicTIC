@@ -1,5 +1,6 @@
 package com.example.adictic.service;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.Manifest;
@@ -267,12 +268,13 @@ public class ForegroundService extends Service {
     public void showBlockDeviceScreen(){
         // Si és MIUI
         try {
-            if(Funcions.isXiaomi())
+            if(Funcions.isXiaomi() && false)
                 Funcions.addOverlayView(ForegroundService.this, true);
             else{
                 Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
                 Intent lockIntent = new Intent(ForegroundService.this, BlockedDevice.class);
                 lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 ForegroundService.this.startActivity(lockIntent);
             }
         } catch (Exception e) {
