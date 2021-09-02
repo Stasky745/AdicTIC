@@ -4,14 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.rest.Api;
@@ -63,6 +62,8 @@ public class IncomingInvitationActivity extends AppCompatActivity {
     }
 
     private void sendInvitationResponse(String type) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
 
         Call<String> call = api.answerCallOfAdmin(admin_id, type);
         call.enqueue(new Callback<String>() {

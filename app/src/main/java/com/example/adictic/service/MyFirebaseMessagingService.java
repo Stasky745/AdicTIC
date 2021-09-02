@@ -5,6 +5,7 @@ import static com.adictic.common.util.Constants.CHANNEL_ID;
 import android.app.KeyguardManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.ui.BlockAppsActivity;
@@ -320,6 +323,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     meetingId
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.adictic_nolletra)
+                                    .setContentTitle("Trucant")
+                                    .setContentText("Test test")
+                                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
+                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                            //notificationManager.cancelAll();
+                            notificationManager.notify(251, builder.build());
                             startActivity(intent);
                         } else if (type.equals("invitationResponse")) {
                             Intent intent = new Intent("invitationResponse");
