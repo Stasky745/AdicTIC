@@ -35,9 +35,6 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
 
     private TextView textFirstChar, textUsername, textEmail;
 
-    private int rejectionCount = 0;
-    private int totalReceivers = 0;
-
     private JitsiUser userProfile;
 
     private Api api;
@@ -90,7 +87,6 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
             String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);
             if (type != null) {
                 if (type.equals(Constants.REMOTE_MSG_INVITATION_ACCEPTED)) {
-
                     try {
                         JitsiMeetActivity.launch(OutgoingInvitationActivity.this, JitsiFuncions.createJitsiMeetConferenceOptionsBuilder(meetingRoom).build());
                         finish();
@@ -99,11 +95,8 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
                         finish();
                     }
                 } else if (type.equals(Constants.REMOTE_MSG_INVITATION_REJECTED)) {
-                    rejectionCount += 1;
-                    if (rejectionCount == totalReceivers) {
-                        Toast.makeText(context, "Invitation Rejected", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+                    Toast.makeText(context, "Invitation Rejected", Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
         }
