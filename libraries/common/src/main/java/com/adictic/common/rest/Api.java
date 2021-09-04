@@ -185,7 +185,7 @@ public interface Api {
     /////////////// ACRA ///////////////
 
     @POST("/crash/{appName}/{version}")
-    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
+    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body String json);
 
     ///////////////////////////////////
 
