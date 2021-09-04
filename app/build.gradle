@@ -35,6 +35,9 @@ android {
             debuggable true
         }
         release {
+            ndk {
+                abiFilters "" // includes ARM SO files only, so no x86 SO file
+            }
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
