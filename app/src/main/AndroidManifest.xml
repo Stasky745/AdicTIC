@@ -22,10 +22,6 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
-    <queries>
-        <package android:name="com.miui.securitycenter" />
-    </queries>
-
     <application
         android:name=".util.AdicticApp"
         android:allowClearUserData="false"
@@ -47,7 +43,7 @@
             android:label="@string/title_activity_nav" />
         <activity android:name=".ui.inici.Login" />
         <activity
-            android:name=".ui.BlockScreenActivity"
+            android:name=".ui.BlockAppActivity"
             android:noHistory="true" />
         <activity android:name=".ui.inici.Register" />
         <activity android:name=".ui.inici.NomFill" />
@@ -101,7 +97,7 @@
         <activity android:name=".ui.main.ChangePasswordActivity" />
         <activity android:name=".ui.inici.Permisos" />
         <activity android:name=".ui.inici.AppLock" />
-        <activity android:name=".ui.BlockedDevice"
+        <activity android:name=".ui.BlockDeviceActivity"
             android:noHistory="true" />
         <activity android:name=".ui.inici.PermisosMIUI" />
 
@@ -159,6 +155,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_OFF"/>
+                <action android:name="android.intent.action.SCREEN_ON"/>
             </intent-filter>
         </receiver>
 

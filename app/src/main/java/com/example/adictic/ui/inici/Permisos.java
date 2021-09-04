@@ -330,5 +330,7 @@ public class Permisos extends AppCompatActivity {
                     "Received: " + intent.getAction());
             super.onReceive(context, intent);
         }
+
+
     }
 }

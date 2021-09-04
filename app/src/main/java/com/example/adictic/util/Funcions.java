@@ -51,7 +51,7 @@ import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.service.AccessibilityScreenService;
 import com.example.adictic.service.ForegroundService;
-import com.example.adictic.ui.BlockScreenActivity;
+import com.example.adictic.ui.BlockAppActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.ServiceWorker;
@@ -792,22 +792,21 @@ public class Funcions extends com.adictic.common.util.Funcions {
             mCtx.startService(intent);
     }
 
-    public static void showBlockAppScreen(Context ctx, String lastPackage) {
+    public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
             if(Funcions.isXiaomi() && false)
                 addOverlayView(ctx, false);
             else{
-                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
-                Intent lockIntent = new Intent(ctx, BlockScreenActivity.class);
+                Log.d(TAG,"Creant Intent cap a BlockAppActivity");
+                Intent lockIntent = new Intent(ctx, BlockAppActivity.class);
                 lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                lockIntent.putExtra("pkgName",lastPackage);
+                lockIntent.putExtra("pkgName", pkgName);
+                lockIntent.putExtra("appName", appName);
                 ctx.startActivity(lockIntent);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
 }
