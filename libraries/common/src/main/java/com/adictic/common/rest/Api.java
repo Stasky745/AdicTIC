@@ -198,4 +198,28 @@ public interface Api {
     Call<String> answerCallOfAdmin(@Path("adminId") Long adminId, @Body String answer);
 
     ///////////////////////////////////////
+  
+    @GET("/usage/{id}/events/{data}")
+    Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/horaris/{data}")
+    Call<Collection<CanvisHoraris>> getCanvisHoraris(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{id}/blockedApps/{data}")
+    Call<Collection<CanvisAppBlock>> getCanvisApps(@Path("id") Long id, @Path("data") String data);
+
+    @GET("/usage/{idChild}/accessInfo/{data}")
+    Call<BlockInfo> getAccessInfo(@Path("idChild") Long idChild, @Path("data") String data);
+
+    @POST("/usage/{idChild}/tempsFreeuse")
+    Call<String> postTempsFreeUse(@Path("idChild") Long idChild, @Body TimeFreeUse timeFreeUse);
+
+    @POST("/usage/{idChild}/tempsBloqueig")
+    Call<String> postTempsBloqueig(@Path("idChild") Long idChild, @Body TimeBlock timeBlock);
+
+    @POST("/usage/{idChild}/intentAccesApp")
+    Call<String> postIntentAccesApp(@Path("idChild") Long idChild, @Body IntentsAccesApp intentsAccesApp);
+
+    @POST("/usage/{idChild}/intentAccesDisp")
+    Call<String> postIntentAccesDisp(@Path("idChild") Long idChild, @Body Long data);
 }
