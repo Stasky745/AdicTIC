@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic_admin.MainActivity;
@@ -24,7 +25,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.jetbrains.annotations.NotNull;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
@@ -62,6 +62,7 @@ public class Login extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NotNull Call<User> call, @NotNull Response<User> response) {
+                    super.onResponse(call, response);
                             if(response.isSuccessful() && response.body() != null){
                                 User adminLogin = response.body();
                                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());

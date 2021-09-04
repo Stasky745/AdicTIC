@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
@@ -29,7 +30,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import org.json.JSONObject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 // This is the Login fragment where the user enters the username and password and
@@ -128,6 +128,7 @@ public class Login extends AppCompatActivity {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     User usuari = response.body();
                     assert usuari != null;
@@ -189,6 +190,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                 toast.show();
             }

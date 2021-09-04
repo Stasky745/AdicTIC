@@ -21,6 +21,7 @@ import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.rest.Api;
 import com.adictic.common.ui.AdminProfileActivity;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.util.AdicticApp;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ClosedChatActivity extends AppCompatActivity {
@@ -110,6 +110,7 @@ public class ClosedChatActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
                 } else {
@@ -119,6 +120,7 @@ public class ClosedChatActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<UserMessage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(getApplicationContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });

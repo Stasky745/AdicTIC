@@ -26,6 +26,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.ui.BlockAppsActivity;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
@@ -51,7 +52,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 //class extending FirebaseMessagingService
@@ -388,6 +388,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
                     call.clone().enqueue(this);
                 else {
@@ -398,6 +399,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 if(retryCount++ < TOTAL_RETRIES)
                     call.clone().enqueue(this);
                 else {
@@ -421,6 +423,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
                     call.clone().enqueue(this);
                 else {
@@ -431,6 +434,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 if(retryCount++ < TOTAL_RETRIES)
                     call.clone().enqueue(this);
                 else {
@@ -481,10 +485,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                     }
                 });
             } catch (PackageManager.NameNotFoundException e) {

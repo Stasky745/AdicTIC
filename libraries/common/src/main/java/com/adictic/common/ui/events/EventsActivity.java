@@ -21,13 +21,13 @@ import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventsActivity extends AppCompatActivity implements IEventDialog {
@@ -85,6 +85,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         call.enqueue(new Callback<EventsAPI>() {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         events = response.body();
@@ -97,6 +98,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
             @Override
             public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
             }
         });
@@ -111,11 +113,13 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     finish();
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
                 }
             });

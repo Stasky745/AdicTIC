@@ -1,7 +1,6 @@
 package com.adictic.common.util;
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 
 import com.adictic.common.rest.Api;
@@ -16,7 +15,6 @@ import org.acra.sender.ReportSenderFactory;
 import org.jetbrains.annotations.NotNull;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AcraSender implements ReportSender {
@@ -31,6 +29,7 @@ public class AcraSender implements ReportSender {
             callSendCrash.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
+                    super.onResponse(call, response);
                     if(!response.isSuccessful()){
                         Log.e(TAG,"Error al enviar al servidor!");
                     }
@@ -38,7 +37,7 @@ public class AcraSender implements ReportSender {
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    // TODO: Implementar repetició
+                    super.onFailure(call, t);
                     t.printStackTrace();
                 }
             });
