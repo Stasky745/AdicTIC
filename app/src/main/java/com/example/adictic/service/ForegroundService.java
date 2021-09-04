@@ -37,7 +37,7 @@ import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.receiver.checkInstalledApps;
 import com.example.adictic.rest.AdicticApi;
-import com.example.adictic.ui.BlockedDevice;
+import com.example.adictic.ui.BlockDeviceActivity;
 import com.example.adictic.ui.main.NavActivity;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
@@ -271,8 +271,8 @@ public class ForegroundService extends Service {
             if(Funcions.isXiaomi() && false)
                 Funcions.addOverlayView(ForegroundService.this, true);
             else{
-                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
-                Intent lockIntent = new Intent(ForegroundService.this, BlockedDevice.class);
+                Log.d(TAG,"Creant Intent cap a BlockAppActivity");
+                Intent lockIntent = new Intent(ForegroundService.this, BlockDeviceActivity.class);
                 lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
                 lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
                 ForegroundService.this.startActivity(lockIntent);
