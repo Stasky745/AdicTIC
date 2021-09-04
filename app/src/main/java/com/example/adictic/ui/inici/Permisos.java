@@ -29,7 +29,9 @@ import com.example.adictic.util.Funcions;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
 public class Permisos extends AppCompatActivity {
-    boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
+    private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
+    private final String TAG = "Permisos";
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -78,7 +80,10 @@ public class Permisos extends AppCompatActivity {
         if(usagePerm)
             Funcions.startAppUsageWorker24h(Permisos.this);
 
-        Permisos.this.startActivity(new Intent(Permisos.this, AppLock.class));
+        if(Funcions.isMIUI())
+            Permisos.this.startActivity(new Intent(Permisos.this, PermisosMIUI.class));
+        else
+            Permisos.this.startActivity(new Intent(Permisos.this, AppLock.class));
         Permisos.this.finish();
     }
     
@@ -206,7 +211,6 @@ public class Permisos extends AppCompatActivity {
                 .setMessage(getString(R.string.overlay_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
