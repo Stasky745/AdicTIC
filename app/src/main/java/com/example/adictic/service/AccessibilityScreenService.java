@@ -142,9 +142,6 @@ public class AccessibilityScreenService extends AccessibilityService {
                 }
             });
         }
-
-        Funcions.checkHoraris(getApplicationContext());
-        Funcions.checkEvents(getApplicationContext());
     }
 
     @Override
