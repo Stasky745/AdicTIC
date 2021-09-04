@@ -1,5 +1,7 @@
 package com.example.adictic.workers;
 
+import static java.lang.Thread.sleep;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +17,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.common.entity.GeoFill;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.AdicticApp;
@@ -29,10 +32,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static java.lang.Thread.sleep;
 
 public class GeoLocWorker extends Worker {
 
@@ -154,11 +154,13 @@ public class GeoLocWorker extends Worker {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 success = response.isSuccessful();
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 success = false;
             }
         });

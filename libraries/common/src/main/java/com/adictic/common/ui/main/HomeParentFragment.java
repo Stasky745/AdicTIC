@@ -15,6 +15,7 @@ import com.adictic.common.R;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
@@ -25,7 +26,6 @@ import java.util.Calendar;
 import java.util.Collection;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeParentFragment extends Fragment {
@@ -68,6 +68,7 @@ public class HomeParentFragment extends Fragment {
             call.enqueue(new Callback<Collection<FillNom>>() {
                 @Override
                 public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                         parentActivity.setHomeParent_childs(new ArrayList<>(response.body()));
                         parentActivity.setHomeParent_lastChildsUpdate(Calendar.getInstance().getTimeInMillis());
@@ -82,6 +83,7 @@ public class HomeParentFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                     TextView error = root.findViewById(R.id.TV_noFills);
                     error.setVisibility(View.VISIBLE);
                 }

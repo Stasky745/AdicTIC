@@ -37,6 +37,7 @@ import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.NouFillLogin;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.VellFillLogin;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
@@ -48,7 +49,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NomFill extends AppCompatActivity {
@@ -254,6 +254,7 @@ public class NomFill extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, fillVell.idChild).apply();
                             NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
@@ -266,6 +267,7 @@ public class NomFill extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                         Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                         toast.show();
                     }
@@ -285,6 +287,7 @@ public class NomFill extends AppCompatActivity {
                     call.enqueue(new Callback<Long>() {
                         @Override
                         public void onResponse(@NonNull Call<Long> call, @NonNull Response<Long> response) {
+                    super.onResponse(call, response);
                             if (response.isSuccessful() && response.body() != null) {
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,response.body()).apply();
                                 NomFill.this.startActivity(new Intent(NomFill.this, Permisos.class));
@@ -297,6 +300,7 @@ public class NomFill extends AppCompatActivity {
 
                         @Override
                         public void onFailure(@NonNull Call<Long> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                             Toast toast = Toast.makeText(NomFill.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                             toast.show();
                         }

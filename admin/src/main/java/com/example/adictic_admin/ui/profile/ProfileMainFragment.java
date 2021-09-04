@@ -11,18 +11,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.common.entity.AdminProfile;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-import com.adictic.common.entity.AdminProfile;
 import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.example.adictic_admin.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileMainFragment extends Fragment {
@@ -58,6 +58,7 @@ public class ProfileMainFragment extends Fragment {
         call.enqueue(new Callback<AdminProfile>() {
             @Override
             public void onResponse(Call<AdminProfile> call, Response<AdminProfile> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null){
                     parentActivity.yourAdminProfile = response.body();
                     showProfileInfo(response.body());

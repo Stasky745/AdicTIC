@@ -12,13 +12,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.adictic.common.entity.AppInfo;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class checkInstalledApps extends BroadcastReceiver {
@@ -57,12 +57,14 @@ public class checkInstalledApps extends BroadcastReceiver {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     if(response.isSuccessful()) Log.i(TAG,"S'ha enviat l'app Instal·lada correctament.");
                     else Log.i(TAG,"No s'ha pogut enviar l'app Instal·lada correctament.");
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                     Log.i(TAG,"No s'ha pogut enviar l'app Instal·lada correctament.");
                 }
             });
@@ -76,6 +78,7 @@ public class checkInstalledApps extends BroadcastReceiver {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful())
                     Log.i(TAG, "S'ha enviat l'app desinstal·lada correctament.");
                 else Log.i(TAG, "No s'ha pogut enviar l'app desinstal·lada correctament.");
@@ -83,6 +86,7 @@ public class checkInstalledApps extends BroadcastReceiver {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Log.i(TAG, "No s'ha pogut enviar l'app desinstal·lada correctament.");
             }
         });

@@ -33,6 +33,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import com.adictic.common.entity.GeoFill;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.receiver.checkInstalledApps;
@@ -54,7 +55,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 //https://github.com/android/location-samples/blob/432d3b72b8c058f220416958b444274ddd186abd/LocationUpdatesForegroundService/app/src/main/java/com/google/android/gms/location/sample/locationupdatesforegroundservice/LocationUpdatesService.java
@@ -220,12 +220,14 @@ public class ForegroundService extends Service {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful())
                     lastUpdate = DateTime.now().getMillis();
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
             }
         });

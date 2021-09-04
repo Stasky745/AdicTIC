@@ -15,6 +15,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.jitsi.R;
 import com.adictic.jitsi.utilities.Constants;
 import com.adictic.jitsi.utilities.JitsiFuncions;
@@ -22,7 +23,6 @@ import com.adictic.jitsi.utilities.JitsiFuncions;
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class IncomingInvitationActivity extends AppCompatActivity {
@@ -69,6 +69,7 @@ public class IncomingInvitationActivity extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     if (type.equals(Constants.REMOTE_MSG_INVITATION_ACCEPTED)) {
                         try {

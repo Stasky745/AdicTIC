@@ -8,14 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.common.rest.Api;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.common.rest.Api;
-import com.example.adictic.util.Funcions;
 import com.example.adictic.util.AdicticApp;
+import com.example.adictic.util.Funcions;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class UpdateTokenWorker extends Worker {
@@ -38,6 +38,7 @@ public class UpdateTokenWorker extends Worker {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 success = response.isSuccessful();
                 if(success) {
                     SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
@@ -48,6 +49,7 @@ public class UpdateTokenWorker extends Worker {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 success = false;
             }
         });

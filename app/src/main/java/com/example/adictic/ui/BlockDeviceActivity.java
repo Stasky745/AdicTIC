@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.common.entity.EventBlock;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
@@ -25,7 +26,6 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BlockDeviceActivity extends AppCompatActivity {
@@ -73,14 +73,12 @@ public class BlockDeviceActivity extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if(!response.isSuccessful() && retryCountAccessDisp++ < TOTAL_RETRIES)
-                    Funcions.retryFailedCall(this, call, 1000*60*5);
+                super.onResponse(call, response);
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                if(retryCountAccessDisp++ < TOTAL_RETRIES)
-                    Funcions.retryFailedCall(this, call, 1000*60*5);
+                super.onFailure(call, t);
             }
         });
     }

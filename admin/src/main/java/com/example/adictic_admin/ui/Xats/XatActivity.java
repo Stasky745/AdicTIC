@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.entity.UserMessage;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 import com.example.adictic_admin.R;
@@ -44,7 +45,6 @@ import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class XatActivity extends AppCompatActivity {
@@ -136,14 +136,16 @@ public class XatActivity extends AppCompatActivity {
                 Call<String> postCall = mService.sendMessageToUser(userId, childId, um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(@NonNull Call<String> postCall, @NonNull Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             mMessageAdapter.add(um);
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<String> postCall, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        super.onFailure(call, t);
                         Toast.makeText(getApplicationContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -183,11 +185,13 @@ public class XatActivity extends AppCompatActivity {
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                            super.onResponse(call, response);
                             if (response.isSuccessful()) startCall(response.body());
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                            super.onFailure(call, t);
                             Toast.makeText(getApplicationContext(), "No s'ha pogut connectar amb el servidor", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -252,11 +256,13 @@ public class XatActivity extends AppCompatActivity {
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                             if (response.isSuccessful()) closeChat();
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                             Toast.makeText(getApplicationContext(), "No s'ha pogut connectar amb el servidor", Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -300,6 +306,7 @@ public class XatActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isEmpty()) {
                         mMessageAdapter.clear();
@@ -312,6 +319,7 @@ public class XatActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<UserMessage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(getApplicationContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });

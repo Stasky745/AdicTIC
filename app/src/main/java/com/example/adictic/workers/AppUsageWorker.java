@@ -16,6 +16,7 @@ import androidx.work.WorkerParameters;
 
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.util.AdicticApp;
@@ -26,7 +27,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AppUsageWorker extends Worker {
@@ -70,6 +70,7 @@ public class AppUsageWorker extends Worker {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
                     sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR, Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
@@ -77,7 +78,8 @@ public class AppUsageWorker extends Worker {
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                super.onFailure(call, t); }
         });
 
         return Result.success();
@@ -91,6 +93,7 @@ public class AppUsageWorker extends Worker {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful()) {
 //                        sharedPreferences.edit().putBoolean("installedApps",true).apply();
                     }
@@ -98,6 +101,7 @@ public class AppUsageWorker extends Worker {
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 }
             });
 //        }

@@ -35,6 +35,7 @@ import com.adictic.common.ui.HorarisActivity;
 import com.adictic.common.ui.events.EventsActivity;
 import com.adictic.common.ui.informe.InformeActivity;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.github.mikephil.charting.charts.PieChart;
@@ -60,7 +61,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
@@ -168,6 +168,7 @@ public class MainParentFragment extends Fragment {
             call.enqueue(new Callback<LiveApp>() {
                 @Override
                 public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful() && response.body() != null) {
                         parentActivity.mainParent_lastAppUsed.put(idChildSelected,response.body());
                         parentActivity.mainParent_lastAppUsedUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
@@ -177,6 +178,7 @@ public class MainParentFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 }
             });
         }
@@ -282,6 +284,7 @@ public class MainParentFragment extends Fragment {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             if (blockButton.getText().equals(getString(R.string.block_device)))
                                 blockButton.setText(getString(R.string.unblock_device));
@@ -292,6 +295,7 @@ public class MainParentFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                         Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -323,6 +327,7 @@ public class MainParentFragment extends Fragment {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
                                 BT_FreeTime.setText(getString(R.string.stop_free_time));
@@ -335,6 +340,7 @@ public class MainParentFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                         Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -414,6 +420,7 @@ public class MainParentFragment extends Fragment {
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> collection = response.body();
                     Funcions.canviarMesosDeServidor(collection);
@@ -426,6 +433,7 @@ public class MainParentFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });

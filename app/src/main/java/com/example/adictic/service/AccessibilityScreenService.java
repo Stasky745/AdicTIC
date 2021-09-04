@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.LiveApp;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.BlockDeviceActivity;
@@ -36,7 +37,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AccessibilityScreenService extends AccessibilityService {
@@ -105,6 +105,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             call.enqueue(new Callback<BlockedLimitedLists>() {
                 @Override
                 public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful() && response.body() != null) {
                         Funcions.updateDB_BlockedApps(getApplicationContext(), response.body());
                     }
@@ -112,7 +113,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
                 @Override
                 public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
-
+                    super.onFailure(call, t);
                 }
             });
 
@@ -123,6 +124,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             call2.enqueue(new Callback<Boolean>() {
                 @Override
                 public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
+                    super.onResponse(call, response);
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
                         Funcions.endFreeUse(getApplicationContext());
@@ -131,7 +133,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
                 @Override
                 public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
-
+                    super.onFailure(call, t);
                 }
             });
         }
@@ -240,10 +242,14 @@ public class AccessibilityScreenService extends AccessibilityService {
         Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) { }
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call,response);
+            }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+            }
         });
     }
 
@@ -296,18 +302,15 @@ public class AccessibilityScreenService extends AccessibilityService {
             Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.instance);
 
             Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
-            call.enqueue(new Callback<String>() {
+            call.enqueue(new Callback<String>(){
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    if(!response.isSuccessful() && retryCountLastApp++ < 5)
-                        Funcions.retryFailedCall(this, call, 2000);
-
+                    super.onResponse(call, response);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    if(retryCountLastApp++ < 5)
-                        Funcions.retryFailedCall(this, call, 2000);
+                    super.onFailure(call, t);
                 }
             });
         }

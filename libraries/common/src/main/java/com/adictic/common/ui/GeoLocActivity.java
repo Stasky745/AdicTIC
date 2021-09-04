@@ -25,6 +25,7 @@ import com.adictic.common.R;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Funcions;
 
 import org.osmdroid.api.IMapController;
@@ -40,7 +41,6 @@ import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class GeoLocActivity extends AppCompatActivity {
@@ -133,6 +133,7 @@ public class GeoLocActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<GeoFill>>() {
             @Override
             public void onResponse(@NonNull Call<List<GeoFill>> call, @NonNull Response<List<GeoFill>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
 
@@ -145,6 +146,7 @@ public class GeoLocActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<GeoFill>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
