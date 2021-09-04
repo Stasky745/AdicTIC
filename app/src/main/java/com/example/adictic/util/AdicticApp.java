@@ -27,17 +27,16 @@ public class AdicticApp extends App {
     private AdicticApi adicticApi;
 
     public static String[] newFeatures = {
-
+            "Nova pantalla per bloqueig de dispositiu (Avisar a dispositiu pare encara no funciona)"
     };
 
     public static String[] fixes = {
-            "No apareixen apps que no arriben a 1 minut a l'ús del dia"
+
     };
 
     public static String[] changes = {
-            "L'app és en castellà de base ara",
-            "Nova pantalla de permisos",
-            "Nova pantalla d'informe mensual"
+            "Nova Videotrucada",
+            "Canvis interns per intentar millorar sincronització"
     };
 
     @Override
