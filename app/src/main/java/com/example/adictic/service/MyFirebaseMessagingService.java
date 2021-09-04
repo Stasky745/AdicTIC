@@ -158,7 +158,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
                         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
-                            mDPM.lockNow();
+                            Funcions.showBlockDeviceScreen(MyFirebaseMessagingService.this);
                     }
                     else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
@@ -196,7 +196,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                        if(!myKM.isDeviceLocked())
+                        if(!myKM.isDeviceLocked() && AccessibilityScreenService.instance != null)
                             AccessibilityScreenService.instance.enviarLiveApp();
 
                         Funcions.runUniqueAppUsageWorker(getApplicationContext());

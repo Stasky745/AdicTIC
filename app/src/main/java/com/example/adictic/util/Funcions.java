@@ -4,6 +4,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -13,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -24,8 +26,10 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.Data;
@@ -46,7 +50,8 @@ import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.service.AccessibilityScreenService;
-import com.example.adictic.ui.BlockScreenActivity;
+import com.example.adictic.service.ForegroundService;
+import com.example.adictic.ui.BlockAppActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.ServiceWorker;
@@ -70,6 +75,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -88,24 +95,7 @@ import retrofit2.Response;
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
 
-    public static void ensenyarBlockScreenActivity(Context ctx, String lastPackage) {
-        // Si és MIUI
-        try {
-            if(Funcions.isXiaomi())
-                addOverlayView(ctx);
-            else{
-                Log.d(TAG,"Creant Intent cap a BlockScreenActivity");
-                Intent lockIntent = new Intent(ctx, BlockScreenActivity.class);
-                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                lockIntent.putExtra("pkgName",lastPackage);
-                ctx.startActivity(lockIntent);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void addOverlayView(Context ctx) {
+    public static void addOverlayView(Context ctx, boolean blockApp) {
 
         final WindowManager.LayoutParams params;
         int layoutParamsType;
@@ -124,7 +114,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 layoutParamsType,
                 0,
-                PixelFormat.OPAQUE);
+                PixelFormat.TRANSLUCENT);
 
         params.gravity = Gravity.CENTER | Gravity.START;
         params.x = 0;
@@ -156,17 +146,53 @@ public class Funcions extends com.adictic.common.util.Funcions {
         LayoutInflater inflater = ((LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
 
         if (inflater != null) {
-            View floatyView = inflater.inflate(R.layout.block_layout, interceptorLayout);
-            windowManager.addView(floatyView, params);
+            if (!blockApp){
+                View floatyView = inflater.inflate(R.layout.block_layout, interceptorLayout);
+                windowManager.addView(floatyView, params);
 
-            Button BT_sortir = floatyView.findViewById(R.id.btn_sortir);
-            BT_sortir.setOnClickListener(view -> {
-                Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
-                startHomescreen.addCategory(Intent.CATEGORY_HOME);
-                startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                ctx.startActivity(startHomescreen);
-                windowManager.removeView(floatyView);
-            });
+                Button BT_sortir = floatyView.findViewById(R.id.btn_sortir);
+                BT_sortir.setOnClickListener(view -> {
+                    Intent startHomescreen = new Intent(Intent.ACTION_MAIN);
+                    startHomescreen.addCategory(Intent.CATEGORY_HOME);
+                    startHomescreen.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    ctx.startActivity(startHomescreen);
+                    windowManager.removeView(floatyView);
+                });
+            }
+            else{
+                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+                assert sharedPreferences != null;
+
+                boolean blockedDevice = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false);
+
+                View floatyView = inflater.inflate(R.layout.block_device_layout, interceptorLayout);
+                windowManager.addView(floatyView, params);
+
+                TextView blockDeviceTitle = floatyView.findViewById(R.id.TV_block_device_title);
+                blockDeviceTitle.setText(ctx.getString(R.string.locked_device));
+
+                if (!blockedDevice){
+                    List<EventBlock> eventsList = readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
+                    assert eventsList != null;
+                    EventBlock eventBlock = eventsList.stream()
+                            .filter(com.adictic.common.util.Funcions::eventBlockIsActive)
+                            .findFirst()
+                            .orElse(null);
+
+                    if(eventBlock != null){
+                        String title = eventBlock.name + "\n";
+                        title += millis2horaString(ctx, eventBlock.startEvent) + " - " + millis2horaString(ctx, eventBlock.endEvent);
+                        blockDeviceTitle.setText(title);
+                    }
+                }
+
+                ConstraintLayout CL_device_blocked_call = floatyView.findViewById(R.id.CL_block_device_emergency_call);
+                CL_device_blocked_call.setOnClickListener(view -> {
+                    Uri number = Uri.parse("tel:" + 112);
+                    Intent dial = new Intent(Intent.ACTION_CALL, number);
+                    ctx.startActivity(dial);
+                });
+            }
         }
         else {
             Log.e("SAW-example", "Layout Inflater Service is null; can't inflate and display R.layout.floating_view");
@@ -688,7 +714,21 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static boolean isXiaomi(){
-        return Build.MANUFACTURER.toLowerCase().equals("xiaomi");
+        return Build.MANUFACTURER.equalsIgnoreCase("xiaomi");
+    }
+
+    public static boolean isMIUI(){
+        try {
+            @SuppressLint("PrivateApi") Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+            String miui = (String) get.invoke(c, "ro.miui.ui.version.code"); // maybe this one or any other
+
+            // if string miui is not empty, bingo
+            return miui != null && !miui.equals("");
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean fileEmpty(Context mCtx, String fileName){
@@ -720,17 +760,53 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return null;
     }
 
+    public static boolean isDeviceBlocked(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
+            return false;
+        else
+            return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
+                    sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
+                    sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false);
+    }
+
     public static void endFreeUse(Context mCtx) {
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
         assert sharedPreferences != null;
-        boolean isBlocked = (sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
-                sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
-                sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false)) &&
-                !sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
+        boolean isBlocked = isDeviceBlocked(mCtx);
         if(isBlocked) {
-            DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            assert mDPM != null;
-            mDPM.lockNow();
+//            DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+//            assert mDPM != null;
+//            mDPM.lockNow();
+            showBlockDeviceScreen(mCtx);
+        }
+    }
+
+    public static void showBlockDeviceScreen(Context mCtx){
+        Intent intent = new Intent(mCtx, ForegroundService.class);
+        intent.setAction(Constants.FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            mCtx.startForegroundService(intent);
+        else
+            mCtx.startService(intent);
+    }
+
+    public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
+        // Si és MIUI
+        try {
+            if(Funcions.isXiaomi() && false)
+                addOverlayView(ctx, false);
+            else{
+                Log.d(TAG,"Creant Intent cap a BlockAppActivity");
+                Intent lockIntent = new Intent(ctx, BlockAppActivity.class);
+                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.putExtra("pkgName", pkgName);
+                lockIntent.putExtra("appName", appName);
+                ctx.startActivity(lockIntent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

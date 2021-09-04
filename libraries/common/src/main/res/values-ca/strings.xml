@@ -414,4 +414,9 @@
     <string name="locked_device">El dispositiu està bloquejat</string>
     <string name="locked_device_alert">Avisar Pares</string>
     <string name="locked_device_call">Trucada\nd\'Emergència</string>
+
+    <string name="xiaomi_perm_desc">Els dispositius de Xiaomi requereixen que s\'acceptin els seus propis permisos per aconseguir que l\'aplicació funcioni correctament. Si us plau, premi el següent botó i, com a mínim, accepti els permisos de:\n\n - Mostra finestres emergents\n\n - Mostra les finestres emergents mentre s\'executa en segon pla\n\n Notificació permanent</string>
+    <string name="go_perm">Anar als permisos</string>
+
+    <string name="permisos_pregunta">Has acceptat tots els permisos?</string>
 </resources>

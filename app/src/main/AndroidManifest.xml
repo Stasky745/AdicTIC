@@ -43,7 +43,7 @@
             android:label="@string/title_activity_nav" />
         <activity android:name=".ui.inici.Login" />
         <activity
-            android:name=".ui.BlockScreenActivity"
+            android:name=".ui.BlockAppActivity"
             android:noHistory="true" />
         <activity android:name=".ui.inici.Register" />
         <activity android:name=".ui.inici.NomFill" />
@@ -53,7 +53,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
-            android:theme="@style/FullscreenTheme">
+            android:theme="@style/FullscreenTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -96,6 +97,9 @@
         <activity android:name=".ui.main.ChangePasswordActivity" />
         <activity android:name=".ui.inici.Permisos" />
         <activity android:name=".ui.inici.AppLock" />
+        <activity android:name=".ui.BlockDeviceActivity"
+            android:noHistory="true" />
+        <activity android:name=".ui.inici.PermisosMIUI" />
 
         <receiver android:name=".receiver.checkInstalledApps"
             android:exported="true">
@@ -145,6 +149,13 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
                 <action android:name="android.app.action." />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".service.AccessibilityScreenService$ScreenLockReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_OFF"/>
+                <action android:name="android.intent.action.SCREEN_ON"/>
             </intent-filter>
         </receiver>
 
