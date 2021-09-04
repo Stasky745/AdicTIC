@@ -158,13 +158,6 @@ public interface Api {
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
 
-    /////////////// ACRA ///////////////
-
-    @POST("/crash/{appName}/{version}")
-    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
-
-    ///////////////////////////////////
-
     @GET("/usage/{id}/events/{data}")
     Call<Collection<CanvisEvents>> getCanvisEvents(@Path("id") Long id, @Path("data") String data);
 
@@ -188,4 +181,21 @@ public interface Api {
 
     @POST("/usage/{idChild}/intentAccesDisp")
     Call<String> postIntentAccesDisp(@Path("idChild") Long idChild, @Body Long data);
+
+    /////////////// ACRA ///////////////
+
+    @POST("/crash/{appName}/{version}")
+    Call<String> sendCrashACRA(@Path("appName") String appName, @Path("version") String version, @Body Object json);
+
+    ///////////////////////////////////
+
+    /////////////// VIDEOCALL //////////////
+
+    @GET("/message/videochat/cancel/{otherUserId}/{childId}")
+    Call<String> cancelCallToUser(@Path("otherUserId") Long otherUserId, @Path("childId") Long childId);
+
+    @POST("/message/videochat/answer/{adminId}")
+    Call<String> answerCallOfAdmin(@Path("adminId") Long adminId, @Body String answer);
+
+    ///////////////////////////////////////
 }

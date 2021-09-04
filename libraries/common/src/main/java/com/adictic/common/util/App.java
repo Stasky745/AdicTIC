@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 
 import com.adictic.common.BuildConfig;
-import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
@@ -20,16 +19,16 @@ import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.LimiterConfigurationBuilder;
 import org.acra.data.StringFormat;
 
-import okhttp3.MediaType;
+import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class App extends Application {
-    private Api mTodoService;
+
+    private Api api;
 
     private static Drawable adminPic = null;
     public static Drawable getAdminPic() { return adminPic; }
@@ -40,25 +39,7 @@ public class App extends Application {
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
 
-    public static String[] newFeatures = {
-
-    };
-
-    public static String[] fixes = {
-            "Ja no peta quan es miren els horaris nocturns del fill",
-            "El percentatge de l'informe funciona bé"
-    };
-
-    public static String[] changes = {
-
-    };
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        OkHttpClient httpClient = getOkHttpClient();
-
+    protected Retrofit createRetrofit(OkHttpClient httpClient){
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -73,14 +54,14 @@ public class App extends Application {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        mTodoService = retrofit.create(Api.class);
+        api = retrofit.create(Api.class);
+
+        return retrofit;
     }
 
-    public Api getAPI() {
-        return mTodoService;
-    }
+    public Api getAPI(){ return api; }
 
-    public OkHttpClient getOkHttpClient() {
+    protected OkHttpClient getOkHttpClient(Authenticator authenticator) {
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
@@ -96,38 +77,7 @@ public class App extends Application {
 
         return httpClient
                 .cookieJar(cookieJar)
-                .authenticator((route, response) -> {
-                    if (responseCount(response) >= 3) {
-                        return null; // If we've failed 3 times, give up.
-                    }
-
-                    String username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME,null);
-                    String password = sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, null);
-
-                    if(username != null && password != null) {
-                        System.out.println("Authenticating for response: " + response);
-                        System.out.println("Challenges: " + response.challenges());
-
-                        UserLogin userLogin = new UserLogin();
-                        userLogin.username = username;
-                        userLogin.password = password;
-                        userLogin.token = sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "");
-
-                        String gson = new Gson().toJson(userLogin);
-                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                        RequestBody body = RequestBody.create(gson, JSON);
-
-                        String url = BuildConfig.DEBUG ? Global.BASE_URL_DEBUG : Global.BASE_URL_RELEASE;
-                        url += "users/loginAdmin";
-
-                        return response.request().newBuilder()
-                                .url(url)
-                                .post(body)
-                                .build();
-                    }
-
-                    return null;
-                })
+                .authenticator(authenticator)
                 .build();
     }
 
