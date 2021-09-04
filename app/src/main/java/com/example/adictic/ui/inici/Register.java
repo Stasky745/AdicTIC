@@ -1,5 +1,7 @@
 package com.example.adictic.ui.inici;
 
+import static android.view.View.GONE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.common.entity.UserRegister;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
@@ -22,10 +25,7 @@ import com.example.adictic.util.Funcions;
 import org.json.JSONObject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
 
 public class Register extends AppCompatActivity {
 
@@ -95,6 +95,7 @@ public class Register extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
 
                 if (response.isSuccessful()) {
                     Register.this.startActivity(new Intent(Register.this, Login.class));
@@ -135,6 +136,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);
                 toast.show();
             }

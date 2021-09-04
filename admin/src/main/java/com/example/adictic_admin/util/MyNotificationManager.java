@@ -1,5 +1,7 @@
 package com.example.adictic_admin.util;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -12,8 +14,6 @@ import androidx.core.app.NotificationCompat;
 import com.adictic.common.util.Constants;
 import com.example.adictic_admin.MainActivity;
 import com.example.adictic_admin.R;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class MyNotificationManager {
 

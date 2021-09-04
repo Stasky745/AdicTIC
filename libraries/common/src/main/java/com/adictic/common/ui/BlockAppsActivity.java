@@ -30,6 +30,7 @@ import com.adictic.common.entity.BlockAppEntity;
 import com.adictic.common.entity.BlockList;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
@@ -39,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class BlockAppsActivity extends AppCompatActivity {
@@ -107,6 +107,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             for(BlockAppEntity blockedApp : blockAppList){
                                 if(selectedApps.contains(blockedApp.pkgName))
@@ -120,6 +121,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        super.onFailure(call, t);
                     }
                 });
             }
@@ -140,6 +142,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             for(BlockAppEntity blockedApp : blockAppList){
                                 if(selectedApps.contains(blockedApp.pkgName))
@@ -153,6 +156,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        super.onFailure(call, t);
                     }
                 });
             }
@@ -171,6 +175,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful()) {
                         for(BlockAppEntity blockedApp : blockAppList){
                             if(selectedApps.contains(blockedApp.pkgName))
@@ -184,6 +189,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 }
             });
         };
@@ -239,6 +245,7 @@ public class BlockAppsActivity extends AppCompatActivity {
         call.enqueue(new Callback<Collection<BlockAppEntity>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<BlockAppEntity>> call, @NonNull Response<Collection<BlockAppEntity>> response) {
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     blockAppList = new ArrayList<>(response.body());
 
@@ -252,7 +259,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Collection<BlockAppEntity>> call, @NonNull Throwable t) {
-
+                super.onFailure(call, t);
             }
         });
     }

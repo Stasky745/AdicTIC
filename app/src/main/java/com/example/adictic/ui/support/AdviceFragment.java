@@ -13,7 +13,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.adictic.common.ui.OficinesActivity;
-import com.example.adictic.BuildConfig;
 import com.example.adictic.R;
 import com.example.adictic.ui.chat.ChatActivity;
 

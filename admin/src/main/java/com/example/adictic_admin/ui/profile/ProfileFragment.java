@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
 import com.adictic.common.ui.AdminProfileActivity;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.rest.AdminApi;
@@ -50,7 +51,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileFragment extends Fragment{
@@ -212,6 +212,7 @@ public class ProfileFragment extends Fragment{
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     Toast.makeText(mCtx, "S'ha pujat la informació al servidor.", Toast.LENGTH_SHORT).show();
                     adminProfile = profile;
@@ -258,6 +259,7 @@ public class ProfileFragment extends Fragment{
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful()){
                     Toast.makeText(mCtx, "S'ha pujat la imatge al servidor.", Toast.LENGTH_SHORT).show();
                     AdminApp.setAdminPic(IV_profilePic.getDrawable());

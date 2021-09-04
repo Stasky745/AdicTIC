@@ -28,11 +28,12 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import com.adictic.common.entity.ChatInfo;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.ui.AdminProfileActivity;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
-import com.example.adictic.util.Funcions;
 import com.example.adictic.util.AdicticApp;
+import com.example.adictic.util.Funcions;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -43,7 +44,6 @@ import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChatFragment extends Fragment {
@@ -143,14 +143,16 @@ public class ChatFragment extends Fragment {
                 Call<String> postCall = mTodoService.sendMessageToUser(idChild, adminId, um);
                 postCall.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(@NonNull Call<String> postCall, @NonNull Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             mMessageAdapter.add(um);
                         }
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<String> postCall, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        super.onFailure(call, t);
                         Toast.makeText(activity.getBaseContext(), "An error occurred! Try again later", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -187,6 +189,7 @@ public class ChatFragment extends Fragment {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                                     if (response.isSuccessful()) {
                                         access = !access;
                                         setAccessButtonImage(IV_acces);
@@ -196,6 +199,7 @@ public class ChatFragment extends Fragment {
 
                                 @Override
                                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                                     Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -215,6 +219,7 @@ public class ChatFragment extends Fragment {
                             call.enqueue(new Callback<String>() {
                                 @Override
                                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                                     if (response.isSuccessful()) {
                                         access = !access;
                                         setAccessButtonImage(IV_acces);
@@ -224,6 +229,7 @@ public class ChatFragment extends Fragment {
 
                                 @Override
                                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                                     Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -265,11 +271,13 @@ public class ChatFragment extends Fragment {
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                             if (response.isSuccessful()) closeChat();
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                             Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -314,6 +322,7 @@ public class ChatFragment extends Fragment {
         call.enqueue(new Callback<List<UserMessage>>() {
             @Override
             public void onResponse(@NonNull Call<List<UserMessage>> call, @NonNull Response<List<UserMessage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().isEmpty()) mMessageAdapter.addAll(response.body());
                 } else {
@@ -323,6 +332,7 @@ public class ChatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<List<UserMessage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT).show();
             }
         });

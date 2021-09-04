@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.Localitzacio;
+import com.adictic.common.util.Callback;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatInfo;
 import com.example.adictic_admin.rest.AdminApi;
@@ -35,7 +36,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ConsultesFragment extends Fragment {
@@ -76,6 +76,7 @@ public class ConsultesFragment extends Fragment {
         call.enqueue(new Callback<List<Dubte>>() {
             @Override
             public void onResponse(@NotNull Call<List<Dubte>> call, @NotNull Response<List<Dubte>> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null && !response.body().isEmpty()){
                     dubtesList = new ArrayList<>(response.body());
                     setRecyclerView();
@@ -212,6 +213,7 @@ public class ConsultesFragment extends Fragment {
                             call.enqueue(new Callback<ChatInfo>() {
                                 @Override
                                 public void onResponse(@NotNull Call<ChatInfo> call, @NotNull Response<ChatInfo> response) {
+                    super.onResponse(call, response);
                                     if(response.isSuccessful()){
                                         if(response.body() == null)
                                             Toast.makeText(mContext, "Aquesta consulta ja ha estat agafada per algú. Refresca la llista.", Toast.LENGTH_SHORT).show();

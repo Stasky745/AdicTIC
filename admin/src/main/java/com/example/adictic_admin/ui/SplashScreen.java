@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.adictic.common.entity.User;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic_admin.BuildConfig;
@@ -36,7 +37,6 @@ import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashScreen extends AppCompatActivity {
@@ -75,6 +75,7 @@ public class SplashScreen extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
+                    super.onResponse(call, response);
                             if (response.isSuccessful() && response.body() != null) {
                                 User adminCheckWithToken = response.body();
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
@@ -88,6 +89,7 @@ public class SplashScreen extends AppCompatActivity {
 
                         @Override
                         public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                             Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                             toast.show();
                         }
@@ -105,6 +107,7 @@ public class SplashScreen extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body()!=null && !response.body().equals("NO")) {
                     installUpdate(response.body());
                 }
@@ -121,6 +124,7 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -147,6 +151,7 @@ public class SplashScreen extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body()!=null) {
                     try {
                         String PATH = getExternalCacheDir().getPath();
@@ -168,6 +173,7 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                 toast.show(); }
         });

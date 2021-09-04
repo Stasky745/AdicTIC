@@ -11,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.ui.main.TabFillsAdapter;
+import com.adictic.common.util.Callback;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.rest.AdminApi;
 import com.example.adictic_admin.util.AdminApp;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainUserActivity extends MainActivityAbstractClass {
@@ -48,6 +48,7 @@ public class MainUserActivity extends MainActivityAbstractClass {
         call.enqueue(new Callback<Collection<FillNom>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
@@ -66,6 +67,7 @@ public class MainUserActivity extends MainActivityAbstractClass {
 
             @Override
             public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 TextView error = findViewById(R.id.TV_noFills);
                 error.setVisibility(View.VISIBLE);
             }

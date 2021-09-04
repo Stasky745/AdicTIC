@@ -13,6 +13,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.BuildConfig;
@@ -28,7 +29,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
@@ -83,10 +83,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
             call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {}
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);}
 
                 @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {}
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);}
             });
             return true;
         });
@@ -131,6 +133,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                                 if (response.isSuccessful()) {
                                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,null).apply();
                                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,null).apply();
@@ -141,6 +144,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                             @Override
                             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                             }
                         });
 

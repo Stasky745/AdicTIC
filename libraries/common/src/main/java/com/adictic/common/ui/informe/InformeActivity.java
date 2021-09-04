@@ -19,6 +19,7 @@ import com.adictic.common.entity.TimesAccessedDay;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
@@ -36,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class InformeActivity extends AppCompatActivity {
@@ -137,6 +137,7 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     age = response.body();
 
@@ -149,6 +150,7 @@ public class InformeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
             }
         });
@@ -159,12 +161,14 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<AppTimesAccessed>>() {
             @Override
             public void onResponse(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Response<List<AppTimesAccessed>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null)
                     setTimesBlockedMap(new ArrayList<>(response.body()));
             }
 
             @Override
             public void onFailure(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
             }
         });
@@ -189,6 +193,7 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
@@ -203,6 +208,7 @@ public class InformeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 showError();
             }
         });
@@ -310,6 +316,7 @@ public class InformeActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
             public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
@@ -339,6 +346,7 @@ public class InformeActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<YearEntity>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 showError();
             }
         });

@@ -1,5 +1,8 @@
 package com.adictic.common.ui;
 
+import static android.content.Intent.ACTION_DIAL;
+import static android.content.Intent.ACTION_VIEW;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -36,6 +39,7 @@ import com.adictic.common.R;
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Funcions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -54,11 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.content.Intent.ACTION_DIAL;
-import static android.content.Intent.ACTION_VIEW;
 
 /**
  * https://github.com/osmdroid/osmdroid/blob/master/OpenStreetMapViewer/src/main/java/org/osmdroid/StarterMapFragment.java
@@ -133,6 +133,7 @@ public class OficinesActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<Oficina>>() {
             @Override
             public void onResponse(@NonNull Call<List<Oficina>> call, @NonNull Response<List<Oficina>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     oficines = response.body();
                 } else {
@@ -143,6 +144,7 @@ public class OficinesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<Oficina>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(OficinesActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 askPermissionsIfNecessary();
             }

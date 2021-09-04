@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.DubteLocalitzacions;
 import com.adictic.common.entity.Localitzacio;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.rest.AdicticApi;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NoChatFragment extends Fragment {
@@ -102,6 +102,7 @@ public class NoChatFragment extends Fragment {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_LONG).show();
                             getActivity().finish();
@@ -113,6 +114,7 @@ public class NoChatFragment extends Fragment {
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                         Toast toast = Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT);
                         toast.show();
                     }
@@ -134,6 +136,7 @@ public class NoChatFragment extends Fragment {
         call.enqueue(new Callback<DubteLocalitzacions>() {
             @Override
             public void onResponse(@NonNull Call<DubteLocalitzacions> call, @NonNull Response<DubteLocalitzacions> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().dubte!=null) {
                         TIET_dubteTitol.setText(response.body().dubte.titol);
@@ -150,6 +153,7 @@ public class NoChatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<DubteLocalitzacions> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast toast = Toast.makeText(getContext(), R.string.error_server_read, Toast.LENGTH_SHORT);
                 toast.show();
             }
