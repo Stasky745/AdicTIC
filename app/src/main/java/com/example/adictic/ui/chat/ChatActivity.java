@@ -9,17 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.adictic.common.util.Constants;
-import com.example.adictic.R;
 import com.adictic.common.entity.ChatsMain;
 import com.adictic.common.rest.Api;
-import com.example.adictic.util.Funcions;
+import com.adictic.common.util.Callback;
+import com.adictic.common.util.Constants;
+import com.example.adictic.R;
 import com.example.adictic.util.AdicticApp;
+import com.example.adictic.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChatActivity extends AppCompatActivity {
@@ -49,6 +49,7 @@ public class ChatActivity extends AppCompatActivity {
         call.enqueue(new Callback<ChatsMain>() {
             @Override
             public void onResponse(@NonNull Call<ChatsMain> call, @NonNull Response<ChatsMain> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     ChatsMain chatMain = response.body();
                     ChatsAdapter adapter = new ChatsAdapter(ChatActivity.this, getBaseContext(), chatMain);
@@ -66,6 +67,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<ChatsMain> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
 
             }
         });

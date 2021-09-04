@@ -23,6 +23,7 @@ import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.google.android.material.chip.Chip;
@@ -34,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HorarisActivity extends AppCompatActivity {
@@ -180,6 +180,7 @@ public class HorarisActivity extends AppCompatActivity {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
                         horarisNits = response.body();
@@ -191,6 +192,7 @@ public class HorarisActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
@@ -408,6 +410,7 @@ public class HorarisActivity extends AppCompatActivity {
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
                     if (response.isSuccessful())
                         finish();
                     else
@@ -416,6 +419,7 @@ public class HorarisActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                     Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
                 }
             });

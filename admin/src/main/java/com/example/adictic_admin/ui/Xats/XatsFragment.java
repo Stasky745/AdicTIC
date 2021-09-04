@@ -9,17 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.adictic_admin.util.AdminApp;
+import com.adictic.common.util.Callback;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.entity.ChatsMain;
 import com.example.adictic_admin.rest.AdminApi;
+import com.example.adictic_admin.util.AdminApp;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.jetbrains.annotations.NotNull;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class XatsFragment extends Fragment {
@@ -46,6 +46,7 @@ public class XatsFragment extends Fragment {
         call.enqueue(new Callback<ChatsMain>() {
             @Override
             public void onResponse(@NotNull Call<ChatsMain> call, @NotNull Response<ChatsMain> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null){
                     ChatsMain chatsMain = response.body();
                     ChatsAdapter chatsAdapter = new ChatsAdapter(requireActivity(), chatsMain);

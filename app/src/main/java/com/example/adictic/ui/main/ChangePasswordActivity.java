@@ -10,18 +10,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.common.entity.ChangePassword;
+import com.adictic.common.rest.Api;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.example.adictic.R;
-import com.adictic.common.entity.ChangePassword;
-import com.adictic.common.rest.Api;
-import com.example.adictic.util.Funcions;
 import com.example.adictic.util.AdicticApp;
+import com.example.adictic.util.Funcions;
 
 import org.json.JSONObject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChangePasswordActivity extends AppCompatActivity {
@@ -61,6 +61,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
+                        super.onResponse(call, response);
                         if(response.isSuccessful()){
                             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChangePasswordActivity.this);
                             assert sharedPreferences != null;

@@ -13,10 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.adictic.R;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.ChatInfo;
 import com.adictic.common.rest.Api;
+import com.example.adictic.R;
 import com.example.adictic.util.AdicticApp;
 
 import java.util.ArrayList;

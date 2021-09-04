@@ -27,6 +27,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -45,7 +46,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DayUsageActivity extends AppCompatActivity {
@@ -170,6 +170,7 @@ public class DayUsageActivity extends AppCompatActivity {
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
@@ -181,6 +182,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 showError();
             }
         });
@@ -352,6 +354,7 @@ public class DayUsageActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
             public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
@@ -375,6 +378,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<YearEntity>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 showError();
             }
         });

@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.ui.OficinesActivity;
+import com.adictic.common.util.Callback;
 import com.example.adictic_admin.R;
 import com.example.adictic_admin.rest.AdminApi;
 import com.example.adictic_admin.util.AdminApp;
@@ -30,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class OfficeFragment extends Fragment {
@@ -109,6 +109,7 @@ public class OfficeFragment extends Fragment {
                         call.enqueue(new Callback<Long>() {
                             @Override
                             public void onResponse(@NotNull Call<Long> call, @NotNull Response<Long> response) {
+                    super.onResponse(call, response);
                                 if (response.isSuccessful()) {
                                     Toast.makeText(getContext(), "L'oficina s'ha actualitzat correctament.", Toast.LENGTH_SHORT).show();
 
@@ -136,6 +137,7 @@ public class OfficeFragment extends Fragment {
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                    super.onResponse(call, response);
                                 if (response.isSuccessful()) {
                                     Toast.makeText(getContext(), "L'oficina s'ha actualitzat correctament.", Toast.LENGTH_SHORT).show();
                                     oficina = novaOficina;

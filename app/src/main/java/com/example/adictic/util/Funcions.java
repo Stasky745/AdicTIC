@@ -46,6 +46,7 @@ import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.rest.Api;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
@@ -89,7 +90,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Funcions extends com.adictic.common.util.Funcions {
@@ -212,6 +212,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<EventsAPI>() {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     if(response.body() == null)
                         write2File(ctx, Constants.FILE_EVENT_BLOCK, null);
@@ -225,7 +226,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
             }
 
             @Override
-            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
+                    super.onFailure(call, t); }
         });
     }
 
@@ -242,6 +244,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
+                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     if(response.body() == null || response.body().horarisNit.isEmpty())
                         write2File(ctx, Constants.FILE_HORARIS_NIT, null);
@@ -255,7 +258,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
             }
 
             @Override
-            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) { }
+            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
+                    super.onFailure(call, t); }
         });
     }
 

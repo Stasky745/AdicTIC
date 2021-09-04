@@ -28,6 +28,7 @@ import com.adictic.common.ui.informe.adapters.EventsAdapter;
 import com.adictic.common.ui.informe.adapters.HorarisNitAdapter;
 import com.adictic.common.ui.informe.adapters.TopAppsAdapter;
 import com.adictic.common.util.App;
+import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.adictic.common.util.RVSpaceDecoration;
@@ -43,7 +44,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 public class InformeDetallatFragment extends Fragment {
@@ -98,6 +98,7 @@ public class InformeDetallatFragment extends Fragment {
         call.enqueue(new Callback<BlockInfo>() {
             @Override
             public void onResponse(@NonNull Call<BlockInfo> call, @NonNull Response<BlockInfo> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful()){
                     BlockInfo blockInfo = response.body();
                     if(blockInfo == null)
@@ -111,6 +112,7 @@ public class InformeDetallatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<BlockInfo> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -164,6 +166,7 @@ public class InformeDetallatFragment extends Fragment {
         call.enqueue(new Callback<Collection<CanvisHoraris>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisHoraris>> call, @NonNull Response<Collection<CanvisHoraris>> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null){
                     if(response.body().isEmpty()){
                         TextView TV_informeCanvisHorarisNit = root.findViewById(R.id.TV_informeCanvisHorarisNit);
@@ -195,6 +198,7 @@ public class InformeDetallatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Collection<CanvisHoraris>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 TextView TV_informeCanvisHorarisNit = root.findViewById(R.id.TV_informeCanvisHorarisNit);
                 String text = TV_informeCanvisHorarisNit.getText() + ": 0";
                 TV_informeCanvisHorarisNit.setText(text);
@@ -211,6 +215,7 @@ public class InformeDetallatFragment extends Fragment {
         call.enqueue(new Callback<Collection<CanvisEvents>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisEvents>> call, @NonNull Response<Collection<CanvisEvents>> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null){
                     if(response.body().isEmpty()){
                         TextView TV_informeCanvisEvents = root.findViewById(R.id.TV_informeCanvisEvents);
@@ -242,6 +247,7 @@ public class InformeDetallatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Collection<CanvisEvents>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 TextView TV_informeCanvisEvents = root.findViewById(R.id.TV_informeCanvisEvents);
                 String text = TV_informeCanvisEvents.getText() + ": 0";
                 TV_informeCanvisEvents.setText(text);
@@ -258,6 +264,7 @@ public class InformeDetallatFragment extends Fragment {
         call.enqueue(new Callback<Collection<CanvisAppBlock>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<CanvisAppBlock>> call, @NonNull Response<Collection<CanvisAppBlock>> response) {
+                    super.onResponse(call, response);
                 if(response.isSuccessful() && response.body() != null){
                     if(response.body().isEmpty()){
                         TextView TV_informeCanvisApps = root.findViewById(R.id.TV_informeCanvisBlock);
@@ -289,6 +296,7 @@ public class InformeDetallatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Collection<CanvisAppBlock>> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
                 TextView TV_informeCanvisApps = root.findViewById(R.id.TV_informeCanvisBlock);
                 String text = TV_informeCanvisApps.getText() + ": 0";
                 TV_informeCanvisApps.setText(text);
