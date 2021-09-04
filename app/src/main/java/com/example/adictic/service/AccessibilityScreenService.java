@@ -23,15 +23,12 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.NonNull;
 
 import com.adictic.common.entity.BlockedLimitedLists;
-import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Constants;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.BlockDeviceActivity;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
-
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,10 +42,6 @@ import retrofit2.Response;
 public class AccessibilityScreenService extends AccessibilityService {
 
     public static AccessibilityScreenService instance;
-
-    private final static int TOTAL_RETRIES = 10;
-    private int retryCountAccessDisp = 0;
-    private int retryCountAccessApp = 0;
 
     private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
@@ -146,16 +139,14 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
-            assert sharedPreferences != null;
-
-            String className = event.getClassName().toString();
-
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && !ignoreActivities.contains(event.getClassName().toString())) {
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
 
-            if(myKM.isDeviceLocked() || ignoreActivities.contains(className))
+            if(myKM.isDeviceLocked())
                 return;
+
+            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
+            assert sharedPreferences != null;
 
             boolean liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
             boolean freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
@@ -172,6 +163,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             }
 
             // Si és una activitat permesa durant bloqueig, posar 'blockDevice' a false
+            String className = event.getClassName().toString();
             if(allowedApps.contains(className))
                 blockDevice = false;
 
@@ -222,38 +214,10 @@ public class AccessibilityScreenService extends AccessibilityService {
                 if(blockedApps != null && !blockedApps.isEmpty())
                     isBlocked = blockedApps.contains(lastPackage);
 
-                if (isBlocked) {
-                    addAccessBlockedApp();
+                if (isBlocked)
                     Funcions.showBlockAppScreen(getApplicationContext(), lastPackage, lastAppName);
-                }
             }
         }
-    }
-
-    private void addAccessBlockedApp(){
-        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
-        if(idChild == -1)
-            return;
-
-        IntentsAccesApp intentsAccesApp = new IntentsAccesApp();
-        intentsAccesApp.appName = lastAppName;
-        intentsAccesApp.pkgName = lastPackage;
-        intentsAccesApp.data = DateTime.now().getMillis();
-        retryCountAccessApp = 0;
-        Call<String> call = mTodoService.postIntentAccesApp(idChild, intentsAccesApp);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if(!response.isSuccessful() && retryCountAccessApp++ < TOTAL_RETRIES)
-                    Funcions.retryFailedCall(this, call, 5000);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                if(retryCountAccessApp++ < TOTAL_RETRIES)
-                    Funcions.retryFailedCall(this, call, 5000);
-            }
-        });
     }
 
     private boolean estaBloquejat() {
