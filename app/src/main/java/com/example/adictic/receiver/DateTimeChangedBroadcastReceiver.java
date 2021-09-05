@@ -12,8 +12,9 @@ public class DateTimeChangedBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         if (action.equals(Intent.ACTION_TIMEZONE_CHANGED) || action.equals(Intent.ACTION_TIME_CHANGED) || action.equals(Intent.ACTION_DATE_CHANGED)) {
             // Inicialitzem workers de bloquejar apps
-            Funcions.runRestartBlockedAppsWorkerOnce(context,0);
-            Funcions.startRestartBlockedAppsWorker24h(context);
+            Funcions.fetchAppBlockFromServer(context);
+//            Funcions.runRestartBlockedAppsWorkerOnce(context,0);
+//            Funcions.startRestartBlockedAppsWorker24h(context);
 
             // Inicialitzem workers d'events
             Funcions.runRestartEventsWorkerOnce(context,0);

@@ -32,11 +32,12 @@ public class BlockDeviceActivity extends AppCompatActivity {
 
     private int retryCountAccessDisp;
     private final int TOTAL_RETRIES = 5;
-    private final AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+    private AdicticApi mTodoService;
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         setContentView(R.layout.block_device_layout);
 
         setText();

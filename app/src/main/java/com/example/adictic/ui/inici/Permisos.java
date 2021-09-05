@@ -299,7 +299,7 @@ public class Permisos extends AppCompatActivity {
                 .setMessage(getString(R.string.accessibility_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())

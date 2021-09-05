@@ -10,6 +10,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -44,6 +45,7 @@ import org.joda.time.DateTime;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -90,19 +92,48 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
-        List<BlockedApp> list = new ArrayList<>();
+        List<BlockedApp> limitedAppsList = new ArrayList<>();
+        List<String> permanentBlockedApps = new ArrayList<>();
         map.remove("blockApp");
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            BlockedApp blockedApp = new BlockedApp();
-            blockedApp.pkgName = entry.getKey();
-            blockedApp.timeLimit = Long.parseLong(entry.getValue());
-            list.add(blockedApp);
+            try {
+                String pkgName = entry.getKey();
+                int totalTime = Integer.parseInt(entry.getValue());
+                if (totalTime == 0)
+                    permanentBlockedApps.add(pkgName);
+                else {
+                    BlockedApp blockedApp = new BlockedApp();
+                    blockedApp.pkgName = pkgName;
+                    blockedApp.timeLimit = totalTime;
+                    limitedAppsList.add(blockedApp);
+                }
+            }
+            catch (NumberFormatException e){
+                e.printStackTrace();
+            }
         }
 
-        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS,list);
+        AccessibilityScreenService.instance.setBlockedApps(permanentBlockedApps);
+        AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
-        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
-        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
+//        Funcions.write2File(getApplicationContext(), Constants.FILE_LIMITED_APPS, limitedAppsList);
+//        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS, permanentBlockedApps);
+
+        // Actualitzem mapa Accessibility amb dades noves
+        HashMap<String, Integer> timeMap = new HashMap<>();
+        if(AccessibilityScreenService.instance != null){
+            for(BlockedApp limitedApp : limitedAppsList) {
+                int dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
+                if (dayAppUsage > limitedApp.timeLimit)
+                    AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
+                else
+                    timeMap.put(limitedApp.pkgName, dayAppUsage);
+            }
+            AccessibilityScreenService.instance.setTempsAppsLimitades(timeMap);
+        }
+
+//        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
+//        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
 
     @Override
@@ -494,7 +525,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 });
             } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
     }
