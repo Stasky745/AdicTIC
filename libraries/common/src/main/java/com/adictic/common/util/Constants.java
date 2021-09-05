@@ -14,6 +14,7 @@ public class Constants {
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
+    public static final String FILE_LIMITED_APPS = "limited_apps";
     public static final String FILE_BLOCKED_APPS = "blocked_apps";
     public static final String FILE_EVENT_BLOCK = "event_block";
     public static final String FILE_HORARIS_NIT = "horaris_nit";
@@ -24,7 +25,8 @@ public class Constants {
     public static final String SHARED_PREFS_PASSWORD = "password";
     public static final String SHARED_PREFS_TOKEN = "firebaseToken";
 
-    public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "current_blocked_apps";
+    public static final String SHARED_PREFS_CHANGE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
+    public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "changed_blocked_apps";
     public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block";
     public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit";
 

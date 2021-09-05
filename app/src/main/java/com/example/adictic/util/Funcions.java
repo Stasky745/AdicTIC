@@ -7,6 +7,8 @@ import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +52,7 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.example.adictic.R;
 import com.example.adictic.entity.BlockedApp;
+import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.service.AccessibilityScreenService;
 import com.example.adictic.service.ForegroundService;
 import com.example.adictic.ui.BlockAppActivity;
@@ -83,8 +86,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -331,20 +336,27 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return found;
     }
 
-    public static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        List<BlockedApp> llista = new ArrayList<>();
+    public static int getDayAppUsage(Context mContext, String pkgName){
+        UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext.getSystemService(Context.USAGE_STATS_SERVICE);
 
-        for(LimitedApps limitedApp : body.limitApps){
-            BlockedApp blockedApp = new BlockedApp();
-            blockedApp.pkgName = limitedApp.name;
-            blockedApp.timeLimit = limitedApp.time;
-            llista.add(blockedApp);
-        }
+        Calendar finalTime = Calendar.getInstance();
 
-        write2File(ctx, Constants.FILE_BLOCKED_APPS,llista);
+        Calendar initialTime = Calendar.getInstance();
+        initialTime.set(Calendar.HOUR_OF_DAY, 0);
+        initialTime.set(Calendar.MINUTE, 0);
+        initialTime.set(Calendar.SECOND, 0);
 
-        runRestartBlockedAppsWorkerOnce(ctx,0);
-        startRestartBlockedAppsWorker24h(ctx);
+        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, initialTime.getTimeInMillis(), finalTime.getTimeInMillis());
+
+        UsageStats appUsageStats = stats.stream()
+                .filter(usageStats -> usageStats.getPackageName().equals(pkgName))
+                .findFirst()
+                .orElse(null);
+
+        if (appUsageStats == null)
+            return 0;
+        else
+            return (int) appUsageStats.getTotalTimeInForeground();
     }
 
     // **************** WORKERS ****************
@@ -430,13 +442,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
-        Data.Builder data = new Data.Builder();
-        data.putLong("id", id);
-
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
                         .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
@@ -447,13 +455,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void runFinishBlockEventWorker(Context mContext, long id, long delay) {
-        Data.Builder data = new Data.Builder();
-        data.putLong("id", id);
-
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
                         .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
                         .build();
 
@@ -748,7 +752,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
     private static Type getListType(String filename) {
         switch (filename) {
-            case Constants.FILE_BLOCKED_APPS:
+            case Constants.FILE_LIMITED_APPS:
                 return new TypeToken<ArrayList<BlockedApp>>() {
                 }.getType();
             case Constants.FILE_EVENT_BLOCK:
@@ -812,5 +816,67 @@ public class Funcions extends com.adictic.common.util.Funcions {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void fetchAppBlockFromServer(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
+            AdicticApi mTodoService = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
+            long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(idChild);
+            call.enqueue(new Callback<BlockedLimitedLists>() {
+                @Override
+                public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
+                    super.onResponse(call, response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        updateDB_BlockedApps(mCtx, response.body());
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        }
+    }
+
+    private static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
+        if(AccessibilityScreenService.instance == null)
+            return;
+
+        List<BlockedApp> appsLimitades = new ArrayList<>();
+        List<String> blockedApps = new ArrayList<>();
+
+        for(LimitedApps limitedApp : body.limitApps){
+            if(limitedApp.time > 0) {
+                BlockedApp blockedApp = new BlockedApp();
+                blockedApp.pkgName = limitedApp.name;
+                blockedApp.timeLimit = limitedApp.time;
+                appsLimitades.add(blockedApp);
+            }
+            else
+                blockedApps.add(limitedApp.name);
+        }
+
+        AccessibilityScreenService.instance.setBlockedApps(blockedApps);
+        AccessibilityScreenService.instance.setAppsLimitades(appsLimitades);
+
+//        Funcions.write2File(ctx, Constants.FILE_LIMITED_APPS, appsLimitades);
+//        Funcions.write2File(ctx, Constants.FILE_BLOCKED_APPS, blockedApps);
+
+        // Actualitzem mapa Accessibility amb dades noves
+        Map<String, Integer> tempsAppsLimitades = new HashMap<>();
+        if(AccessibilityScreenService.instance != null){
+            for(BlockedApp limitedApp : appsLimitades) {
+                int dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
+                if (dayAppUsage > limitedApp.timeLimit)
+                    blockedApps.add(limitedApp.pkgName);
+                else
+                    tempsAppsLimitades.put(limitedApp.pkgName, dayAppUsage);
+            }
+            AccessibilityScreenService.instance.setTempsAppsLimitades(tempsAppsLimitades);
+        }
+
     }
 }
