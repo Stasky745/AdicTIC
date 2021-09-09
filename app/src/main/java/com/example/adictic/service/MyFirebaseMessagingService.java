@@ -130,7 +130,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     timeMap.put(limitedApp.pkgName, dayAppUsage);
             }
             AccessibilityScreenService.instance.setTempsAppsLimitades(timeMap);
+
+            AccessibilityScreenService.instance.setChangedBlockedApps(true);
+
+            // Ensenyar pantalla bloqueig si és una app bloquejada
+            if(AccessibilityScreenService.instance.isCurrentAppBlocked())
+                Funcions.showBlockAppScreen(MyFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
         }
+
 
 //        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
 //        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);

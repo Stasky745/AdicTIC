@@ -79,9 +79,16 @@ public class AccessibilityScreenService extends AccessibilityService {
     private List<String> blockedApps = new ArrayList<>();
     public void addBlockedApp(String app) { blockedApps.add(app); }
     public void setBlockedApps(List<String> list) { blockedApps = list; }
+    public boolean isCurrentAppBlocked() {
+        return currentPackage != null && blockedApps.contains(currentPackage);
+    }
 
     private String lastAppName = "";
     private String lastPackage = "";
+    private String currentPackage = "";
+    private String currentAppName = "";
+    public String getCurrentPackage() { return currentPackage; }
+    public String getCurrentAppName() { return currentAppName; }
 
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
             "com.example.adictic.ui.BlockDeviceActivity",
@@ -106,12 +113,9 @@ public class AccessibilityScreenService extends AccessibilityService {
     public void setChangedBlockedApps(boolean bool) { changedBlockedApps = bool; }
 
     private int activeEvents = 0;
-    private void setActiveEvents(int i) { activeEvents = i; }
-    private void addActiveEvent() { activeEvents++; }
-    private void deleteActiveEvent() {
-        activeEvents--;
-        activeEvents = Math.max(activeEvents, 0);
-    }
+    public void setActiveEvents(int i) { activeEvents = i; }
+    public void addActiveEvent() { activeEvents++; }
+    public void deleteActiveEvent() { activeEvents = Math.max(activeEvents--, 0); }
 
     @Override
     protected void onServiceConnected() {
@@ -183,14 +187,15 @@ public class AccessibilityScreenService extends AccessibilityService {
                 isActivity(event)) {
 
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-            if(myKM.isDeviceLocked())
+            if(myKM.isDeviceLocked()) {
+                currentPackage = "";
                 return;
+            }
 
             sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
             assert sharedPreferences != null;
 
-            String currentPackage = event.getPackageName().toString();
-            String currentAppName;
+            currentPackage = event.getPackageName().toString();
             try {
                 ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
                 currentAppName = appInfo.loadLabel(getPackageManager()).toString();
@@ -218,6 +223,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             if(samePkg && !changedBlockedApps)
                 return;
 
+            changedBlockedApps = false;
             Log.d(TAG, "Nou 'package' sense canvis en bloquejos");
 
             // --- LIVE APP ---
@@ -258,8 +264,13 @@ public class AccessibilityScreenService extends AccessibilityService {
     private boolean isActivity(AccessibilityEvent event) {
         ComponentName componentName = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
         try {
-            return getPackageManager().getActivityInfo(componentName, 0) != null;
+            if(getPackageManager().getActivityInfo(componentName, 0) != null)
+                return true;
+
+            currentPackage = "";
+            return false;
         } catch (PackageManager.NameNotFoundException e) {
+            currentPackage = "";
             return false;
         }
     }
