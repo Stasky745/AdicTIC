@@ -105,6 +105,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private boolean freeUse = false;
     public void setFreeUse(boolean bool) { freeUse = bool; }
+    public boolean getFreeUse() { return  freeUse; }
 
     private boolean blockDevice = false;
     public void setBlockDevice(boolean bool) { blockDevice = bool; }
@@ -192,9 +193,6 @@ public class AccessibilityScreenService extends AccessibilityService {
                 return;
             }
 
-            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
-            assert sharedPreferences != null;
-
             currentPackage = event.getPackageName().toString();
             try {
                 ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
@@ -276,9 +274,6 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     private void cronometrarAppBloquejada(String currentPkg) {
-//        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS, false))
-//            appsLimitades = Funcions.readFromFile(AccessibilityScreenService.this, Constants.FILE_LIMITED_APPS, true);
-
         // Si no hi ha apps limitades, sortim
         if(appsLimitades == null || appsLimitades.isEmpty()) {
             startAppLimitada = 0;
@@ -357,6 +352,9 @@ public class AccessibilityScreenService extends AccessibilityService {
         liveApp.pkgName = pkgName;
         liveApp.appName = appName;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
+
+        if(sharedPreferences == null)
+            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
 
         Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
