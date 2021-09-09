@@ -118,6 +118,9 @@ public class AccessibilityScreenService extends AccessibilityService {
     public void addActiveEvent() { activeEvents++; }
     public void deleteActiveEvent() { activeEvents = Math.max(activeEvents--, 0); }
 
+    private boolean horarisActius = false;
+    public void setHorarisActius(boolean b) { horarisActius = b; }
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -223,9 +226,10 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             changedBlockedApps = false;
             Log.d(TAG, "Nou 'package' sense canvis en bloquejos");
+            boolean shouldDeviceBeBlocked = !freeUse && (blockDevice || activeEvents > 0 || horarisActius);
 
             // --- LIVE APP ---
-            if (liveApp && (freeUse || !blockDevice))
+            if (liveApp && !shouldDeviceBeBlocked)
                 enviarLiveApp(currentPackage, currentAppName);
 
             // --- FREE USE ---
@@ -237,7 +241,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             // --- BLOCK DEVICE ---
             String className = event.getClassName().toString();
-            if (blockDevice && !myKM.isDeviceLocked() && !allowedApps.contains(className)) {
+            if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className)) {
                 showBlockedDeviceScreen();
                 return;
             }
@@ -387,7 +391,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = true;
                 enviarLastApp();
             }
-            else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0)) && !myKM.isDeviceLocked())
+            else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0 && !instance.horarisActius)) && !myKM.isDeviceLocked())
                 wasLocked = false;
         }
 
