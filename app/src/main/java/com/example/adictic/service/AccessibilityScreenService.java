@@ -251,6 +251,9 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
     }
 
+    @Override
+    public void onInterrupt() { }
+
     private boolean isActivity(AccessibilityEvent event) {
         ComponentName componentName = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
         try {
@@ -332,12 +335,6 @@ public class AccessibilityScreenService extends AccessibilityService {
         Log.d(TAG,"Worker bloqueigAppWorker (únic) Començat");
     }
 
-    private boolean estaBloquejat() {
-        return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
-                || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false)
-                || sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0;
-    }
-
     public void enviarLiveApp(){
         enviarLiveApp(lastPackage, lastAppName);
     }
@@ -361,18 +358,6 @@ public class AccessibilityScreenService extends AccessibilityService {
                 super.onFailure(call, t);
             }
         });
-    }
-
-    private ActivityInfo tryGetActivity(ComponentName componentName) {
-        try {
-            return getPackageManager().getActivityInfo(componentName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public void onInterrupt() {
     }
 
     private void registerScreenLockReceiver() {
