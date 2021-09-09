@@ -89,7 +89,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     ));
 
     private final List<String> ignoreActivities = new ArrayList<>(Arrays.asList(
-            "android.widget.FrameLayout"
+            "android.widget.FrameLayout",
+            "com.example.adictic.ui.BlockAppActivity"
     ));
 
     private boolean liveApp = false;
@@ -259,7 +260,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         try {
             return getPackageManager().getActivityInfo(componentName, 0) != null;
         } catch (PackageManager.NameNotFoundException e) {
-            return true;
+            return false;
         }
     }
 
