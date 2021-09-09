@@ -58,6 +58,7 @@ import com.example.adictic.service.ForegroundService;
 import com.example.adictic.ui.BlockAppActivity;
 import com.example.adictic.workers.AppUsageWorker;
 import com.example.adictic.workers.GeoLocWorker;
+import com.example.adictic.workers.HorarisWorker;
 import com.example.adictic.workers.ServiceWorker;
 import com.example.adictic.workers.UpdateTokenWorker;
 import com.example.adictic.workers.block_apps.BlockAppWorker;
@@ -72,6 +73,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.DurationFieldType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -224,9 +227,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     else
                         write2File(ctx, Constants.FILE_EVENT_BLOCK, response.body().events);
 
+                    setEvents(ctx, new ArrayList<>(response.body().events));
+
                     // Engeguem els workers
                     runRestartEventsWorkerOnce(ctx,0);
                     startRestartEventsWorker24h(ctx);
+
                 }
             }
 
@@ -234,6 +240,17 @@ public class Funcions extends com.adictic.common.util.Funcions {
             public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
                     super.onFailure(call, t); }
         });
+    }
+
+    private static void setEvents(Context ctx, ArrayList<EventBlock> events) {
+        // Aturem tots els workers d'Events que estiguin configurats
+        WorkManager.getInstance(ctx)
+                .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
+
+        if(events == null || events.isEmpty())
+            return;
+
+
     }
 
     public static void checkHoraris(Context ctx) {
@@ -256,9 +273,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     else
                         write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
 
+                    setHoraris(ctx, new ArrayList<>(response.body().horarisNit));
                     // Engeguem els workers
-                    runRestartHorarisWorkerOnce(ctx,0);
-                    startRestartHorarisWorker24h(ctx);
+//                    runRestartHorarisWorkerOnce(ctx,0);
+//                    startRestartHorarisWorker24h(ctx);
                 }
             }
 
@@ -266,6 +284,52 @@ public class Funcions extends com.adictic.common.util.Funcions {
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
                     super.onFailure(call, t); }
         });
+    }
+
+    private static void setHoraris(Context ctx, List<HorarisNit> horaris){
+        // Aturem tots els workers d'Horaris que estiguin configurats
+        WorkManager.getInstance(ctx)
+                .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
+
+        if(horaris == null || horaris.isEmpty())
+            return;
+
+        DateTime now = DateTime.now();
+        int currentDay = now.get(DateTimeFieldType.dayOfWeek());
+
+        for(HorarisNit horari : horaris){
+            long wakeDelay;
+            long sleepDelay;
+
+            int daysAdded = horari.dia < currentDay ? 7 - currentDay + horari.dia : horari.dia - currentDay;
+
+            DateTime nextDay = DateTime.now();
+            nextDay.withFieldAdded(DurationFieldType.days(), daysAdded);
+            nextDay.withMillisOfDay(horari.despertar);
+
+            wakeDelay = nextDay.getMillis() - now.getMillis();
+
+            // Si wakeDelay es negatiu vol dir que ha passat ja durant el dia d'avui
+            if(wakeDelay < 0){
+                nextDay.withFieldAdded(DurationFieldType.days(), 7);
+                wakeDelay = nextDay.getMillis() - now.getMillis();
+            }
+            else if(nextDay.getDayOfWeek() == currentDay && AccessibilityScreenService.instance != null)
+                AccessibilityScreenService.instance.setHorarisActius(true);
+
+            nextDay.withMillisOfDay(horari.dormir);
+
+            sleepDelay = nextDay.getMillis() - now.getMillis();
+
+            // Si sleepDelay es negatiu vol dir que ha passat ja durant el dia d'avui
+            if(sleepDelay < 0){
+                nextDay.withFieldAdded(DurationFieldType.days(), 7);
+                sleepDelay = nextDay.getMillis() - now.getMillis();
+            }
+
+            Funcions.setUpHorariWorker(ctx, wakeDelay, false);
+            Funcions.setUpHorariWorker(ctx, sleepDelay, true);
+        }
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
@@ -484,6 +548,24 @@ public class Funcions extends com.adictic.common.util.Funcions {
                         myWork);
 
         Log.d(TAG,"Worker RestartEvents 24h Configurat");
+    }
+
+    public static void setUpHorariWorker(Context mContext, long delay, boolean startSleep){
+        Data data = new Data.Builder()
+                .putBoolean("start", startSleep)
+                .build();
+
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(HorarisWorker.class, 7, TimeUnit.DAYS)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
+                        .setInputData(data)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueue(myWork);
+
+        Log.d(TAG,"Worker RestartEvents (únic) Començat");
     }
 
     public static void runRestartHorarisWorkerOnce(Context mContext, long delay){

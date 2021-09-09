@@ -17,12 +17,14 @@ public class DateTimeChangedBroadcastReceiver extends BroadcastReceiver {
 //            Funcions.startRestartBlockedAppsWorker24h(context);
 
             // Inicialitzem workers d'events
-            Funcions.runRestartEventsWorkerOnce(context,0);
-            Funcions.startRestartEventsWorker24h(context);
+            Funcions.checkEvents(context);
+//            Funcions.runRestartEventsWorkerOnce(context,0);
+//            Funcions.startRestartEventsWorker24h(context);
 
             // Inicialitzem workers d'horaris
-            Funcions.runRestartHorarisWorkerOnce(context, 0);
-            Funcions.startRestartHorarisWorker24h(context);
+            Funcions.checkHoraris(context);
+//            Funcions.runRestartHorarisWorkerOnce(context, 0);
+//            Funcions.startRestartHorarisWorker24h(context);
         }
     }
 }
