@@ -392,7 +392,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = true;
                 enviarLastApp();
             }
-            else if(intent.getAction().equals(ACTION_SCREEN_ON) && !myKM.isDeviceLocked())
+            else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0)) && !myKM.isDeviceLocked())
                 wasLocked = false;
         }
 
