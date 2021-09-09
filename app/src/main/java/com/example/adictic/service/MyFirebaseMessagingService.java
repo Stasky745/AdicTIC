@@ -192,13 +192,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Funcions.runGeoLocWorker(MyFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
-                        DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
-                        if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
+
+                        boolean freeUse = AccessibilityScreenService.instance == null ? sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false) : AccessibilityScreenService.instance.getFreeUse();
+
+                        if(AccessibilityScreenService.instance != null)
+                            AccessibilityScreenService.instance.setBlockDevice(true);
+
+                        if(!freeUse)
                             Funcions.showBlockDeviceScreen(MyFirebaseMessagingService.this);
                     }
                     else {
+                        if(AccessibilityScreenService.instance != null)
+                            AccessibilityScreenService.instance.setBlockDevice(true);
+
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
                         sendBlockDeviceTime(sharedPreferences);
                     }
@@ -208,9 +216,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
 
+                        if(AccessibilityScreenService.instance != null)
+                            AccessibilityScreenService.instance.setFreeUse(true);
+
                         title = getString(R.string.free_use_activation);
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
+
+                        if(AccessibilityScreenService.instance != null)
+                            AccessibilityScreenService.instance.setFreeUse(false);
 
                         sendFreeUseTime(sharedPreferences);
                         Funcions.endFreeUse(getApplicationContext());
@@ -227,6 +241,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 case "liveApp":
                     String s = messageMap.get("liveApp");
                     boolean active = Boolean.parseBoolean(messageMap.get("bool"));
+
+                    if(AccessibilityScreenService.instance != null)
+                        AccessibilityScreenService.instance.setLiveApp(active);
+
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
                     if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
