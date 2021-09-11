@@ -354,6 +354,7 @@
     <string name="horaris_incorrectes_body">"\n        <![CDATA[
             El horario <font color="#3c9df8"><b>%s</b></font> es incorrecto. La hora de despertar debe ser inferior a la de dormir.
         ]]>\n    "</string>
+    <string name="horaris_buits_body">Hay horarios sin determinar. Por favor, rellene todos los horarios.</string>
 
 <!--    PERMISOS ENLLAÇ DISPOSITIU FILL -->
     <string name="permis_titol">¿Quieres vincular tu dispositivo móvil a AdicTIC?</string>
