@@ -306,7 +306,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
                 if(endTimeDelay < 0)
                     endTimeDelay = date.getTimeInMillis() + pair.second - now;
-                else {
+                else if(!AccessibilityScreenService.instance.getFreeUse()){
                     AccessibilityScreenService.instance.setActiveEvents(1);
                     showBlockDeviceScreen(ctx);
                 }
@@ -383,7 +383,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 date.add(Calendar.DAY_OF_YEAR, 1);
                 wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
 
-                if(sleepTimeDelay < 0) {
+                if(sleepTimeDelay < 0 && !AccessibilityScreenService.instance.getFreeUse()) {
                     sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
                     AccessibilityScreenService.instance.setHorarisActius(true);
                     showBlockDeviceScreen(ctx);
@@ -411,9 +411,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 date.add(Calendar.WEEK_OF_YEAR, 1);
                 wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
 
-                if(sleepTimeDelay < 0)
+                if(sleepTimeDelay < 0 && !AccessibilityScreenService.instance.getFreeUse()) {
                     sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
-                else {
                     AccessibilityScreenService.instance.setHorarisActius(true);
                     showBlockDeviceScreen(ctx);
                 }
