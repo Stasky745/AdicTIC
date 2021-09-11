@@ -136,8 +136,6 @@ public class AccessibilityScreenService extends AccessibilityService {
         else {
             fetchDades();
 
-            blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, true);
-
             lastAppName = "";
             lastPackage = "";
 
@@ -155,7 +153,6 @@ public class AccessibilityScreenService extends AccessibilityService {
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
         blockDevice = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false);
-        changedBlockedApps = sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_CURRENT_BLOCKED_APPS,false);
 
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
             AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();

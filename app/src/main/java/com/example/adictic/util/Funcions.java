@@ -331,12 +331,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful()) {
-                    if(response.body() == null || response.body().horarisNit.isEmpty())
-                        write2File(ctx, Constants.FILE_HORARIS_NIT, null);
-                    else
-                        write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
+//                    if(response.body() == null || response.body().horarisNit.isEmpty())
+//                        write2File(ctx, Constants.FILE_HORARIS_NIT, null);
+//                    else
+//                        write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
 
                     setHoraris(ctx, response.body());
                     // Engeguem els workers
