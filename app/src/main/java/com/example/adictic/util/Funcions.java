@@ -298,9 +298,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 date.add(Calendar.WEEK_OF_YEAR, 1);
                 startTimeDelay = date.getTimeInMillis() + pair.first - now;
 
-                if(endTimeDelay < 0){
+                if(endTimeDelay < 0)
                     endTimeDelay = date.getTimeInMillis() + pair.first - now;
-                }
+                else
+                    AccessibilityScreenService.instance.setActiveEvents(1);
             }
 
             // Engegar workers
