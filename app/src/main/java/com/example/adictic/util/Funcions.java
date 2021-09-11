@@ -251,6 +251,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
+        if(AccessibilityScreenService.instance == null) {
+            return;
+        }
+
+        AccessibilityScreenService.instance.setActiveEvents(0);
+
         if(events == null || events.isEmpty())
             return;
 
@@ -299,7 +305,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 startTimeDelay = date.getTimeInMillis() + pair.first - now;
 
                 if(endTimeDelay < 0)
-                    endTimeDelay = date.getTimeInMillis() + pair.first - now;
+                    endTimeDelay = date.getTimeInMillis() + pair.second - now;
                 else {
                     AccessibilityScreenService.instance.setActiveEvents(1);
                     showBlockDeviceScreen(ctx);
@@ -332,7 +338,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     else
                         write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
 
-                    setHoraris(ctx, new ArrayList<>(response.body().horarisNit));
+                    setHoraris(ctx, response.body());
                     // Engeguem els workers
 //                    runRestartHorarisWorkerOnce(ctx,0);
 //                    startRestartHorarisWorker24h(ctx);
@@ -345,49 +351,76 @@ public class Funcions extends com.adictic.common.util.Funcions {
         });
     }
 
-    private static void setHoraris(Context ctx, List<HorarisNit> horaris){
+    private static void setHoraris(Context ctx, HorarisAPI horarisAPI){
         // Aturem tots els workers d'Horaris que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
 
-        if(horaris == null || horaris.isEmpty())
+        if(AccessibilityScreenService.instance == null)
             return;
 
-        DateTime now = DateTime.now();
-        int currentDay = now.get(DateTimeFieldType.dayOfWeek());
+        AccessibilityScreenService.instance.setHorarisActius(false);
+
+        List<HorarisNit> horaris = new ArrayList<>(horarisAPI.horarisNit);
+
+        if(horaris.isEmpty())
+            return;
+
+        // Si és genèric, fem que els workers vagin cada dia
+        if(horarisAPI.tipus.equals(3)){
+            HorarisNit horari = horaris.get(0);
+
+            Calendar date = Calendar.getInstance();
+            long now = date.getTimeInMillis();
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+
+            long wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
+            long sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+
+            if(wakeTimeDelay < 0) {
+                date.add(Calendar.DAY_OF_YEAR, 1);
+                wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
+
+                if(sleepTimeDelay < 0) {
+                    sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+                    AccessibilityScreenService.instance.setHorarisActius(true);
+                    showBlockDeviceScreen(ctx);
+                }
+            }
+
+            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, true);
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, true);
+
+            return;
+        }
 
         for(HorarisNit horari : horaris){
-            long wakeDelay;
-            long sleepDelay;
+            Calendar date = Calendar.getInstance();
+            long now = date.getTimeInMillis();
+            date.set(Calendar.DAY_OF_WEEK, horari.dia);
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
 
-            int daysAdded = horari.dia < currentDay ? 7 - currentDay + horari.dia : horari.dia - currentDay;
+            long wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
+            long sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
 
-            DateTime nextDay = DateTime.now();
-            nextDay.withFieldAdded(DurationFieldType.days(), daysAdded);
-            nextDay.withMillisOfDay(horari.despertar);
+            if(wakeTimeDelay < 0) {
+                date.add(Calendar.WEEK_OF_YEAR, 1);
+                wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
 
-            wakeDelay = nextDay.getMillis() - now.getMillis();
-
-            // Si wakeDelay es negatiu vol dir que ha passat ja durant el dia d'avui
-            if(wakeDelay < 0){
-                nextDay.withFieldAdded(DurationFieldType.days(), 7);
-                wakeDelay = nextDay.getMillis() - now.getMillis();
-            }
-            else if(nextDay.getDayOfWeek() == currentDay && AccessibilityScreenService.instance != null)
-                AccessibilityScreenService.instance.setHorarisActius(true);
-
-            nextDay.withMillisOfDay(horari.dormir);
-
-            sleepDelay = nextDay.getMillis() - now.getMillis();
-
-            // Si sleepDelay es negatiu vol dir que ha passat ja durant el dia d'avui
-            if(sleepDelay < 0){
-                nextDay.withFieldAdded(DurationFieldType.days(), 7);
-                sleepDelay = nextDay.getMillis() - now.getMillis();
+                if(sleepTimeDelay < 0)
+                    sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+                else {
+                    AccessibilityScreenService.instance.setHorarisActius(true);
+                    showBlockDeviceScreen(ctx);
+                }
             }
 
-            Funcions.setUpHorariWorker(ctx, wakeDelay, false);
-            Funcions.setUpHorariWorker(ctx, sleepDelay, true);
+            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, false);
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
         }
     }
 
@@ -627,7 +660,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         Log.d(TAG,"Worker RestartEvents 24h Configurat");
     }
 
-    private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep){
+    private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep, boolean daily){
         Data data = new Data.Builder()
                 .putBoolean("start", startSleep)
                 .build();

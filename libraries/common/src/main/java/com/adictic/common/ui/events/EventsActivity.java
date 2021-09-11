@@ -137,7 +137,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     @Override
     public void onSelectedData(EventBlock newEvent, boolean delete) {
         events.events.stream()
-                .filter(eb -> eb.id == newEvent.id)
+                .filter(eb -> eb.id > 0 && eb.id == newEvent.id)
                 .findAny()
                 .ifPresent(eventBlock -> events.events.remove(eventBlock));
         canvis = 1;

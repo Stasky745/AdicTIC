@@ -159,9 +159,9 @@ public class Funcions {
     }
 
     // retorna -1 si no hi ha hora establerta
-    public static int string2MillisOfDay(String time){
+    public static Integer string2MillisOfDay(String time){
         if(time == null || time.equals(""))
-            return -1;
+            return null;
 
         String[] time2 = time.split(":");
         DateTime dateTime = new DateTime()
