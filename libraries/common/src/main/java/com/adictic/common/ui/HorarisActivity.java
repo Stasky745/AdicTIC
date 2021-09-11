@@ -234,59 +234,59 @@ public class HorarisActivity extends AppCompatActivity {
 
         for (HorarisNit horarisNit : horarisNits.horarisNit){
             if(horarisNit.dia == Calendar.MONDAY){
-                if(horarisNit.despertar != -1){
+                if(horarisNit.despertar != null && horarisNit.despertar != -1){
                     ET_wakeMon.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                     ET_wakeGeneric.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                     ET_wakeWeekday.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 }
-                if(horarisNit.dormir != -1) {
+                if(horarisNit.dormir != null && horarisNit.dormir != -1) {
                     ET_sleepMon.setText(Funcions.millisOfDay2String(horarisNit.dormir));
                     ET_sleepGeneric.setText(Funcions.millisOfDay2String(horarisNit.dormir));
                     ET_sleepWeekday.setText(Funcions.millisOfDay2String(horarisNit.dormir));
                 }
             }
             else if(horarisNit.dia == Calendar.TUESDAY){
-                if(horarisNit.despertar != -1)
+                if(horarisNit.despertar != null && horarisNit.despertar != -1)
                     ET_wakeTue.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                if(horarisNit.dormir != -1)
+                if(horarisNit.dormir != null && horarisNit.dormir != -1)
                     ET_sleepTue.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.WEDNESDAY){
-                if(horarisNit.despertar != -1)
+                if(horarisNit.despertar != null && horarisNit.despertar != -1)
                     ET_wakeWed.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                if(horarisNit.dormir != -1)
+                if(horarisNit.dormir != null && horarisNit.dormir != -1)
                     ET_sleepWed.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.THURSDAY){
-                if(horarisNit.despertar != -1)
+                if(horarisNit.despertar != null && horarisNit.despertar != -1)
                     ET_wakeThu.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                if(horarisNit.dormir != -1)
+                if(horarisNit.dormir != null && horarisNit.dormir != -1)
                     ET_sleepThu.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.FRIDAY){
-                if(horarisNit.despertar != -1)
+                if(horarisNit.despertar != null && horarisNit.despertar != -1)
                     ET_wakeFri.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                if(horarisNit.dormir != -1)
+                if(horarisNit.dormir != null && horarisNit.dormir != -1)
                     ET_sleepFri.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.SATURDAY){
-                if(horarisNit.despertar != -1)
+                if(horarisNit.despertar != null && horarisNit.despertar != -1)
                     ET_wakeSat.setText(Funcions.millisOfDay2String(horarisNit.despertar));
 
-                if(horarisNit.dormir != -1)
+                if(horarisNit.dormir != null && horarisNit.dormir != -1)
                     ET_sleepSat.setText(Funcions.millisOfDay2String(horarisNit.dormir));
             }
             else if(horarisNit.dia == Calendar.SUNDAY){
-                if(horarisNit.despertar != -1){
+                if(horarisNit.despertar != null && horarisNit.despertar != -1){
                     ET_wakeSun.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                     ET_wakeWeekend.setText(Funcions.millisOfDay2String(horarisNit.despertar));
                 }
 
-                if(horarisNit.dormir != -1) {
+                if(horarisNit.dormir != null && horarisNit.dormir != -1) {
                     ET_sleepSun.setText(Funcions.millisOfDay2String(horarisNit.dormir));
                     ET_sleepWeekend.setText(Funcions.millisOfDay2String(horarisNit.dormir));
                 }
@@ -388,6 +388,29 @@ public class HorarisActivity extends AppCompatActivity {
 
         ET_sleepWeekday.setText("");
         ET_sleepWeekend.setText("");
+
+        HorarisAPI horaris = new HorarisAPI();
+        horaris.horarisNit = new ArrayList<>();
+        horaris.tipus = chipGroup.getCheckedChipId();
+
+        Call<String> call = mTodoService.postHoraris(idChild, horaris);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if (response.isSuccessful())
+                    finish();
+                else
+                    Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+                Toast.makeText(HorarisActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void sendHoraris() {
@@ -530,6 +553,10 @@ public class HorarisActivity extends AppCompatActivity {
                     horari.dormir = Funcions.string2MillisOfDay(ET_sleepGeneric.getText().toString());
                 }
             }
+            if(horari.despertar == null || horari.dormir == null){
+                errorHorarisBuitsDialog();
+                return null;
+            }
             if(horari.despertar > horari.dormir) {
                 errorHorarisDialog(i);
                 return null;
@@ -538,6 +565,15 @@ public class HorarisActivity extends AppCompatActivity {
         }
 
         return res;
+    }
+
+    private void errorHorarisBuitsDialog() {
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle(R.string.horaris_incorrectes)
+                .setMessage(R.string.horaris_buits_body)
+                .setNeutralButton(getString(R.string.accept), null)
+                .show();
     }
 
     // Passem el dia de la setmana

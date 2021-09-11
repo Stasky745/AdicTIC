@@ -31,7 +31,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-
+            "Ara ja es poden afegir més events de cop"
     };
 
     public static String[] changes = {

@@ -38,7 +38,7 @@ public class BlockAppWorker extends Worker {
         List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
         List<AppUsage> appUsageList = new ArrayList<>(gul.get(0).usage);
 
-        List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_BLOCKED_APPS,false);
+        List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_LIMITED_APPS,false);
         if(blockedApps == null || blockedApps.isEmpty()) {
             Log.i(TAG,"BlockedAppList null o empty -> SUCCESS");
             return Result.success();

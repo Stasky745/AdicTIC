@@ -124,7 +124,7 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
 
-        String action = intent.getAction() != null ? intent.getAction() : "-1";
+        String action = intent != null && intent.getAction() != null ? intent.getAction() : "-1";
 
         switch (action) {
             case Constants.FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN:
