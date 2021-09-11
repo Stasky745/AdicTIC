@@ -300,8 +300,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
                 if(endTimeDelay < 0)
                     endTimeDelay = date.getTimeInMillis() + pair.first - now;
-                else
+                else {
                     AccessibilityScreenService.instance.setActiveEvents(1);
+                    showBlockDeviceScreen(ctx);
+                }
             }
 
             // Engegar workers
