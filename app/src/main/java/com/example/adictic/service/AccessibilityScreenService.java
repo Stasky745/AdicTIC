@@ -21,20 +21,34 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.example.adictic.entity.BlockedApp;
 import com.example.adictic.rest.AdicticApi;
 import com.example.adictic.ui.BlockDeviceActivity;
 import com.example.adictic.util.AdicticApp;
 import com.example.adictic.util.Funcions;
+import com.example.adictic.workers.block_apps.BlockSingleAppWorker;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -49,13 +63,32 @@ public class AccessibilityScreenService extends AccessibilityService {
             "com.android.systemui",
             "com.miui.aod"
     ));
-    private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
 
-    private List<String> blockedApps;
+    private List<BlockedApp> appsLimitades = new ArrayList<>();
+    public void setAppsLimitades(List<BlockedApp> list) { appsLimitades = list; }
+    public void putAppLimitada(BlockedApp blockedApp) { appsLimitades.add(blockedApp); }
 
-    private String lastAppName;
-    private String lastPackage;
+    private Map<String, Integer> tempsAppsLimitades = new HashMap<>();
+    public void setTempsAppsLimitades (Map<String, Integer> map) { tempsAppsLimitades = map; }
+    public void putTempsAppLimitada (String pkgName, Integer time) { tempsAppsLimitades.put(pkgName, time); }
+
+    private int startAppLimitada = 0;
+    private int ultimCopAcceditApp = 0;
+
+    private List<String> blockedApps = new ArrayList<>();
+    public void addBlockedApp(String app) { blockedApps.add(app); }
+    public void setBlockedApps(List<String> list) { blockedApps = list; }
+    public boolean isCurrentAppBlocked() {
+        return currentPackage != null && blockedApps.contains(currentPackage);
+    }
+
+    private String lastAppName = "";
+    private String lastPackage = "";
+    private String currentPackage = "";
+    private String currentAppName = "";
+    public String getCurrentPackage() { return currentPackage; }
+    public String getCurrentAppName() { return currentAppName; }
 
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
             "com.example.adictic.ui.BlockDeviceActivity",
@@ -63,8 +96,30 @@ public class AccessibilityScreenService extends AccessibilityService {
     ));
 
     private final List<String> ignoreActivities = new ArrayList<>(Arrays.asList(
-            "android.widget.FrameLayout"
+            "android.widget.FrameLayout",
+            "com.example.adictic.ui.BlockAppActivity"
     ));
+
+    private boolean liveApp = false;
+    public void setLiveApp(boolean bool) { liveApp = bool; }
+
+    private boolean freeUse = false;
+    public void setFreeUse(boolean bool) { freeUse = bool; }
+    public boolean getFreeUse() { return  freeUse; }
+
+    private boolean blockDevice = false;
+    public void setBlockDevice(boolean bool) { blockDevice = bool; }
+
+    private boolean changedBlockedApps = false;
+    public void setChangedBlockedApps(boolean bool) { changedBlockedApps = bool; }
+
+    private int activeEvents = 0;
+    public void setActiveEvents(int i) { activeEvents = i; }
+    public void addActiveEvent() { activeEvents++; }
+    public void deleteActiveEvent() { activeEvents = Math.max(activeEvents--, 0); }
+
+    private boolean horarisActius = false;
+    public void setHorarisActius(boolean b) { horarisActius = b; }
 
     @Override
     protected void onServiceConnected() {
@@ -81,9 +136,6 @@ public class AccessibilityScreenService extends AccessibilityService {
         else {
             fetchDades();
 
-            mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
-            blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, true);
-
             lastAppName = "";
             lastPackage = "";
 
@@ -98,27 +150,17 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     private void fetchDades() {
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
+        freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
+        blockDevice = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false);
+
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
+            AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-            Call<BlockedLimitedLists> call = mTodoService.getBlockedLimitedLists(idChild);
-            call.enqueue(new Callback<BlockedLimitedLists>() {
-                @Override
-                public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
-                    super.onResponse(call, response);
-                    if (response.isSuccessful() && response.body() != null) {
-                        Funcions.updateDB_BlockedApps(getApplicationContext(), response.body());
-                    }
-                }
+            Funcions.fetchAppBlockFromServer(AccessibilityScreenService.this);
 
-                @Override
-                public void onFailure(@NonNull Call<BlockedLimitedLists> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                }
-            });
-
-            Funcions.checkEvents(getApplicationContext());
-            Funcions.checkHoraris(getApplicationContext());
+            Funcions.checkEvents(AccessibilityScreenService.this);
+            Funcions.checkHoraris(AccessibilityScreenService.this);
 
             Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
             call2.enqueue(new Callback<Boolean>() {
@@ -141,22 +183,17 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && !ignoreActivities.contains(event.getClassName().toString())) {
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+                !ignoreActivities.contains(event.getClassName().toString()) &&
+                isActivity(event)) {
+
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-
-            if(myKM.isDeviceLocked())
+            if(myKM.isDeviceLocked()) {
+                currentPackage = "";
                 return;
+            }
 
-            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
-            assert sharedPreferences != null;
-
-            boolean liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
-            boolean freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
-            boolean blockDevice = !freeUse && estaBloquejat();
-            boolean changedBlockedApps = sharedPreferences.getBoolean(Constants.SHARED_PREFS_CHANGE_BLOCKED_APPS,false);
-
-            String currentPackage = event.getPackageName().toString();
-            String currentAppName;
+            currentPackage = event.getPackageName().toString();
             try {
                 ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
                 currentAppName = appInfo.loadLabel(getPackageManager()).toString();
@@ -164,28 +201,33 @@ public class AccessibilityScreenService extends AccessibilityService {
                 currentAppName = event.getPackageName().toString();
             }
 
-            // Si és una activitat permesa durant bloqueig, posar 'blockDevice' a false
-            String className = event.getClassName().toString();
-            if(allowedApps.contains(className))
-                blockDevice = false;
+            boolean samePkg = currentPackage.equals(lastPackage);
+
+            // Reset al mapa de temps si és un dia nou
+            int today = DateTime.now().get(DateTimeFieldType.dayOfYear());
+            if(ultimCopAcceditApp != today || ultimCopAcceditApp == 0){
+                ultimCopAcceditApp = today;
+                tempsAppsLimitades.clear();
+
+//                blockedApps = Funcions.readFromFile(AccessibilityScreenService.this, Constants.FILE_BLOCKED_APPS, true);
+//                Funcions.write2File(AccessibilityScreenService.this, Constants.FILE_CURRENT_BLOCKED_APPS, blockedApps);
+            }
+
+            // Cronometrem el temps d'ús de l'app si està bloquejada
+            if(!samePkg)
+                cronometrarAppBloquejada(currentPackage);
 
             // Si estem al mateix pkg i no hi ha hagut canvis a bloquejos d'apps i l'app no està bloquejada sortim
-            if(lastPackage.equals(currentPackage) && !changedBlockedApps)
+            if(samePkg && !changedBlockedApps)
                 return;
 
+            changedBlockedApps = false;
             Log.d(TAG, "Nou 'package' sense canvis en bloquejos");
+            boolean shouldDeviceBeBlocked = !freeUse && (blockDevice || activeEvents > 0 || horarisActius);
 
             // --- LIVE APP ---
-            if (liveApp && !blockDevice) {
-//                String pkgName = lastPackage;
-//                String appName = lastActivity;
-//                if(!blackListLiveApp.contains(event.getPackageName().toString())) {
-//                    pkgName = currentPackage;
-//                    appName = currentAppName;
-//                }
-//                enviarLiveApp(pkgName, appName);
+            if (liveApp && !shouldDeviceBeBlocked)
                 enviarLiveApp(currentPackage, currentAppName);
-            }
 
             // --- FREE USE ---
             // Si és FreeUse, tornem sense fer res
@@ -195,37 +237,110 @@ public class AccessibilityScreenService extends AccessibilityService {
             }
 
             // --- BLOCK DEVICE ---
-            if (blockDevice && !myKM.isDeviceLocked()) {
+            String className = event.getClassName().toString();
+            if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className)) {
                 showBlockedDeviceScreen();
                 return;
             }
 
             // --- TRACTAR APP ACTUAL ---
-            // Només entrem a fer coses si s'han canviat les apps bloquejades o el pkgName és diferent a l'anterior (per evitar activitats) I dispositiu no està bloquejat
-            if(changedBlockedApps || !currentPackage.equals(lastPackage)) {
-                lastPackage = currentPackage;
-                lastAppName = currentAppName;
-                Log.d(TAG, "Window State Changed - Event: " + currentPackage);
+            lastPackage = currentPackage;
+            lastAppName = currentAppName;
 
-                if (changedBlockedApps) {
-                    blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, true);
-                }
+            //Mirem si l'app està bloquejada
+            boolean isBlocked = false;
+            if(blockedApps != null && !blockedApps.isEmpty())
+                isBlocked = blockedApps.contains(lastPackage);
 
-                //Mirem si l'app està bloquejada
-                boolean isBlocked = false;
-                if(blockedApps != null && !blockedApps.isEmpty())
-                    isBlocked = blockedApps.contains(lastPackage);
-
-                if (isBlocked)
-                    Funcions.showBlockAppScreen(getApplicationContext(), lastPackage, lastAppName);
-            }
+            if (isBlocked)
+                Funcions.showBlockAppScreen(getApplicationContext(), lastPackage, lastAppName);
         }
     }
 
-    private boolean estaBloquejat() {
-        return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false)
-                || sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT,false)
-                || sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0;
+    @Override
+    public void onInterrupt() { }
+
+    private boolean isActivity(AccessibilityEvent event) {
+        ComponentName componentName = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
+        try {
+            if(getPackageManager().getActivityInfo(componentName, 0) != null)
+                return true;
+
+            currentPackage = "";
+            return false;
+        } catch (PackageManager.NameNotFoundException e) {
+            currentPackage = "";
+            return false;
+        }
+    }
+
+    private void cronometrarAppBloquejada(String currentPkg) {
+        // Si no hi ha apps limitades, sortim
+        if(appsLimitades == null || appsLimitades.isEmpty()) {
+            startAppLimitada = 0;
+            return;
+        }
+
+        // Si startAppLimitada és superior a 0, lastPackage està limitat. Actualitzem
+        if(startAppLimitada > 0){
+            int tempsUsAppLimitada = DateTime.now().getMillisOfDay() - startAppLimitada;
+
+            if(tempsAppsLimitades.containsKey(lastPackage))
+                tempsUsAppLimitada += tempsAppsLimitades.getOrDefault(lastPackage, 0);
+
+            tempsAppsLimitades.put(lastPackage, tempsUsAppLimitada);
+
+            // Cancel·lem el worker de bloqueig d'app
+            cancelarWorkerBloqueigApp();
+        }
+
+        startAppLimitada = 0;
+
+        // Si l'app actual està bloquejada, tornem
+        if(blockedApps != null && blockedApps.contains(currentPkg))
+            return;
+
+        // Si l'app actual està limitada, comencem a comptar. Sinó tornem
+        BlockedApp blockedApp = appsLimitades.stream()
+                .filter(blockedApp1 -> blockedApp1.pkgName.equals(currentPkg))
+                .findFirst()
+                .orElse(null);
+
+        if(blockedApp == null)
+            return;
+
+        startAppLimitada = DateTime.now().getMillisOfDay();
+
+        Integer appTimeUsed = tempsAppsLimitades.getOrDefault(currentPkg, 0);
+
+        long delay = appTimeUsed != null ? blockedApp.timeLimit - appTimeUsed : blockedApp.timeLimit;
+
+        // Engegar worker amb delay blockedApp.timeBlocked - appTimeUsed
+        programarWorkerBloqueigApp(currentPkg, delay);
+    }
+
+    private void cancelarWorkerBloqueigApp(){
+        // Cancelem tots els workers que hi pugui haver
+        WorkManager.getInstance(getApplicationContext())
+                .cancelUniqueWork("bloqueigAppWorker");
+
+        Log.d(TAG,"Worker bloqueigAppWorker (únic) cancel·lat");
+    }
+
+    private void programarWorkerBloqueigApp(String pkgName, long delay){
+        Data.Builder data = new Data.Builder();
+        data.putString("pkgName", pkgName);
+
+        OneTimeWorkRequest myWork =
+                new OneTimeWorkRequest.Builder(BlockSingleAppWorker.class)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(data.build())
+                        .build();
+
+        WorkManager.getInstance(AccessibilityScreenService.this)
+                .enqueueUniqueWork("bloqueigAppWorker", ExistingWorkPolicy.REPLACE, myWork);
+
+        Log.d(TAG,"Worker bloqueigAppWorker (únic) Començat");
     }
 
     public void enviarLiveApp(){
@@ -238,6 +353,9 @@ public class AccessibilityScreenService extends AccessibilityService {
         liveApp.pkgName = pkgName;
         liveApp.appName = appName;
         liveApp.time = Calendar.getInstance().getTimeInMillis();
+
+        if(sharedPreferences == null)
+            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
 
         Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
@@ -253,18 +371,6 @@ public class AccessibilityScreenService extends AccessibilityService {
         });
     }
 
-    private ActivityInfo tryGetActivity(ComponentName componentName) {
-        try {
-            return getPackageManager().getActivityInfo(componentName, 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public void onInterrupt() {
-    }
-
     private void registerScreenLockReceiver() {
         IntentFilter intentFilter = new IntentFilter(ACTION_SCREEN_OFF);
         intentFilter.addAction(ACTION_SCREEN_ON);
@@ -273,7 +379,6 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     public static class ScreenLockReceiver extends BroadcastReceiver {
-        private int retryCountLastApp = 0;
         private boolean wasLocked = false;
 
         @Override
@@ -283,7 +388,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = true;
                 enviarLastApp();
             }
-            else if(intent.getAction().equals(ACTION_SCREEN_ON) && !myKM.isDeviceLocked())
+            else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0 && !instance.horarisActius)) && !myKM.isDeviceLocked())
                 wasLocked = false;
         }
 
@@ -295,8 +400,6 @@ public class AccessibilityScreenService extends AccessibilityService {
             liveApp.pkgName = AccessibilityScreenService.instance.lastPackage;
             liveApp.appName = AccessibilityScreenService.instance.lastAppName;
             liveApp.time = Calendar.getInstance().getTimeInMillis();
-
-            retryCountLastApp = 0;
 
             // També actualitzem les dades d'ús al servidor
             Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.instance);

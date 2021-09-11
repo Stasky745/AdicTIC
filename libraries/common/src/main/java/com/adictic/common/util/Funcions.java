@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -158,9 +159,9 @@ public class Funcions {
     }
 
     // retorna -1 si no hi ha hora establerta
-    public static int string2MillisOfDay(String time){
+    public static Integer string2MillisOfDay(String time){
         if(time == null || time.equals(""))
-            return -1;
+            return null;
 
         String[] time2 = time.split(":");
         DateTime dateTime = new DateTime()
@@ -398,19 +399,29 @@ public class Funcions {
         List<GeneralUsage> gul = new ArrayList<>();
 
         if (fTime == -1) {
-            Calendar finalTime = Calendar.getInstance();
+            Calendar now = Calendar.getInstance();
 
-            Calendar initialTime = Calendar.getInstance();
-            initialTime.set(Calendar.HOUR_OF_DAY, 0);
-            initialTime.set(Calendar.MINUTE, 0);
-            initialTime.set(Calendar.SECOND, 0);
+            Calendar initialDate = Calendar.getInstance();
+            initialDate.set(Calendar.HOUR_OF_DAY, 0);
+            initialDate.set(Calendar.MINUTE, 0);
+            initialDate.set(Calendar.SECOND, 0);
+
+            long initialTime = initialDate.getTimeInMillis();
+
+            Calendar finalDate = Calendar.getInstance();
+            finalDate.add(Calendar.DAY_OF_YEAR, 1);
+            finalDate.set(Calendar.HOUR_OF_DAY, 0);
+            finalDate.set(Calendar.MINUTE, 0);
+            finalDate.set(Calendar.SECOND, 0);
+
+            long finalTime = finalDate.getTimeInMillis();
 
             List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
 
             GeneralUsage gu = new GeneralUsage();
-            gu.day = finalTime.get(Calendar.DAY_OF_MONTH);
-            gu.month = finalTime.get(Calendar.MONTH) + 1;
-            gu.year = finalTime.get(Calendar.YEAR);
+            gu.day = now.get(Calendar.DAY_OF_MONTH);
+            gu.month = now.get(Calendar.MONTH) + 1;
+            gu.year = now.get(Calendar.YEAR);
             gu.usage = appUsages;
 
             gu.totalTime = 0L;
@@ -421,24 +432,30 @@ public class Funcions {
             gul.add(gu);
         } else {
             for (int i = iTime; i <= fTime; i++) {
-                Calendar finalTime = Calendar.getInstance();
-                finalTime.set(Calendar.DAY_OF_YEAR, i);
-                finalTime.set(Calendar.HOUR_OF_DAY, 23);
-                finalTime.set(Calendar.MINUTE, 59);
-                finalTime.set(Calendar.SECOND, 59);
+                Calendar now = Calendar.getInstance();
 
-                Calendar initialTime = Calendar.getInstance();
-                initialTime.set(Calendar.DAY_OF_YEAR, i);
-                initialTime.set(Calendar.HOUR_OF_DAY, 0);
-                initialTime.set(Calendar.MINUTE, 0);
-                initialTime.set(Calendar.SECOND, 0);
+                Calendar initialDate = Calendar.getInstance();
+                initialDate.set(Calendar.DAY_OF_YEAR, i);
+                initialDate.set(Calendar.HOUR_OF_DAY, 0);
+                initialDate.set(Calendar.MINUTE, 0);
+                initialDate.set(Calendar.SECOND, 0);
+
+                long initialTime = initialDate.getTimeInMillis();
+
+                Calendar finalDate = Calendar.getInstance();
+                finalDate.set(Calendar.DAY_OF_YEAR, i+1);
+                finalDate.set(Calendar.HOUR_OF_DAY, 0);
+                finalDate.set(Calendar.MINUTE, 0);
+                finalDate.set(Calendar.SECOND, 0);
+
+                long finalTime = finalDate.getTimeInMillis();
 
                 List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
 
                 GeneralUsage gu = new GeneralUsage();
-                gu.day = finalTime.get(Calendar.DAY_OF_MONTH);
-                gu.month = finalTime.get(Calendar.MONTH) + 1;
-                gu.year = finalTime.get(Calendar.YEAR);
+                gu.day = now.get(Calendar.DAY_OF_MONTH);
+                gu.month = now.get(Calendar.MONTH) + 1;
+                gu.year = now.get(Calendar.YEAR);
                 gu.usage = appUsages;
 
                 gu.totalTime = 0L;
@@ -452,35 +469,39 @@ public class Funcions {
         return gul;
     }
 
-    private static List<AppUsage> getAppUsages(Context mContext, Calendar initialTime, Calendar finalTime) {
+    private static List<AppUsage> getAppUsages(Context mContext, long initialTime, long finalTime) {
+
         UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext.getSystemService(Context.USAGE_STATS_SERVICE);
         PackageManager mPm = mContext.getPackageManager();
 
         List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                initialTime.getTimeInMillis(), finalTime.getTimeInMillis());
+                initialTime, finalTime).stream()
+                .filter(usageStats -> usageStats.getTotalTimeInForeground() > 5000)
+                .collect(Collectors.toList());
 
         List<AppUsage> appUsages = new ArrayList<>();
-        final int statCount = stats.size();
-        for (int j = 0; j < statCount; j++) {
-            final android.app.usage.UsageStats pkgStats = stats.get(j);
-            if(pkgStats.getPackageName().equals(mContext.getPackageName()))
-                break;
-            ApplicationInfo appInfo = null;
-            try {
-                appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                //e.printStackTrace();
-            }
-            if (appInfo != null && pkgStats.getLastTimeUsed() >= initialTime.getTimeInMillis() && pkgStats.getLastTimeUsed() <= finalTime.getTimeInMillis() && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                AppUsage appUsage = new AppUsage();
-                appUsage.app = new AppInfo();
+        for (UsageStats pkgStats : stats) {
+            if(!pkgStats.getPackageName().equals(mContext.getPackageName())) {
+                ApplicationInfo appInfo = null;
+                try {
+                    appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), PackageManager.GET_META_DATA);
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-                if (Build.VERSION.SDK_INT >= 26) appUsage.app.category = appInfo.category;
-                appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
-                appUsage.app.pkgName = pkgStats.getPackageName();
-                appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
-                appUsage.totalTime = pkgStats.getTotalTimeInForeground();
-                appUsages.add(appUsage);
+//            if (appInfo != null && lastTimeUsed >= initialTime && lastTimeUsed <= finalTime && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                if (appInfo != null) {
+                    AppUsage appUsage = new AppUsage();
+                    appUsage.app = new AppInfo();
+
+                    if (Build.VERSION.SDK_INT >= 26)
+                        appUsage.app.category = appInfo.category;
+                    appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
+                    appUsage.app.pkgName = pkgStats.getPackageName();
+                    appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
+                    appUsage.totalTime = pkgStats.getTotalTimeInForeground();
+                    appUsages.add(appUsage);
+                }
             }
         }
 
