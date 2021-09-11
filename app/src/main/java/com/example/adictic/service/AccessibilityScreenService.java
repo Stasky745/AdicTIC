@@ -162,8 +162,8 @@ public class AccessibilityScreenService extends AccessibilityService {
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
             Funcions.fetchAppBlockFromServer(AccessibilityScreenService.this);
 
-            Funcions.checkEvents(getApplicationContext());
-            Funcions.checkHoraris(getApplicationContext());
+            Funcions.checkEvents(AccessibilityScreenService.this);
+            Funcions.checkHoraris(AccessibilityScreenService.this);
 
             Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
             call2.enqueue(new Callback<Boolean>() {
