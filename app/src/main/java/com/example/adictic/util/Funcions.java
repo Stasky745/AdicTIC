@@ -33,6 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -57,6 +58,7 @@ import com.example.adictic.service.AccessibilityScreenService;
 import com.example.adictic.service.ForegroundService;
 import com.example.adictic.ui.BlockAppActivity;
 import com.example.adictic.workers.AppUsageWorker;
+import com.example.adictic.workers.EventWorker;
 import com.example.adictic.workers.GeoLocWorker;
 import com.example.adictic.workers.HorarisWorker;
 import com.example.adictic.workers.ServiceWorker;
@@ -89,6 +91,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +99,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -230,8 +234,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     setEvents(ctx, new ArrayList<>(response.body().events));
 
                     // Engeguem els workers
-                    runRestartEventsWorkerOnce(ctx,0);
-                    startRestartEventsWorker24h(ctx);
+//                    runRestartEventsWorkerOnce(ctx,0);
+//                    startRestartEventsWorker24h(ctx);
 
                 }
             }
@@ -250,7 +254,59 @@ public class Funcions extends com.adictic.common.util.Funcions {
         if(events == null || events.isEmpty())
             return;
 
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.monday).collect(Collectors.toList()), Calendar.MONDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.tuesday).collect(Collectors.toList()), Calendar.TUESDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.wednesday).collect(Collectors.toList()), Calendar.WEDNESDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.thursday).collect(Collectors.toList()), Calendar.THURSDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.friday).collect(Collectors.toList()), Calendar.FRIDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.saturday).collect(Collectors.toList()), Calendar.SATURDAY);
+        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.sunday).collect(Collectors.toList()), Calendar.SUNDAY);
+    }
 
+    private static void setEventWorkerByDay(Context ctx, List<EventBlock> eventList, int day) {
+        eventList.sort(Comparator.comparingInt(eventBlock -> eventBlock.startEvent));
+
+        List<Pair<Integer, Integer>> workersList = new ArrayList<>();
+        for(EventBlock event : eventList){
+            Pair<Integer, Integer> newTime = new Pair<>(event.startEvent, event.endEvent);
+
+            if(workersList.isEmpty())
+                workersList.add(newTime);
+            else {
+                int index = workersList.size()-1;
+                Pair<Integer, Integer> lastTime = workersList.get(index);
+                if(newTime.first < lastTime.second && newTime.second > lastTime.second)
+                    workersList.set(index, new Pair<>(lastTime.first, newTime.second));
+                else if(newTime.first > lastTime.second)
+                    workersList.add(newTime);
+            }
+        }
+
+        // Fer workers
+        for(Pair<Integer, Integer> pair : workersList){
+            Calendar date = Calendar.getInstance();
+            long now = date.getTimeInMillis();
+            date.set(Calendar.DAY_OF_WEEK, day);
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+
+            long startTimeDelay = date.getTimeInMillis() + pair.first - now;
+            long endTimeDelay = date.getTimeInMillis() + pair.second - now;
+
+            if(startTimeDelay < 0) {
+                date.add(Calendar.WEEK_OF_YEAR, 1);
+                startTimeDelay = date.getTimeInMillis() + pair.first - now;
+
+                if(endTimeDelay < 0){
+                    endTimeDelay = date.getTimeInMillis() + pair.first - now;
+                }
+            }
+
+            // Engegar workers
+            setUpEventWorker(ctx, startTimeDelay, true);
+            setUpEventWorker(ctx, endTimeDelay, false);
+        }
     }
 
     public static void checkHoraris(Context ctx) {
@@ -531,6 +587,24 @@ public class Funcions extends com.adictic.common.util.Funcions {
         Log.d(TAG,"Worker FinishBlockEvent Configurat - ID=" + id + " | delay=" + delay);
     }
 
+    public static void setUpEventWorker(Context mContext, long delay, boolean startEvent){
+        Data data = new Data.Builder()
+                .putBoolean("start", startEvent)
+                .build();
+
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(EventWorker.class, 7, TimeUnit.DAYS)
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
+                        .setInputData(data)
+                        .build();
+
+        WorkManager.getInstance(mContext)
+                .enqueue(myWork);
+
+        Log.d(TAG,"setUpEventWorker Començat");
+    }
+
     // Horaris Worker
 
     public static void startRestartHorarisWorker24h(Context mCtx){
@@ -550,7 +624,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         Log.d(TAG,"Worker RestartEvents 24h Configurat");
     }
 
-    public static void setUpHorariWorker(Context mContext, long delay, boolean startSleep){
+    private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep){
         Data data = new Data.Builder()
                 .putBoolean("start", startSleep)
                 .build();
@@ -565,7 +639,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(mContext)
                 .enqueue(myWork);
 
-        Log.d(TAG,"Worker RestartEvents (únic) Començat");
+        Log.d(TAG,"setUpHorariWorker Començat");
     }
 
     public static void runRestartHorarisWorkerOnce(Context mContext, long delay){
