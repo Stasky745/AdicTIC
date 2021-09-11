@@ -372,7 +372,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     private void registerScreenLockReceiver() {
-        IntentFilter intentFilter = new IntentFilter(ACTION_SCREEN_OFF);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_SCREEN_OFF);
         intentFilter.addAction(ACTION_SCREEN_ON);
         ScreenLockReceiver screenLockReceiver = new ScreenLockReceiver();
         AccessibilityScreenService.this.registerReceiver(screenLockReceiver, intentFilter);
