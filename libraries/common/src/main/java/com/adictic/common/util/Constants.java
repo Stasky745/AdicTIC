@@ -25,11 +25,6 @@ public class Constants {
     public static final String SHARED_PREFS_PASSWORD = "password";
     public static final String SHARED_PREFS_TOKEN = "firebaseToken";
 
-    public static final String SHARED_PREFS_CHANGE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
-    public static final String SHARED_PREFS_CHANGE_BLOCKED_APPS = "changed_blocked_apps";
-    public static final String SHARED_PREFS_CHANGE_EVENT_BLOCK = "event_block";
-    public static final String SHARED_PREFS_CHANGE_HORARIS_NIT = "horaris_nit";
-
     public static final String SHARED_PREFS_IDUSER = "idUser";
     public static final String SHARED_PREFS_IDTUTOR = "idTutor";
     public static final String SHARED_PREFS_ISTUTOR = "isTutor";
