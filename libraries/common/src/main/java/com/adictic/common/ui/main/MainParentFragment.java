@@ -159,7 +159,7 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setLastLiveApp(){
-        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected))
+        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected) && parentActivity.mainParent_lastAppUsed.get(idChildSelected) != null)
             setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
         //Fer-ho si fa més de 5 minuts que no hem actualitzat.
         if(!parentActivity.mainParent_lastAppUsedUpdate.containsKey(idChildSelected) ||
@@ -185,7 +185,7 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setLiveAppMenu(LiveApp liveApp){
-        if(!liveApp.pkgName.equals("-1")) {
+        if(liveApp.pkgName != null && !liveApp.pkgName.equals("-1")) {
             try {
                 Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
             } catch (IllegalStateException ex) {

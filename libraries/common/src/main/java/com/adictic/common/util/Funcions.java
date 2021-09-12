@@ -514,7 +514,7 @@ public class Funcions {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (!response.isSuccessful()) {
                     Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                     toast.show();
@@ -523,7 +523,7 @@ public class Funcions {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast toast = Toast.makeText(ctx, ctx.getString(R.string.error_liveApp), Toast.LENGTH_LONG);
                 toast.show();
             }
