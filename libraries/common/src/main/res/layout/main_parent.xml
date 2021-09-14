@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -142,45 +143,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:background="@color/colorBackgroundGrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/Ch_Pie">
+                app:layout_constraintTop_toBottomOf="@+id/TV_PieApp">
 
                 <ImageView
-                    android:id="@+id/imageView3"
+                    android:id="@+id/IV_CL_info"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_info"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_info"
                     app:srcCompat="@drawable/ic_informe" />
 
                 <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/TV_CL_info"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/dades_del_dispositiu"
                     android:textAlignment="viewStart"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView3"
+                    app:layout_constraintEnd_toStartOf="@+id/IV_openInfo"
+                    app:layout_constraintStart_toEndOf="@+id/IV_CL_info"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/IV_openInfo"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_info"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_info"
                     app:srcCompat="@drawable/ic_arrow_open" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -236,37 +240,40 @@
                 app:layout_constraintTop_toBottomOf="@id/CL_infoButtons">
 
                 <ImageView
-                    android:id="@+id/imageView2"
+                    android:id="@+id/IV_CL_suport"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_suport"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_suport"
                     app:srcCompat="@drawable/ic_horaris" />
 
                 <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/TV_CL_suport"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/limit"
                     android:textAlignment="viewStart"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintEnd_toStartOf="@+id/IV_openSuport"
+                    app:layout_constraintStart_toEndOf="@+id/IV_CL_suport"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/IV_openSuport"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_suport"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_suport"
                     app:srcCompat="@drawable/ic_arrow_open" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -342,27 +349,30 @@
                 app:layout_constraintTop_toBottomOf="@id/CL_suportButtons">
 
                 <ImageView
-                    android:id="@+id/imageView4"
+                    android:id="@+id/IV_CL_geoloc"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_geoloc"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_geoloc"
                     app:srcCompat="@drawable/ic_geoloc" />
 
                 <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/TV_CL_geoloc"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/geolocalitzacio"
                     android:textAlignment="viewStart"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView4"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/IV_CL_geoloc"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
