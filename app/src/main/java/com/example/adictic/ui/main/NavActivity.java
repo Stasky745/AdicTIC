@@ -27,18 +27,6 @@ import java.util.TreeMap;
 
 public class NavActivity extends MainActivityAbstractClass {
 
-    public final Integer tempsPerActu = 5 * 60 * 1000; // 5 min
-    public final Integer tempsPerActuLiveApp = 60 * 1000; // 1 minut
-
-    public TreeMap<Long, Long> mainParent_lastAppUsedUpdate = new TreeMap<>();
-    public TreeMap<Long, LiveApp> mainParent_lastAppUsed = new TreeMap<>();
-    public TreeMap<Long, Long> mainParent_lastUsageChartUpdate = new TreeMap<>();
-    public TreeMap<Long, Map<String, Long>> mainParent_usageChart = new TreeMap<>();
-    public TreeMap<Long, Long> mainParent_totalUsageTime = new TreeMap<>();
-
-    public ArrayList<FillNom> homeParent_childs = null;
-    public Long homeParent_lastChildsUpdate = null;
-
     private SharedPreferences sharedPreferences;
 
     @Override

@@ -13,9 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.adictic.common.R;
-import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.GeneralUsage;
-import com.adictic.common.entity.TimesAccessedDay;
+import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
@@ -157,32 +156,27 @@ public class InformeActivity extends AppCompatActivity {
     }
 
     private void getTimesBlockedMap() {
-        Call<List<AppTimesAccessed>> call = mTodoService.getAccessBlocked(idChild);
-        call.enqueue(new Callback<List<AppTimesAccessed>>() {
+        Call<List<IntentsAccesApp>> call = mTodoService.getIntentAccesApp(idChild);
+        call.enqueue(new Callback<List<IntentsAccesApp>>() {
             @Override
-            public void onResponse(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Response<List<AppTimesAccessed>> response) {
-                    super.onResponse(call, response);
+            public void onResponse(@NonNull Call<List<IntentsAccesApp>> call, @NonNull Response<List<IntentsAccesApp>> response) {
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null)
-                    setTimesBlockedMap(new ArrayList<>(response.body()));
+                    setTimesBlockedMap(response.body());
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<AppTimesAccessed>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-
+            public void onFailure(@NonNull Call<List<IntentsAccesApp>> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
             }
         });
     }
 
-    private void setTimesBlockedMap(ArrayList<AppTimesAccessed> list) {
+    private void setTimesBlockedMap(List<IntentsAccesApp> list) {
         Map<String, Long> map = new HashMap<>();
-        for (AppTimesAccessed ata : list) {
-            String pkgName = ata.app;
-            int times = 0;
-            for (TimesAccessedDay tad : ata.times) {
-                times += tad.times;
-            }
-            map.put(pkgName, (long) times);
+        for (IntentsAccesApp ata : list) {
+            Long times = map.getOrDefault(ata.pkgName, (long)0);
+            map.put(ata.pkgName, ++times);
         }
         tabsAdapter.setTimesBlockedMap(map);
     }
