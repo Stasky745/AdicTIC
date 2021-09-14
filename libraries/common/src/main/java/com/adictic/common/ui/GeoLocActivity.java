@@ -133,7 +133,7 @@ public class GeoLocActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<GeoFill>>() {
             @Override
             public void onResponse(@NonNull Call<List<GeoFill>> call, @NonNull Response<List<GeoFill>> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful() && !Objects.requireNonNull(response.body()).isEmpty() && response.body().get(0) != null) {
                     fills = response.body();
 
@@ -146,7 +146,7 @@ public class GeoLocActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<GeoFill>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast.makeText(getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
