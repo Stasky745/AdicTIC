@@ -101,9 +101,6 @@ public interface Api {
     @GET("/users/{idChild}/age")
     Call<Integer> getAge(@Path("idChild") Long idChild);
 
-    @GET("/usage/{idChild}/timesTried")
-    Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
-
     @POST("/users/{id}/block")
     Call<String> blockChild(@Path("id") Long childId);
 
@@ -175,6 +172,9 @@ public interface Api {
 
     @POST("/usage/{idChild}/tempsBloqueig")
     Call<String> postTempsBloqueig(@Path("idChild") Long idChild, @Body TimeBlock timeBlock);
+
+    @GET("/usage/{idChild}/intentAccesApp")
+    Call<List<IntentsAccesApp>> getIntentAccesApp(@Path("idChild") Long idChild);
 
     @POST("/usage/{idChild}/intentAccesApp")
     Call<String> postIntentAccesApp(@Path("idChild") Long idChild, @Body IntentsAccesApp intentsAccesApp);
