@@ -6,14 +6,17 @@
         app:entries="@array/languages"
         app:entryValues="@array/language_alias"
         app:key="setting_change_language"
+        app:icon="@drawable/ic_language_change"
         app:title="@string/change_language" />
 
     <Preference
         app:key="setting_change_password"
+        app:icon="@drawable/ic_change_password"
         app:title="@string/changePassword" />
 
     <Preference
         app:key="setting_tancar_sessio"
+        app:icon="@drawable/ic_close_session"
         app:title="@string/tancar_sessio" />
 
     <PreferenceCategory

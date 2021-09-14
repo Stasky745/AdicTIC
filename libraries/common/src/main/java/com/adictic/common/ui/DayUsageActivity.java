@@ -255,12 +255,12 @@ public class DayUsageActivity extends AppCompatActivity {
         String text;
         if (elapsedDays == 0) {
             if (elapsedHours == 0) {
-                text = elapsedMinutes + getString(R.string.minutes);
+                text = elapsedMinutes + " " + getString(R.string.minutes);
             } else {
-                text = elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+                text = elapsedHours + " " + getString(R.string.hours) + " " + elapsedMinutes + " " + getString(R.string.minutes);
             }
         } else {
-            text = elapsedDays + getString(R.string.days) + elapsedHours + getString(R.string.hours) + elapsedMinutes + getString(R.string.minutes);
+            text = elapsedDays + " " + getString(R.string.days) + " " + elapsedHours + " " + getString(R.string.hours) + " " + elapsedMinutes + " " + getString(R.string.minutes);
         }
         TV_totalUse.setText(text);
     }
@@ -472,10 +472,10 @@ public class DayUsageActivity extends AppCompatActivity {
                     if (elapsedHours == 0) {
                         time = elapsedMinutes + getString(R.string.minutes_tag);
                     } else {
-                        time = elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag);
+                        time = elapsedHours + getString(R.string.hours_tag) + " " + elapsedMinutes + getString(R.string.minutes_tag);
                     }
                 } else {
-                    time = elapsedDays + getString(R.string.days_tag) + elapsedHours + getString(R.string.hours_tag) + elapsedMinutes + getString(R.string.minutes_tag);
+                    time = elapsedDays + getString(R.string.days_tag) + " " +  elapsedHours + getString(R.string.hours_tag) + " " + elapsedMinutes + getString(R.string.minutes_tag);
                 }
                 holder.usageTime.setText(time);
 

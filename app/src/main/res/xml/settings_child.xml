@@ -6,6 +6,7 @@
         app:entries="@array/languages"
         app:entryValues="@array/language_alias"
         app:key="setting_change_language"
+        app:icon="@drawable/ic_language_change"
         app:title="@string/change_language" />
 
     <PreferenceCategory
