@@ -133,7 +133,7 @@ public class OficinesActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<Oficina>>() {
             @Override
             public void onResponse(@NonNull Call<List<Oficina>> call, @NonNull Response<List<Oficina>> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     oficines = response.body();
                 } else {
@@ -144,7 +144,7 @@ public class OficinesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<Oficina>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast.makeText(OficinesActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 askPermissionsIfNecessary();
             }
@@ -152,14 +152,14 @@ public class OficinesActivity extends AppCompatActivity {
     }
 
     private void askPermissionsIfNecessary() {
-        requestPermissionsIfNecessary(new String[]{
+        requestPermissions(new String[]{
                 // if you need to show the current location, uncomment the line below
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 // WRITE_EXTERNAL_STORAGE is required in order to show the map
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-        });
+        }, REQUEST_PERMISSIONS_REQUEST_CODE);
     }
 
     @SuppressLint("MissingPermission")
@@ -316,6 +316,9 @@ public class OficinesActivity extends AppCompatActivity {
                             if (location != null) {
                                 currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                             }
+                            setMap();
+                        })
+                        .addOnFailureListener(e -> {
                             setMap();
                         });
             } else {
