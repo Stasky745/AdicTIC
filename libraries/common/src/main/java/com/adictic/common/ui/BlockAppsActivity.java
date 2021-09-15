@@ -1,5 +1,6 @@
 package com.adictic.common.ui;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,23 +8,27 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 
 import com.adictic.common.R;
 import com.adictic.common.entity.BlockAppEntity;
@@ -52,8 +57,9 @@ public class BlockAppsActivity extends AppCompatActivity {
 
     private RV_Adapter RVadapter;
 
-    private EditText ET_Search;
-
+    private ConstraintLayout parent_constraint;
+    private Transition transition;
+    private ConstraintLayout CL_menu_block;
     private Button BT_blockNow;
     private Button BT_limitApp;
     private Button BT_unlock;
@@ -75,29 +81,26 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         mTodoService = ((App) this.getApplication()).getAPI();
 
-        ET_Search = findViewById(R.id.ET_search);
-
         selectedApps = new ArrayList<>();
         RV_appList = findViewById(R.id.RV_Apps);
         RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
+        parent_constraint = findViewById(R.id.CL_act_block);
+        CL_menu_block = findViewById(R.id.CL_menu_block);
+        CL_menu_block.setVisibility(View.GONE);
         BT_blockNow = findViewById(R.id.BT_blockNow);
-        BT_blockNow.setVisibility(View.GONE);
         BT_limitApp = findViewById(R.id.BT_limitUse);
-        BT_limitApp.setVisibility(View.GONE);
         BT_unlock = findViewById(R.id.BT_unlock);
-        BT_unlock.setVisibility(View.GONE);
+
+        transition = new Slide();
+        transition.setDuration(200);
+        transition.addTarget(R.id.CL_menu_block);
 
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setButtons();
         setRecyclerView();
-        setSearchBar();
     }
 
     private void setButtons() {
-        BT_blockNow.setVisibility(View.VISIBLE);
-        BT_limitApp.setVisibility(View.VISIBLE);
-        BT_unlock.setVisibility(View.VISIBLE);
-
         BT_blockNow.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
                 Toast.makeText(getApplicationContext(), R.string.select_apps_lock, Toast.LENGTH_LONG).show();
@@ -115,7 +118,6 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
-                            ET_Search.setText("");
                         }
                     }
 
@@ -150,7 +152,6 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
-                            ET_Search.setText("");
                         }
                     }
 
@@ -165,7 +166,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
     private void useTimePicker() {
         TimePickerDialog.OnTimeSetListener timeListener = (view, hourOfDay, minute) -> {
-            final long time = (hourOfDay * 60 * 60 * 1000) + (minute * 60 * 1000);
+            final long time = ((long) hourOfDay * 60 * 60 * 1000) + ((long) minute * 60 * 1000);
 
             BlockList bList = new BlockList();
             bList.apps = selectedApps;
@@ -183,7 +184,6 @@ public class BlockAppsActivity extends AppCompatActivity {
                         }
                         Collections.sort(blockAppList);
                         selectedApps.clear();
-                        ET_Search.setText("");
                     }
                 }
 
@@ -196,25 +196,6 @@ public class BlockAppsActivity extends AppCompatActivity {
 
         TimePickerDialog timePicker = new TimePickerDialog(this, R.style.datePicker, timeListener, 0, 0, true);
         timePicker.show();
-    }
-
-    private void setSearchBar() {
-        ET_Search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                filter(s.toString());
-            }
-        });
     }
 
     private void filter(String s) {
@@ -291,7 +272,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             holder.itemView.setActivated(selectedApps.contains(blockAppList.get(position).pkgName));
             if (holder.itemView.isActivated())
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
+                holder.itemView.setBackground(AppCompatResources.getDrawable(BlockAppsActivity.this, R.drawable.rounded_rectangle_received));
             else holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
             final BlockAppEntity blockedApp = blockAppList.get(position);
@@ -339,8 +320,10 @@ public class BlockAppsActivity extends AppCompatActivity {
                         holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                     } else {
                         selectedApps.add(blockedApp.pkgName);
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background_activity));
+                        holder.itemView.setBackground(AppCompatResources.getDrawable(BlockAppsActivity.this, R.drawable.rounded_rectangle_received));
                     }
+                    TransitionManager.beginDelayedTransition(parent_constraint, transition);
+                    CL_menu_block.setVisibility(selectedApps.isEmpty() ? View.GONE : View.VISIBLE);
                 });
             }
         }
@@ -355,6 +338,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             return position;
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         public void filterList(List<BlockAppEntity> fList) {
             blockAppList = fList;
             notifyDataSetChanged();
@@ -380,5 +364,28 @@ public class BlockAppsActivity extends AppCompatActivity {
                 TV_category = itemView.findViewById(R.id.TV_Category);
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+        MenuItem menuItem = menu.findItem(R.id.search_icon);
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search_app_category));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filter(s);
+                return true;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 }
