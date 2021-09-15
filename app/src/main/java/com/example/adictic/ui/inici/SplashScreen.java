@@ -1,6 +1,7 @@
 package com.example.adictic.ui.inici;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,8 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -162,7 +165,7 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(newBase);
-        String selectedTheme = sharedPreferences.getString("theme", "follow_system");
+        String selectedTheme = sharedPreferences != null ? sharedPreferences.getString("theme", "follow_system") : "follow_system";
         switch(selectedTheme){
             case "no":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -273,15 +276,15 @@ public class SplashScreen extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
         intent.setData (FileProvider.getUriForFile(SplashScreen.this, BuildConfig.APPLICATION_ID + ".provider", file));
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        SplashScreen.this.startActivityForResult(intent,1034);
+        resultInstallAPK.launch(intent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1034)
-        {
-            startApp();
+    ActivityResultLauncher<Intent> resultInstallAPK = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                startApp();
+            }
         }
-    }
+    );
 }
