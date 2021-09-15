@@ -64,6 +64,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class MainParentFragment extends Fragment {
+    private final static String ARG_FILL = "arg_fill";
 
     private final static String TAG = "MainParentFragment";
 
@@ -115,15 +116,23 @@ public class MainParentFragment extends Fragment {
 
     public MainParentFragment() {    }
 
-    public MainParentFragment(FillNom fill) {
-        idChildSelected = fill.idChild;
-        this.fill = fill;
+    public static MainParentFragment newInstance(FillNom fill) {
+        MainParentFragment mainParentFragment = new MainParentFragment();
+
+        Bundle args = new Bundle(1);
+        args.putParcelable(ARG_FILL, fill);
+        mainParentFragment.setArguments(args);
+
+        return mainParentFragment;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.main_parent, container, false);
+
+        getBundle();
+
         parentActivity = (MainActivityAbstractClass) getActivity();
         mTodoService = ((App) Objects.requireNonNull(parentActivity).getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
@@ -140,6 +149,15 @@ public class MainParentFragment extends Fragment {
             makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
 
         return root;
+    }
+
+    private void getBundle() {
+        Bundle arguments = getArguments();
+        if(arguments == null)
+            return;
+
+        fill = arguments.getParcelable(ARG_FILL);
+        idChildSelected = fill.idChild;
     }
 
     @Override

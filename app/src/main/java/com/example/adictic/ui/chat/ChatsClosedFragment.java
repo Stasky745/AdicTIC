@@ -24,11 +24,6 @@ import java.util.List;
 
 public class ChatsClosedFragment extends Fragment {
 
-    Api mTodoService;
-
-    RecyclerView mRecyclerView;
-    List<ChatInfo> chatsList;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -40,12 +35,11 @@ public class ChatsClosedFragment extends Fragment {
     public void onStart() {
 
         super.onStart();
-        mTodoService = ((AdicticApp) this.requireActivity().getApplication()).getAPI();
 
         assert getArguments() != null;
-        chatsList = getArguments().getParcelableArrayList("list");
+        List<ChatInfo> chatsList = getArguments().getParcelableArrayList("list");
 
-        mRecyclerView = requireView().findViewById(R.id.RV_chats_closed);
+        RecyclerView mRecyclerView = requireView().findViewById(R.id.RV_chats_closed);
         ClosedChatsListAdapter mAdapter = new ClosedChatsListAdapter(this.requireActivity().getApplication());
         mAdapter.setList(chatsList);
         mRecyclerView.setAdapter(mAdapter);
