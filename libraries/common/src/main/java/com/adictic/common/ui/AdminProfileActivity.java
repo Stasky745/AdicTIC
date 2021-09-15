@@ -20,9 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
+import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AdminProfileActivity extends AppCompatActivity {
 
@@ -81,7 +83,11 @@ public class AdminProfileActivity extends AppCompatActivity {
 
     private void setFoto(){
         ImageView IV_profilePic = findViewById(R.id.IV_profilePic);
-        Funcions.setAdminPhoto(AdminProfileActivity.this, adminProfile.idAdmin, IV_profilePic);
+        long idAdmin;
+        if(adminProfile == null || adminProfile.idAdmin == null)
+            idAdmin = Objects.requireNonNull(Funcions.getEncryptedSharedPreferences(this)).getLong(Constants.SHARED_PREFS_ID_ADMIN,-1);
+        else idAdmin = adminProfile.idAdmin;
+        Funcions.setAdminPhoto(AdminProfileActivity.this, idAdmin, IV_profilePic);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
