@@ -67,11 +67,11 @@ def getCustomVersionCode() {
     if (versionPropsFile.canRead()) {
         Properties versionProps = new Properties()
         versionProps.load(new FileInputStream(versionPropsFile))
-        List<String> runTasks = gradle.startParameter.getTaskNames();
+        List<String> runTasks = gradle.startParameter.getTaskNames()
         def value = 0
         for (String item : runTasks)
             if (item.contains("assembleRelease")) {
-                value = 1;
+                value = 1
             }
         if (value == 1) {
             code = Integer.parseInt(versionProps['VERSION_CODE']).intValue() + value
@@ -88,8 +88,8 @@ def getCustomVersionCode() {
 
 dependencies {
     //AndroidX
-    implementation "androidx.appcompat:appcompat:1.3.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.appcompat:appcompat:1.3.1"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
@@ -97,11 +97,11 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-    implementation "androidx.work:work-runtime:2.5.0"
+    implementation "androidx.work:work-runtime:2.6.0"
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
 
     //Google
-    implementation "com.google.android.material:material:1.3.0"
+    implementation "com.google.android.material:material:1.4.0"
 
     //Otros
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'

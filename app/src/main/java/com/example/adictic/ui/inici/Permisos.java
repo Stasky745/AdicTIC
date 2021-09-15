@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -32,14 +34,12 @@ public class Permisos extends AppCompatActivity {
     private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
     private final String TAG = "Permisos";
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
+    ActivityResultLauncher<Intent> activityResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == RESULT_OK) {
                 TextView TV_permiso_admin_status = findViewById(R.id.TV_permiso_admin_status);
-                if (Funcions.isAdminPermissionsOn(this)) {
+                if (Funcions.isAdminPermissionsOn(Permisos.this)) {
                     adminPerm = true;
                     TV_permiso_admin_status.setText(getText(R.string.activat));
                     TV_permiso_admin_status.setTextColor(Color.GREEN);
@@ -50,7 +50,7 @@ public class Permisos extends AppCompatActivity {
                 }
             }
         }
-    }
+    );
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -246,7 +246,7 @@ public class Permisos extends AppCompatActivity {
                     intent.putExtra(
                             DevicePolicyManager.EXTRA_ADD_EXPLANATION,
                             getString(R.string.admin_pem_intent));
-                    startActivityForResult(intent, 1);
+                    activityResult.launch(intent);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
                 .show());
