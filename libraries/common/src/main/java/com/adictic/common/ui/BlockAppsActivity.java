@@ -23,8 +23,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.Slide;
+import androidx.transition.Transition;
+import androidx.transition.TransitionManager;
 
 import com.adictic.common.R;
 import com.adictic.common.entity.BlockAppEntity;
@@ -53,6 +57,9 @@ public class BlockAppsActivity extends AppCompatActivity {
 
     private RV_Adapter RVadapter;
 
+    private ConstraintLayout parent_constraint;
+    private Transition transition;
+    private ConstraintLayout CL_menu_block;
     private Button BT_blockNow;
     private Button BT_limitApp;
     private Button BT_unlock;
@@ -78,22 +85,22 @@ public class BlockAppsActivity extends AppCompatActivity {
         RV_appList = findViewById(R.id.RV_Apps);
         RV_appList.setLayoutManager(new LinearLayoutManager(this));
 
+        parent_constraint = findViewById(R.id.CL_act_block);
+        CL_menu_block = findViewById(R.id.CL_menu_block);
+        CL_menu_block.setVisibility(View.GONE);
         BT_blockNow = findViewById(R.id.BT_blockNow);
-        BT_blockNow.setVisibility(View.GONE);
         BT_limitApp = findViewById(R.id.BT_limitUse);
-        BT_limitApp.setVisibility(View.GONE);
         BT_unlock = findViewById(R.id.BT_unlock);
-        BT_unlock.setVisibility(View.GONE);
+
+        transition = new Slide();
+        transition.setDuration(200);
+        transition.addTarget(R.id.CL_menu_block);
 
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) setButtons();
         setRecyclerView();
     }
 
     private void setButtons() {
-        BT_blockNow.setVisibility(View.VISIBLE);
-        BT_limitApp.setVisibility(View.VISIBLE);
-        BT_unlock.setVisibility(View.VISIBLE);
-
         BT_blockNow.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
                 Toast.makeText(getApplicationContext(), R.string.select_apps_lock, Toast.LENGTH_LONG).show();
@@ -315,6 +322,8 @@ public class BlockAppsActivity extends AppCompatActivity {
                         selectedApps.add(blockedApp.pkgName);
                         holder.itemView.setBackground(AppCompatResources.getDrawable(BlockAppsActivity.this, R.drawable.rounded_rectangle_received));
                     }
+                    TransitionManager.beginDelayedTransition(parent_constraint, transition);
+                    CL_menu_block.setVisibility(selectedApps.isEmpty() ? View.GONE : View.VISIBLE);
                 });
             }
         }
