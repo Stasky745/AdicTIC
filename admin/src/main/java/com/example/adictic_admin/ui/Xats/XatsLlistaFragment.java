@@ -23,19 +23,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XatsLlistaFragment extends Fragment {
-    private final List<ChatInfo> chatsList;
+    private static final String ARG_LIST = "arg_list";
+    private static final String ARG_BOOL = "arg_bool";
+
+    private List<ChatInfo> chatsList;
     private static boolean active;
 
-    public XatsLlistaFragment (List<ChatInfo> list, boolean a){
-        chatsList = list;
-        active = a;
+    public XatsLlistaFragment() { }
+
+    public static XatsLlistaFragment newInstance(List<ChatInfo> list, boolean a){
+        final XatsLlistaFragment xatsLlistaFragment = new XatsLlistaFragment();
+        final Bundle args = new Bundle(2);
+
+        args.putBoolean(ARG_BOOL, a);
+        args.putParcelableArrayList(ARG_LIST, new ArrayList<>(list));
+        xatsLlistaFragment.setArguments(args);
+
+        return xatsLlistaFragment;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        getBundle();
         return inflater.inflate(R.layout.fragment_chat, container, false);
+    }
+
+    private void getBundle() {
+        final Bundle arguments = getArguments();
+
+        if(arguments == null)
+            return;
+
+        chatsList = arguments.getParcelableArrayList(ARG_LIST);
+        active = arguments.getBoolean(ARG_BOOL);
     }
 
     @Override

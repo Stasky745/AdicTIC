@@ -34,27 +34,39 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class OfficeFragment extends Fragment {
+    private static final String OFFICE_ARG = "office_arg";
+
     private AdminApi mService;
     private View root;
     private Oficina oficina;
-    private final Context mCtx;
 
     private TextInputEditText TIET_oficinaNom, TIET_oficinaDesc, TIET_oficinaDireccio, TIET_oficinaPoblacio, TIET_oficinaTelf, TIET_oficinaWeb;
     private EditText ETND_oficinaLat, ETND_oficinaLong;
 
-    public OfficeFragment(Context mCtx, Oficina o){
-        this.mCtx = mCtx;
-        oficina = o;
+    public OfficeFragment() { }
+
+    public static OfficeFragment newInstance(Oficina o){
+        OfficeFragment officeFragment = new OfficeFragment();
+
+        Bundle args = new Bundle(1);
+        args.putParcelable(OFFICE_ARG, o);
+        officeFragment.setArguments(args);
+
+        return officeFragment;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        if(getArguments() != null)
+            oficina = getArguments().getParcelable(OFFICE_ARG);
+
         root = inflater.inflate(R.layout.oficina_layout, container, false);
         Funcions.closeKeyboard(root.findViewById(R.id.main_parent), requireActivity());
 
-        mService = ((AdminApp) mCtx.getApplicationContext()).getAPI();
+        mService = ((AdminApp) requireActivity().getApplicationContext()).getAPI();
 
         setViews();
 

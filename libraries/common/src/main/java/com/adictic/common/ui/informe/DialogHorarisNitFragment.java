@@ -22,6 +22,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.Calendar;
 
 public class DialogHorarisNitFragment extends Fragment {
+    private static final String HORARIS_ARG = "horaris_arg";
 
     private final int TIPUS_HORARIS_DIARIS = 1;
     private final int TIPUS_HORARIS_SETMANA = 2;
@@ -45,8 +46,16 @@ public class DialogHorarisNitFragment extends Fragment {
 
     private HorarisAPI horarisNits;
 
-    public DialogHorarisNitFragment(HorarisAPI horarisAPI){
-        horarisNits = horarisAPI;
+    public DialogHorarisNitFragment() { }
+
+    public static DialogHorarisNitFragment newInstance(HorarisAPI horarisAPI){
+        final DialogHorarisNitFragment dialogHorarisNitFragment = new DialogHorarisNitFragment();
+
+        final Bundle args = new Bundle(1);
+        args.putParcelable(HORARIS_ARG, horarisAPI);
+        dialogHorarisNitFragment.setArguments(args);
+
+        return dialogHorarisNitFragment;
     }
 
     @Nullable
@@ -54,6 +63,9 @@ public class DialogHorarisNitFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.horaris_layout, container, false);
+
+        if(getArguments() != null)
+            horarisNits = getArguments().getParcelable(HORARIS_ARG);
 
         setViews(root);
         setViewsTutor();
