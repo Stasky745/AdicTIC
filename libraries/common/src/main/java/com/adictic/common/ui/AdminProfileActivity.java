@@ -2,7 +2,6 @@ package com.adictic.common.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,26 +20,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
-import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
 import java.util.ArrayList;
 
 public class AdminProfileActivity extends AppCompatActivity {
+
     private AdminProfile adminProfile;
-
-    private ArrayList<WebLink> webList;
-    private RV_Adapter RVadapter;
-    private RecyclerView RV_profileLinks;
-
-    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_profile);
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         adminProfile = getIntent().getExtras().getParcelable("adminProfile");
 
         setDades();
@@ -57,32 +49,39 @@ public class AdminProfileActivity extends AppCompatActivity {
         TV_professio.setText(adminProfile.professio);
 
         setFoto();
-        setRecyclerView();
+        setEnllacos();
         setOfficeButton();
     }
 
     private void setOfficeButton() {
         Button BT_oficina = findViewById(R.id.BT_oficina);
-        BT_oficina.setOnClickListener(view -> {
-            Intent intent = new Intent(this, OficinesActivity.class);
-            intent.putExtra("idOficina", adminProfile.oficina.id);
+        if(adminProfile.oficina==null) BT_oficina.setVisibility(View.GONE);
+        else BT_oficina.setOnClickListener(view -> {
+                Intent intent = new Intent(this, OficinesActivity.class);
+                intent.putExtra("idOficina", adminProfile.oficina.id);
 
-            startActivity(intent);
-        });
+                startActivity(intent);
+            });
     }
 
-    private void setRecyclerView() {
-        RV_profileLinks = findViewById(R.id.RV_profileLinks);
-        RV_profileLinks.setLayoutManager(new LinearLayoutManager(this.getApplication()));
-        webList = new ArrayList<>(adminProfile.webLinks);
-        RVadapter = new RV_Adapter(getApplicationContext(),webList);
+    private void setEnllacos() {
+        RecyclerView RV_profileLinks = findViewById(R.id.RV_profileLinks);
+        TextView TV_profileLinks = findViewById(R.id.TV_profileLinks);
+        if(adminProfile.webLinks == null || adminProfile.webLinks.isEmpty()){
+            RV_profileLinks.setVisibility(View.GONE);
+            TV_profileLinks.setVisibility(View.GONE);
+        } else {
+            RV_profileLinks.setLayoutManager(new LinearLayoutManager(this.getApplication()));
+            ArrayList<WebLink> webList = new ArrayList<>(adminProfile.webLinks);
+            RV_Adapter RVadapter = new RV_Adapter(getApplicationContext(), webList);
 
-        RV_profileLinks.setAdapter(RVadapter);
+            RV_profileLinks.setAdapter(RVadapter);
+        }
     }
 
     private void setFoto(){
         ImageView IV_profilePic = findViewById(R.id.IV_profilePic);
-        Funcions.setAdminPhoto(AdminProfileActivity.this, sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN,-1), IV_profilePic);
+        Funcions.setAdminPhoto(AdminProfileActivity.this, adminProfile.idAdmin, IV_profilePic);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {
