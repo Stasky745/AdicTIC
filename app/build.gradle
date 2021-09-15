@@ -68,11 +68,11 @@ def getCustomVersionCode() {
     if (versionPropsFile.canRead()) {
         Properties versionProps = new Properties()
         versionProps.load(new FileInputStream(versionPropsFile))
-        List<String> runTasks = gradle.startParameter.getTaskNames();
+        List<String> runTasks = gradle.startParameter.getTaskNames()
         def value = 0
         for (String item : runTasks)
             if (item.contains("assembleRelease")) {
-                value = 1;
+                value = 1
             }
         if (value == 1) {
             code = Integer.parseInt(versionProps['VERSION_CODE']).intValue() + value
@@ -97,28 +97,28 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'androidx.core:core:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.5'
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.preference:preference:1.1.1'
-    implementation "androidx.work:work-runtime:2.5.0"
+    implementation "androidx.work:work-runtime:2.6.0"
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
 
     //Google
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
     implementation 'com.google.guava:guava:29.0-android'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.android.material:material:1.4.0'
     //implementation 'com.google.android.gms:play-services-ads:19.7.0'
 
     //Otros
     implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
     implementation 'com.github.judemanutd:autostarter:1.1.0'
 
     // Firebase
