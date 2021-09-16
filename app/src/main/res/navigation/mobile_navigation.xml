@@ -6,12 +6,12 @@
 
     <fragment
         android:id="@+id/nav_advice"
-        android:name="com.example.adictic.ui.support.AdviceFragment"
+        android:name="com.adictic.client.ui.support.AdviceFragment"
         android:label="@string/menu_advice"
         tools:layout="@layout/fragment_advice" />
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.example.adictic.ui.main.SettingsFragment"
+        android:name="com.adictic.client.ui.main.SettingsFragment"
         android:label="@string/menu_settings" />
     <fragment
         android:id="@+id/nav_mainParent"

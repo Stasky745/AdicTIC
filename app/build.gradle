@@ -23,7 +23,7 @@ android {
     compileSdkVersion 31
     def code = getCustomVersionCode()
     defaultConfig {
-        applicationId "com.example.adictic"
+        applicationId "com.adictic.client"
         minSdkVersion 24
         targetSdkVersion 31
         versionCode code

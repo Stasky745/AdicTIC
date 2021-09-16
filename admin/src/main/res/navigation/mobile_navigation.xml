@@ -6,19 +6,19 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.adictic_admin.ui.dubtes.ConsultesFragment"
+        android:name="com.adictic.admin.ui.dubtes.ConsultesFragment"
         android:label="Consultes"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.adictic_admin.ui.Xats.XatsFragment"
+        android:name="com.adictic.admin.ui.Xats.XatsFragment"
         android:label="Xats"
         tools:layout="@layout/chat_dashboard" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.example.adictic_admin.ui.profile.ProfileMainFragment"
+        android:name="com.adictic.admin.ui.profile.ProfileMainFragment"
         android:label="@string/profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>
