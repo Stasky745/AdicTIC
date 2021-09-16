@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -70,6 +71,7 @@ public class BlockAppsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
@@ -108,6 +110,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 Call<String> call = mTodoService.blockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
@@ -118,6 +121,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
+                            RVadapter.notifyDataSetChanged();
                         }
                     }
 
@@ -142,6 +146,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 Call<String> call = mTodoService.unlockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
@@ -152,6 +157,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
+                            RVadapter.notifyDataSetChanged();
                         }
                     }
 
@@ -174,6 +180,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             Call<String> call = mTodoService.limitApps(idChild, bList);
 
             call.enqueue(new Callback<String>() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     super.onResponse(call, response);
@@ -184,6 +191,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                         }
                         Collections.sort(blockAppList);
                         selectedApps.clear();
+                        RVadapter.notifyDataSetChanged();
                     }
                 }
 
@@ -315,6 +323,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
                 holder.mRootView.setOnClickListener(v -> {
+                    RV_appList.scrollToPosition(position);
                     if (selectedApps.contains(blockedApp.pkgName)) {
                         selectedApps.remove(blockedApp.pkgName);
                         holder.itemView.setBackgroundColor(Color.TRANSPARENT);
