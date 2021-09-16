@@ -83,8 +83,6 @@ public class SplashScreen extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    super.onResponse(call, response);
-
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "Firebase Token = " + token);
                                 if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
