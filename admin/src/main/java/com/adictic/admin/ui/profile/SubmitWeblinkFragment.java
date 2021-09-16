@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.adictic.common.entity.WebLink;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class SubmitWeblinkFragment extends DialogFragment {

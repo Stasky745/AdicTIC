@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -72,6 +73,7 @@ public class HorarisActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.descans_nocturn));
         mTodoService = ((App) getApplication()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 

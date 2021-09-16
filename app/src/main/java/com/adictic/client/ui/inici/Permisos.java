@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.util.Funcions;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
 public class Permisos extends AppCompatActivity {

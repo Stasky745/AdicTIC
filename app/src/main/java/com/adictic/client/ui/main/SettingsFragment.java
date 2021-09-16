@@ -20,7 +20,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.ui.inici.Login;
 import com.adictic.client.ui.inici.SplashScreen;
 import com.google.firebase.messaging.FirebaseMessaging;

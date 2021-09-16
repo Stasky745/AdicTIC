@@ -16,7 +16,7 @@ import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavActivity extends MainActivityAbstractClass {

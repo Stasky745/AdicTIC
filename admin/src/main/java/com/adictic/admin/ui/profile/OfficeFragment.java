@@ -22,7 +22,7 @@ import com.adictic.admin.util.Funcions;
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.ui.OficinesActivity;
 import com.adictic.common.util.Callback;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;

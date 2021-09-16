@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.adictic.common.entity.AdminProfile;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 
 public class TabProfileAdapter extends FragmentStateAdapter {
     private final Context mCtx;

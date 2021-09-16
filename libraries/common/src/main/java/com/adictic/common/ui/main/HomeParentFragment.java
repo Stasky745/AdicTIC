@@ -106,6 +106,9 @@ public class HomeParentFragment extends Fragment {
             new TabLayoutMediator(tabLayout, viewPager,
                     (tab, position) -> tab.setText(adapter.getPageTitle(position))
             ).attach();
+            for(int i=0; i < viewPager.getChildCount(); i++){
+                viewPager.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
+            }
         }
         else{
             adapter.updateFills(fills);

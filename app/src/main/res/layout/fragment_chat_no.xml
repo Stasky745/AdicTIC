@@ -37,7 +37,7 @@
                 android:paddingBottom="16dp"
                 android:text="@string/no_chat_dubte"
                 android:textAlignment="center"
-                android:textColor="@color/adictic_logo_background"
+                android:textColor="#455A64"
                 android:textStyle="bold"
                 app:autoSizeTextType="none"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="32dp"
                 android:text="@string/localitat_professional"
-                android:textColor="@color/colorPrimary"
+                android:textColor="#0277BD"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/titol"
-                    android:maxLength="130" />
+                    android:maxLength="130"
+                    android:minHeight="48dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,7 +108,8 @@
                     android:id="@+id/TIET_dubteDesc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/desc" />
+                    android:hint="@string/desc"
+                    android:minHeight="48dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.chip.ChipGroup

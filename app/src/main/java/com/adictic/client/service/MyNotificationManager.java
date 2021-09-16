@@ -12,7 +12,7 @@ import android.graphics.BitmapFactory;
 import androidx.core.app.NotificationCompat;
 
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.ui.chat.ChatActivity;
 import com.adictic.client.ui.main.NavActivity;
 

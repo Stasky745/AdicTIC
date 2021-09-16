@@ -16,7 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;

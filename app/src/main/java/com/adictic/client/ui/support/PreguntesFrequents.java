@@ -6,7 +6,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 public class PreguntesFrequents extends AppCompatActivity {
 

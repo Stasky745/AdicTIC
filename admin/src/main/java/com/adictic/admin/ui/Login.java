@@ -19,7 +19,7 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.adictic.admin.MainActivity;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;

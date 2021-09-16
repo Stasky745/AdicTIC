@@ -17,9 +17,11 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 import org.json.JSONObject;
+
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -32,6 +34,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.changePassword));
         api = ((AdicticApp) this.getApplication()).getAPI();
 
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);

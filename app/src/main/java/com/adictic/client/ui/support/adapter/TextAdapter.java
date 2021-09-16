@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.util.Funcions;
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 import java.util.ArrayList;
 

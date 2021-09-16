@@ -35,7 +35,7 @@ import com.adictic.common.entity.WebLink;
 import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;

@@ -24,7 +24,7 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
@@ -128,7 +128,6 @@ public class Login extends AppCompatActivity {
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
                     User usuari = response.body();
                     assert usuari != null;
@@ -190,7 +189,7 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast toast = Toast.makeText(Login.this, getString(R.string.error_noLogin), Toast.LENGTH_SHORT);
                 toast.show();
             }

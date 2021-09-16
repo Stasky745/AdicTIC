@@ -13,7 +13,7 @@ import com.adictic.admin.entity.ChatsMain;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.common.util.Callback;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

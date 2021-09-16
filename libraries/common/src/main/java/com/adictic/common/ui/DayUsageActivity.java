@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -117,6 +118,7 @@ public class DayUsageActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.usage_stats_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_usage));
         mTodoService = ((App) getApplication()).getAPI();
 
         listView = findViewById(R.id.pkg_list);

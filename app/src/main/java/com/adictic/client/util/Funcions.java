@@ -53,7 +53,7 @@ import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.service.ForegroundService;
