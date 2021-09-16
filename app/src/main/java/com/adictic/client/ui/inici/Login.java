@@ -148,7 +148,7 @@ public class Login extends AppCompatActivity {
                     if (usuari.tutor == 0) {
                         Bundle extras = new Bundle();
 
-                        extras.putSerializable("user", usuari);
+                        extras.putParcelable("user", usuari);
                         extras.putString("token", token);
                         extras.putLong("id", usuari.id);
 
