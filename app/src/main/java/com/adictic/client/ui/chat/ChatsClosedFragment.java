@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.ChatInfo;
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 import java.util.ArrayList;
 import java.util.List;

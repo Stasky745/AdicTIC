@@ -66,6 +66,7 @@ public class InformeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.informe_tabs);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.informe));
         mTodoService = ((App) getApplication()).getAPI();
 
         idChild = getIntent().getLongExtra("idChild", -1);
@@ -193,6 +194,9 @@ public class InformeActivity extends AppCompatActivity {
                     Funcions.canviarMesosDeServidor(generalUsages);
                     tabsAdapter.setGenericAppUsage(generalUsages);
                     viewPager.setAdapter(tabsAdapter);
+                    for(int i=0; i < viewPager.getChildCount(); i++){
+                        viewPager.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
+                    }
 
                     setPercentages(generalUsages);
                 } else {
@@ -216,6 +220,9 @@ public class InformeActivity extends AppCompatActivity {
 
         tabsAdapter.setTimes(totalUsageTime);
         viewPager.setAdapter(tabsAdapter);
+        for(int i=0; i < viewPager.getChildCount(); i++){
+            viewPager.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
 
         long totalRecomanat = col.size() * Constants.AGE_TIMES_MILLIS[age];
         percentage = totalUsageTime * 100.0f / totalRecomanat;

@@ -33,7 +33,7 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;

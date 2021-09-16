@@ -39,7 +39,7 @@ import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.adictic.client.receiver.checkInstalledApps;
 import com.adictic.client.ui.main.NavActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;

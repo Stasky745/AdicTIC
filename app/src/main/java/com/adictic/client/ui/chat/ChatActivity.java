@@ -15,7 +15,7 @@ import com.adictic.common.entity.ChatsMain;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -61,6 +61,9 @@ public class ChatActivity extends AppCompatActivity {
 
                     if (adapter.getItemCount() > 1) {
                         _tabChat.setVisibility(View.VISIBLE);
+                    }
+                    for(int i=0; i < _vpChats.getChildCount(); i++){
+                        _vpChats.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
                     }
                 }
             }

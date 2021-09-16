@@ -33,7 +33,7 @@ import com.adictic.common.entity.UserMessage;
 import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;

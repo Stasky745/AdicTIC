@@ -20,7 +20,7 @@ import com.adictic.common.entity.DubteLocalitzacions;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.example.adictic.R;
+import com.adictic.client.R;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;

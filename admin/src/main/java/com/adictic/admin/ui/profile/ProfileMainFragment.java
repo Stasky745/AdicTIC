@@ -18,7 +18,7 @@ import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.admin.MainActivity;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

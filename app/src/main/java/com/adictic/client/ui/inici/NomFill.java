@@ -43,7 +43,7 @@ import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.example.adictic.R;
+import com.adictic.client.R;
 
 import java.util.Calendar;
 import java.util.List;

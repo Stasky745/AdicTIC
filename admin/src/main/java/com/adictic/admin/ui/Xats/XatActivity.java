@@ -33,7 +33,7 @@ import com.adictic.common.entity.UserMessage;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
-import com.example.adictic_admin.R;
+import com.adictic.admin.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.joda.time.DateTime;
