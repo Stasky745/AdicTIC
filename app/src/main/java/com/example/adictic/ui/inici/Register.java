@@ -24,6 +24,8 @@ import com.example.adictic.util.Funcions;
 
 import org.json.JSONObject;
 
+import java.util.Objects;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -39,6 +41,7 @@ public class Register extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.register));
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
@@ -95,8 +98,6 @@ public class Register extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-
                 if (response.isSuccessful()) {
                     Register.this.startActivity(new Intent(Register.this, Login.class));
                     Login.getInstance().finish();
@@ -136,7 +137,7 @@ public class Register extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast toast = Toast.makeText(Register.this, getString(R.string.error_noRegister), Toast.LENGTH_SHORT);
                 toast.show();
             }

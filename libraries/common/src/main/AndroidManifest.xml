@@ -7,10 +7,12 @@
 
     <application>
         <activity android:name=".ui.main.MainActivityAbstractClass" />
-        <activity android:name=".ui.OficinesActivity" />
+        <activity android:name=".ui.OficinesActivity"
+            android:theme= "@style/Theme.AppCompat.DayNight.NoActionBar"/>
         <activity android:name=".ui.informe.InformeActivity" />
         <activity android:name=".ui.DayUsageActivity" />
-        <activity android:name=".ui.GeoLocActivity" />
+        <activity android:name=".ui.GeoLocActivity"
+            android:theme= "@style/Theme.AppCompat.DayNight.NoActionBar"/>
         <activity android:name=".ui.HorarisActivity" />
         <activity android:name=".ui.AdminProfileActivity" />
         <activity android:name=".ui.events.EventsActivity" />
