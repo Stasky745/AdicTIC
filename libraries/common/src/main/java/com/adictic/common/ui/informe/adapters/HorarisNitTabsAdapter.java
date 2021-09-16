@@ -23,14 +23,14 @@ public class HorarisNitTabsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if(canvisHoraris.horariNou == null)
-            return new DialogHorarisNitFragment(canvisHoraris.horariAntic);
+            return DialogHorarisNitFragment.newInstance(canvisHoraris.horariAntic);
         else if(canvisHoraris.horariAntic == null)
-            return new DialogHorarisNitFragment(canvisHoraris.horariNou);
+            return DialogHorarisNitFragment.newInstance(canvisHoraris.horariNou);
         else{
             if(position == 0)
-                return new DialogHorarisNitFragment(canvisHoraris.horariAntic);
+                return DialogHorarisNitFragment.newInstance(canvisHoraris.horariAntic);
             else
-                return new DialogHorarisNitFragment(canvisHoraris.horariNou);
+                return DialogHorarisNitFragment.newInstance(canvisHoraris.horariNou);
         }
     }
 

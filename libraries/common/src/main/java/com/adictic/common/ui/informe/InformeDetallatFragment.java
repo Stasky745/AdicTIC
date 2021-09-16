@@ -50,26 +50,31 @@ public class InformeDetallatFragment extends Fragment {
     private final int RV_APPS_EVENTS_HEIGHT = 1300;
     private final int RV_HORARIS_HEIGHT = 1000;
 
-    private final List<GeneralUsage> appList;
-    private final int age;
-    private final long mitjanaMillisDia;
+    private static final String ARG_TOTALUSAGETIME = "totalUsageTime";
+    private static final String ARG_EDAT = "edat";
+    private static final String ARG_ID = "id";
+    private static final String ARG_APPLIST = "appList";
+
+    private List<GeneralUsage> appList;
+    private int age;
+    private long mitjanaMillisDia;
     private Api api;
-    private final long idChild;
-    private final String activeDateString;
-    private final int activeMonth;
-    private final int activeYear;
+    private long idChild;
+    private String activeDateString;
+    private int activeMonth;
+    private int activeYear;
 
-    InformeDetallatFragment(Collection<GeneralUsage> col, long totalUsageT, int edat, long id){
-        appList = new ArrayList<>(col);
-        age = edat;
-        mitjanaMillisDia = totalUsageT / appList.size();
-        idChild = id;
+    public static InformeDetallatFragment newInstance(Collection<GeneralUsage> col, long totalUsageT, int edat, long id){
+        final InformeDetallatFragment informeDetallatFragment = new InformeDetallatFragment();
 
-        GeneralUsage generalUsage = appList.get(0);
-        activeMonth = generalUsage.month;
-        activeYear = generalUsage.year;
-        activeDateString = (activeMonth+1) +"-"+ activeYear;
+        final Bundle args = new Bundle(4);
+        args.putLong(ARG_TOTALUSAGETIME, totalUsageT);
+        args.putLong(ARG_ID, id);
+        args.putInt(ARG_EDAT, edat);
+        args.putParcelableArrayList(ARG_APPLIST, new ArrayList<>(col));
 
+        informeDetallatFragment.setArguments(args);
+        return informeDetallatFragment;
     }
 
     @Nullable
@@ -78,12 +83,31 @@ public class InformeDetallatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable @org.jetbrains.annotations.Nullable ViewGroup container, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.informe_detallat, container, false);
 
+        getBundle();
+
         api = ((App) requireContext().getApplicationContext()).getAPI();
 
         setIntro(root);
         setLimitsMarcats(root);
 
         return root;
+    }
+
+    private void getBundle() {
+        final Bundle arguments = getArguments();
+
+        if(arguments == null)
+            return;
+
+        appList = arguments.getParcelableArrayList(ARG_APPLIST);
+        age = arguments.getInt(ARG_EDAT);
+        mitjanaMillisDia = arguments.getLong(ARG_TOTALUSAGETIME) / appList.size();
+        idChild = arguments.getLong(ARG_ID);
+
+        GeneralUsage generalUsage = appList.get(0);
+        activeMonth = generalUsage.month;
+        activeYear = generalUsage.year;
+        activeDateString = (activeMonth+1) +"-"+ activeYear;
     }
 
     private void setLimitsMarcats(View root) {

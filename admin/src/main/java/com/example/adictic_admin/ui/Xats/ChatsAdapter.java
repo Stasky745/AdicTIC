@@ -26,13 +26,13 @@ public class ChatsAdapter extends FragmentStateAdapter {
             if(chatsMain.oberts == null)
                 chatsMain.oberts = new ArrayList<>();
 
-            fragment = new XatsLlistaFragment(chatsMain.oberts, true);
+            fragment = XatsLlistaFragment.newInstance(chatsMain.oberts, true);
         }
         else {
             if(chatsMain.tancats == null)
                 chatsMain.tancats = new ArrayList<>();
 
-            fragment = new XatsLlistaFragment(chatsMain.tancats, false);
+            fragment = XatsLlistaFragment.newInstance(chatsMain.tancats, false);
         }
         return fragment;
     }
