@@ -26,6 +26,7 @@ import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -49,6 +50,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_event);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.horaris));
         mTodoService = ((App) getApplication()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
