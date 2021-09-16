@@ -45,7 +45,7 @@ public class TabFillsAdapter extends FragmentStateAdapter {
         } else {
             lastId = fills.get(position).idChild;
 
-            return new MainParentFragment(fills.get(position));
+            return MainParentFragment.newInstance(fills.get(position));
         }
     }
 

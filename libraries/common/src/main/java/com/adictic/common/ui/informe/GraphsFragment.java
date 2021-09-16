@@ -45,31 +45,41 @@ import java.util.Map;
 
 public class GraphsFragment extends Fragment {
 
+    private static final String LIST_ARG = "list_arg";
+    private static final String ID_ARG = "ID_arg";
+
     private PieChart pieChart;
     private TextView TV_pieApp;
     private BarChart barChart;
-    private final Long idChild;
+    private Long idChild;
     private boolean pieCategory;
 
-    private final List<GeneralUsage> genericAppUsage;
+    private List<GeneralUsage> genericAppUsage;
 
     private int currentYear;
 
     private ChipGroup chipGroup;
     private Chip CH_appName;
 
-    GraphsFragment(long id, Collection<GeneralUsage> col) {
-        genericAppUsage = new ArrayList<>(col);
+    public GraphsFragment(){ }
 
-        if (genericAppUsage.isEmpty()) currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        else currentYear = genericAppUsage.get(0).year;
+    public static GraphsFragment newInstance(long id, Collection<GeneralUsage> col) {
+        final GraphsFragment graphsFragment = new GraphsFragment();
 
-        idChild = id;
+        final Bundle args = new Bundle(2);
+
+        args.putParcelableArrayList(LIST_ARG, new ArrayList<>(col));
+        args.putLong(ID_ARG, id);
+
+        graphsFragment.setArguments(args);
+        return graphsFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.informe_layout, viewGroup, false);
+
+        getBundle();
 
         pieChart = root.findViewById(R.id.Ch_Pie);
         barChart = root.findViewById(R.id.Ch_Line);
@@ -84,6 +94,20 @@ public class GraphsFragment extends Fragment {
         makeGraphs();
 
         return root;
+    }
+
+    private void getBundle() {
+        final Bundle arguments = getArguments();
+
+        if(arguments == null)
+            return;
+
+        genericAppUsage = arguments.getParcelableArrayList(LIST_ARG);
+
+        if (genericAppUsage.isEmpty()) currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        else currentYear = genericAppUsage.get(0).year;
+
+        idChild = arguments.getLong(ID_ARG);
     }
 
     private void makeGraphs() {

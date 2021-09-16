@@ -24,9 +24,9 @@ public class TabProfileAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position){
             case 0:
-                return new ProfileFragment(mCtx, adminProfile);
+                return ProfileFragment.newInstance(adminProfile);
             case 1:
-                return new OfficeFragment(mCtx, adminProfile.oficina);
+                return OfficeFragment.newInstance(adminProfile.oficina);
             default:
                 throw new IllegalStateException("Unexpected position TabProfileAdapter (getItem): " + position);
         }

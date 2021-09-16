@@ -54,6 +54,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class ProfileFragment extends Fragment{
+    private static final String PROFILE_ARGS = "profile_args";
 
     private static final int AFEGIR_WEBLINK = 1;
     private static final int EDIT_WEBLINK = 2;
@@ -61,7 +62,7 @@ public class ProfileFragment extends Fragment{
     private ArrayList<WebLink> webList;
     private RV_Adapter RVadapter;
 
-    private final Context mCtx;
+    private Context mCtx;
     private AdminProfile adminProfile;
 
     private String nomOriginal;
@@ -80,9 +81,16 @@ public class ProfileFragment extends Fragment{
 
     private SharedPreferences sharedPreferences;
 
-    public ProfileFragment(Context mCtx, AdminProfile adminProfile1) {
-        this.adminProfile = adminProfile1;
-        this.mCtx = mCtx;
+    public ProfileFragment() { }
+
+    public static ProfileFragment newInstance(AdminProfile adminProfile1) {
+        final ProfileFragment profileFragment = new ProfileFragment();
+
+        final Bundle args = new Bundle(1);
+        args.putParcelable(PROFILE_ARGS, adminProfile1);
+        profileFragment.setArguments(args);
+
+        return profileFragment;
     }
 
     @Override
@@ -126,6 +134,11 @@ public class ProfileFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.profile_edit, container, false);
+
+        mCtx = requireContext();
+
+        if(getArguments() != null)
+            adminProfile = getArguments().getParcelable(PROFILE_ARGS);
 
         mService = ((AdminApp) requireActivity().getApplication()).getAPI();
 
