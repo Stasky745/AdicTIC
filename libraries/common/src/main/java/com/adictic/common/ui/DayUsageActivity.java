@@ -30,6 +30,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.RVSpaceDecoration;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
@@ -230,6 +231,8 @@ public class DayUsageActivity extends AppCompatActivity {
 
         mAdapter = new UsageStatsAdapter(appList, DayUsageActivity.this);
         listView.setAdapter(mAdapter);
+        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+        listView.addItemDecoration(rvSpaceDecoration);
         //setSpinner ha d'anar després de l'adapter
         setSpinner();
     }
