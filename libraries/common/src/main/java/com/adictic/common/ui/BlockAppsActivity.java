@@ -108,6 +108,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 Call<String> call = mTodoService.blockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
@@ -118,6 +119,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
+                            RVadapter.notifyDataSetChanged();
                         }
                     }
 
@@ -142,6 +144,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                 Call<String> call = mTodoService.unlockApps(idChild, selectedApps);
 
                 call.enqueue(new Callback<String>() {
+                    @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
@@ -152,6 +155,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                             }
                             Collections.sort(blockAppList);
                             selectedApps.clear();
+                            RVadapter.notifyDataSetChanged();
                         }
                     }
 
@@ -174,6 +178,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             Call<String> call = mTodoService.limitApps(idChild, bList);
 
             call.enqueue(new Callback<String>() {
+                @SuppressLint("NotifyDataSetChanged")
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     super.onResponse(call, response);
@@ -184,6 +189,7 @@ public class BlockAppsActivity extends AppCompatActivity {
                         }
                         Collections.sort(blockAppList);
                         selectedApps.clear();
+                        RVadapter.notifyDataSetChanged();
                     }
                 }
 
