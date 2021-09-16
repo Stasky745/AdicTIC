@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -70,6 +71,7 @@ public class BlockAppsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 

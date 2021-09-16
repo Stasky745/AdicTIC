@@ -62,6 +62,9 @@ public class ChatActivity extends AppCompatActivity {
                     if (adapter.getItemCount() > 1) {
                         _tabChat.setVisibility(View.VISIBLE);
                     }
+                    for(int i=0; i < _vpChats.getChildCount(); i++){
+                        _vpChats.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
+                    }
                 }
             }
 
