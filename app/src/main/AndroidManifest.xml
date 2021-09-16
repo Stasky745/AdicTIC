@@ -22,7 +22,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <application
-        android:name=".util.AdicticApp"
+        android:name="com.adictic.client.util.AdicticApp"
         android:allowClearUserData="false"
         android:allowBackup="false"
         android:icon="@mipmap/adictic_logo"
@@ -34,21 +34,21 @@
         android:requestLegacyExternalStorage="true"
         tools:replace="android:allowBackup,android:icon,android:roundIcon,android:theme">
         <activity
-            android:name=".ui.chat.ChatActivity"
+            android:name="com.adictic.client.ui.chat.ChatActivity"
             android:label="@string/title_activity_dubte"
             android:theme="@style/AppTheme.NoActionBarBlue" />
         <activity
-            android:name=".ui.main.NavActivity"
+            android:name="com.adictic.client.ui.main.NavActivity"
             android:label="@string/title_activity_nav" />
-        <activity android:name=".ui.inici.Login" />
+        <activity android:name="com.adictic.client.ui.inici.Login" />
         <activity
-            android:name=".ui.BlockAppActivity"
+            android:name="com.adictic.client.ui.BlockAppActivity"
             android:noHistory="true" />
-        <activity android:name=".ui.inici.Register" />
-        <activity android:name=".ui.inici.NomFill" />
+        <activity android:name="com.adictic.client.ui.inici.Register" />
+        <activity android:name="com.adictic.client.ui.inici.NomFill" />
         <activity android:name="com.adictic.common.ui.DayUsageActivity" />
         <activity
-            android:name=".ui.inici.SplashScreen"
+            android:name="com.adictic.client.ui.inici.SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
@@ -61,14 +61,14 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.MyFirebaseMessagingService"
+        <service android:name="com.adictic.client.service.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:name=".service.AccessibilityScreenService"
+            android:name="com.adictic.client.service.AccessibilityScreenService"
             android:label="@string/accessibility_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
@@ -80,27 +80,27 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibilityservice" />
         </service>
-        <service android:name=".service.ForegroundService" android:foregroundServiceType="location" android:stopWithTask="false" />
+        <service android:name="com.adictic.client.service.ForegroundService" android:foregroundServiceType="location" android:stopWithTask="false" />
 
         <!-- DEVICE ADMIN POLICIES -->
         <activity android:name="com.adictic.common.ui.HorarisActivity" />
         <activity android:name="com.adictic.common.ui.BlockAppsActivity" />
         <activity android:name="com.adictic.common.ui.informe.InformeActivity" />
-        <activity android:name=".ui.support.PreguntesFrequents" />
-        <activity android:name=".ui.support.InformationActivity" />
+        <activity android:name="com.adictic.client.ui.support.PreguntesFrequents" />
+        <activity android:name="com.adictic.client.ui.support.InformationActivity" />
         <activity android:name="com.adictic.common.ui.events.EventsActivity" />
         <activity android:name="com.adictic.common.ui.OficinesActivity" />
         <activity android:name="com.adictic.common.ui.GeoLocActivity" />
-        <activity android:name=".ui.chat.ClosedChatActivity"
+        <activity android:name="com.adictic.client.ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
-        <activity android:name=".ui.main.ChangePasswordActivity" />
-        <activity android:name=".ui.inici.Permisos" />
-        <activity android:name=".ui.inici.AppLock" />
-        <activity android:name=".ui.BlockDeviceActivity"
+        <activity android:name="com.adictic.client.ui.main.ChangePasswordActivity" />
+        <activity android:name="com.adictic.client.ui.inici.Permisos" />
+        <activity android:name="com.adictic.client.ui.inici.AppLock" />
+        <activity android:name="com.adictic.client.ui.BlockDeviceActivity"
             android:noHistory="true" />
-        <activity android:name=".ui.inici.PermisosMIUI" />
+        <activity android:name="com.adictic.client.ui.inici.PermisosMIUI" />
 
-        <receiver android:name=".receiver.checkInstalledApps"
+        <receiver android:name="com.adictic.client.receiver.checkInstalledApps"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
@@ -108,7 +108,7 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DateTimeChangedBroadcastReceiver"
+        <receiver android:name="com.adictic.client.receiver.DateTimeChangedBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.ACTION_TIMEZONE_CHANGED"/>
@@ -126,7 +126,7 @@
                 <action android:name="android.intent.action.ACTION_TIME_CHANGED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.StartServiceOnBootReceiver"
+        <receiver android:name="com.adictic.client.receiver.StartServiceOnBootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -134,7 +134,7 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".ui.inici.Permisos$MyDevicePolicyReceiver"
+            android:name="com.adictic.client.ui.inici.Permisos$MyDevicePolicyReceiver"
             android:description="@string/device_admin_description"
             android:label="@string/device_admin"
             android:permission="android.permission.BIND_DEVICE_ADMIN"
@@ -150,7 +150,7 @@
                 <action android:name="android.app.action." />
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.AccessibilityScreenService$ScreenLockReceiver"
+        <receiver android:name="com.adictic.client.service.AccessibilityScreenService$ScreenLockReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SCREEN_OFF"/>
