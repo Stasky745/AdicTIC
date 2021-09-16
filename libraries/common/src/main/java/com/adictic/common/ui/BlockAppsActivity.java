@@ -321,6 +321,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
                 holder.mRootView.setOnClickListener(v -> {
+                    RV_appList.scrollToPosition(position);
                     if (selectedApps.contains(blockedApp.pkgName)) {
                         selectedApps.remove(blockedApp.pkgName);
                         holder.itemView.setBackgroundColor(Color.TRANSPARENT);
