@@ -32,6 +32,7 @@ import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
+import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.adictic.client.R;
 import com.adictic.client.ui.chat.ChatFragment;
@@ -159,21 +160,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
             Log.d(TAG, "Message data payload: " + messageMap);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
-                NotificationManager mNotificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                mChannel.enableLights(true);
-                mChannel.setLightColor(Color.RED);
-                mChannel.enableVibration(true);
-                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                mNotificationManager.createNotificationChannel(mChannel);
-            }
 
             if(!messageMap.containsKey("action")){
                 Log.e(TAG,"La consulta de firebase no té la clau 'action'");
@@ -315,26 +301,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 case "chat":
                     switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
                         case "0":
-                            //if the message contains data payload
-                            //It is a map of custom keyvalues
-                            //we can read it easily
-
-                            //then here we can use the title and body to build a notification
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                NotificationManager mNotificationManager =
-                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                                mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                                mChannel.enableLights(true);
-                                mChannel.setLightColor(Color.RED);
-                                mChannel.enableVibration(true);
-                                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                                mNotificationManager.createNotificationChannel(mChannel);
-                            }
-
-                            MyNotificationManager.getInstance(this).displayNotification(title, body, null);
+                            ClientNotificationManager.getInstance(this).displayGeneralNotification(title, body, (Class)null, MyNotificationManager.Channels.CHAT);
                             break;
                         case "1":  //Message with Chat
                             body = remoteMessage.getData().get("body");
@@ -360,7 +327,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     mNotificationManager.createNotificationChannel(mChannel);
                                 }
 
-                                MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                                ClientNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
                             }
                             break;
                         case "2":
@@ -393,17 +360,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     meetingId
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.adictic_nolletra)
-                                    .setContentTitle("Trucant")
-                                    .setContentText("Test test")
-                                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                                    .setContentIntent(pendingIntent)
-                                    .setAutoCancel(true);
-                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                            //notificationManager.cancelAll();
-                            notificationManager.notify(251, builder.build());
+                            ClientNotificationManager.getInstance(this).displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT);
                             startActivity(intent);
                         } else if (type.equals("invitationResponse")) {
                             Intent intent = new Intent("invitationResponse");
@@ -425,7 +382,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            MyNotificationManager.getInstance(this).displayNotification(title, body, activitatIntent);
+            ClientNotificationManager.getInstance(this).displayGeneralNotification(title, body, activitatIntent, MyNotificationManager.Channels.GENERAL);
         }
     }
 
