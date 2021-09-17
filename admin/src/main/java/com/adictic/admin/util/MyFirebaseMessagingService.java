@@ -102,7 +102,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             String title = "Tens un nou missatge!";
                             Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
 
-                            MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                            AdminNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
                         }
                         break;
                     case "2":
