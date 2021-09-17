@@ -62,7 +62,6 @@ public class Login extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NotNull Call<User> call, @NotNull Response<User> response) {
-                    super.onResponse(call, response);
                             if(response.isSuccessful() && response.body() != null){
                                 User adminLogin = response.body();
                                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
