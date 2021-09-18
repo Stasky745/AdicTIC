@@ -2,6 +2,7 @@ package com.adictic.common.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
@@ -55,6 +56,8 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -398,49 +401,42 @@ public class Funcions {
     public static List<GeneralUsage> getGeneralUsages(Context mContext, int iTime, int fTime) {
         List<GeneralUsage> gul = new ArrayList<>();
 
-        if (fTime == -1) {
-            Calendar now = Calendar.getInstance();
+        long timer = System.currentTimeMillis();
 
+        long initialTime, finalTime;
+
+        if (fTime == -1) {
             Calendar initialDate = Calendar.getInstance();
             initialDate.set(Calendar.HOUR_OF_DAY, 0);
             initialDate.set(Calendar.MINUTE, 0);
             initialDate.set(Calendar.SECOND, 0);
 
-            long initialTime = initialDate.getTimeInMillis();
+            initialTime = initialDate.getTimeInMillis();
 
-            Calendar finalDate = Calendar.getInstance();
-            finalDate.add(Calendar.DAY_OF_YEAR, 1);
-            finalDate.set(Calendar.HOUR_OF_DAY, 0);
-            finalDate.set(Calendar.MINUTE, 0);
-            finalDate.set(Calendar.SECOND, 0);
-
-            long finalTime = finalDate.getTimeInMillis();
+            finalTime = Calendar.getInstance().getTimeInMillis();
 
             List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
 
             GeneralUsage gu = new GeneralUsage();
-            gu.day = now.get(Calendar.DAY_OF_MONTH);
-            gu.month = now.get(Calendar.MONTH) + 1;
-            gu.year = now.get(Calendar.YEAR);
+            gu.day = initialDate.get(Calendar.DAY_OF_MONTH);
+            gu.month = initialDate.get(Calendar.MONTH) + 1;
+            gu.year = initialDate.get(Calendar.YEAR);
             gu.usage = appUsages;
 
-            gu.totalTime = 0L;
-            for (AppUsage au : appUsages) {
-                gu.totalTime += au.totalTime;
-            }
+            gu.totalTime = appUsages.stream()
+                    .mapToLong(appUsage -> appUsage.totalTime)
+                    .sum();
 
             gul.add(gu);
         } else {
             for (int i = iTime; i <= fTime; i++) {
-                Calendar now = Calendar.getInstance();
-
                 Calendar initialDate = Calendar.getInstance();
                 initialDate.set(Calendar.DAY_OF_YEAR, i);
                 initialDate.set(Calendar.HOUR_OF_DAY, 0);
                 initialDate.set(Calendar.MINUTE, 0);
                 initialDate.set(Calendar.SECOND, 0);
 
-                long initialTime = initialDate.getTimeInMillis();
+                initialTime = initialDate.getTimeInMillis();
 
                 Calendar finalDate = Calendar.getInstance();
                 finalDate.set(Calendar.DAY_OF_YEAR, i+1);
@@ -448,64 +444,121 @@ public class Funcions {
                 finalDate.set(Calendar.MINUTE, 0);
                 finalDate.set(Calendar.SECOND, 0);
 
-                long finalTime = finalDate.getTimeInMillis();
+                finalTime = finalDate.getTimeInMillis();
 
                 List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
 
                 GeneralUsage gu = new GeneralUsage();
-                gu.day = now.get(Calendar.DAY_OF_MONTH);
-                gu.month = now.get(Calendar.MONTH) + 1;
-                gu.year = now.get(Calendar.YEAR);
+                gu.day = initialDate.get(Calendar.DAY_OF_MONTH);
+                gu.month = initialDate.get(Calendar.MONTH) + 1;
+                gu.year = initialDate.get(Calendar.YEAR);
                 gu.usage = appUsages;
 
-                gu.totalTime = 0L;
-                for (AppUsage au : appUsages) {
-                    gu.totalTime += au.totalTime;
-                }
+                gu.totalTime = appUsages.stream()
+                        .mapToLong(appUsage -> appUsage.totalTime)
+                        .sum();
 
                 gul.add(gu);
             }
         }
+
+        System.out.println("TIME: " + (System.currentTimeMillis() - timer));
+
         return gul;
     }
 
     private static List<AppUsage> getAppUsages(Context mContext, long initialTime, long finalTime) {
+        UsageEvents.Event currentEvent;
+        List<UsageEvents.Event> allEvents = new ArrayList<>();
+        HashMap<String, AppUsage> map = new HashMap<>();
 
         UsageStatsManager mUsageStatsManager = (UsageStatsManager) mContext.getSystemService(Context.USAGE_STATS_SERVICE);
+        assert  mUsageStatsManager != null;
         PackageManager mPm = mContext.getPackageManager();
 
-        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST,
-                initialTime, finalTime).stream()
-                .filter(usageStats -> usageStats.getTotalTimeInForeground() > 5000)
-                .collect(Collectors.toList());
+        UsageEvents usageEvents = mUsageStatsManager.queryEvents(initialTime, finalTime);
 
-        List<AppUsage> appUsages = new ArrayList<>();
-        for (UsageStats pkgStats : stats) {
-            if(!pkgStats.getPackageName().equals(mContext.getPackageName())) {
-                ApplicationInfo appInfo = null;
-                try {
-                    appInfo = mPm.getApplicationInfo(pkgStats.getPackageName(), PackageManager.GET_META_DATA);
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
-                }
+        //capturing all events in a array to compare with next element
 
-//            if (appInfo != null && lastTimeUsed >= initialTime && lastTimeUsed <= finalTime && pkgStats.getTotalTimeInForeground() > 5000 && (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                if (appInfo != null) {
-                    AppUsage appUsage = new AppUsage();
-                    appUsage.app = new AppInfo();
+        while (usageEvents.hasNextEvent()) {
+            currentEvent = new UsageEvents.Event();
+            usageEvents.getNextEvent(currentEvent);
+            if (currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND ||
+                    currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+                allEvents.add(currentEvent);
+                String pkgName = currentEvent.getPackageName();
 
-                    if (Build.VERSION.SDK_INT >= 26)
-                        appUsage.app.category = appInfo.category;
-                    appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
-                    appUsage.app.pkgName = pkgStats.getPackageName();
-                    appUsage.lastTimeUsed = pkgStats.getLastTimeUsed();
-                    appUsage.totalTime = pkgStats.getTotalTimeInForeground();
-                    appUsages.add(appUsage);
+                // taking it into a collection to access by package name
+                if (map.get(pkgName)==null) {
+                    try {
+                        ApplicationInfo appInfo;
+                        appInfo = mPm.getApplicationInfo(pkgName, PackageManager.GET_META_DATA);
+
+                        AppUsage appUsage = new AppUsage();
+                        appUsage.app = new AppInfo();
+
+                        if (Build.VERSION.SDK_INT >= 26)
+                            appUsage.app.category = appInfo.category;
+                        appUsage.app.appName = mPm.getApplicationLabel(appInfo).toString();
+                        appUsage.app.pkgName = pkgName;
+                        appUsage.totalTime = 0L;
+                        appUsage.timesOpened = 0;
+                        map.put(pkgName, appUsage);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        AppUsage appUsage = new AppUsage();
+                        appUsage.app = new AppInfo();
+
+                        if (Build.VERSION.SDK_INT >= 26)
+                            appUsage.app.category = -1;
+                        appUsage.app.appName = pkgName;
+                        appUsage.app.pkgName = pkgName;
+                        appUsage.totalTime = 0L;
+                        appUsage.timesOpened = 0;
+                        map.put(pkgName, appUsage);
+                    }
                 }
             }
         }
 
-        return appUsages;
+        allEvents.sort(Comparator.comparing(UsageEvents.Event::getTimeStamp));
+
+        // Si el primer event és de pausar activitat és que estava oberta abans de mitjanit, per tant sumar aquell temps també
+        UsageEvents.Event primerEvent = allEvents.get(0);
+        if(primerEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED){
+            long diff = primerEvent.getTimeStamp() - initialTime;
+            Objects.requireNonNull(map.get(primerEvent.getPackageName())).totalTime += diff;
+        }
+
+        // Si l'últim event és de començar activitat és que està oberta ara, per tant sumar aquest temps també
+        UsageEvents.Event ultimEvent = allEvents.get(allEvents.size() - 1);
+        if(ultimEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED){
+            long diff = finalTime - ultimEvent.getTimeStamp();
+            Objects.requireNonNull(map.get(ultimEvent.getPackageName())).totalTime += diff;
+        }
+
+        // iterating through the arraylist
+        for (int i=0;i<allEvents.size()-1;i++){
+            UsageEvents.Event E0=allEvents.get(i);
+            UsageEvents.Event E1=allEvents.get(i+1);
+
+            //Si els noms són diferents i l'event és obrir
+            if (!E0.getPackageName().equals(E1.getPackageName()) && E1.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED){
+            // if true, E1 (launch event of an app) app launched
+                Objects.requireNonNull(map.get(E0.getPackageName())).lastTimeUsed = E0.getTimeStamp();
+                Objects.requireNonNull(map.get(E1.getPackageName())).timesOpened++;
+            }
+
+            // Si són la mateixa classe que ha començat i acabat, mirar temps
+            if (E0.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED
+                    && E1.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED
+                    && E0.getClassName().equals(E1.getClassName())){
+                long diff = E1.getTimeStamp()-E0.getTimeStamp();
+                Objects.requireNonNull(map.get(E0.getPackageName())).totalTime += diff;
+                Objects.requireNonNull(map.get(E0.getPackageName())).lastTimeUsed = E0.getTimeStamp();
+            }
+        }
+
+        return new ArrayList<>(map.values());
     }
 
     public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp) {

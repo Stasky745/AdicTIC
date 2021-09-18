@@ -1,5 +1,6 @@
 package com.adictic.common.ui.main;
 
+import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.LiveApp;
 
@@ -15,7 +16,7 @@ public interface MainActivityInterface {
     TreeMap<Long, Long> mainParent_lastAppUsedUpdate = new TreeMap<>();
     TreeMap<Long, LiveApp> mainParent_lastAppUsed = new TreeMap<>();
     TreeMap<Long, Long> mainParent_lastUsageChartUpdate = new TreeMap<>();
-    TreeMap<Long, Map<String, Long>> mainParent_usageChart = new TreeMap<>();
+    TreeMap<Long, Map<String, AppUsage>> mainParent_usageChart = new TreeMap<>();
     TreeMap<Long, Long> mainParent_totalUsageTime = new TreeMap<>();
 
     ArrayList<FillNom> homeParent_childs = null;
