@@ -84,7 +84,7 @@ public class NomFill extends AppCompatActivity {
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
 
-        User usuari = (User) bundle.getSerializable("user");
+        User usuari = (User) bundle.getParcelable("user");
         final String token = bundle.getString("token");
         final long idParent = bundle.getLong("id");
 

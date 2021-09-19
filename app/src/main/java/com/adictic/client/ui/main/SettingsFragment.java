@@ -25,7 +25,6 @@ import com.adictic.client.ui.inici.Login;
 import com.adictic.client.ui.inici.SplashScreen;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -75,7 +74,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         assert pujar_informe != null;
         pujar_informe.setOnPreferenceClickListener(preference -> {
-            List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), sharedPreferences.getInt("dayOfYear", Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+            List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 6));
 
             Funcions.canviarMesosAServidor(gul);
 

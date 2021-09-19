@@ -27,11 +27,12 @@ public class AdicticApp extends App {
     private AdicticApi adicticApi;
 
     public static String[] newFeatures = {
-
+            "Quan es desbloqueja el dispositiu, si hi ha la pantalla de bloqueig oberta, aquesta es tanca sola"
     };
 
     public static String[] fixes = {
-
+            "Dades d'ús molt més exactes",
+            "Ara ja es desbloqueja bé el dispositiu i no queda bloquejat sense Temps lliure"
     };
 
     public static String[] changes = {
