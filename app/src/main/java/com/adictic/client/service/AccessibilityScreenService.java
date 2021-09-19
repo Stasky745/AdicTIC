@@ -349,7 +349,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
         liveApp.pkgName = pkgName;
         liveApp.appName = appName;
-        liveApp.time = Calendar.getInstance().getTimeInMillis();
+        liveApp.time = DateTime.now().getMillis();
 
         if(sharedPreferences == null)
             sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
@@ -397,7 +397,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             LiveApp liveApp = new LiveApp();
             liveApp.pkgName = AccessibilityScreenService.instance.lastPackage;
             liveApp.appName = AccessibilityScreenService.instance.lastAppName;
-            liveApp.time = Calendar.getInstance().getTimeInMillis();
+            liveApp.time = DateTime.now().getMillis();
 
             // També actualitzem les dades d'ús al servidor
             Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.instance);

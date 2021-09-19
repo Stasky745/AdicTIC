@@ -531,11 +531,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
     public static void startAppUsageWorker24h(Context mCtx){
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-        Calendar cal = Calendar.getInstance();
         // Agafem dades dels últims X dies per inicialitzar dades al servidor
-        cal.add(Calendar.DAY_OF_YEAR, -6);
         assert sharedPreferences != null;
-        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR,cal.get(Calendar.DAY_OF_YEAR)).apply();
+        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR, 6).apply();
 
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)

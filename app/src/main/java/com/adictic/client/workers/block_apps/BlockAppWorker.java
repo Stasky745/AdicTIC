@@ -35,7 +35,7 @@ public class BlockAppWorker extends Worker {
     public Result doWork() {
         Log.i(TAG,"Worker Start");
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0, -1);
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), 0);
         List<AppUsage> appUsageList = new ArrayList<>(gul.get(0).usage);
 
         List<BlockedApp> blockedApps = Funcions.readFromFile(getApplicationContext(), Constants.FILE_LIMITED_APPS,false);

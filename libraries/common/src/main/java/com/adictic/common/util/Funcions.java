@@ -49,19 +49,26 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeField;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -398,29 +405,30 @@ public class Funcions {
      * pre: si fTime = -1, agafa valors del dia actual inacabat
      * post: retorna la llista amb els mesos ja adaptats pel servidor (+1)
      **/
-    public static List<GeneralUsage> getGeneralUsages(Context mContext, int iTime, int fTime) {
+    public static List<GeneralUsage> getGeneralUsages(Context mContext, int nDies) {
         List<GeneralUsage> gul = new ArrayList<>();
 
         long timer = System.currentTimeMillis();
 
         long initialTime, finalTime;
 
-        if (fTime == -1) {
-            Calendar initialDate = Calendar.getInstance();
-            initialDate.set(Calendar.HOUR_OF_DAY, 0);
-            initialDate.set(Calendar.MINUTE, 0);
-            initialDate.set(Calendar.SECOND, 0);
+        for(int i = 0; i <= nDies; i++){
+            DateTime initialDate = new DateTime();
+            initialDate = initialDate.withTimeAtStartOfDay().withZone(DateTimeZone.UTC);
+            initialDate = initialDate.minusDays(i);
 
-            initialTime = initialDate.getTimeInMillis();
+            DateTime finalDate = new DateTime(initialDate).plusDays(1);
 
-            finalTime = Calendar.getInstance().getTimeInMillis();
+            initialTime = initialDate.getMillis();
+
+            finalTime = Math.min(finalDate.getMillis(), DateTime.now().getMillis());
 
             List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
 
             GeneralUsage gu = new GeneralUsage();
-            gu.day = initialDate.get(Calendar.DAY_OF_MONTH);
-            gu.month = initialDate.get(Calendar.MONTH) + 1;
-            gu.year = initialDate.get(Calendar.YEAR);
+            gu.day = initialDate.getDayOfMonth();
+            gu.month = initialDate.getMonthOfYear();
+            gu.year = initialDate.getYear();
             gu.usage = appUsages;
 
             gu.totalTime = appUsages.stream()
@@ -428,38 +436,6 @@ public class Funcions {
                     .sum();
 
             gul.add(gu);
-        } else {
-            for (int i = iTime; i <= fTime; i++) {
-                Calendar initialDate = Calendar.getInstance();
-                initialDate.set(Calendar.DAY_OF_YEAR, i);
-                initialDate.set(Calendar.HOUR_OF_DAY, 0);
-                initialDate.set(Calendar.MINUTE, 0);
-                initialDate.set(Calendar.SECOND, 0);
-
-                initialTime = initialDate.getTimeInMillis();
-
-                Calendar finalDate = Calendar.getInstance();
-                finalDate.set(Calendar.DAY_OF_YEAR, i+1);
-                finalDate.set(Calendar.HOUR_OF_DAY, 0);
-                finalDate.set(Calendar.MINUTE, 0);
-                finalDate.set(Calendar.SECOND, 0);
-
-                finalTime = finalDate.getTimeInMillis();
-
-                List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
-
-                GeneralUsage gu = new GeneralUsage();
-                gu.day = initialDate.get(Calendar.DAY_OF_MONTH);
-                gu.month = initialDate.get(Calendar.MONTH) + 1;
-                gu.year = initialDate.get(Calendar.YEAR);
-                gu.usage = appUsages;
-
-                gu.totalTime = appUsages.stream()
-                        .mapToLong(appUsage -> appUsage.totalTime)
-                        .sum();
-
-                gul.add(gu);
-            }
         }
 
         System.out.println("TIME: " + (System.currentTimeMillis() - timer));
@@ -520,6 +496,9 @@ public class Funcions {
             }
         }
 
+        if(allEvents.isEmpty())
+            return new ArrayList<>();
+
         allEvents.sort(Comparator.comparing(UsageEvents.Event::getTimeStamp));
 
         // Si el primer event és de pausar activitat és que estava oberta abans de mitjanit, per tant sumar aquell temps també
@@ -546,6 +525,11 @@ public class Funcions {
             // if true, E1 (launch event of an app) app launched
                 Objects.requireNonNull(map.get(E0.getPackageName())).lastTimeUsed = E0.getTimeStamp();
                 Objects.requireNonNull(map.get(E1.getPackageName())).timesOpened++;
+
+                if(E0.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED){
+                    long diff = E1.getTimeStamp()-E0.getTimeStamp();
+                    Objects.requireNonNull(map.get(E0.getPackageName())).totalTime += diff;
+                }
             }
 
             // Si són la mateixa classe que ha començat i acabat, mirar temps

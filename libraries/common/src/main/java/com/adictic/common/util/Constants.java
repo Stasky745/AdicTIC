@@ -33,6 +33,7 @@ public class Constants {
     public static final String SHARED_PREFS_FREEUSE = "freeuse";
     public static final String SHARED_PREFS_FREEUSE_START = "shared_prefs_freeuse_start";
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
+    public static final String SHARED_PREFS_DAYS_TO_SEND_DATA = "daysToSendData";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
 

@@ -30,9 +30,10 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class AppUsageWorker extends Worker {
-    private Boolean ok;
+    private static final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
+    private int retryCountLastApp = 0;
 
     public AppUsageWorker(
             @NonNull Context context,
@@ -49,10 +50,11 @@ public class AppUsageWorker extends Worker {
 
         Log.d(TAG, "Starting Worker");
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
 
         checkInstalledApps();
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt("dayOfYear",Calendar.getInstance().get(Calendar.DAY_OF_YEAR)), Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 6));
 
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)
@@ -64,22 +66,29 @@ public class AppUsageWorker extends Worker {
         if(totalTime > lastTotalUsage && totalTime < lastTotalUsage + (Constants.HOUR_IN_MILLIS / 2))
             return Result.success();
 
-        ok = null;
-
         Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
-                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR, Calendar.getInstance().get(Calendar.DAY_OF_YEAR)).apply();
+                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0).apply();
+                }
+                else if(retryCountLastApp++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else{
+                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0) + 1).apply();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                super.onFailure(call, t); }
+                if(retryCountLastApp++ < TOTAL_RETRIES)
+                    call.clone().enqueue(this);
+                else{
+                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0) + 1).apply();
+                }
+            }
         });
 
         return Result.success();

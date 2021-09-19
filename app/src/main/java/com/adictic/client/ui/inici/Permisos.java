@@ -7,6 +7,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.text.LineBreaker;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.util.Funcions;
 import com.adictic.client.R;
+import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
 public class Permisos extends AppCompatActivity {
@@ -77,8 +79,14 @@ public class Permisos extends AppCompatActivity {
     }
 
     private void acabarActivitat(){
-        if(usagePerm)
+        if(usagePerm) {
+            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(Permisos.this);
+            assert  sharedPreferences != null;
+
+            sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 6).apply();
+
             Funcions.startAppUsageWorker24h(Permisos.this);
+        }
 
         if(Funcions.isMIUI())
             Permisos.this.startActivity(new Intent(Permisos.this, PermisosMIUI.class));
