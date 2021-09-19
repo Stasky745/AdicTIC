@@ -2,7 +2,10 @@ package com.adictic.client.ui;
 
 import static android.content.Intent.ACTION_DIAL;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
@@ -34,11 +38,20 @@ public class BlockDeviceActivity extends AppCompatActivity {
     private final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
 
+    private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         setContentView(R.layout.block_device_layout);
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
+                new IntentFilter(Constants.NO_BLOCK_SCREEN));
 
         setText();
         setCallButton();

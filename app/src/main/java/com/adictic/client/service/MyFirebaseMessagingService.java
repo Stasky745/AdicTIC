@@ -196,14 +196,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                     else {
                         if(AccessibilityScreenService.instance != null)
-                            AccessibilityScreenService.instance.setBlockDevice(true);
+                            AccessibilityScreenService.instance.setBlockDevice(false);
 
+                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
                         sendBlockDeviceTime(sharedPreferences);
                     }
                     break;
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
+                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
+
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
 
