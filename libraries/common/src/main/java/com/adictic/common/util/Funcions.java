@@ -459,8 +459,8 @@ public class Funcions {
         while (usageEvents.hasNextEvent()) {
             currentEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(currentEvent);
-            if (currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_FOREGROUND ||
-                    currentEvent.getEventType() == UsageEvents.Event.MOVE_TO_BACKGROUND) {
+            if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED ||
+                    currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED) {
                 allEvents.add(currentEvent);
                 String pkgName = currentEvent.getPackageName();
 
