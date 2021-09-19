@@ -512,9 +512,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                     bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,100,stream);
-                else{
+                else
                     bitmap.compress(Bitmap.CompressFormat.WEBP,100,stream);
-                }
 
                 byte[] byteArray = stream.toByteArray();
 
