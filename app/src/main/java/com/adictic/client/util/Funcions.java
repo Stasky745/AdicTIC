@@ -880,21 +880,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return null;
     }
 
-    public static boolean isDeviceBlocked(Context mCtx){
-        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-        assert sharedPreferences != null;
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false))
-            return false;
-        else
-            return sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false) ||
-                    sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0 ||
-                    sharedPreferences.getBoolean(Constants.SHARED_PREFS_ACTIVE_HORARIS_NIT, false);
-    }
-
     public static void endFreeUse(Context mCtx) {
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
         assert sharedPreferences != null;
-        boolean isBlocked = isDeviceBlocked(mCtx);
+        boolean isBlocked = AccessibilityScreenService.instance.isDeviceBlocked();
         if(isBlocked)
             showBlockDeviceScreen(mCtx);
     }

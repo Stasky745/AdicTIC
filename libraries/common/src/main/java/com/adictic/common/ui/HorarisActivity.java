@@ -365,32 +365,6 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void clearHoraris() {
-        canvis = 1;
-        ET_wakeMon.setText("");
-        ET_wakeTue.setText("");
-        ET_wakeWed.setText("");
-        ET_wakeThu.setText("");
-        ET_wakeFri.setText("");
-        ET_wakeSat.setText("");
-        ET_wakeSun.setText("");
-
-        ET_sleepMon.setText("");
-        ET_sleepTue.setText("");
-        ET_sleepWed.setText("");
-        ET_sleepThu.setText("");
-        ET_sleepFri.setText("");
-        ET_sleepSat.setText("");
-        ET_sleepSun.setText("");
-
-        ET_wakeGeneric.setText("");
-        ET_sleepGeneric.setText("");
-
-        ET_wakeWeekday.setText("");
-        ET_wakeWeekend.setText("");
-
-        ET_sleepWeekday.setText("");
-        ET_sleepWeekend.setText("");
-
         HorarisAPI horaris = new HorarisAPI();
         horaris.horarisNit = new ArrayList<>();
         horaris.tipus = chipGroup.getCheckedChipId();
