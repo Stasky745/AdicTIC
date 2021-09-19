@@ -27,6 +27,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
+import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.LiveApp;
@@ -143,6 +144,12 @@ public class AccessibilityScreenService extends AccessibilityService {
             config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
             setServiceInfo(config);
         }
+    }
+
+    public boolean isDeviceBlocked(){
+        if(freeUse)
+            return false;
+        return horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked();
     }
 
     private void fetchDades() {
@@ -349,7 +356,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
         liveApp.pkgName = pkgName;
         liveApp.appName = appName;
-        liveApp.time = Calendar.getInstance().getTimeInMillis();
+        liveApp.time = DateTime.now().getMillis();
 
         if(sharedPreferences == null)
             sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
@@ -397,10 +404,11 @@ public class AccessibilityScreenService extends AccessibilityService {
             LiveApp liveApp = new LiveApp();
             liveApp.pkgName = AccessibilityScreenService.instance.lastPackage;
             liveApp.appName = AccessibilityScreenService.instance.lastAppName;
-            liveApp.time = Calendar.getInstance().getTimeInMillis();
+            liveApp.time = DateTime.now().getMillis();
 
             // També actualitzem les dades d'ús al servidor
-            Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.instance);
+            Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+            Funcions.sendAppUsage(instance.getApplicationContext());
 
             Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
             call.enqueue(new Callback<String>(){

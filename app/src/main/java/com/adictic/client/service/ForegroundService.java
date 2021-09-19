@@ -86,6 +86,12 @@ public class ForegroundService extends Service {
     public void onCreate() {
         super.onCreate();
 
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ForegroundService.this);
+        assert sharedPreferences != null;
+
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            stopSelf();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotification();
         }
@@ -196,9 +202,9 @@ public class ForegroundService extends Service {
     }
 
     private void onNewLocation(Location location) {
-        Log.i(TAG, "New location: " + location);
         mLocation = location;
         if(DateTime.now().getMillis() - lastUpdate > Constants.HOUR_IN_MILLIS / 2){
+            Log.i(TAG, "Enviem nova localització: " + location);
             sendLocation();
         }
     }
