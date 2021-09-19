@@ -146,6 +146,12 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
     }
 
+    public boolean isDeviceBlocked(){
+        if(freeUse)
+            return false;
+        return horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked();
+    }
+
     private void fetchDades() {
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
