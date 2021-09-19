@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.BackoffPolicy;
 import androidx.work.Data;
@@ -49,6 +50,7 @@ import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.service.ForegroundService;
+import com.adictic.client.service.MyFirebaseMessagingService;
 import com.adictic.client.ui.BlockAppActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
@@ -385,8 +387,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         List<HorarisNit> horaris = new ArrayList<>(horarisAPI.horarisNit);
 
-        if(horaris.isEmpty())
+        if(horaris.isEmpty()) {
+            Funcions.endFreeUse(ctx);
             return;
+        }
 
         int now = DateTime.now().getMillisOfDay();
         // Si és genèric, fem que els workers vagin cada dia
@@ -415,6 +419,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
             Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, true);
             Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, true);
 
+            Funcions.endFreeUse(ctx);
+
             return;
         }
 
@@ -425,8 +431,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 .findFirst()
                 .orElse(null);
 
-        if(horariAvui == null)
+        if(horariAvui == null) {
+            Funcions.endFreeUse(ctx);
             return;
+        }
 
         int wakeTimeDelay = horariAvui.despertar - now;
         int sleepTimeDelay = horariAvui.dormir - now;
@@ -446,6 +454,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
             if (!AccessibilityScreenService.instance.getFreeUse())
                 showBlockDeviceScreen(ctx);
         }
+
+        Funcions.endFreeUse(ctx);
     }
 
     //POST usage information to server
@@ -881,11 +891,11 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void endFreeUse(Context mCtx) {
-        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-        assert sharedPreferences != null;
         boolean isBlocked = AccessibilityScreenService.instance.isDeviceBlocked();
         if(isBlocked)
             showBlockDeviceScreen(mCtx);
+        else
+            LocalBroadcastManager.getInstance(mCtx).sendBroadcast(new Intent(Constants.NO_BLOCK_SCREEN));
     }
 
     public static void showBlockDeviceScreen(Context mCtx){
