@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:667013344400:android:47d58d75247cd8763b3c15",
+        "mobilesdk_app_id": "1:667013344400:android:dd960a63f6860d333b3c15",
         "android_client_info": {
-          "package_name": "com.adictic.client"
+          "package_name": "com.adictic.admin"
         }
       },
       "oauth_client": [
@@ -37,9 +37,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:667013344400:android:a0069b7a8d16a6173b3c15",
+        "mobilesdk_app_id": "1:667013344400:android:947fc1a2ab7e3cda3b3c15",
         "android_client_info": {
-          "package_name": "com.adictic.admin"
+          "package_name": "com.adictic.client"
         }
       },
       "oauth_client": [

@@ -114,9 +114,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         AccessibilityScreenService.instance.setBlockedApps(permanentBlockedApps);
         AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
-//        Funcions.write2File(getApplicationContext(), Constants.FILE_LIMITED_APPS, limitedAppsList);
-//        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS, permanentBlockedApps);
-
         // Actualitzem mapa Accessibility amb dades noves
         HashMap<String, Integer> timeMap = new HashMap<>();
         if(AccessibilityScreenService.instance != null){
@@ -135,10 +132,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(AccessibilityScreenService.instance.isCurrentAppBlocked())
                 Funcions.showBlockAppScreen(MyFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
         }
-
-
-//        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
-//        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
 
     @Override
@@ -253,7 +246,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         if(!myKM.isDeviceLocked() && AccessibilityScreenService.instance != null)
                             AccessibilityScreenService.instance.enviarLiveApp();
 
-                        Funcions.runUniqueAppUsageWorker(getApplicationContext());
+                        Funcions.startAppUsageWorker24h(getApplicationContext());
+                        Funcions.sendAppUsage(getApplicationContext());
 
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, DateTime.now().getMillis()).apply();
                     }

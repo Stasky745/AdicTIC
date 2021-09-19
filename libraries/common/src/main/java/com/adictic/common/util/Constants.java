@@ -33,7 +33,7 @@ public class Constants {
     public static final String SHARED_PREFS_FREEUSE = "freeuse";
     public static final String SHARED_PREFS_FREEUSE_START = "shared_prefs_freeuse_start";
     public static final String SHARED_PREFS_DAYOFYEAR = "dayOfYear";
-    public static final String SHARED_PREFS_DAYS_TO_SEND_DATA = "daysToSendData";
+    public static final String SHARED_PREFS_LAST_DAY_SENT_DATA = "daysToSendData";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
 
@@ -56,7 +56,9 @@ public class Constants {
 
     public static final String WORKER_TAG_BLOCK_APPS = "blocked_apps_worker_tag";
     public static final String WORKER_TAG_EVENT_BLOCK = "event_block_worker_tag";
+    public static final String WORKER_TAG_EVENT_MANAGER = "event_manager_tag";
     public static final String WORKER_TAG_HORARIS_BLOCK = "horaris_worker_tag";
+    public static final String WORKER_TAG_HORARIS_EVENTS_MANAGER = "horaris_manager_tag";
     public static final String WORKER_TAG_GEOLOC_PERIODIC = "geoloc_worker_periodic_tag";
 
     public static final String FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN = "device_block_screen";

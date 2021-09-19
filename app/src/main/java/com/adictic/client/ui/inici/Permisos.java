@@ -32,6 +32,8 @@ import com.adictic.client.R;
 import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
+import org.joda.time.DateTime;
+
 public class Permisos extends AppCompatActivity {
     private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
     private final String TAG = "Permisos";
@@ -83,9 +85,12 @@ public class Permisos extends AppCompatActivity {
             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(Permisos.this);
             assert  sharedPreferences != null;
 
-            sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 6).apply();
+            long sixDaysAgo = DateTime.now().minusDays(6).getMillis();
+
+            sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, sixDaysAgo).apply();
 
             Funcions.startAppUsageWorker24h(Permisos.this);
+            Funcions.sendAppUsage(Permisos.this);
         }
 
         if(Funcions.isMIUI())

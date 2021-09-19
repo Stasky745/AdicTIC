@@ -27,6 +27,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
+import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.LiveApp;
@@ -400,7 +401,8 @@ public class AccessibilityScreenService extends AccessibilityService {
             liveApp.time = DateTime.now().getMillis();
 
             // També actualitzem les dades d'ús al servidor
-            Funcions.runUniqueAppUsageWorker(AccessibilityScreenService.instance);
+            Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+            Funcions.sendAppUsage(instance.getApplicationContext());
 
             Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
             call.enqueue(new Callback<String>(){

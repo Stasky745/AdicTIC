@@ -23,7 +23,6 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -54,42 +53,7 @@ public class AppUsageWorker extends Worker {
 
         checkInstalledApps();
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(getApplicationContext(), sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 6));
-
-        long totalTime = gul.stream()
-                .mapToLong(generalUsage -> generalUsage.totalTime)
-                .sum();
-
-        long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, Constants.HOUR_IN_MILLIS);
-
-        // Si no s'ha augmentat l'ús de les apps en 30 minuts ni ha canviat el dia, no fem res
-        if(totalTime > lastTotalUsage && totalTime < lastTotalUsage + (Constants.HOUR_IN_MILLIS / 2))
-            return Result.success();
-
-        Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if(response.isSuccessful()) {
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
-                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0).apply();
-                }
-                else if(retryCountLastApp++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
-                else{
-                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0) + 1).apply();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                if(retryCountLastApp++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
-                else{
-                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, sharedPreferences.getInt(Constants.SHARED_PREFS_DAYS_TO_SEND_DATA, 0) + 1).apply();
-                }
-            }
-        });
+        Funcions.sendAppUsage(getApplicationContext());
 
         return Result.success();
     }
