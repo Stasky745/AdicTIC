@@ -146,7 +146,7 @@ public class MainParentFragment extends Fragment {
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             getStats();
         else
-            makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
+            makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
 
         return root;
     }
