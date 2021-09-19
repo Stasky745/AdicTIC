@@ -13,18 +13,14 @@ public class DateTimeChangedBroadcastReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_TIMEZONE_CHANGED) || action.equals(Intent.ACTION_TIME_CHANGED) || action.equals(Intent.ACTION_DATE_CHANGED)) {
             // Inicialitzem workers de bloquejar apps
             Funcions.fetchAppBlockFromServer(context);
-//            Funcions.runRestartBlockedAppsWorkerOnce(context,0);
-//            Funcions.startRestartBlockedAppsWorker24h(context);
 
             // Inicialitzem workers d'events
             Funcions.checkEvents(context);
-//            Funcions.runRestartEventsWorkerOnce(context,0);
-//            Funcions.startRestartEventsWorker24h(context);
 
             // Inicialitzem workers d'horaris
             Funcions.checkHoraris(context);
 //            Funcions.runRestartHorarisWorkerOnce(context, 0);
-//            Funcions.startRestartHorarisWorker24h(context);
+//            Funcions.startHorarisEventsManagerWorker(context);
         }
     }
 }

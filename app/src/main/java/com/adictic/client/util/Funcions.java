@@ -35,42 +35,38 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.security.crypto.EncryptedFile;
+import androidx.work.BackoffPolicy;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
-import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.ui.BlockAppActivity;
-import com.adictic.common.entity.BlockedLimitedLists;
-import com.adictic.common.entity.EventBlock;
-import com.adictic.common.entity.EventsAPI;
-import com.adictic.common.entity.HorarisAPI;
-import com.adictic.common.entity.HorarisNit;
-import com.adictic.common.entity.LimitedApps;
-import com.adictic.common.rest.Api;
-import com.adictic.common.util.Callback;
-import com.adictic.common.util.Constants;
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
+import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.service.ForegroundService;
+import com.adictic.client.ui.BlockAppActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.client.workers.UpdateTokenWorker;
-import com.adictic.client.workers.block_apps.BlockAppWorker;
-import com.adictic.client.workers.block_apps.RestartBlockedApps;
-import com.adictic.client.workers.event_workers.FinishBlockEventWorker;
-import com.adictic.client.workers.event_workers.RestartEventsWorker;
-import com.adictic.client.workers.event_workers.StartBlockEventWorker;
-import com.adictic.client.workers.horaris_workers.DespertarWorker;
-import com.adictic.client.workers.horaris_workers.DormirWorker;
-import com.adictic.client.workers.horaris_workers.RestartHorarisWorker;
+import com.adictic.client.workers.horaris_workers.HorarisEventsWorkerManager;
+import com.adictic.common.entity.BlockedLimitedLists;
+import com.adictic.common.entity.EventBlock;
+import com.adictic.common.entity.EventsAPI;
+import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.entity.HorarisAPI;
+import com.adictic.common.entity.HorarisNit;
+import com.adictic.common.entity.LimitedApps;
+import com.adictic.common.rest.Api;
+import com.adictic.common.util.Callback;
+import com.adictic.common.util.Constants;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -222,29 +218,31 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<EventsAPI>() {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
-                    super.onResponse(call, response);
                 if (response.isSuccessful()) {
-                    if(response.body() == null)
-                        write2File(ctx, Constants.FILE_EVENT_BLOCK, null);
-                    else
-                        write2File(ctx, Constants.FILE_EVENT_BLOCK, response.body().events);
+                    startHorarisEventsManagerWorker(ctx);
 
+                    EventsAPI eventsAPI = response.body() != null ? response.body() : new EventsAPI();
+
+                    eventsAPI.events = eventsAPI.events != null ? eventsAPI.events : new ArrayList<>();
+
+                    write2File(ctx, Constants.FILE_EVENT_BLOCK, response.body().events);
                     setEvents(ctx, new ArrayList<>(response.body().events));
-
-                    // Engeguem els workers
-//                    runRestartEventsWorkerOnce(ctx,0);
-//                    startRestartEventsWorker24h(ctx);
-
+                }
+                else {
+                    List<EventBlock> list = Funcions.readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
+                    setEvents(ctx, list);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
-                    super.onFailure(call, t); }
+                List<EventBlock> list = Funcions.readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
+                setEvents(ctx, list);
+            }
         });
     }
 
-    private static void setEvents(Context ctx, ArrayList<EventBlock> events) {
+    private static void setEvents(Context ctx, List<EventBlock> events) {
         // Aturem tots els workers d'Events que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
@@ -258,18 +256,41 @@ public class Funcions extends com.adictic.common.util.Funcions {
         if(events == null || events.isEmpty())
             return;
 
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.monday).collect(Collectors.toList()), Calendar.MONDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.tuesday).collect(Collectors.toList()), Calendar.TUESDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.wednesday).collect(Collectors.toList()), Calendar.WEDNESDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.thursday).collect(Collectors.toList()), Calendar.THURSDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.friday).collect(Collectors.toList()), Calendar.FRIDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.saturday).collect(Collectors.toList()), Calendar.SATURDAY);
-        setEventWorkerByDay(ctx, events.stream().filter(eventBlock -> eventBlock.sunday).collect(Collectors.toList()), Calendar.SUNDAY);
+        int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+
+        List<EventBlock> eventsTodayList = new ArrayList<>();
+
+        switch (diaSetmana) {
+            case 1:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.sunday).collect(Collectors.toList());
+                break;
+            case 2:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.monday).collect(Collectors.toList());
+                break;
+            case 3:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.tuesday).collect(Collectors.toList());
+                break;
+            case 4:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.wednesday).collect(Collectors.toList());
+                break;
+            case 5:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.thursday).collect(Collectors.toList());
+                break;
+            case 6:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.friday).collect(Collectors.toList());
+                break;
+            case 7:
+                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.saturday).collect(Collectors.toList());
+                break;
+        }
+
+        setEventWorkerByDay(ctx, eventsTodayList);
     }
 
-    private static void setEventWorkerByDay(Context ctx, List<EventBlock> eventList, int day) {
+    private static void setEventWorkerByDay(Context ctx, List<EventBlock> eventList) {
         eventList.sort(Comparator.comparingInt(eventBlock -> eventBlock.startEvent));
 
+        // Mirem quins workers són necessaris en cas que hi hagi events que es solapin
         List<Pair<Integer, Integer>> workersList = new ArrayList<>();
         for(EventBlock event : eventList){
             Pair<Integer, Integer> newTime = new Pair<>(event.startEvent, event.endEvent);
@@ -288,31 +309,22 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         // Fer workers
         for(Pair<Integer, Integer> pair : workersList){
-            Calendar date = Calendar.getInstance();
-            long now = date.getTimeInMillis();
-            date.set(Calendar.DAY_OF_WEEK, day);
-            date.set(Calendar.HOUR_OF_DAY, 0);
-            date.set(Calendar.MINUTE, 0);
-            date.set(Calendar.SECOND, 0);
+            long now = DateTime.now().getMillisOfDay();
 
-            long startTimeDelay = date.getTimeInMillis() + pair.first - now;
-            long endTimeDelay = date.getTimeInMillis() + pair.second - now;
+            long startTimeDelay = pair.first - now;
+            long endTimeDelay = pair.second - now;
 
-            if(startTimeDelay < 0) {
-                date.add(Calendar.WEEK_OF_YEAR, 1);
-                startTimeDelay = date.getTimeInMillis() + pair.first - now;
-
-                if(endTimeDelay < 0)
-                    endTimeDelay = date.getTimeInMillis() + pair.second - now;
-                else if(!AccessibilityScreenService.instance.getFreeUse()){
-                    AccessibilityScreenService.instance.setActiveEvents(1);
-                    showBlockDeviceScreen(ctx);
-                }
+            if(startTimeDelay > 0) {
+                setUpEventWorker(ctx, startTimeDelay, true);
+                setUpEventWorker(ctx, endTimeDelay, false);
             }
+            else if(endTimeDelay > 0){
+                setUpEventWorker(ctx, endTimeDelay, false);
 
-            // Engegar workers
-            setUpEventWorker(ctx, startTimeDelay, true);
-            setUpEventWorker(ctx, endTimeDelay, false);
+                AccessibilityScreenService.instance.setActiveEvents(1);
+                if(!AccessibilityScreenService.instance.getFreeUse())
+                    showBlockDeviceScreen(ctx);
+            }
         }
     }
 
@@ -329,27 +341,39 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                super.onResponse(call, response);
                 if (response.isSuccessful()) {
-//                    if(response.body() == null || response.body().horarisNit.isEmpty())
-//                        write2File(ctx, Constants.FILE_HORARIS_NIT, null);
-//                    else
-//                        write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(response.body().horarisNit));
+                    startHorarisEventsManagerWorker(ctx);
 
-                    setHoraris(ctx, response.body());
-                    // Engeguem els workers
-//                    runRestartHorarisWorkerOnce(ctx,0);
-//                    startRestartHorarisWorker24h(ctx);
+                    HorarisAPI horarisAPI = response.body() != null ? response.body() : new HorarisAPI();
+                    horarisAPI.horarisNit = horarisAPI.horarisNit != null ? new ArrayList<>(horarisAPI.horarisNit) : new ArrayList<>();
+                    horarisAPI.tipus = horarisAPI.tipus != null ? horarisAPI.tipus : 1;
+
+                    write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(horarisAPI.horarisNit));
+                    setHoraris(ctx, horarisAPI);
+                }
+                else {
+                    HorarisAPI horarisAPI = new HorarisAPI();
+                    horarisAPI.tipus = 1;
+                    horarisAPI.actiu = false;
+                    horarisAPI.horarisNit = Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false);
+
+                    setHoraris(ctx, horarisAPI);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                    super.onFailure(call, t); }
+                HorarisAPI horarisAPI = new HorarisAPI();
+                horarisAPI.tipus = 1;
+                horarisAPI.actiu = false;
+                horarisAPI.horarisNit = Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false);
+
+                setHoraris(ctx, horarisAPI);
+            }
         });
     }
 
-    private static void setHoraris(Context ctx, HorarisAPI horarisAPI){
+    public static void setHoraris(Context ctx, HorarisAPI horarisAPI){
         // Aturem tots els workers d'Horaris que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
@@ -364,28 +388,28 @@ public class Funcions extends com.adictic.common.util.Funcions {
         if(horaris.isEmpty())
             return;
 
+        int now = DateTime.now().getMillisOfDay();
         // Si és genèric, fem que els workers vagin cada dia
         if(horarisAPI.tipus.equals(3)){
             HorarisNit horari = horaris.get(0);
 
-            Calendar date = Calendar.getInstance();
-            long now = date.getTimeInMillis();
-            date.set(Calendar.HOUR_OF_DAY, 0);
-            date.set(Calendar.MINUTE, 0);
-            date.set(Calendar.SECOND, 0);
-
-            long wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
-            long sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+            int wakeTimeDelay = horari.despertar - now;
+            int sleepTimeDelay = horari.dormir - now;
 
             if(wakeTimeDelay < 0) {
-                date.add(Calendar.DAY_OF_YEAR, 1);
-                wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
+                wakeTimeDelay += Constants.TOTAL_MILLIS_IN_DAY;
 
-                if(sleepTimeDelay < 0 && !AccessibilityScreenService.instance.getFreeUse()) {
-                    sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+                if(sleepTimeDelay < 0) {
+                    sleepTimeDelay += Constants.TOTAL_MILLIS_IN_DAY;
                     AccessibilityScreenService.instance.setHorarisActius(true);
-                    showBlockDeviceScreen(ctx);
+                    if(!AccessibilityScreenService.instance.getFreeUse())
+                        showBlockDeviceScreen(ctx);
                 }
+            }
+            else {
+                AccessibilityScreenService.instance.setHorarisActius(true);
+                if(!AccessibilityScreenService.instance.getFreeUse())
+                    showBlockDeviceScreen(ctx);
             }
 
             Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, true);
@@ -394,31 +418,69 @@ public class Funcions extends com.adictic.common.util.Funcions {
             return;
         }
 
-        for(HorarisNit horari : horaris){
-            Calendar date = Calendar.getInstance();
-            long now = date.getTimeInMillis();
-            date.set(Calendar.DAY_OF_WEEK, horari.dia);
-            date.set(Calendar.HOUR_OF_DAY, 0);
-            date.set(Calendar.MINUTE, 0);
-            date.set(Calendar.SECOND, 0);
+        int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-            long wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
-            long sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
+        HorarisNit horariAvui = horaris.stream()
+                .filter(horarisNit -> diaSetmana == horarisNit.dia)
+                .findFirst()
+                .orElse(null);
 
-            if(wakeTimeDelay < 0) {
-                date.add(Calendar.WEEK_OF_YEAR, 1);
-                wakeTimeDelay = date.getTimeInMillis() + horari.despertar - now;
+        if(horariAvui == null)
+            return;
 
-                if(sleepTimeDelay < 0 && !AccessibilityScreenService.instance.getFreeUse()) {
-                    sleepTimeDelay = date.getTimeInMillis() + horari.dormir - now;
-                    AccessibilityScreenService.instance.setHorarisActius(true);
-                    showBlockDeviceScreen(ctx);
+        int wakeTimeDelay = horariAvui.despertar - now;
+        int sleepTimeDelay = horariAvui.dormir - now;
+
+        if(wakeTimeDelay > 0) {
+            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, false);
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
+
+            AccessibilityScreenService.instance.setHorarisActius(true);
+            if (!AccessibilityScreenService.instance.getFreeUse())
+                showBlockDeviceScreen(ctx);
+        }
+        else if(sleepTimeDelay > 0)
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
+        else {
+            AccessibilityScreenService.instance.setHorarisActius(true);
+            if (!AccessibilityScreenService.instance.getFreeUse())
+                showBlockDeviceScreen(ctx);
+        }
+    }
+
+    //POST usage information to server
+    public static void sendAppUsage(Context ctx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
+        AdicticApi api = ((AdicticApp) ctx.getApplicationContext()).getAPI();
+
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 6));
+
+        long totalTime = gul.stream()
+                .mapToLong(generalUsage -> generalUsage.totalTime)
+                .sum();
+
+        long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
+
+        if(totalTime - lastTotalUsage < 5 * 60 * 1000)
+            return;
+
+        Call<String> call = api.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful()) {
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, DateTime.now().getMillis()).apply();
                 }
             }
 
-            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, false);
-            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
-        }
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+            }
+        });
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
@@ -545,78 +607,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
                         myWork);
 
         Log.d(TAG,"Worker AppUsage 24h Configurat");
-
-        runUniqueAppUsageWorker(mCtx);
-    }
-
-    public static void runUniqueAppUsageWorker(Context mContext) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(AppUsageWorker.class)
-                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("uniqueAppUsageWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker AppUsage (únic) Començat");
     }
 
     // EventWorkers
-
-    public static void startRestartEventsWorker24h(Context mCtx){
-        long now = DateTime.now().getMillisOfDay();
-        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
-
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(RestartEventsWorker.class, 24, TimeUnit.HOURS)
-                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("24h_eventBlock",
-                        ExistingPeriodicWorkPolicy.REPLACE,
-                        myWork);
-
-        Log.d(TAG,"Worker RestartEvents 24h Configurat");
-    }
-
-    public static void runRestartEventsWorkerOnce(Context mContext, long delay){
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(RestartEventsWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("EventsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker RestartEvents (únic) Començat");
-    }
-
-    public static void runStartBlockEventWorker(Context mContext, long id, long delay) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(StartBlockEventWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker StartBlockEvent Configurat - ID=" + id + " | delay=" + delay);
-    }
-
-    public static void runFinishBlockEventWorker(Context mContext, long id, long delay) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(FinishBlockEventWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_EVENT_BLOCK)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork(String.valueOf(id), ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker FinishBlockEvent Configurat - ID=" + id + " | delay=" + delay);
-    }
 
     public static void setUpEventWorker(Context mContext, long delay, boolean startEvent){
         Data data = new Data.Builder()
@@ -638,21 +631,27 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
     // Horaris Worker
 
-    public static void startRestartHorarisWorker24h(Context mCtx){
-        long now = DateTime.now().getMillisOfDay();
-        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
+    public static void startHorarisEventsManagerWorker(Context mCtx){
+        long startOfDay = DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillisOfDay();
+        long delay = startOfDay - DateTime.now().getMillis();
 
         PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(RestartHorarisWorker.class, 24, TimeUnit.HOURS)
+                new PeriodicWorkRequest.Builder(HorarisEventsWorkerManager.class, 24, TimeUnit.HOURS)
                         .setInitialDelay(delay,TimeUnit.MILLISECONDS)
+                        .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                30,
+                                TimeUnit.SECONDS
+                        )
+                        .addTag(Constants.WORKER_TAG_HORARIS_EVENTS_MANAGER)
                         .build();
 
         WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("24h_horarisWorker",
-                        ExistingPeriodicWorkPolicy.REPLACE,
+                .enqueueUniquePeriodicWork(Constants.WORKER_TAG_HORARIS_EVENTS_MANAGER,
+                        ExistingPeriodicWorkPolicy.KEEP,
                         myWork);
 
-        Log.d(TAG,"Worker RestartEvents 24h Configurat");
+        Log.d(TAG,"Worker HorarisEventManager Configurat");
     }
 
     private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep, boolean daily){
@@ -660,99 +659,25 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 .putBoolean("start", startSleep)
                 .build();
 
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(HorarisWorker.class, 7, TimeUnit.DAYS)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
-                        .setInputData(data)
-                        .build();
+        WorkRequest myWork;
+
+        if(daily) {
+             myWork = new PeriodicWorkRequest.Builder(HorarisWorker.class, 7, TimeUnit.DAYS)
+                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                            .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
+                            .setInputData(data)
+                            .build();
+        }
+        else {
+            myWork = new OneTimeWorkRequest.Builder(HorarisWorker.class)
+                    .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                    .build();
+        }
 
         WorkManager.getInstance(mContext)
                 .enqueue(myWork);
 
         Log.d(TAG,"setUpHorariWorker Començat");
-    }
-
-    public static void runRestartHorarisWorkerOnce(Context mContext, long delay){
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(RestartHorarisWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("HorarisWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker RestartEvents (únic) Començat");
-    }
-
-    public static void runDespertarWorker(Context mContext, long delay){
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(DespertarWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("despertarWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker Despertar Configurat - delay=" + delay);
-    }
-
-    public static void runDormirWorker(Context mContext, long delay){
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(DormirWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("dormirWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker Dormir Configurat - delay=" + delay);
-    }
-
-    // BlockAppsWorkers
-
-    public static void startRestartBlockedAppsWorker24h(Context mCtx){
-        long now = DateTime.now().getMillisOfDay();
-        long delay = Constants.TOTAL_MILLIS_IN_DAY + 30000 - now; // 30 segons més de mitjanit
-
-        PeriodicWorkRequest myWork =
-                new PeriodicWorkRequest.Builder(RestartBlockedApps.class, 24, TimeUnit.HOURS)
-                        .setInitialDelay(delay,TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mCtx)
-                .enqueueUniquePeriodicWork("24h_blockApps",
-                        ExistingPeriodicWorkPolicy.REPLACE,
-                        myWork);
-
-        Log.d(TAG,"Worker RestartBlockedApps 24h Configurat");
-    }
-
-    public static void runRestartBlockedAppsWorkerOnce(Context mContext, long delay){
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(RestartBlockedApps.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("BlockedAppsWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker RestartBlockedApps (únic) Començat");
-    }
-
-    public static void runBlockAppsWorker(Context mContext, long delay) {
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(BlockAppWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .addTag(Constants.WORKER_TAG_BLOCK_APPS)
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("blockAppWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker BlockApp Configurat - Delay=" + delay);
     }
 
     // GeolocWorkers
@@ -970,12 +895,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
         assert sharedPreferences != null;
         boolean isBlocked = isDeviceBlocked(mCtx);
-        if(isBlocked) {
-//            DevicePolicyManager mDPM = (DevicePolicyManager) mCtx.getSystemService(Context.DEVICE_POLICY_SERVICE);
-//            assert mDPM != null;
-//            mDPM.lockNow();
+        if(isBlocked)
             showBlockDeviceScreen(mCtx);
-        }
     }
 
     public static void showBlockDeviceScreen(Context mCtx){
@@ -1007,6 +928,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
     public static void fetchAppBlockFromServer(Context mCtx){
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
             AdicticApi mTodoService = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
