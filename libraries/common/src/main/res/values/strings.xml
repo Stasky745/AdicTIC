@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="ok">Aceptar</string>
 
@@ -7,7 +7,7 @@
     <string name="admin_pem_intent">Dar permisos de administrador a esta aplicación permite lo siguiente:</string>
 
     <string name="accessibility_pem_title">Permisos de accesibilidad</string>
-    <string name="accessibility_pem_info">" Esta aplicación requiere de permisos de accesibilidad a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Bloquear aplicaciones. \n \n • Detectar actividad al momento. "</string>
+    <string name="accessibility_pem_info" tools:ignore="Typos">" Esta aplicación requiere de permisos de accesibilidad a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Bloquear aplicaciones. \n \n • Detectar actividad al momento. "</string>
 
     <string name="appusage_pem_title">Permisos de uso de datos</string>
     <string name="appusage_pem_info">" Esta aplicación requiere de permisos de uso de datos a todos los dispositivos excepto el del tutor. \n \n Estos permisos permiten: \n \n • Extraer información de las aplicaciones. "</string>
@@ -318,7 +318,7 @@
     <string name="localitat_professional">¿En qué localidad te gustaría que estuviera el profesional que te atienda?</string>
     <string name="send_dubte">Enviar Consulta</string>
     <string name="dubte_overwrite">Ya tienes una consulta entrada, si haces otra sobreescribirá la que ya existe. Quieres enviar esta consulta?</string>
-    <string name="dubte_send">Enviar la consulta entrada? Solo puedes tenir una activa en cada momento, si envías otra sobreescribirá esta. Quieres continuar?</string>
+    <string name="dubte_send" tools:ignore="Typos">Enviar la consulta entrada? Solo puedes tenir una activa en cada momento, si envías otra sobreescribirá esta. Quieres continuar?</string>
     <string name="dubte_success">Consulta enviada correctamente.</string>
     <string name="links">Enlaces</string>
     <string name="profile_pic">Foto de Perfil</string>
@@ -339,7 +339,7 @@
     <string name="title_installed_app">%s ha instalado una nueva app</string>
     <string name="title_uninstalled_app">%s ha desinstalado una app</string>
     <string name="perm_background_loc_title">Permiso de localización</string>
-    <string name="perm_back_location_desc">Esta aplicación requiere de permisos de localización en todo momento en todos los dispositivos excepto el del tutor. \n\n Estos permisos permiten: \n\n · Saber la geolocalización del dispositivo. \n\nLos demás permisos disponibles para activar son micrófono y cámara para consultas online; y almacenamiento para poder generar los mapas de la geolocalización. Por favor, acepte los permisos que le sean de interés.</string>
+    <string name="perm_back_location_desc" tools:ignore="Typos">Esta aplicación requiere de permisos de localización en todo momento en todos los dispositivos excepto el del tutor. \n\n Estos permisos permiten: \n\n · Saber la geolocalización del dispositivo. \n\nLos demás permisos disponibles para activar son micrófono y cámara para consultas online; y almacenamiento para poder generar los mapas de la geolocalización. Por favor, acepte los permisos que le sean de interés.</string>
     <string name="dialog_title_perm_loc">Continuar sin el permiso de Localización?</string>
     <string name="dialog_body_perm_loc">Sin el permiso de localización no se podrá tener un seguimiento de la geolocalización de este dispositivo. Está seguro de querer continuar?</string>
     <string name="escull_dates">Escoge fechas</string>
@@ -425,7 +425,7 @@
     <string name="falten_perm_titol">Faltan Permisos</string>
     <string name="falten_perm_desc">No se han aceptado todos los permisos. ¿Seguro que quieres continuar?</string>
 
-    <string name="permisos_battery_info">Android intenta siempre que todas las aplicaciones del dispositivo funcionen lo mínimo necesario. En nuestro caso, queremos que la aplicación esté funcionando en todo momento. Android no nos facilita eso, ya que puede parar nuestra aplicación cuando decida que usa demasiados recursos. Los siguientes permisos intentan conseguir que Android pare la aplicación lo más mínimo.\nSi en cualquier momento parece que ha dejado de funcionar, reiniciar el dispositivo o volver a entrar a la aplicación reiniciará todos los procesos.</string>
+    <string name="permisos_battery_info" tools:ignore="Typos">Android intenta siempre que todas las aplicaciones del dispositivo funcionen lo mínimo necesario. En nuestro caso, queremos que la aplicación esté funcionando en todo momento. Android no nos facilita eso, ya que puede parar nuestra aplicación cuando decida que usa demasiados recursos. Los siguientes permisos intentan conseguir que Android pare la aplicación lo más mínimo.\nSi en cualquier momento parece que ha dejado de funcionar, reiniciar el dispositivo o volver a entrar a la aplicación reiniciará todos los procesos.</string>
     
     <string name="lock_app_title">Bloquear Aplicación</string>
     <string name="lock_app_info">Para intentar evitar que Android pare la aplicación, es recomendable que se bloquee ésta. La mayoría de dispositivos permiten hacer esto desde el menú con todas las aplicaciones abiertas: manteniendo apretado encima de la aplicación o desplazándola en alguna dirección, y luego dándole al candado.</string>
@@ -440,4 +440,5 @@
 
     <string name="permisos_pregunta">¿Has aceptado todos los permisos?</string>
     <string name="search">Buscar</string>
+    <string name="title_message">Tienes un nuevo mensaje!</string>
 </resources>

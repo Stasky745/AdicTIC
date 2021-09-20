@@ -421,4 +421,5 @@
     <string name="permisos_pregunta">Has acceptat tots els permisos?</string>
     <string name="horaris_buits_body">Hi ha horaris sense determina. Si us plau, ompli tots els horaris.</string>
     <string name="search">Buscar</string>
+    <string name="title_message">Tens un nou missatge!</string>
 </resources>
