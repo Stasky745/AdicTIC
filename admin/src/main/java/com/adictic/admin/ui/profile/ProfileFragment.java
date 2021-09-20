@@ -1,5 +1,6 @@
 package com.adictic.admin.ui.profile;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,10 +21,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -93,32 +101,12 @@ public class ProfileFragment extends Fragment{
         return profileFragment;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == Activity.RESULT_OK){
-            if(requestCode == AFEGIR_WEBLINK){
-                WebLink webLink = new WebLink();
-                assert data != null;
-                webLink.name = data.getExtras().getString("name");
-                webLink.url = data.getExtras().getString("url");
-                webList.add(webLink);
-                RVadapter.notifyDataSetChanged();
-            }
-            else if(requestCode == EDIT_WEBLINK){
-                assert data != null;
-                int pos = data.getExtras().getInt("posicio");
-
-                webList.get(pos).name = data.getExtras().getString("name");
-                webList.get(pos).url = data.getExtras().getString("url");
-
-                RVadapter.notifyDataSetChanged();
-            }
-            else if(requestCode == AGAFAR_IMG){
+    ActivityResultLauncher<Intent> resultAgafarImg = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
                 try {
-                    assert data != null;
-                    final Uri imageUri = data.getData();
+                    assert result.getData() != null;
+                    final Uri imageUri = result.getData().getData();
                     final InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                     imageChange = true;
@@ -128,8 +116,7 @@ public class ProfileFragment extends Fragment{
                     Toast.makeText(this.getActivity(), "Something went wrong", Toast.LENGTH_LONG).show();
                 }
             }
-        }
-    }
+    );
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -183,6 +170,7 @@ public class ProfileFragment extends Fragment{
         setRecyclerView(root);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void setButtons(View root) {
         Button BT_accept = root.findViewById(R.id.BT_profileAccept);
         BT_accept.setOnClickListener(view -> {
@@ -196,12 +184,21 @@ public class ProfileFragment extends Fragment{
 
         Button BT_addLink = root.findViewById(R.id.BT_addLink);
         BT_addLink.setOnClickListener(view -> {
-            FragmentManager fm = getParentFragmentManager();
+            FragmentManager fm = requireActivity().getSupportFragmentManager();
 
             SubmitWeblinkFragment dialog = new SubmitWeblinkFragment();
+            fm.setFragmentResultListener("weblink", getViewLifecycleOwner(), (requestKey, bundle) -> {
+                System.out.println("OriDebug: " + requestKey);
+                if(requestKey.equals("weblink")) {
+                    WebLink webLink = new WebLink();
+                    webLink.name = bundle.getString("name");
+                    webLink.url = bundle.getString("url");
+                    webList.add(webLink);
+                    RVadapter.notifyDataSetChanged();
+                }
 
-            dialog.setTargetFragment(this,AFEGIR_WEBLINK);
-            dialog.show(fm,getString(R.string.new_weblink));
+            });
+            fm.beginTransaction().add(dialog, getString(R.string.new_weblink)).commitNow();
         });
 
         ImageView IV_profilePic = root.findViewById(R.id.IV_profilePic);
@@ -209,7 +206,7 @@ public class ProfileFragment extends Fragment{
         IV_profilePic.setOnClickListener(view -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, AGAFAR_IMG);
+            resultAgafarImg.launch(photoPickerIntent);
         });
     }
 
@@ -359,21 +356,33 @@ public class ProfileFragment extends Fragment{
             setEditIV(holder,position);
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         private void setEditIV(MyViewHolder holder, int position) {
             holder.IV_edit.setClickable(true);
 
             holder.IV_edit.setOnClickListener(view -> {
-                FragmentManager fm = getParentFragmentManager();
+                FragmentManager fm = requireActivity().getSupportFragmentManager();
 
                 WebLink webLink = webList.get(position);
 
-                SubmitWeblinkFragment dialog = new SubmitWeblinkFragment(webLink,position);
+                SubmitWeblinkFragment dialog = new SubmitWeblinkFragment(webLink, position);
+                fm.setFragmentResultListener("weblink", getViewLifecycleOwner(), (requestKey, bundle) -> {
+                    System.out.println("OriDebug: " + requestKey);
+                    if(requestKey.equals("weblink")) {
+                        int pos = bundle.getInt("posicio");
 
-                dialog.setTargetFragment(ProfileFragment.this,EDIT_WEBLINK);
-                dialog.show(fm,getString(R.string.weblink_edit));
+                        webList.get(pos).name = bundle.getString("name");
+                        webList.get(pos).url = bundle.getString("url");
+
+                        RVadapter.notifyDataSetChanged();
+                    }
+
+                });
+                fm.beginTransaction().add(dialog, getString(R.string.weblink_edit)).commitNow();
             });
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         private void setDeleteIV(MyViewHolder holder, int position){
             holder.IV_delete.setClickable(true);
 
