@@ -196,33 +196,28 @@ public class DayUsageActivity extends AppCompatActivity {
         long totalTime = 0;
 
         // Si hi ha diferents dies amb les mateixes aplicacions, sumem els temps
-        List<AppUsage> appList = new ArrayList<>();
+        Map<String, AppUsage> map = new HashMap<>();
         for (GeneralUsage gu : gul) {
             for (AppUsage au : gu.usage) {
-                int index = appList.indexOf(au);
+                AppUsage mapObject= map.get(au.app.pkgName);
+                if(mapObject != null) {
+                    if(au.totalTime != null) {
+                        totalTime += au.totalTime;
+                        mapObject.totalTime = mapObject.totalTime != null ? mapObject.totalTime + au.totalTime : au.totalTime;
+                    }
 
-                totalTime += au.totalTime;
+                    if(au.lastTimeUsed != null)
+                        mapObject.lastTimeUsed = mapObject.lastTimeUsed != null ? Math.max(mapObject.lastTimeUsed, au.lastTimeUsed) : au.lastTimeUsed;
 
-                if (index != -1) {
-                    AppUsage current = appList.remove(index);
-                    AppUsage res = new AppUsage();
-                    res.app = new AppInfo();
-                    res.app.appName = au.app.appName;
-                    res.app.pkgName = au.app.pkgName;
-                    res.totalTime = au.totalTime + current.totalTime;
-                    if (current.lastTimeUsed > au.lastTimeUsed)
-                        res.lastTimeUsed = current.lastTimeUsed;
-                    else
-                        res.lastTimeUsed = au.lastTimeUsed;
-
-                    appList.add(res);
-                } else {
-                    appList.add(au);
+                    if(au.timesOpened != null)
+                        mapObject.timesOpened = mapObject.timesOpened != null ? mapObject.timesOpened + au.timesOpened : au.timesOpened;
                 }
+                else
+                    map.put(au.app.pkgName, au);
             }
         }
 
-        appList = appList.stream()
+        List<AppUsage> appList = new ArrayList<>(map.values()).stream()
                 .filter(appUsage -> appUsage.totalTime > Constants.HOUR_IN_MILLIS / 60)
                 .collect(Collectors.toList());
 
