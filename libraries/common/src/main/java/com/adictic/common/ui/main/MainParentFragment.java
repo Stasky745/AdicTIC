@@ -146,7 +146,7 @@ public class MainParentFragment extends Fragment {
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             getStats();
         else
-            makeGraph(Funcions.getGeneralUsages(getActivity(), -1, -1));
+            makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
 
         return root;
     }
@@ -465,23 +465,21 @@ public class MainParentFragment extends Fragment {
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
-            long totalUsageTime = 0;
 
-            Map<String, Long> mapUsage = new HashMap<>();
+            Map<String, AppUsage> mapUsage = new HashMap<>();
 
-            for (GeneralUsage gu : genericAppUsage) {
-                if (gu.totalTime > 0) {
-                    totalUsageTime += gu.totalTime;
-                    for (AppUsage au : gu.usage) {
-                        if (mapUsage.containsKey(au.app.appName))
-                            mapUsage.put(au.app.appName, mapUsage.get(au.app.appName) + au.totalTime);
-                        else mapUsage.put(au.app.appName, au.totalTime);
-                    }
+            GeneralUsage gu = genericAppUsage.stream().findFirst().orElse(null);
+            if(gu != null && gu.totalTime > 0) {
+                for (AppUsage au : gu.usage) {
+                    if (mapUsage.containsKey(au.app.pkgName))
+                        Objects.requireNonNull(mapUsage.get(au.app.pkgName)).totalTime += au.totalTime;
+                    else
+                        mapUsage.put(au.app.pkgName, au);
                 }
             }
 
             parentActivity.mainParent_usageChart.put(idChildSelected,mapUsage);
-            parentActivity.mainParent_totalUsageTime.put(idChildSelected,totalUsageTime);
+            parentActivity.mainParent_totalUsageTime.put(idChildSelected,gu.totalTime);
             setUsageMenu();
         }
     }
@@ -508,21 +506,21 @@ public class MainParentFragment extends Fragment {
         }
     }
 
-    private void setPieChart(Map<String, Long> mapUsage, long totalUsageTime) {
+    private void setPieChart(Map<String, AppUsage> mapUsage, long totalUsageTime) {
         root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
         root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
         pieChart = root.findViewById(R.id.Ch_Pie);
         ArrayList<PieEntry> yValues = new ArrayList<>();
         long others = 0;
-        for (Map.Entry<String, Long> entry : mapUsage.entrySet()) {
+        for (Map.Entry<String, AppUsage> entry : mapUsage.entrySet()) {
             // Si hi ha poques entrades no crear "Altres"
             if(mapUsage.size() < 5)
-                yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+                yValues.add(new PieEntry(entry.getValue().totalTime, entry.getValue().app.appName));
             else{
-                if (entry.getValue() >= totalUsageTime * 0.05)
-                    yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
+                if (entry.getValue().totalTime >= totalUsageTime * 0.05)
+                    yValues.add(new PieEntry(entry.getValue().totalTime, entry.getValue().app.appName));
                 else {
-                    others += entry.getValue();
+                    others += entry.getValue().totalTime;
                 }
             }
         }

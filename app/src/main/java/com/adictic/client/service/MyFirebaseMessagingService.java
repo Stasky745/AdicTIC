@@ -115,9 +115,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         AccessibilityScreenService.instance.setBlockedApps(permanentBlockedApps);
         AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
-//        Funcions.write2File(getApplicationContext(), Constants.FILE_LIMITED_APPS, limitedAppsList);
-//        Funcions.write2File(getApplicationContext(), Constants.FILE_BLOCKED_APPS, permanentBlockedApps);
-
         // Actualitzem mapa Accessibility amb dades noves
         HashMap<String, Integer> timeMap = new HashMap<>();
         if(AccessibilityScreenService.instance != null){
@@ -136,10 +133,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             if(AccessibilityScreenService.instance.isCurrentAppBlocked())
                 Funcions.showBlockAppScreen(MyFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
         }
-
-
-//        Funcions.startRestartBlockedAppsWorker24h(getApplicationContext());
-//        Funcions.runRestartBlockedAppsWorkerOnce(getApplicationContext(),0);
     }
 
     @Override
@@ -189,14 +182,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                     else {
                         if(AccessibilityScreenService.instance != null)
-                            AccessibilityScreenService.instance.setBlockDevice(true);
+                            AccessibilityScreenService.instance.setBlockDevice(false);
 
+                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
                         sendBlockDeviceTime(sharedPreferences);
                     }
                     break;
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
+                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
+
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
 
@@ -232,16 +228,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
                     if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
-                            Calendar.getInstance().getTimeInMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
+                            DateTime.now().getMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
 
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
                         if(!myKM.isDeviceLocked() && AccessibilityScreenService.instance != null)
                             AccessibilityScreenService.instance.enviarLiveApp();
 
-                        Funcions.runUniqueAppUsageWorker(getApplicationContext());
+                        Funcions.startAppUsageWorker24h(getApplicationContext());
+                        Funcions.sendAppUsage(getApplicationContext());
 
-                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, Calendar.getInstance().getTimeInMillis()).apply();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, DateTime.now().getMillis()).apply();
                     }
 
                     long now = Calendar.getInstance().getTimeInMillis();
@@ -475,9 +472,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
                     bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,100,stream);
-                else{
+                else
                     bitmap.compress(Bitmap.CompressFormat.WEBP,100,stream);
-                }
 
                 byte[] byteArray = stream.toByteArray();
 
