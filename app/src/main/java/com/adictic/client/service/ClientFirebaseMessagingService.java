@@ -129,6 +129,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
@@ -138,7 +139,9 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = "";
         String body = "";
-        Class<?> activitatIntent = null;
+        Class<?> activitatClass = null;
+        Intent activitatIntent = null;
+        MyNotificationManager.Channels channel = MyNotificationManager.Channels.GENERAL;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -167,8 +170,12 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         if(AccessibilityScreenService.instance != null)
                             AccessibilityScreenService.instance.setBlockDevice(true);
 
-                        if(!freeUse)
+                        if(!freeUse) {
+                            title = getString(R.string.phone_locked);
+                            body = getString(R.string.notif_phone_locked);
+                            channel = MyNotificationManager.Channels.BLOCK;
                             Funcions.showBlockDeviceScreen(ClientFirebaseMessagingService.this);
+                        }
                     }
                     else {
                         if(AccessibilityScreenService.instance != null)
@@ -206,7 +213,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     updateBlockedAppsList(messageMap);
 
                     title = getString(R.string.update_blocked_apps);
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
+                    channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "liveApp":
                     String s = messageMap.get("liveApp");
@@ -270,14 +278,14 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     String childNameInsApp = messageMap.get("childName");
                     title = getString(R.string.title_installed_app, childNameInsApp);
                     body = appNameInsApp;
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
                     break;
                 case "uninstalledApp":
                     String appNameUninsApp = messageMap.get("uninstalledApp");
                     String childNameUninsApp = messageMap.get("childName");
                     title = getString(R.string.title_uninstalled_app, childNameUninsApp);
                     body = appNameUninsApp;
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
                     break;
                 case "geolocFills":
                     Intent intentGeoFill = new Intent("actualitzarLoc");
@@ -288,7 +296,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                 case "chat":
                     switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
                         case "0":
-                            ClientNotificationManager.getInstance(this).displayGeneralNotification(title, body, (Class<?>)null, MyNotificationManager.Channels.CHAT);
+                            channel = MyNotificationManager.Channels.CHAT;
                             break;
                         case "1":  //Message with Chat
                             body = remoteMessage.getData().get("body");
@@ -300,7 +308,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                                 intent.putExtra("senderId", userID);
                                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                             } else {
-                                ClientNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                                clientNotificationManager.displayNotificationChat(title, body, userID, myId);
                             }
                             break;
                         case "2":
@@ -333,7 +341,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                                     meetingId
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            ClientNotificationManager.getInstance(this).displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT);
+                            clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT);
                             startActivity(intent);
                         } else if (type.equals("invitationResponse")) {
                             Intent intent = new Intent("invitationResponse");
@@ -355,7 +363,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            ClientNotificationManager.getInstance(this).displayGeneralNotification(title, body, activitatIntent, MyNotificationManager.Channels.GENERAL);
+            if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel);
+            else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel);
         }
     }
 
