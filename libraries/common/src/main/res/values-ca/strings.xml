@@ -422,4 +422,6 @@
     <string name="horaris_buits_body">Hi ha horaris sense determina. Si us plau, ompli tots els horaris.</string>
     <string name="search">Buscar</string>
     <string name="title_message">Tens un nou missatge!</string>
+
+    <string name="setting_notifications">Notificacions</string>
 </resources>

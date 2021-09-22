@@ -441,4 +441,6 @@
     <string name="permisos_pregunta">¿Has aceptado todos los permisos?</string>
     <string name="search">Buscar</string>
     <string name="title_message">Tienes un nuevo mensaje!</string>
+
+    <string name="setting_notifications">Notificaciones</string>
 </resources>
