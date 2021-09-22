@@ -1,5 +1,6 @@
 package com.adictic.common.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,7 +22,6 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.common.R;
-import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.YearEntity;
@@ -196,33 +196,28 @@ public class DayUsageActivity extends AppCompatActivity {
         long totalTime = 0;
 
         // Si hi ha diferents dies amb les mateixes aplicacions, sumem els temps
-        List<AppUsage> appList = new ArrayList<>();
+        Map<String, AppUsage> map = new HashMap<>();
         for (GeneralUsage gu : gul) {
             for (AppUsage au : gu.usage) {
-                int index = appList.indexOf(au);
+                AppUsage mapObject= map.get(au.app.pkgName);
+                if(mapObject != null) {
+                    if(au.totalTime != null) {
+                        totalTime += au.totalTime;
+                        mapObject.totalTime = mapObject.totalTime != null ? mapObject.totalTime + au.totalTime : au.totalTime;
+                    }
 
-                totalTime += au.totalTime;
+                    if(au.lastTimeUsed != null)
+                        mapObject.lastTimeUsed = mapObject.lastTimeUsed != null ? Math.max(mapObject.lastTimeUsed, au.lastTimeUsed) : au.lastTimeUsed;
 
-                if (index != -1) {
-                    AppUsage current = appList.remove(index);
-                    AppUsage res = new AppUsage();
-                    res.app = new AppInfo();
-                    res.app.appName = au.app.appName;
-                    res.app.pkgName = au.app.pkgName;
-                    res.totalTime = au.totalTime + current.totalTime;
-                    if (current.lastTimeUsed > au.lastTimeUsed)
-                        res.lastTimeUsed = current.lastTimeUsed;
-                    else
-                        res.lastTimeUsed = au.lastTimeUsed;
-
-                    appList.add(res);
-                } else {
-                    appList.add(au);
+                    if(au.timesOpened != null)
+                        mapObject.timesOpened = mapObject.timesOpened != null ? mapObject.timesOpened + au.timesOpened : au.timesOpened;
                 }
+                else
+                    map.put(au.app.pkgName, au);
             }
         }
 
-        appList = appList.stream()
+        List<AppUsage> appList = new ArrayList<>(map.values()).stream()
                 .filter(appUsage -> appUsage.totalTime > Constants.HOUR_IN_MILLIS / 60)
                 .collect(Collectors.toList());
 
@@ -241,9 +236,9 @@ public class DayUsageActivity extends AppCompatActivity {
         TextView TV_totalUse = findViewById(R.id.TV_totalUseVar);
 
         // Set colours according to total time spent
-        if (totalTime <= xDays * Constants.CORRECT_USAGE_DAY)
+        if (totalTime <= (long) xDays * Constants.CORRECT_USAGE_DAY)
             TV_totalUse.setTextColor(getColor(R.color.colorPrimary));
-        else if (totalTime > xDays * Constants.DANGEROUS_USAGE_DAY)
+        else if (totalTime > (long) xDays * Constants.DANGEROUS_USAGE_DAY)
             TV_totalUse.setTextColor(Color.RED);
         else
             TV_totalUse.setTextColor(Color.rgb(255, 128, 64));
@@ -320,8 +315,9 @@ public class DayUsageActivity extends AppCompatActivity {
         Calendar calendarStart = Calendar.getInstance();
 
         int firstYear = Collections.min(yearList);
-        int firstMonth = Collections.min(daysMap.get(firstYear).keySet());
-        List<Integer> month = daysMap.get(firstYear).get(firstMonth);
+        int firstMonth = Collections.min(Objects.requireNonNull(daysMap.get(firstYear)).keySet());
+        List<Integer> month = Objects.requireNonNull(daysMap.get(firstYear)).get(firstMonth);
+        assert month != null;
         int firstDay = Collections.min(month);
 
         calendarStart.set(firstYear, firstMonth, firstDay);
@@ -371,7 +367,7 @@ public class DayUsageActivity extends AppCompatActivity {
                         yearList.addAll(daysMap.keySet());
                         yearList.sort(Collections.reverseOrder());
 
-                        monthList.addAll(daysMap.get(yearList.get(0)).keySet());
+                        monthList.addAll(Objects.requireNonNull(daysMap.get(yearList.get(0))).keySet());
                         monthList.sort(Collections.reverseOrder());
 
                         getStats();
@@ -508,13 +504,13 @@ public class DayUsageActivity extends AppCompatActivity {
 
         public void sortList(int sortOrder) {
             if (mDisplayOrder == sortOrder) {
-                notifyDataSetChanged();
                 return;
             }
             mDisplayOrder = sortOrder;
             sortList();
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         private void sortList() {
             if (mDisplayOrder == _DISPLAY_ORDER_USAGE_TIME) {
                 Log.i(TAG, "Sorting by usage time");
