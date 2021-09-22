@@ -13,30 +13,18 @@ import com.adictic.client.ui.chat.ChatActivity;
 import com.adictic.client.ui.main.NavActivity;
 import com.adictic.common.util.MyNotificationManager;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Random;
 
 public class ClientNotificationManager extends MyNotificationManager {
-
-    protected static ClientNotificationManager mInstance;
 
     public ClientNotificationManager(Context context){
         super(context);
     }
 
-    public static synchronized ClientNotificationManager getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new ClientNotificationManager(context);
-        }
-        return mInstance;
-    }
-
-    public void displayGeneralNotification(String title, String body, Class activityIntent, Channels channel) {
-
-        Intent mainIntent;
-        if(activityIntent == null) mainIntent = new Intent(mCtx, NavActivity.class);
-        else mainIntent = new Intent(mCtx, activityIntent);
-
-        displayGeneralNotification(title, body, mainIntent, channel);
+    public void displayGeneralNotification(String title, String body, @NotNull Class<?> activityIntent, Channels channel) {
+        displayGeneralNotification(title, body, new Intent(mCtx, activityIntent), channel);
     }
 
     public void displayGeneralNotification(String title, String body, Intent activityIntent, Channels channel) {

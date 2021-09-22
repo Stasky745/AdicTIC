@@ -9,21 +9,26 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
+import com.adictic.common.R;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class MyNotificationManager {
 
-    protected static MyNotificationManager mInstance;
     protected final Context mCtx;
 
     public MyNotificationManager(Context context) {
         mCtx = context;
+        channel_info.put(Channels.GENERAL, new Channel("General", "GENERAL notification", "This is the description", NotificationManager.IMPORTANCE_DEFAULT)); //TODO: Posar a strings.xml
+        channel_info.put(Channels.CHAT, new Channel("CHAT", "Chat notification", "New message in the chat", NotificationManager.IMPORTANCE_HIGH)); //TODO: Posar a strings.xml
+        channel_info.put(Channels.VIDEOCHAT, new Channel("VIDEOCHAT", "Videochat notification", "Calling to a videochat", NotificationManager.IMPORTANCE_MAX)); //TODO: Posar a strings.xml
+        channel_info.put(Channels.BLOCK, new Channel("BLOCK", context.getString(R.string.channel_title_notif_block), context.getString(R.string.channel_desc_notif_block), NotificationManager.IMPORTANCE_MAX));
     }
 
     public enum Channels {
-        GENERAL, CHAT, VIDEOCHAT
+        GENERAL, CHAT, VIDEOCHAT, BLOCK
     }
 
     protected static class Channel {
@@ -40,18 +45,7 @@ public class MyNotificationManager {
         }
     }
 
-    protected static final Map<Channels, Channel> channel_info = new HashMap<Channels, Channel>() {{
-        put(Channels.GENERAL, new Channel("General", "GENERAL notification", "This is the description", NotificationManager.IMPORTANCE_DEFAULT));
-        put(Channels.CHAT, new Channel("CHAT", "Chat notification", "New message in the chat", NotificationManager.IMPORTANCE_HIGH));
-        put(Channels.VIDEOCHAT, new Channel("VIDEOCHAT", "Videochat notification", "Calling to a videochat", NotificationManager.IMPORTANCE_MAX));
-    }};
-
-    public static synchronized MyNotificationManager getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new MyNotificationManager(context);
-        }
-        return mInstance;
-    }
+    protected static final Map<Channels, Channel> channel_info = new HashMap<>();
 
     protected NotificationCompat.Builder createNotificationBuilder(String title, String body, Channels channel, PendingIntent pendingIntent, int icon){
         Channel channelInfo = Objects.requireNonNull(channel_info.get(channel));

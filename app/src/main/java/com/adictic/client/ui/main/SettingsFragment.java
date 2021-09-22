@@ -62,7 +62,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
             settings_change_password();
-            settings_change_notifications();
             if(BuildConfig.DEBUG){
                 settings_change_theme();
             } else {
@@ -71,7 +70,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if(preferenceScreen != null) preferenceScreen.removePreference(myPrefCat);
             }
         }
-
+        settings_change_notifications();
         settings_change_language();
     }
 

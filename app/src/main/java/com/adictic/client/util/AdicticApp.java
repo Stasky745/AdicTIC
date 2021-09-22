@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.adictic.client.BuildConfig;
 import com.adictic.client.rest.AdicticApi;
+import com.adictic.client.service.ClientNotificationManager;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
@@ -25,6 +26,7 @@ import okhttp3.Route;
 public class AdicticApp extends App {
 
     private AdicticApi adicticApi;
+    private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
 
@@ -42,14 +44,17 @@ public class AdicticApp extends App {
     public void onCreate() {
         super.onCreate();
         adicticApi = createRetrofit(getOkHttpClient(new AdicticAuthenticator())).create(AdicticApi.class);
+        notificationManager = new ClientNotificationManager(this);
     }
 
     public AdicticApi getAPI() { return adicticApi; }
 
+    public ClientNotificationManager getNotificationManager() { return notificationManager; }
+
     private class AdicticAuthenticator implements Authenticator {
         @Nullable
         @Override
-        public Request authenticate(@Nullable Route route, @NonNull Response response) throws IOException {
+        public Request authenticate(@Nullable Route route, @NonNull Response response) {
             if (responseCount(response) >= 3) {
                 return null; // If we've failed 3 times, give up.
             }
