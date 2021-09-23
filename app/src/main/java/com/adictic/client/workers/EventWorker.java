@@ -7,6 +7,7 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.client.service.AccessibilityScreenService;
+import com.adictic.client.util.Funcions;
 
 public class EventWorker extends Worker {
     public EventWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -16,7 +17,7 @@ public class EventWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if(AccessibilityScreenService.instance == null) {
+        if(!Funcions.accessibilityServiceOn()) {
             return Result.failure();
         }
 

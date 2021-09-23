@@ -249,7 +249,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
-        if(AccessibilityScreenService.instance == null) {
+        if(!Funcions.accessibilityServiceOn()) {
             return;
         }
 
@@ -380,7 +380,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
 
-        if(AccessibilityScreenService.instance == null)
+        if(!Funcions.accessibilityServiceOn())
             return;
 
         AccessibilityScreenService.instance.setHorarisActius(false);
@@ -891,6 +891,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void endFreeUse(Context mCtx) {
+        if(!Funcions.accessibilityServiceOn())
+            return;
+
         boolean isBlocked = AccessibilityScreenService.instance.isDeviceBlocked();
         if(isBlocked)
             showBlockDeviceScreen(mCtx);
@@ -951,7 +954,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     private static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        if(AccessibilityScreenService.instance == null)
+        if(!Funcions.accessibilityServiceOn())
             return;
 
         List<BlockedApp> appsLimitades = new ArrayList<>();
@@ -976,7 +979,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         // Actualitzem mapa Accessibility amb dades noves
         Map<String, Integer> tempsAppsLimitades = new HashMap<>();
-        if(AccessibilityScreenService.instance != null){
+        if(Funcions.accessibilityServiceOn()){
             for(BlockedApp limitedApp : appsLimitades) {
                 int dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
                 if (dayAppUsage > limitedApp.timeLimit)
@@ -987,5 +990,13 @@ public class Funcions extends com.adictic.common.util.Funcions {
             AccessibilityScreenService.instance.setTempsAppsLimitades(tempsAppsLimitades);
         }
 
+    }
+
+    public static boolean accessibilityServiceOn(){
+        boolean res = Funcions.accessibilityServiceOn();
+
+
+
+        return res;
     }
 }
