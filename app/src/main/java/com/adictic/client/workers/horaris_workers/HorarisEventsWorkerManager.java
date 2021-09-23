@@ -32,7 +32,7 @@ public class HorarisEventsWorkerManager extends Worker {
     public Result doWork() {
         Log.d(TAG,"Worker començat");
 
-        if(AccessibilityScreenService.instance == null)
+        if(!Funcions.accessibilityServiceOn())
             return Result.failure();
 
         long millisAra = DateTime.now().getMillis();

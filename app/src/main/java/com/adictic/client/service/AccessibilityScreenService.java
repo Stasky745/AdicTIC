@@ -398,6 +398,9 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
 
         private void enviarLastApp() {
+            if(!Funcions.accessibilityServiceOn())
+                return;
+
             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.instance);
             assert sharedPreferences != null;
 
