@@ -992,7 +992,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static boolean accessibilityServiceOn(){
-        boolean res = Funcions.accessibilityServiceOn();
+        boolean res = AccessibilityScreenService.instance != null;
 
 
 

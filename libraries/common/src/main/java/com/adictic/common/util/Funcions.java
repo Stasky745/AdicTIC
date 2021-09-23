@@ -157,15 +157,10 @@ public class Funcions {
     }
 
     public static Pair<Integer, Integer> millisToString(float l) {
-        float minuts = l / (60000);
-        int hores = 0;
+        float minuts = (l%(1000*60*60))/(1000*60);
+        int hores = (int) l/(1000*60*60);
 
-        while (minuts >= 60) {
-            hores++;
-            minuts -= 60;
-        }
-
-        return new Pair<>(hores, Math.round(minuts));
+        return new Pair<>(hores, (int) Math.floor(minuts));
     }
 
     // retorna -1 si no hi ha hora establerta
