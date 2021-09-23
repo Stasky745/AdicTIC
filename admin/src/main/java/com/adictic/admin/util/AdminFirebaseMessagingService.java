@@ -1,27 +1,22 @@
 package com.adictic.admin.util;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.adictic.common.util.Constants;
-import com.adictic.jitsi.activities.IncomingInvitationActivity;
+import com.adictic.admin.R;
 import com.adictic.admin.ui.Xats.XatActivity;
+import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 import java.util.Objects;
 
-//class extending FirebaseMessagingService
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class AdminFirebaseMessagingService extends FirebaseMessagingService {
 
     private final String TAG = "Firebase: ";
 
@@ -85,24 +80,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             intent.putExtra("childId", childID);
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         } else {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                NotificationManager mNotificationManager =
-                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                                NotificationChannel mChannel = new NotificationChannel(Constants.CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                                mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                                mChannel.enableLights(true);
-                                mChannel.setLightColor(Color.RED);
-                                mChannel.enableVibration(true);
-                                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                                mNotificationManager.createNotificationChannel(mChannel);
-                            }
-
-                            String title = "Tens un nou missatge!";
+                            String title = getString(R.string.title_message);
                             Long myId = Long.parseLong(Objects.requireNonNull(remoteMessage.getData().get("myID")));
 
-                            MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                            AdminNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
                         }
                         break;
                     case "2":

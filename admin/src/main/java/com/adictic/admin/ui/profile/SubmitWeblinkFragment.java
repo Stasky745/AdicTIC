@@ -18,6 +18,8 @@ import com.adictic.common.entity.WebLink;
 import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
 public class SubmitWeblinkFragment extends DialogFragment {
     private TextInputEditText TIET_titol, TIET_url;
 
@@ -30,10 +32,10 @@ public class SubmitWeblinkFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ViewGroup.LayoutParams params = getDialog().getWindow().getAttributes();
+        WindowManager.LayoutParams params = Objects.requireNonNull(getDialog()).getWindow().getAttributes();
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
+        getDialog().getWindow().setAttributes(params);
     }
 
     @Override
@@ -59,32 +61,30 @@ public class SubmitWeblinkFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TIET_titol = (TextInputEditText) view.findViewById(R.id.TIET_title);
-        TIET_url = (TextInputEditText) view.findViewById(R.id.TIET_url);
+        TIET_titol = view.findViewById(R.id.TIET_title);
+        TIET_url = view.findViewById(R.id.TIET_url);
 
         if(posicio > -1){
             TIET_titol.setText(name);
             TIET_url.setText(url);
         }
 
-        BT_accept = (Button) view.findViewById(R.id.BT_accept);
-        BT_cancel = (Button) view.findViewById(R.id.BT_cancel);
+        BT_accept = view.findViewById(R.id.BT_accept);
+        BT_cancel = view.findViewById(R.id.BT_cancel);
 
         setButtons();
 
-        getDialog().setTitle(getString(R.string.new_weblink));
+        Objects.requireNonNull(getDialog()).setTitle(getString(R.string.new_weblink));
     }
 
     public void setButtons() {
         BT_accept.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putString("name",TIET_titol.getText().toString());
-            bundle.putString("url",TIET_url.getText().toString());
+            bundle.putString("name", Objects.requireNonNull(TIET_titol.getText()).toString());
+            bundle.putString("url", Objects.requireNonNull(TIET_url.getText()).toString());
             bundle.putInt("posicio",posicio);
 
-            Intent intent = new Intent().putExtras(bundle);
-
-            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK,intent);
+            requireActivity().getSupportFragmentManager().setFragmentResult("weblink", bundle);
 
             dismiss();
         });
