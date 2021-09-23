@@ -61,7 +61,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.adictic.client.service.MyFirebaseMessagingService"
+        <service android:name="com.adictic.client.service.ClientFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

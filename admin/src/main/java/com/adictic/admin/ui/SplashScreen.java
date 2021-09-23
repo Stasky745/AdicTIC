@@ -75,7 +75,6 @@ public class SplashScreen extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    super.onResponse(call, response);
                             if (response.isSuccessful() && response.body() != null) {
                                 User adminCheckWithToken = response.body();
                                 sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
@@ -89,7 +88,7 @@ public class SplashScreen extends AppCompatActivity {
 
                         @Override
                         public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                            super.onFailure(call, t);
                             Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                             toast.show();
                         }

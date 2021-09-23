@@ -62,8 +62,11 @@ public class IncomingInvitationActivity extends AppCompatActivity {
     }
 
     private void sendInvitationResponse(String type) {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancelAll();
+        int notifId = getIntent().getIntExtra("notification_id",-1);
+        if(notifId!=-1) {
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.cancel(notifId);
+        }
 
         Call<String> call = api.answerCallOfAdmin(admin_id, type);
         call.enqueue(new Callback<String>() {
