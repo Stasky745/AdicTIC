@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.text.LineBreaker;
 import android.net.Uri;
 import android.os.Build;
@@ -25,14 +24,17 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.adictic.client.util.Funcions;
 import com.adictic.client.R;
+import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
 
 import org.joda.time.DateTime;
+
+import java.util.Objects;
 
 public class Permisos extends AppCompatActivity {
     private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
@@ -42,16 +44,9 @@ public class Permisos extends AppCompatActivity {
         new ActivityResultContracts.StartActivityForResult(),
         result -> {
             if (result.getResultCode() == RESULT_OK) {
-                TextView TV_permiso_admin_status = findViewById(R.id.TV_permiso_admin_status);
-                if (Funcions.isAdminPermissionsOn(Permisos.this)) {
-                    adminPerm = true;
-                    TV_permiso_admin_status.setText(getText(R.string.activat));
-                    TV_permiso_admin_status.setTextColor(Color.GREEN);
-                }
-                else{
-                    TV_permiso_admin_status.setText(getText(R.string.desactivat));
-                    TV_permiso_admin_status.setTextColor(getColor(R.color.vermell));
-                }
+                SwitchCompat SW_permiso_admin_status = findViewById(R.id.SW_permiso_admin);
+                adminPerm = Funcions.isAdminPermissionsOn(Permisos.this);
+                SW_permiso_admin_status.setChecked(adminPerm);
             }
         }
     );
@@ -60,6 +55,7 @@ public class Permisos extends AppCompatActivity {
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.permissions_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.permisos));
 
         TextView TV_permisosDesc = findViewById(R.id.TV_permisos_desc);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
@@ -101,7 +97,7 @@ public class Permisos extends AppCompatActivity {
     }
     
     private boolean totsPermisosActivats(){
-        return accessibilityPerm && usagePerm && adminPerm && overlayPerm && locationPerm && batteryPerm && autostartPerm;
+        return accessibilityPerm && usagePerm && adminPerm && overlayPerm && locationPerm && batteryPerm; //&& autostartPerm;
     }
 
     @Override
@@ -119,7 +115,6 @@ public class Permisos extends AppCompatActivity {
 
     private void setAutoStartLayout() {
         ConstraintLayout CL_auto_start = findViewById(R.id.CL_auto_start);
-        TextView TV_permiso_auto_start_status = findViewById(R.id.TV_permiso_auto_start_status);
         boolean autoStartAvailable = AutoStartPermissionHelper.Companion.getInstance().isAutoStartPermissionAvailable(this, true);
 
         if (!autoStartAvailable) {
@@ -127,125 +122,99 @@ public class Permisos extends AppCompatActivity {
             autostartPerm = true;
         }
         else {
-            CL_auto_start.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                     .setTitle(getString(R.string.auto_start))
                     .setMessage(getString(R.string.auto_start_info))
-                    .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
-                        boolean autoStartSuccess = AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(this,true, false);
-                        if(autoStartSuccess){
-                            TV_permiso_auto_start_status.setText(getText(R.string.activat));
-                            TV_permiso_auto_start_status.setTextColor(Color.GREEN);
-                            autostartPerm = true;
-                        }
-                        else
-                            autostartPerm = false;
-                    })
-                    .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                    .show());
+                    .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> autostartPerm = AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(this,true, false))
+                    .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss());
+
+            CL_auto_start.setOnClickListener(view -> alertDialog.show());
         }
     }
 
     private void setBatteryLayout() {
-        batteryPerm = false;
         ConstraintLayout CL_battery_optimisation = findViewById(R.id.CL_battery_optimisation);
-        TextView TV_permiso_battery_optimisation_status = findViewById(R.id.TV_permiso_battery_optimisation_status);
+        SwitchCompat SW_permiso_battery_optimisation_status = findViewById(R.id.SW_permiso_battery_optimisation);
         PowerManager mPm = (PowerManager) getSystemService(POWER_SERVICE);
 
-        boolean ignoringBatteryOptimizations = mPm.isIgnoringBatteryOptimizations(getPackageName());
-        if (ignoringBatteryOptimizations) {
-            batteryPerm = true;
-            TV_permiso_battery_optimisation_status.setText(getText(R.string.desactivat));
-            TV_permiso_battery_optimisation_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_permiso_battery_optimisation_status.setText(getText(R.string.activat));
-            TV_permiso_battery_optimisation_status.setTextColor(getColor(R.color.vermell));
-        }
+        batteryPerm = mPm.isIgnoringBatteryOptimizations(getPackageName());
+        SW_permiso_battery_optimisation_status.setChecked(batteryPerm);
 
-        CL_battery_optimisation.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.battery_optimisation))
                 .setMessage(getString(R.string.battery_optimisation_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
+                    //TODO: Aixo activa per no pots desactivar
                     @SuppressLint("BatteryLife") Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:"+getPackageName()));
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_permiso_battery_optimisation_status.setChecked(batteryPerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_battery_optimisation.setOnClickListener(view -> alertDialog.show());
+        SW_permiso_battery_optimisation_status.setOnClickListener(view -> alertDialog.show());
     }
 
     private void setLocationLayout() {
-        locationPerm = false;
         ConstraintLayout CL_location = findViewById(R.id.CL_location);
-        TextView TV_permiso_location_status = findViewById(R.id.TV_permiso_location_status);
+        SwitchCompat SW_permiso_location_status = findViewById(R.id.SW_permiso_location);
 
-        if (Funcions.isBackgroundLocationPermissionOn(Permisos.this)) {
-            locationPerm = true;
-            TV_permiso_location_status.setText(getText(R.string.activat));
-            TV_permiso_location_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_permiso_location_status.setText(getText(R.string.desactivat));
-            TV_permiso_location_status.setTextColor(getColor(R.color.vermell));
-        }
+        locationPerm = Funcions.isBackgroundLocationPermissionOn(Permisos.this);
+        SW_permiso_location_status.setChecked(locationPerm);
 
-        CL_location.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.perm_background_loc_title))
                 .setMessage(getString(R.string.perm_back_location_desc))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
                     intent.setData(Uri.parse("package:" + getPackageName()));
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_permiso_location_status.setChecked(locationPerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_location.setOnClickListener(view -> alertDialog.show());
+        SW_permiso_location_status.setOnClickListener(view -> alertDialog.show());
     }
 
     private void setOverlayLayout() {
-        overlayPerm = false;
         ConstraintLayout CL_overlay = findViewById(R.id.CL_overlay);
-        TextView TV_permiso_overlay_status = findViewById(R.id.TV_permiso_overlay_status);
+        SwitchCompat SW_permiso_overlay_status = findViewById(R.id.SW_permiso_overlay);
 
-        if (Settings.canDrawOverlays(this)) {
-            overlayPerm = true;
-            TV_permiso_overlay_status.setText(getText(R.string.activat));
-            TV_permiso_overlay_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_permiso_overlay_status.setText(getText(R.string.desactivat));
-            TV_permiso_overlay_status.setTextColor(getColor(R.color.vermell));
-        }
+        overlayPerm = Settings.canDrawOverlays(this);
+        SW_permiso_overlay_status.setChecked(overlayPerm);
 
-        CL_overlay.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.overlay_title))
                 .setMessage(getString(R.string.overlay_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
                     startActivity(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_permiso_overlay_status.setChecked(overlayPerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_overlay.setOnClickListener(view -> alertDialog.show());
+        SW_permiso_overlay_status.setOnClickListener(view -> alertDialog.show());
     }
 
     private void setAdminLayout() {
-        adminPerm = false;
         ConstraintLayout CL_admin = findViewById(R.id.CL_admin);
-        TextView TV_permiso_admin_status = findViewById(R.id.TV_permiso_admin_status);
+        SwitchCompat SW_permiso_admin_status = findViewById(R.id.SW_permiso_admin);
 
-        if (Funcions.isAdminPermissionsOn(this)) {
-            adminPerm = true;
-            TV_permiso_admin_status.setText(getText(R.string.activat));
-            TV_permiso_admin_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_permiso_admin_status.setText(getText(R.string.desactivat));
-            TV_permiso_admin_status.setTextColor(getColor(R.color.vermell));
-        }
+        adminPerm = Funcions.isAdminPermissionsOn(this);
+        SW_permiso_admin_status.setChecked(adminPerm);
 
-        CL_admin.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.admin_pem_title))
                 .setMessage(getString(R.string.admin_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
@@ -261,53 +230,47 @@ public class Permisos extends AppCompatActivity {
                             getString(R.string.admin_pem_intent));
                     activityResult.launch(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_permiso_admin_status.setChecked(adminPerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_admin.setOnClickListener(view -> alertDialog.show());
+        SW_permiso_admin_status.setOnClickListener(view -> alertDialog.show());
     }
 
     private void setUsageLayout() {
-        usagePerm = false;
         ConstraintLayout CL_usage = findViewById(R.id.CL_usage);
-        TextView TV_permiso_usage_status = findViewById(R.id.TV_permiso_usage_status);
+        SwitchCompat SW_permiso_usage_status = findViewById(R.id.SW_permiso_usage);
 
-        if (Funcions.isAppUsagePermissionOn(this)) {
-            usagePerm = true;
-            TV_permiso_usage_status.setText(getText(R.string.activat));
-            TV_permiso_usage_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_permiso_usage_status.setText(getText(R.string.desactivat));
-            TV_permiso_usage_status.setTextColor(getColor(R.color.vermell));
-        }
+        usagePerm = Funcions.isAppUsagePermissionOn(this);
+        SW_permiso_usage_status.setChecked(usagePerm);
 
-        CL_usage.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.appusage_pem_title))
                 .setMessage(getString(R.string.appusage_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
                     Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_permiso_usage_status.setChecked(usagePerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_usage.setOnClickListener(view -> alertDialog.show());
+        SW_permiso_usage_status.setOnClickListener(view -> alertDialog.show());
     }
 
     private void setAccessibilityLayout() {
-        accessibilityPerm = false;
         ConstraintLayout CL_accessibility = findViewById(R.id.CL_accessibility);
-        TextView TV_accessibility_status = findViewById(R.id.TV_permiso_accessibility_status);
+        SwitchCompat SW_accessibility_status = findViewById(R.id.SW_permiso_accessibility);
 
-        if (Funcions.isAccessibilitySettingsOn(this)) {
-            accessibilityPerm = true;
-            TV_accessibility_status.setText(getText(R.string.activat));
-            TV_accessibility_status.setTextColor(Color.GREEN);
-        }
-        else{
-            TV_accessibility_status.setText(getText(R.string.desactivat));
-            TV_accessibility_status.setTextColor(getColor(R.color.vermell));
-        }
+        accessibilityPerm = Funcions.isAccessibilitySettingsOn(this);
+        SW_accessibility_status.setChecked(accessibilityPerm);
 
-        CL_accessibility.setOnClickListener(view -> new AlertDialog.Builder(Permisos.this)
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.accessibility_pem_title))
                 .setMessage(getString(R.string.accessibility_pem_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
@@ -315,8 +278,13 @@ public class Permisos extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss())
-                .show());
+                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
+                    SW_accessibility_status.setChecked(accessibilityPerm);
+                    dialogInterface.dismiss();
+                });
+
+        CL_accessibility.setOnClickListener(view -> alertDialog.show());
+        SW_accessibility_status.setOnClickListener(view -> alertDialog.show());
     }
 
     public static class MyDevicePolicyReceiver extends DeviceAdminReceiver {

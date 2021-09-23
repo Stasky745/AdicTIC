@@ -437,4 +437,5 @@
 
     <string name="settings_android">Opcions d\'Android</string>
     <string name="language_not_supported">Idioma no suportat</string>
+    <string name="continue_">Continuar</string>
 </resources>
