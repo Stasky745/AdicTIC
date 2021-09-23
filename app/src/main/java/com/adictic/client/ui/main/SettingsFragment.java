@@ -3,7 +3,9 @@ package com.adictic.client.ui.main;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -14,20 +16,21 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.adictic.client.BuildConfig;
+import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
+import com.adictic.client.ui.inici.Login;
+import com.adictic.client.ui.inici.Permisos;
+import com.adictic.client.ui.inici.SplashScreen;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.client.R;
-import com.adictic.client.ui.inici.Login;
-import com.adictic.client.ui.inici.SplashScreen;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -38,15 +41,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private SharedPreferences sharedPreferences;
 
+    private ApplicationInfo appInfo;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         mTodoService = ((AdicticApp) requireActivity().getApplication()).getAPI();
 
+        appInfo = requireContext().getApplicationContext().getApplicationInfo();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         assert sharedPreferences != null;
         if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
             // Settings de fill
             setPreferencesFromResource(R.xml.settings_child, rootKey);
+            settings_permission();
             if(BuildConfig.DEBUG) {
                 settings_change_theme();
                 settings_tancar_sessio();
@@ -62,6 +69,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
             settings_change_password();
+            settings_android();
             if(BuildConfig.DEBUG){
                 settings_change_theme();
             } else {
@@ -82,8 +90,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Intent intent = new Intent();
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
 
-            ApplicationInfo appInfo = requireContext().getApplicationContext().getApplicationInfo();
-
             //for Android 5-7
             intent.putExtra("app_package", appInfo.packageName);
             intent.putExtra("app_uid", appInfo.uid);
@@ -95,6 +101,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
+    }
+
+    private void settings_android() {
+        Preference setting_android = findPreference("setting_android");
+
+        assert setting_android != null;
+        setting_android.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", appInfo.packageName, null);
+            intent.setData(uri);
+            startActivity(intent);
+            return true;
+        });
+    }
+
+    private void settings_permission(){
+        Preference change_perm = findPreference("setting_permission");
+
+        assert change_perm != null;
+        change_perm.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(requireActivity(), Permisos.class);
+            startActivity(intent);
+            return true;
+        });
     }
 
     private void settings_pujar_informe(){
@@ -124,11 +155,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     private void settings_change_language() {
         ListPreference language_preference = findPreference("setting_change_language");
-        String selectedLanguage = sharedPreferences.getString("language", "none");
+        String selectedLanguage = sharedPreferences.getString("language", Locale.getDefault().getLanguage());
 
         assert language_preference != null;
         language_preference.setValue(selectedLanguage);
-        language_preference.setSummary(language_preference.getEntry());
+        if(language_preference.getEntry().length()==0) language_preference.setSummary(getString(R.string.language_not_supported));
+        else language_preference.setSummary(language_preference.getEntry());
 
         language_preference.setOnPreferenceChangeListener((preference, newValue) -> {
             sharedPreferences.edit().putString("language", (String) newValue).apply();
