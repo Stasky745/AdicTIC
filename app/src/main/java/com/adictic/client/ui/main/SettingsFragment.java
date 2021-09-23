@@ -2,6 +2,7 @@ package com.adictic.client.ui.main;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import com.adictic.client.ui.inici.SplashScreen;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -41,32 +43,58 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         mTodoService = ((AdicticApp) requireActivity().getApplication()).getAPI();
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        assert sharedPreferences != null;
         if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
+            // Settings de fill
             setPreferencesFromResource(R.xml.settings_child, rootKey);
             if(BuildConfig.DEBUG) {
                 settings_change_theme();
                 settings_tancar_sessio();
                 settings_pujar_informe();
             } else {
-                PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("preferenceChild");
-                PreferenceCategory myPrefCat = (PreferenceCategory) findPreference("pcdebug");
-                preferenceScreen.removePreference(myPrefCat);
+                PreferenceScreen preferenceScreen = findPreference("preferenceChild");
+                PreferenceCategory myPrefCat = findPreference("pcdebug");
+                if (preferenceScreen != null) preferenceScreen.removePreference(myPrefCat);
             }
 
         } else {
+            // Settings de pare
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             settings_tancar_sessio();
             settings_change_password();
             if(BuildConfig.DEBUG){
                 settings_change_theme();
             } else {
-                PreferenceScreen preferenceScreen = (PreferenceScreen) findPreference("preferenceParent");
-                PreferenceCategory myPrefCat = (PreferenceCategory) findPreference("ppdebug");
-                preferenceScreen.removePreference(myPrefCat);
+                PreferenceScreen preferenceScreen = findPreference("preferenceParent");
+                PreferenceCategory myPrefCat = findPreference("ppdebug");
+                if(preferenceScreen != null) preferenceScreen.removePreference(myPrefCat);
             }
         }
-
+        settings_change_notifications();
         settings_change_language();
+    }
+
+    private void settings_change_notifications() {
+        Preference change_notif = findPreference("setting_notifications");
+
+        assert change_notif != null;
+        change_notif.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent();
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+
+            ApplicationInfo appInfo = requireContext().getApplicationContext().getApplicationInfo();
+
+            //for Android 5-7
+            intent.putExtra("app_package", appInfo.packageName);
+            intent.putExtra("app_uid", appInfo.uid);
+
+            // for Android 8 and above
+            intent.putExtra("android.provider.extra.APP_PACKAGE", appInfo.packageName);
+
+            startActivity(intent);
+            return true;
+        });
+
     }
 
     private void settings_pujar_informe(){

@@ -50,7 +50,6 @@ import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.service.ForegroundService;
-import com.adictic.client.service.MyFirebaseMessagingService;
 import com.adictic.client.ui.BlockAppActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
@@ -913,7 +912,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
-            if(Funcions.isXiaomi() && false)
+            if(Funcions.isXiaomi() && false) //TODO: Perquè està desactivat?
                 addOverlayView(ctx, false);
             else{
                 Log.d(TAG,"Creant Intent cap a BlockAppActivity");
