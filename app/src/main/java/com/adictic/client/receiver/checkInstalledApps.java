@@ -78,15 +78,16 @@ public class checkInstalledApps extends BroadcastReceiver {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful())
                     Log.i(TAG, "S'ha enviat l'app desinstal·lada correctament.");
-                else Log.i(TAG, "No s'ha pogut enviar l'app desinstal·lada correctament.");
+                else
+                    Log.i(TAG, "No s'ha pogut enviar l'app desinstal·lada correctament.");
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Log.i(TAG, "No s'ha pogut enviar l'app desinstal·lada correctament.");
             }
         });
