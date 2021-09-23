@@ -421,4 +421,17 @@
     <string name="permisos_pregunta">Has acceptat tots els permisos?</string>
     <string name="horaris_buits_body">Hi ha horaris sense determina. Si us plau, ompli tots els horaris.</string>
     <string name="search">Buscar</string>
+    <string name="title_message">Tens un nou missatge!</string>
+
+    <string name="setting_notifications">Notificacions</string>
+
+    <string name="channel_title_notif_block">Notificacions de bloquejos</string>
+    <string name="channel_desc_notif_block">Les notificacions de quan el dispositiu és bloquejat o alguna aplicació és bloquejada</string>
+    <string name="phone_locked">Dispositiu bloquejat</string>
+    <string name="new_app_blocked">Nova aplicació bloquejada</string>
+    <string name="notif_phone_locked">Aquest dispositiu està bloquejat temporalment</string>
+    <string name="notif_app_locked">Aquesta aplicació ha estat bloquejada "%s"</string>
+    <string name="notif_surpass_limit"><b>Has superat el límit diari acordat</b></string>
+    <string name="notif_free_use">%s.<b> El dispositiu està bloquejat perquè puguis realitzar l\'activitat prevista sense tecnologies</b></string>
+    <string name="notif_night_sleep">Descans nocturn.<b> El dispositiu ha estat bloquejat perquè puguis tenir un son de qualitat</b></string>
 </resources>

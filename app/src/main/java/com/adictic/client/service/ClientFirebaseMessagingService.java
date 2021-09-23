@@ -1,29 +1,22 @@
 package com.adictic.client.service;
 
-import static com.adictic.common.util.Constants.CHANNEL_ID;
-
 import android.app.KeyguardManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
+import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.TimeBlock;
@@ -32,9 +25,8 @@ import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
+import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
-import com.adictic.client.R;
-import com.adictic.client.ui.chat.ChatFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -54,8 +46,7 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
-//class extending FirebaseMessagingService
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
     private final String TAG = "Firebase: ";
     private AdicticApi mTodoService;
@@ -133,7 +124,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             // Ensenyar pantalla bloqueig si és una app bloquejada
             if(AccessibilityScreenService.instance.isCurrentAppBlocked())
-                Funcions.showBlockAppScreen(MyFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
+                Funcions.showBlockAppScreen(ClientFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
         }
     }
 
@@ -141,6 +132,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
@@ -150,26 +142,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String title = "";
         String body = "";
-        Class activitatIntent = null;
+        Class<?> activitatClass = null;
+        Intent activitatIntent = null;
+        MyNotificationManager.Channels channel = MyNotificationManager.Channels.GENERAL;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
             Log.d(TAG, "Message data payload: " + messageMap);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
-                NotificationManager mNotificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                mChannel.enableLights(true);
-                mChannel.setLightColor(Color.RED);
-                mChannel.enableVibration(true);
-                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                mNotificationManager.createNotificationChannel(mChannel);
-            }
 
             if(!messageMap.containsKey("action")){
                 Log.e(TAG,"La consulta de firebase no té la clau 'action'");
@@ -183,7 +162,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             switch(action){
                 // ************* Accions del dispositiu fill *************
                 case "geolocActive":
-                    Funcions.runGeoLocWorker(MyFirebaseMessagingService.this);
+                    Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
@@ -194,21 +173,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         if(Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.setBlockDevice(true);
 
-                        if(!freeUse)
-                            Funcions.showBlockDeviceScreen(MyFirebaseMessagingService.this);
+                        if(!freeUse) {
+                            title = getString(R.string.phone_locked);
+                            body = getString(R.string.notif_phone_locked);
+                            channel = MyNotificationManager.Channels.BLOCK;
+                            Funcions.showBlockDeviceScreen(ClientFirebaseMessagingService.this);
+                        }
                     }
                     else {
                         if(Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.setBlockDevice(false);
 
-                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
+                        Funcions.endFreeUse(ClientFirebaseMessagingService.this);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
                         sendBlockDeviceTime(sharedPreferences);
                     }
                     break;
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
-                        Funcions.endFreeUse(MyFirebaseMessagingService.this);
+                        Funcions.endFreeUse(ClientFirebaseMessagingService.this);
 
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
@@ -233,7 +216,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     updateBlockedAppsList(messageMap);
 
                     title = getString(R.string.update_blocked_apps);
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
+                    channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "liveApp":
                     String s = messageMap.get("liveApp");
@@ -297,14 +281,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     String childNameInsApp = messageMap.get("childName");
                     title = getString(R.string.title_installed_app, childNameInsApp);
                     body = appNameInsApp;
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
                     break;
                 case "uninstalledApp":
                     String appNameUninsApp = messageMap.get("uninstalledApp");
                     String childNameUninsApp = messageMap.get("childName");
                     title = getString(R.string.title_uninstalled_app, childNameUninsApp);
                     body = appNameUninsApp;
-                    activitatIntent = BlockAppsActivity.class;
+                    activitatClass = BlockAppsActivity.class;
                     break;
                 case "geolocFills":
                     Intent intentGeoFill = new Intent("actualitzarLoc");
@@ -315,26 +299,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 case "chat":
                     switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {
                         case "0":
-                            //if the message contains data payload
-                            //It is a map of custom keyvalues
-                            //we can read it easily
-
-                            //then here we can use the title and body to build a notification
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                NotificationManager mNotificationManager =
-                                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                                mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                                mChannel.enableLights(true);
-                                mChannel.setLightColor(Color.RED);
-                                mChannel.enableVibration(true);
-                                mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                                mNotificationManager.createNotificationChannel(mChannel);
-                            }
-
-                            MyNotificationManager.getInstance(this).displayNotification(title, body, null);
+                            channel = MyNotificationManager.Channels.CHAT;
                             break;
                         case "1":  //Message with Chat
                             body = remoteMessage.getData().get("body");
@@ -346,21 +311,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 intent.putExtra("senderId", userID);
                                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                             } else {
-                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                    NotificationManager mNotificationManager =
-                                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                    int importance = NotificationManager.IMPORTANCE_HIGH;
-
-                                    NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, Constants.CHANNEL_NAME, importance);
-                                    mChannel.setDescription(Constants.CHANNEL_DESCRIPTION);
-                                    mChannel.enableLights(true);
-                                    mChannel.setLightColor(Color.RED);
-                                    mChannel.enableVibration(true);
-                                    mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                                    mNotificationManager.createNotificationChannel(mChannel);
-                                }
-
-                                MyNotificationManager.getInstance(this).displayNotificationChat(title, body, userID, myId);
+                                clientNotificationManager.displayNotificationChat(title, body, userID, myId);
                             }
                             break;
                         case "2":
@@ -393,17 +344,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                     meetingId
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-                            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                                    .setSmallIcon(R.drawable.adictic_nolletra)
-                                    .setContentTitle("Trucant")
-                                    .setContentText("Test test")
-                                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                                    .setContentIntent(pendingIntent)
-                                    .setAutoCancel(true);
-                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                            //notificationManager.cancelAll();
-                            notificationManager.notify(251, builder.build());
+                            clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT);
                             startActivity(intent);
                         } else if (type.equals("invitationResponse")) {
                             Intent intent = new Intent("invitationResponse");
@@ -425,7 +366,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            MyNotificationManager.getInstance(this).displayNotification(title, body, activitatIntent);
+            if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel);
+            else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel);
         }
     }
 
