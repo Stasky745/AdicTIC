@@ -6,20 +6,6 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/TV_permission_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/permisos"
-        android:textColor="@color/colorPrimary"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="TextContrastCheck" />
-
-    <TextView
         android:id="@+id/TV_permisos_desc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -29,7 +15,7 @@
         android:text="@string/permisos_desc"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TV_permission_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/BT_permisos_continuar"
@@ -48,7 +34,8 @@
         android:id="@+id/CL_usage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
@@ -56,273 +43,316 @@
 
         <TextView
             android:id="@+id/TV_permiso_usage"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/appusage_pem_title"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_usage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_usage_status"
-            android:layout_width="0dp"
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_usage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_usage"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_usage"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_usage"
-            tools:ignore="TextContrastCheck" />
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_usage"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_usage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_admin"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_usage">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_admin"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
             android:id="@+id/TV_permiso_admin"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/admin_pem_title"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_admin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_admin_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_admin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_admin"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_admin"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_accessibility"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_admin">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_accessibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_accessibility"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_accessibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
             android:id="@+id/TV_permiso_accessibility"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/accessibility_pem_title"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_accessibility"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_accessibility_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_accessibility"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_accessibility"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_accessibility"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_overlay"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_accessibility">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_overlay"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_overlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
             android:id="@+id/TV_permiso_overlay"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/overlay_title"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_overlay"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_overlay_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_overlay"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_overlay"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_overlay"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_location"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_overlay">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_location"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
             android:id="@+id/TV_permiso_location"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/perm_background_loc_title"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_location"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_location_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_location"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_location"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_battery_optimisation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_location">
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/SW_permiso_battery_optimisation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/GD_permiso_battery_optimisation"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_battery_optimisation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
         <TextView
             android:id="@+id/TV_permiso_battery_optimisation"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:text="@string/battery_optimisation"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_battery_optimisation"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_battery_optimisation_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_battery_optimisation"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_battery_optimisation"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_battery_optimisation"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CL_auto_start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_rectangle_received"
         app:layout_constraintEnd_toEndOf="@+id/TV_permisos_desc"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/TV_permisos_desc"
         app:layout_constraintTop_toBottomOf="@+id/CL_battery_optimisation">
 
-        <TextView
-            android:id="@+id/TV_permiso_auto_start"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/GD_permiso_auto_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <TextView
+            android:id="@+id/TV_permiso_auto_start"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/auto_start"
             android:textColor="@color/colorPrimary"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GD_permiso_auto_start"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TextContrastCheck" />
 
-        <TextView
-            android:id="@+id/TV_permiso_auto_start_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/desactivat"
-            android:textAlignment="textEnd"
-            android:textColor="@color/vermell"
-            app:layout_constraintBottom_toBottomOf="@+id/TV_permiso_auto_start"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/TV_permiso_auto_start"
-            app:layout_constraintTop_toTopOf="@+id/TV_permiso_auto_start"
-            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
