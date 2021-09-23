@@ -453,4 +453,7 @@
     <string name="notif_surpass_limit"><b>Has superado el límite diario acordado</b></string>
     <string name="notif_free_use">%s.<b> El dispositivo está bloqueado para que puedas realizar la actividad prevista sin tecnologías</b></string>
     <string name="notif_night_sleep">Descanso nocturno.<b> El dispositivo ha sido bloqueado para que puedas tener un sueño de calidad</b></string>
+
+    <string name="settings_android">Opciones de Android</string>
+    <string name="language_not_supported">Idioma no soportado</string>
 </resources>
