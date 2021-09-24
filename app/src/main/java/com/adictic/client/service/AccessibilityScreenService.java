@@ -251,10 +251,8 @@ public class AccessibilityScreenService extends AccessibilityService {
             boolean shouldDeviceBeBlocked = !freeUse && (blockDevice || activeEvents > 0 || horarisActius);
 
             // --- LIVE APP ---
-            if (liveApp && !shouldDeviceBeBlocked) {
-                Log.e(TAG, "Entra a liveapp");
+            if (liveApp && !shouldDeviceBeBlocked)
                 enviarLiveApp(currentPackage, currentAppName);
-            }
 
             // --- FREE USE ---
             // Si és FreeUse, tornem sense fer res
