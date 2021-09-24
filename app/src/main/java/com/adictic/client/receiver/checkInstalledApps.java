@@ -18,6 +18,9 @@ import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -29,13 +32,19 @@ public class checkInstalledApps extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         mTodoService = ((AdicticApp) context.getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(context);
+        String pkgName = intent.getDataString();
+        String regexPkgName = "[a-zA-Z]+\\.[a-zA-Z]+\\.[a-zA-Z]+";
+        if(!pkgName.matches("^"+regexPkgName+"$")){
+            Log.e(TAG, "PkgName no és vàlid: "+pkgName+", intentant extreure'l");
+            Pattern pattern = Pattern.compile(regexPkgName);
+            Matcher matcher = pattern.matcher(pkgName);
+            if (matcher.find()) pkgName = matcher.group();
+        }
         if(intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)){
-            String pkgName = intent.getDataString();
             Log.i(TAG,"S'intenta afegir l'app: " + pkgName);
             enviarAppInstall(context, pkgName);
         }
         else if(intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)){
-            String pkgName = intent.getDataString();
             Log.i(TAG,"S'intenta esborrar l'app: " + pkgName);
             enviarAppUninstall(pkgName);
         }
