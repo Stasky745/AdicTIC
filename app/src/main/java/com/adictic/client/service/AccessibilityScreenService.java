@@ -123,8 +123,6 @@ public class AccessibilityScreenService extends AccessibilityService {
     private boolean horarisActius = false;
     public void setHorarisActius(boolean b) { horarisActius = b; }
 
-    private Long lastAccessibilityEvent = 0L;
-
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -207,12 +205,6 @@ public class AccessibilityScreenService extends AccessibilityService {
                 event.getClassName() != null &&
                 !ignoreActivities.contains(event.getClassName().toString()) &&
                 isActivity(event)) {
-
-            long newTime = DateTime.now().getMillis();
-            if(newTime<(lastAccessibilityEvent+1000)){
-                return;
-            }
-            lastAccessibilityEvent = newTime;
 
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()) {
