@@ -27,6 +27,7 @@ public class EventWorker extends Worker {
             events = 1;
 
         AccessibilityScreenService.instance.setActiveEvents(events);
+        AccessibilityScreenService.instance.updateDeviceBlock();
 
         return Result.success();
     }
