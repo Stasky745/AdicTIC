@@ -114,7 +114,7 @@ public class MainParentFragment extends Fragment {
 
     private PieChart pieChart;
 
-    public MainParentFragment() {    }
+    public MainParentFragment() { }
 
     public static MainParentFragment newInstance(FillNom fill) {
         MainParentFragment mainParentFragment = new MainParentFragment();
@@ -141,6 +141,12 @@ public class MainParentFragment extends Fragment {
         root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
+
+        // LiveApp Broadcast
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
+            LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
+                    new IntentFilter("liveApp"));
+        }
 
         setButtons();
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
@@ -228,42 +234,47 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setButtons() {
+        // BlockAppsActivity
         View.OnClickListener blockApps = v -> {
             Intent i = new Intent(getActivity(), BlockAppsActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
-        Button BT_BlockApps = root.findViewById(R.id.BT_ConsultaPrivada);
+        Button BT_BlockApps = root.findViewById(R.id.BT_BlockApps);
         BT_BlockApps.setOnClickListener(blockApps);
 
+        // InformeActivity
         View.OnClickListener informe = v -> {
             Intent i = new Intent(getActivity(), InformeActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
-        Button BT_Informe = root.findViewById(R.id.BT_ContingutInformatiu);
+        Button BT_Informe = root.findViewById(R.id.BT_InformeMensual);
         BT_Informe.setOnClickListener(informe);
 
+        // DayUsageActivity
         View.OnClickListener appUsage = v -> {
             Intent i = new Intent(getActivity(), DayUsageActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
-        Button BT_appUse = root.findViewById(R.id.BT_faqs);
+        Button BT_appUse = root.findViewById(R.id.BT_UsApps);
         BT_appUse.setOnClickListener(appUsage);
 
+        // EventsActivity
         View.OnClickListener horaris = v -> {
             Intent i = new Intent(getActivity(), EventsActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         };
 
-        Button BT_horaris = root.findViewById(R.id.BT_oficines);
+        Button BT_horaris = root.findViewById(R.id.BT_Events);
         BT_horaris.setOnClickListener(horaris);
 
+        // GeoLocActivity
         View.OnClickListener geoloc = v -> {
             Intent i = new Intent(getActivity(), GeoLocActivity.class);
             i.putExtra("idChild", idChildSelected);
@@ -271,17 +282,12 @@ public class MainParentFragment extends Fragment {
         };
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             CL_Geoloc.setOnClickListener(geoloc);
-
-            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
-                LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
-                        new IntentFilter("liveApp"));
-            }
-        }
         else
             CL_Geoloc.setVisibility(View.GONE);
 
+        // Bloquejar dispositiu
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
@@ -320,13 +326,15 @@ public class MainParentFragment extends Fragment {
             });
         }
 
-        Button nitButton = root.findViewById(R.id.BT_nits);
+        // HorarisActivity
+        Button nitButton = root.findViewById(R.id.BT_Horaris);
         nitButton.setOnClickListener(v -> {
             Intent i = new Intent(getActivity(), HorarisActivity.class);
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         });
 
+        // FreeTime
         Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
@@ -365,53 +373,55 @@ public class MainParentFragment extends Fragment {
             });
         }
 
-        ConstraintLayout CL_info = root.findViewById(R.id.CL_info);
-        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_infoButtons);
+        // CL_Informes
+        ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
+        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
         CL_info.setOnClickListener(v -> {
             if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openResumUs);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_infoButtons.setVisibility(View.GONE);
 
-                ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
+                ImageView IV_openInfo = root.findViewById(R.id.IV_openResumUs);
                 IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
         /* Posar icona de desplegar en la posició correcta **/
         if (CL_infoButtons.getVisibility() == View.GONE) {
-            ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
+            ImageView IV_openInfo = root.findViewById(R.id.IV_openResumUs);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_open);
         } else {
-            ImageView IV_openInfo = root.findViewById(R.id.IV_openInfo);
+            ImageView IV_openInfo = root.findViewById(R.id.IV_openResumUs);
             IV_openInfo.setImageResource(R.drawable.ic_arrow_close);
         }
 
-        ConstraintLayout CL_limit = root.findViewById(R.id.CL_suport);
-        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_suportButtons);
+        // CL_Limits
+        ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
+        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
         CL_limit.setOnClickListener(v -> {
             if (CL_limitButtons.getVisibility() == View.GONE) {
                 CL_limitButtons.setVisibility(View.VISIBLE);
 
-                ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
                 IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
             } else {
                 CL_limitButtons.setVisibility(View.GONE);
 
-                ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
+                ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
                 IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
             }
         });
 
         /* Posar icona de desplegar en la posició correcta **/
         if (CL_limitButtons.getVisibility() == View.GONE) {
-            ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
+            ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_open);
         } else {
-            ImageView IV_openLimit = root.findViewById(R.id.IV_openSuport);
+            ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
     }
