@@ -595,17 +595,4 @@ public class Funcions {
             spannableString = new SpannableString(string);
         return HtmlCompat.fromHtml(spannableString.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
-
-    public static <T> void retryFailedCall(Callback<T> callback, Call<T> call, int delayMillis){
-        wait(delayMillis);
-        call.clone().enqueue(callback);
-    }
-
-    public static void wait(int delayMillis){
-        try {
-            Thread.sleep(delayMillis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
 }

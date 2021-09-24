@@ -71,9 +71,13 @@ public class BlockAppsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
-        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+            Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
+        else
+            Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.apps_blocked));
 
         assert sharedPreferences != null;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
@@ -239,6 +243,10 @@ public class BlockAppsActivity extends AppCompatActivity {
                     blockAppList = new ArrayList<>(response.body());
 
                     blockAppList.removeIf(obj -> obj.pkgName.equals(getPackageName()));
+                    if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)){
+                        //Nomes mostrar apps bloquejades.
+                        blockAppList.removeIf(obj -> obj.appTime<0);
+                    }
                     Collections.sort(blockAppList);
                     RVadapter = new RV_Adapter(BlockAppsActivity.this, blockAppList);
 
