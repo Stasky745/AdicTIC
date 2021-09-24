@@ -54,7 +54,6 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,19 +68,16 @@ public class MainParentFragment extends Fragment {
 
     private final static String TAG = "MainParentFragment";
 
-    private MainActivityAbstractClass parentActivity;
     private Api mTodoService;
     private long idChildSelected = -1;
     private View root;
-    private SharedPreferences sharedPreferences;
     private FillNom fill;
     private boolean isTutor = false;
 
     // ---------- CACHE -----------
-    private List<GeneralUsage> dadesAvui = null;
     private long ultimaActualitzacioDades = 0L;
     private long totalUsageTime = 0;
-    private Map<String, AppUsage> appUsageMap = new HashMap<>();
+    private final Map<String, AppUsage> appUsageMap = new HashMap<>();
 
     private ImageView IV_liveIcon;
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
@@ -125,9 +121,8 @@ public class MainParentFragment extends Fragment {
 
         getBundle();
 
-        parentActivity = (MainActivityAbstractClass) getActivity();
-        mTodoService = ((App) Objects.requireNonNull(parentActivity).getApplicationContext()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        mTodoService = ((App) requireActivity().getApplicationContext()).getAPI();
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
         assert sharedPreferences != null;
 
         isTutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false);
@@ -144,16 +139,8 @@ public class MainParentFragment extends Fragment {
         }
 
         setButtons();
-        setGraph();
 
         return root;
-    }
-
-    private void setGraph() {
-        if(isTutor)
-            getStats();
-        else
-            makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
     }
 
     private void getBundle() {
@@ -171,10 +158,16 @@ public class MainParentFragment extends Fragment {
 
         setLiveApp();
 
-        long now = System.currentTimeMillis();
+        // ----- Crear gràfiques -----
+        // Fa +5 minuts des que s'han agafat dades?
+        boolean actualitzarDades = System.currentTimeMillis() - ultimaActualitzacioDades > 1000*60*5;
 
-        if(now - ultimaActualitzacioDades > 1000*60*5)
-            setGraph();
+        if(actualitzarDades){
+            if(isTutor)
+                getUsageFromServer();
+            else
+                makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
+        }
     }
 
     private void setLiveApp() {
@@ -423,16 +416,6 @@ public class MainParentFragment extends Fragment {
         }
     }
 
-    private void getStats() {
-        long now = System.currentTimeMillis();
-
-        // Si fa més de 5 minuts que s'ha actualitzat, agafem dades un altre cop
-        if(now - ultimaActualitzacioDades > 1000*60*5)
-            getUsageFromServer();
-        else
-            setUsageMenu();
-    }
-
     private void getUsageFromServer() {
         String dataAvui = Funcions.date2String(Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.MONTH) + 1, Calendar.getInstance().get(Calendar.YEAR));
         Call<Collection<GeneralUsage>> call = mTodoService.getGenericAppUsage(idChildSelected, dataAvui, dataAvui);
@@ -444,7 +427,6 @@ public class MainParentFragment extends Fragment {
                     List<GeneralUsage> collection = new ArrayList<>(response.body());
                     Funcions.canviarMesosDeServidor(collection);
                     makeGraph(collection);
-                    ultimaActualitzacioDades = System.currentTimeMillis();
                 } else {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
@@ -459,16 +441,16 @@ public class MainParentFragment extends Fragment {
     }
 
     private void makeGraph(List<GeneralUsage> genericAppUsage) {
+        ultimaActualitzacioDades = System.currentTimeMillis();
+
         // Si l'ús diari està buit o és inferior a 1 minut, tot a GONE
         if (genericAppUsage.isEmpty() || genericAppUsage.get(0) == null || genericAppUsage.get(0).totalTime < 1000 * 60) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
-            dadesAvui = genericAppUsage;
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
 
-            dadesAvui = genericAppUsage;
             totalUsageTime = genericAppUsage.get(0).totalTime;
 
             GeneralUsage gu = genericAppUsage.stream().findFirst().orElse(null);
