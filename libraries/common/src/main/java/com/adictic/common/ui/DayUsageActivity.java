@@ -212,8 +212,10 @@ public class DayUsageActivity extends AppCompatActivity {
                     if(au.timesOpened != null)
                         mapObject.timesOpened = mapObject.timesOpened != null ? mapObject.timesOpened + au.timesOpened : au.timesOpened;
                 }
-                else
+                else {
                     map.put(au.app.pkgName, au);
+                    totalTime += au.totalTime;
+                }
             }
         }
 
@@ -355,7 +357,7 @@ public class DayUsageActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<YearEntity>>() {
             @Override
             public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
@@ -379,7 +381,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<List<YearEntity>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 showError();
             }
         });
