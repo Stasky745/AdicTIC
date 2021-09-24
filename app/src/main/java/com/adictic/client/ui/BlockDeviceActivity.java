@@ -34,6 +34,7 @@ import retrofit2.Response;
 
 public class BlockDeviceActivity extends AppCompatActivity {
 
+    public static BlockDeviceActivity instance;
     private int retryCountAccessDisp;
     private final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
@@ -48,6 +49,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        instance = this;
         setContentView(R.layout.block_device_layout);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,

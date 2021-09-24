@@ -11,6 +11,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -70,6 +71,8 @@ public class ForegroundService extends Service {
     private Location mLocation;
     private FusedLocationProviderClient mFusedLocationClient;
 
+    private BroadcastReceiver checkInstalledAppsReceiver = null;
+
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         actiu = false;
@@ -105,7 +108,8 @@ public class ForegroundService extends Service {
         intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         intentFilter.addDataScheme("package");
-        registerReceiver(new checkInstalledApps(), intentFilter);
+        checkInstalledAppsReceiver = new checkInstalledApps();
+        registerReceiver(checkInstalledAppsReceiver, intentFilter);
 
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
@@ -130,19 +134,13 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
 
-        String action = intent != null && intent.getAction() != null ? intent.getAction() : "-1";
+        if(checkInstalledAppsReceiver != null)
+            unregisterReceiver(checkInstalledAppsReceiver);
 
-        switch (action) {
-            case Constants.FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN:
-                showBlockDeviceScreen();
-                break;
-            default:
-                wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
-                wakeLock.acquire();
+        wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
+        wakeLock.acquire();
 
-                startLocationReceiver();
-                break;
-        }
+        startLocationReceiver();
 
         return START_STICKY;
     }
