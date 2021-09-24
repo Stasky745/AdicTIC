@@ -977,7 +977,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static boolean accessibilityServiceOn(){
         boolean res = AccessibilityScreenService.instance != null;
 
-
+        if(!res){
+            //TODO: Crida al servidor per avisar pare
+        }
 
         return res;
     }
