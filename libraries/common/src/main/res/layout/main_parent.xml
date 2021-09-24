@@ -140,7 +140,7 @@
             </com.github.mikephil.charting.charts.PieChart>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_info"
+                android:id="@+id/CL_resumUs"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="32dp"
@@ -152,17 +152,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/TV_PieApp">
 
                 <ImageView
-                    android:id="@+id/IV_CL_info"
+                    android:id="@+id/IV_CL_Resum_us"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_info"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_ResumUs"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/TV_CL_info"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_ResumUs"
                     app:srcCompat="@drawable/ic_informe" />
 
                 <TextView
-                    android:id="@+id/TV_CL_info"
+                    android:id="@+id/TV_CL_ResumUs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -174,31 +174,31 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/IV_openInfo"
-                    app:layout_constraintStart_toEndOf="@+id/IV_CL_info"
+                    app:layout_constraintEnd_toStartOf="@+id/IV_openResumUs"
+                    app:layout_constraintStart_toEndOf="@+id/IV_CL_Resum_us"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/IV_openInfo"
+                    android:id="@+id/IV_openResumUs"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_info"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_ResumUs"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/TV_CL_info"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_ResumUs"
                     app:srcCompat="@drawable/ic_arrow_open" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_infoButtons"
+                android:id="@+id/CL_ResumUsButons"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layout_constraintEnd_toEndOf="@+id/CL_info"
-                app:layout_constraintStart_toStartOf="@+id/CL_info"
-                app:layout_constraintTop_toBottomOf="@id/CL_info">
+                app:layout_constraintEnd_toEndOf="@+id/CL_resumUs"
+                app:layout_constraintStart_toStartOf="@+id/CL_resumUs"
+                app:layout_constraintTop_toBottomOf="@id/CL_resumUs">
 
                 <Button
-                    android:id="@+id/BT_faqs"
+                    android:id="@+id/BT_UsApps"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -208,12 +208,12 @@
                     android:text="@string/app_usage"
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
-                    app:layout_constraintEnd_toEndOf="@+id/BT_ContingutInformatiu"
-                    app:layout_constraintStart_toStartOf="@+id/BT_ContingutInformatiu"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_ContingutInformatiu" />
+                    app:layout_constraintEnd_toEndOf="@+id/BT_InformeMensual"
+                    app:layout_constraintStart_toStartOf="@+id/BT_InformeMensual"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_InformeMensual" />
 
                 <Button
-                    android:id="@+id/BT_ContingutInformatiu"
+                    android:id="@+id/BT_InformeMensual"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -229,7 +229,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_suport"
+                android:id="@+id/CL_LimitsApps"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="32dp"
@@ -238,20 +238,20 @@
                 android:background="@color/colorBackgroundGrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/CL_infoButtons">
+                app:layout_constraintTop_toBottomOf="@id/CL_ResumUsButons">
 
                 <ImageView
-                    android:id="@+id/IV_CL_suport"
+                    android:id="@+id/IV_CL_LimitsApps"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_suport"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_LimitsApps"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/TV_CL_suport"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_LimitsApps"
                     app:srcCompat="@drawable/ic_horaris" />
 
                 <TextView
-                    android:id="@+id/TV_CL_suport"
+                    android:id="@+id/TV_CL_LimitsApps"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -263,32 +263,32 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/IV_openSuport"
-                    app:layout_constraintStart_toEndOf="@+id/IV_CL_suport"
+                    app:layout_constraintEnd_toStartOf="@+id/IV_openLimitsApps"
+                    app:layout_constraintStart_toEndOf="@+id/IV_CL_LimitsApps"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
-                    android:id="@+id/IV_openSuport"
+                    android:id="@+id/IV_openLimitsApps"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_suport"
+                    app:layout_constraintBottom_toBottomOf="@+id/TV_CL_LimitsApps"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/TV_CL_suport"
+                    app:layout_constraintTop_toTopOf="@+id/TV_CL_LimitsApps"
                     app:srcCompat="@drawable/ic_arrow_open" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/CL_suportButtons"
+                android:id="@+id/CL_LimitsAppsButtons"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layout_constraintEnd_toEndOf="@id/CL_suport"
-                app:layout_constraintStart_toStartOf="@id/CL_suport"
-                app:layout_constraintTop_toBottomOf="@id/CL_suport">
+                app:layout_constraintEnd_toEndOf="@id/CL_LimitsApps"
+                app:layout_constraintStart_toStartOf="@id/CL_LimitsApps"
+                app:layout_constraintTop_toBottomOf="@id/CL_LimitsApps">
 
                 <Button
-                    android:id="@+id/BT_ConsultaPrivada"
+                    android:id="@+id/BT_BlockApps"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -303,7 +303,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
-                    android:id="@+id/BT_oficines"
+                    android:id="@+id/BT_Events"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -315,10 +315,10 @@
                     android:textAllCaps="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_ConsultaPrivada" />
+                    app:layout_constraintTop_toBottomOf="@+id/BT_BlockApps" />
 
                 <Button
-                    android:id="@+id/BT_nits"
+                    android:id="@+id/BT_Horaris"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -328,9 +328,9 @@
                     android:text="@string/descans_nocturn"
                     android:textAlignment="textStart"
                     android:textAllCaps="false"
-                    app:layout_constraintEnd_toEndOf="@+id/BT_oficines"
-                    app:layout_constraintStart_toStartOf="@+id/BT_oficines"
-                    app:layout_constraintTop_toBottomOf="@+id/BT_oficines" />
+                    app:layout_constraintEnd_toEndOf="@+id/BT_Events"
+                    app:layout_constraintStart_toStartOf="@+id/BT_Events"
+                    app:layout_constraintTop_toBottomOf="@+id/BT_Events" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -347,7 +347,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/CL_suportButtons">
+                app:layout_constraintTop_toBottomOf="@id/CL_LimitsAppsButtons">
 
                 <ImageView
                     android:id="@+id/IV_CL_geoloc"
