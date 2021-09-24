@@ -33,7 +33,11 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-            "Agafa bé les dates a l'apartat d'agafar informació d'ús"
+            "Agafa bé les dates a l'apartat d'agafar informació d'ús",
+            "Ensenya temps total a l'apartat d'agafar informació d'ús",
+            "Ja no entra en bucle quan surt la pàgina de bloqueig de dispositiu",
+            "Ara ja es tanca bé la pàgina de bloqueig de dispositiu",
+            "Les dades entre l'apartat d'agafar informació d'ús i la gràfica inicial ja són iguals"
     };
 
     public static String[] changes = {
