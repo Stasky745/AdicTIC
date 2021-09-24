@@ -1,4 +1,4 @@
-package com.adictic.client.workers.horaris_workers;
+package com.adictic.client.workers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

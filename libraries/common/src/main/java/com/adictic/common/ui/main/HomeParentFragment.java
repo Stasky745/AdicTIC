@@ -24,12 +24,12 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class HomeParentFragment extends Fragment {
-    private SharedPreferences sharedPreferences;
     private MainActivityAbstractClass parentActivity;
     private View root;
     private TabFillsAdapter adapter;
@@ -44,51 +44,49 @@ public class HomeParentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        assert sharedPreferences != null;
+
         parentActivity = (MainActivityAbstractClass) requireActivity();
 
-        if(parentActivity.getHomeParent_childs()!=null && !parentActivity.getHomeParent_childs().isEmpty()) setupTabLayout(parentActivity.getHomeParent_childs());
-        if(parentActivity.getHomeParent_childs()==null || (parentActivity.getHomeParent_lastChildsUpdate()+ parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
-            Api mTodoService = ((App) requireActivity().getApplicationContext()).getAPI();
+        Api mTodoService = ((App) requireActivity().getApplicationContext()).getAPI();
 
-            long idTutor;
-            Call<Collection<FillNom>> call;
+        long idTutor;
+        Call<Collection<FillNom>> call;
 
-            //Si es tutor
-            if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
-                idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-                call = mTodoService.getUserChilds(idTutor);
-            }
-            else {
-                idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
-                long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-                call = mTodoService.getChildInfo(idTutor,idChild);
-            }
+        //Si es tutor
+        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
+            idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            call = mTodoService.getUserChilds(idTutor);
+        }
+        else {
+            idTutor = sharedPreferences.getLong(Constants.SHARED_PREFS_IDTUTOR, -1);
+            long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            call = mTodoService.getChildInfo(idTutor,idChild);
+        }
 
-            call.enqueue(new Callback<Collection<FillNom>>() {
-                @Override
-                public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
-                    super.onResponse(call, response);
-                    if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
-                        parentActivity.setHomeParent_childs(new ArrayList<>(response.body()));
-                        parentActivity.setHomeParent_lastChildsUpdate(Calendar.getInstance().getTimeInMillis());
-                        setupTabLayout(parentActivity.getHomeParent_childs());
-                        TextView error = root.findViewById(R.id.TV_noFills);
-                        error.setVisibility(View.GONE);
-                    } else {
-                        TextView error = root.findViewById(R.id.TV_noFills);
-                        error.setVisibility(View.VISIBLE);
-                    }
-                }
+        call.enqueue(new Callback<Collection<FillNom>>() {
+            @Override
+            public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
+                super.onResponse(call, response);
+                if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
+                    TextView error = root.findViewById(R.id.TV_noFills);
+                    error.setVisibility(View.GONE);
 
-                @Override
-                public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                    setupTabLayout(new ArrayList<>(response.body()));
+                } else {
                     TextView error = root.findViewById(R.id.TV_noFills);
                     error.setVisibility(View.VISIBLE);
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+                TextView error = root.findViewById(R.id.TV_noFills);
+                error.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 //    @Override
