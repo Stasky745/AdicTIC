@@ -78,8 +78,14 @@ public class AccessibilityScreenService extends AccessibilityService {
     private int ultimCopAcceditApp = 0;
 
     private List<String> blockedApps = new ArrayList<>();
-    public void addBlockedApp(String app) { blockedApps.add(app); }
-    public void setBlockedApps(List<String> list) { blockedApps = list; }
+    public void addBlockedApp(String app) {
+        blockedApps.add(app);
+        changedBlockedApps = true;
+    }
+    public void setBlockedApps(List<String> list) {
+        blockedApps = list;
+        changedBlockedApps = true;
+    }
     public boolean isCurrentAppBlocked() {
         return currentPackage != null && blockedApps.contains(currentPackage);
     }
