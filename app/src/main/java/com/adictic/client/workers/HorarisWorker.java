@@ -23,6 +23,7 @@ public class HorarisWorker extends Worker {
 
         boolean start = getInputData().getBoolean("start", false);
         AccessibilityScreenService.instance.setHorarisActius(start);
+        AccessibilityScreenService.instance.updateDeviceBlock();
 
         return Result.success();
     }

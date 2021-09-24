@@ -2,8 +2,6 @@ package com.adictic.client.service;
 
 import static android.content.Intent.ACTION_SCREEN_OFF;
 import static android.content.Intent.ACTION_SCREEN_ON;
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -20,6 +18,8 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -27,25 +27,24 @@ import androidx.work.WorkManager;
 
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
-import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.client.entity.BlockedApp;
-import com.adictic.client.workers.block_apps.BlockSingleAppWorker;
+import com.adictic.client.workers.BlockSingleAppWorker;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -65,6 +64,11 @@ public class AccessibilityScreenService extends AccessibilityService {
     private List<BlockedApp> appsLimitades = new ArrayList<>();
     public void setAppsLimitades(List<BlockedApp> list) { appsLimitades = list; }
     public void putAppLimitada(BlockedApp blockedApp) { appsLimitades.add(blockedApp); }
+    public void removeAppLimitada(String pkgName){
+        appsLimitades.removeAll(appsLimitades.stream()
+                .filter(blockedApp -> blockedApp.pkgName.equals(pkgName))
+                .collect(Collectors.toList()));
+    }
 
     private Map<String, Integer> tempsAppsLimitades = new HashMap<>();
     public void setTempsAppsLimitades (Map<String, Integer> map) { tempsAppsLimitades = map; }
@@ -89,6 +93,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
             "BlockDeviceActivity",
+            "com.adictic.client.ui.BlockDeviceActivity",
             "com.android.contacts.activities.PeopleActivity"
     ));
 
@@ -146,10 +151,19 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
     }
 
-    public boolean isDeviceBlocked(){
-        if(freeUse)
-            return false;
-        return horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked();
+    public void updateDeviceBlock(){
+        KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
+        if(myKM.isDeviceLocked())
+            return;
+
+        boolean deviceBlocked = !freeUse && (horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked());
+
+        if(deviceBlocked) {
+            if(BlockDeviceActivity.instance == null || !BlockDeviceActivity.instance.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED))
+                Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
+        }
+        else
+            LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_BLOCK_SCREEN));
     }
 
     private void fetchDades() {
@@ -172,7 +186,8 @@ public class AccessibilityScreenService extends AccessibilityService {
                     super.onResponse(call, response);
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
-                        Funcions.endFreeUse(getApplicationContext());
+                        if(Funcions.accessibilityServiceOn())
+                            AccessibilityScreenService.instance.updateDeviceBlock();
                     }
                 }
 
@@ -243,7 +258,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             // --- BLOCK DEVICE ---
             String className = event.getClassName().toString();
             if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className)) {
-                showBlockedDeviceScreen();
+                Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
                 return;
             }
 
@@ -426,14 +441,6 @@ public class AccessibilityScreenService extends AccessibilityService {
                 }
             });
         }
-    }
-
-    private void showBlockedDeviceScreen(){
-        Log.d(TAG,"Creant Intent cap a BlockAppActivity");
-        Intent lockIntent = new Intent(AccessibilityScreenService.this, BlockDeviceActivity.class);
-        lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
-        AccessibilityScreenService.this.startActivity(lockIntent);
     }
 
 }
