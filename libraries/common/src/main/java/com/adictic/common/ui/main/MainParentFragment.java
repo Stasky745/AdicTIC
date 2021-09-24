@@ -56,6 +56,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -74,39 +75,30 @@ public class MainParentFragment extends Fragment {
     private View root;
     private SharedPreferences sharedPreferences;
     private FillNom fill;
+    private boolean isTutor = false;
+
+    // ---------- CACHE -----------
+    private List<GeneralUsage> dadesAvui = null;
+    private long ultimaActualitzacioDades = 0L;
+    private long totalUsageTime = 0;
+    private Map<String, AppUsage> appUsageMap = new HashMap<>();
 
     private ImageView IV_liveIcon;
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-
             if(intent.getStringExtra("idChild").equals(String.valueOf(idChildSelected))) {
                 String pkgName = intent.getStringExtra("pkgName");
-                try {
-                    Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
-                    String appName = intent.getStringExtra("appName");
-                    currentApp.setText(appName);
-
-                    if(!pkgName.equals("-1")) {
-                        LiveApp liveApp = new LiveApp();
-                        liveApp.pkgName = pkgName;
-                        liveApp.appName = appName;
-                        liveApp.time = Long.parseLong(intent.getStringExtra("time"));
-
-                        parentActivity.mainParent_lastAppUsed.put(idChildSelected, liveApp);
-                        parentActivity.mainParent_lastAppUsedUpdate.put(idChildSelected, Calendar.getInstance().getTimeInMillis());
+                if(pkgName.equals("-1"))
+                    setLastLiveApp();
+                else {
+                    TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+                    try {
+                        Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                        String appName = intent.getStringExtra("appName");
+                        currentApp.setText(appName);
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
                     }
-                    else {
-                        LiveApp liveApp = parentActivity.mainParent_lastAppUsed.get(idChildSelected);
-                        if(liveApp != null) {
-                            liveApp.time = Long.parseLong(intent.getStringExtra("time"));
-                            parentActivity.mainParent_lastAppUsed.put(idChildSelected, liveApp);
-                        }
-                        setLastLiveApp();
-                    }
-
-                } catch (IllegalStateException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -136,6 +128,9 @@ public class MainParentFragment extends Fragment {
         parentActivity = (MainActivityAbstractClass) getActivity();
         mTodoService = ((App) Objects.requireNonNull(parentActivity).getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        assert sharedPreferences != null;
+
+        isTutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false);
 
         root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
         root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
@@ -143,18 +138,22 @@ public class MainParentFragment extends Fragment {
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
 
         // LiveApp Broadcast
-        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
+        if (isTutor) {
             LocalBroadcastManager.getInstance(root.getContext()).registerReceiver(messageReceiver,
                     new IntentFilter("liveApp"));
         }
 
         setButtons();
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        setGraph();
+
+        return root;
+    }
+
+    private void setGraph() {
+        if(isTutor)
             getStats();
         else
             makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
-
-        return root;
     }
 
     private void getBundle() {
@@ -170,11 +169,19 @@ public class MainParentFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
-            Funcions.askChildForLiveApp(requireContext(), idChildSelected, true);
+        setLiveApp();
 
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        long now = System.currentTimeMillis();
+
+        if(now - ultimaActualitzacioDades > 1000*60*5)
+            setGraph();
+    }
+
+    private void setLiveApp() {
+        if(isTutor) {
+            Funcions.askChildForLiveApp(requireContext(), idChildSelected, true);
             setLastLiveApp();
+        }
         else{
             IV_liveIcon.setVisibility(View.GONE);
             TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
@@ -183,29 +190,20 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setLastLiveApp(){
-        if(parentActivity.mainParent_lastAppUsed.containsKey(idChildSelected) && parentActivity.mainParent_lastAppUsed.get(idChildSelected) != null)
-            setLiveAppMenu(parentActivity.mainParent_lastAppUsed.get(idChildSelected));
-        //Fer-ho si fa més de 5 minuts que no hem actualitzat.
-        if(!parentActivity.mainParent_lastAppUsedUpdate.containsKey(idChildSelected) ||
-                (parentActivity.mainParent_lastAppUsedUpdate.get(idChildSelected)+parentActivity.tempsPerActuLiveApp)<Calendar.getInstance().getTimeInMillis()) {
-            Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
-            call.enqueue(new Callback<LiveApp>() {
-                @Override
-                public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
-                    super.onResponse(call, response);
-                    if (response.isSuccessful() && response.body() != null) {
-                        parentActivity.mainParent_lastAppUsed.put(idChildSelected,response.body());
-                        parentActivity.mainParent_lastAppUsedUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
-                        setLiveAppMenu(response.body());
-                    }
-                }
+        Call<LiveApp> call = mTodoService.getLastAppUsed(idChildSelected);
+        call.enqueue(new Callback<LiveApp>() {
+            @Override
+            public void onResponse(@NonNull Call<LiveApp> call, @NonNull Response<LiveApp> response) {
+                super.onResponse(call, response);
+                if (response.isSuccessful() && response.body() != null)
+                    setLiveAppMenu(response.body());
+            }
 
-                @Override
-                public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                }
-            });
-        }
+            @Override
+            public void onFailure(@NonNull Call<LiveApp> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+            }
+        });
     }
 
     private void setLiveAppMenu(LiveApp liveApp){
@@ -282,7 +280,7 @@ public class MainParentFragment extends Fragment {
         };
 
         ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        if(isTutor)
             CL_Geoloc.setOnClickListener(geoloc);
         else
             CL_Geoloc.setVisibility(View.GONE);
@@ -291,9 +289,8 @@ public class MainParentFragment extends Fragment {
         Button blockButton = root.findViewById(R.id.BT_BlockDevice);
         blockButton.setVisibility(View.GONE);
 
-        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+        if (isTutor) {
             blockButton.setVisibility(View.VISIBLE);
-
 
             if(fill != null && fill.blocked)
                 blockButton.setText(getString(R.string.unblock_device));
@@ -337,7 +334,7 @@ public class MainParentFragment extends Fragment {
         // FreeTime
         Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
         BT_FreeTime.setVisibility(View.GONE);
-        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+        if (isTutor) {
             BT_FreeTime.setVisibility(View.VISIBLE);
 
             if(fill != null && fill.freeuse) {
@@ -427,19 +424,13 @@ public class MainParentFragment extends Fragment {
     }
 
     private void getStats() {
+        long now = System.currentTimeMillis();
 
-        if (parentActivity.mainParent_usageChart.containsKey(idChildSelected) && Objects.requireNonNull(parentActivity.mainParent_usageChart.get(idChildSelected)).isEmpty()) {
-            root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
-            root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
-        }
-        else if(parentActivity.mainParent_usageChart.containsKey(idChildSelected))
-            setUsageMenu();
-
-        if(parentActivity.mainParent_usageChart.get(idChildSelected) == null || Objects.requireNonNull(parentActivity.mainParent_usageChart.get(idChildSelected)).isEmpty() ||
-                !parentActivity.mainParent_lastUsageChartUpdate.containsKey(idChildSelected) ||
-                (parentActivity.mainParent_lastUsageChartUpdate.get(idChildSelected)+parentActivity.tempsPerActu)<Calendar.getInstance().getTimeInMillis()) {
+        // Si fa més de 5 minuts que s'ha actualitzat, agafem dades un altre cop
+        if(now - ultimaActualitzacioDades > 1000*60*5)
             getUsageFromServer();
-        }
+        else
+            setUsageMenu();
     }
 
     private void getUsageFromServer() {
@@ -448,12 +439,12 @@ public class MainParentFragment extends Fragment {
         call.enqueue(new Callback<Collection<GeneralUsage>>() {
             @Override
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
-                    Collection<GeneralUsage> collection = response.body();
+                    List<GeneralUsage> collection = new ArrayList<>(response.body());
                     Funcions.canviarMesosDeServidor(collection);
                     makeGraph(collection);
-                    parentActivity.mainParent_lastUsageChartUpdate.put(idChildSelected,Calendar.getInstance().getTimeInMillis());
+                    ultimaActualitzacioDades = System.currentTimeMillis();
                 } else {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 }
@@ -461,42 +452,46 @@ public class MainParentFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void makeGraph(Collection<GeneralUsage> genericAppUsage) {
-        if (genericAppUsage.isEmpty()) {
+    private void makeGraph(List<GeneralUsage> genericAppUsage) {
+        // Si l'ús diari està buit o és inferior a 1 minut, tot a GONE
+        if (genericAppUsage.isEmpty() || genericAppUsage.get(0) == null || genericAppUsage.get(0).totalTime < 1000 * 60) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
-            parentActivity.mainParent_usageChart.put(idChildSelected, Collections.emptyMap());
+            dadesAvui = genericAppUsage;
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
 
-            Map<String, AppUsage> mapUsage = new HashMap<>();
+            dadesAvui = genericAppUsage;
+            totalUsageTime = genericAppUsage.get(0).totalTime;
 
             GeneralUsage gu = genericAppUsage.stream().findFirst().orElse(null);
-            if(gu != null && gu.totalTime > 0) {
+            if(gu.totalTime > 0) {
                 for (AppUsage au : gu.usage) {
-                    if (mapUsage.containsKey(au.app.pkgName))
-                        Objects.requireNonNull(mapUsage.get(au.app.pkgName)).totalTime += au.totalTime;
+                    if (appUsageMap.containsKey(au.app.pkgName))
+                        Objects.requireNonNull(appUsageMap.get(au.app.pkgName)).totalTime += au.totalTime;
                     else
-                        mapUsage.put(au.app.pkgName, au);
+                        appUsageMap.put(au.app.pkgName, au);
                 }
             }
-
-            parentActivity.mainParent_usageChart.put(idChildSelected,mapUsage);
-            parentActivity.mainParent_totalUsageTime.put(idChildSelected,gu.totalTime);
+            else{
+                root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
+                root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+            }
+            
             setUsageMenu();
         }
     }
 
     private void setUsageMenu(){
-        setMascot(parentActivity.mainParent_totalUsageTime.get(idChildSelected));
-        setPieChart(parentActivity.mainParent_usageChart.get(idChildSelected), parentActivity.mainParent_totalUsageTime.get(idChildSelected));
+        setMascot(totalUsageTime);
+        setPieChart(appUsageMap, totalUsageTime);
     }
 
     private void setMascot(long totalUsageTime) {
@@ -606,7 +601,7 @@ public class MainParentFragment extends Fragment {
 
     @Override
     protected void finalize() throws Throwable {
-        if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        if (isTutor)
             Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
         super.finalize();
     }
