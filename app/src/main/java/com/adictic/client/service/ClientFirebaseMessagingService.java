@@ -168,46 +168,49 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
 
-                        boolean freeUse = !Funcions.accessibilityServiceOn() ? sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false) : AccessibilityScreenService.instance.getFreeUse();
-
-                        if(Funcions.accessibilityServiceOn())
+                        if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setBlockDevice(true);
+                            AccessibilityScreenService.instance.updateDeviceBlock();
 
-                        if(!freeUse) {
-                            title = getString(R.string.phone_locked);
-                            body = getString(R.string.notif_phone_locked);
-                            channel = MyNotificationManager.Channels.BLOCK;
-                            Funcions.showBlockDeviceScreen(ClientFirebaseMessagingService.this);
+                            boolean freeUse = AccessibilityScreenService.instance.getFreeUse();
+
+                            if(!freeUse) {
+                                title = getString(R.string.phone_locked);
+                                body = getString(R.string.notif_phone_locked);
+                                channel = MyNotificationManager.Channels.BLOCK;
+                            }
                         }
                     }
                     else {
-                        if(Funcions.accessibilityServiceOn())
+                        if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setBlockDevice(false);
+                            AccessibilityScreenService.instance.updateDeviceBlock();
+                        }
 
-                        Funcions.endFreeUse(ClientFirebaseMessagingService.this);
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
                         sendBlockDeviceTime(sharedPreferences);
                     }
                     break;
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
-                        Funcions.endFreeUse(ClientFirebaseMessagingService.this);
-
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
 
-                        if(Funcions.accessibilityServiceOn())
+                        if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setFreeUse(true);
+                            AccessibilityScreenService.instance.updateDeviceBlock();
+                        }
 
                         title = getString(R.string.free_use_activation);
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
-                        if(Funcions.accessibilityServiceOn())
+                        if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setFreeUse(false);
+                            AccessibilityScreenService.instance.updateDeviceBlock();
+                        }
 
                         sendFreeUseTime(sharedPreferences);
-                        Funcions.endFreeUse(getApplicationContext());
 
                         title = getString(R.string.free_use_deactivation);
                     }
@@ -228,25 +231,21 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
-                    if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
-                            DateTime.now().getMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
-
+                    if(active) {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                        if(!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
+                        if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.enviarLiveApp();
 
                         Funcions.startAppUsageWorker24h(getApplicationContext());
                         Funcions.sendAppUsage(getApplicationContext());
 
-                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, DateTime.now().getMillis()).apply();
-                    }
-
-                    long now = Calendar.getInstance().getTimeInMillis();
-                    long minute = 1000*60;
-                    if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                        Funcions.runGeoLocWorkerOnce(getApplicationContext());
-                        updateGeoloc = now;
+                        long now = System.currentTimeMillis();
+                        long minute = 1000*60;
+                        if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                            Funcions.runGeoLocWorkerOnce(getApplicationContext());
+                            updateGeoloc = now;
+                        }
                     }
 
                     Log.d(TAG, "Token liveApp: " + s);

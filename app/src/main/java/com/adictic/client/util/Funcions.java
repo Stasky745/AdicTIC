@@ -1,5 +1,6 @@
 package com.adictic.client.util;
 
+import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 import android.Manifest;
@@ -34,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.BackoffPolicy;
 import androidx.work.Data;
@@ -49,15 +49,15 @@ import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
-import com.adictic.client.service.ForegroundService;
 import com.adictic.client.ui.BlockAppActivity;
+import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.client.workers.UpdateTokenWorker;
-import com.adictic.client.workers.horaris_workers.HorarisEventsWorkerManager;
+import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
@@ -322,9 +322,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
             else if(endTimeDelay > 0){
                 setUpEventWorker(ctx, endTimeDelay, false);
 
-                AccessibilityScreenService.instance.setActiveEvents(1);
-                if(!AccessibilityScreenService.instance.getFreeUse())
-                    showBlockDeviceScreen(ctx);
+                if(Funcions.accessibilityServiceOn()){
+                    AccessibilityScreenService.instance.setActiveEvents(1);
+                    AccessibilityScreenService.instance.updateDeviceBlock();
+                }
             }
         }
     }
@@ -387,7 +388,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         List<HorarisNit> horaris = new ArrayList<>(horarisAPI.horarisNit);
 
         if(horaris.isEmpty()) {
-            Funcions.endFreeUse(ctx);
+            AccessibilityScreenService.instance.updateDeviceBlock();
             return;
         }
 
@@ -405,20 +406,16 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 if(sleepTimeDelay < 0) {
                     sleepTimeDelay += Constants.TOTAL_MILLIS_IN_DAY;
                     AccessibilityScreenService.instance.setHorarisActius(true);
-                    if(!AccessibilityScreenService.instance.getFreeUse())
-                        showBlockDeviceScreen(ctx);
                 }
             }
             else {
                 AccessibilityScreenService.instance.setHorarisActius(true);
-                if(!AccessibilityScreenService.instance.getFreeUse())
-                    showBlockDeviceScreen(ctx);
             }
 
             Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, true);
             Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, true);
 
-            Funcions.endFreeUse(ctx);
+            AccessibilityScreenService.instance.updateDeviceBlock();
 
             return;
         }
@@ -431,7 +428,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 .orElse(null);
 
         if(horariAvui == null) {
-            Funcions.endFreeUse(ctx);
+            AccessibilityScreenService.instance.updateDeviceBlock();
             return;
         }
 
@@ -443,18 +440,13 @@ public class Funcions extends com.adictic.common.util.Funcions {
             Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
 
             AccessibilityScreenService.instance.setHorarisActius(true);
-            if (!AccessibilityScreenService.instance.getFreeUse())
-                showBlockDeviceScreen(ctx);
         }
         else if(sleepTimeDelay > 0)
             Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
-        else {
+        else
             AccessibilityScreenService.instance.setHorarisActius(true);
-            if (!AccessibilityScreenService.instance.getFreeUse())
-                showBlockDeviceScreen(ctx);
-        }
 
-        Funcions.endFreeUse(ctx);
+        AccessibilityScreenService.instance.updateDeviceBlock();
     }
 
     //POST usage information to server
@@ -471,7 +463,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
 
-        if(totalTime - lastTotalUsage < 5 * 60 * 1000)
+        long now = System.currentTimeMillis();
+        long lastUpdate = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
+
+        if(now - lastUpdate < 5 * 60 * 1000 && totalTime - lastTotalUsage < 5 * 60 * 1000)
             return;
 
         Call<String> call = api.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
@@ -481,7 +476,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, DateTime.now().getMillis()).apply();
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, now).apply();
                 }
             }
 
@@ -889,24 +884,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return null;
     }
 
-    public static void endFreeUse(Context mCtx) {
-        if(!Funcions.accessibilityServiceOn())
-            return;
-
-        boolean isBlocked = AccessibilityScreenService.instance.isDeviceBlocked();
-        if(isBlocked)
-            showBlockDeviceScreen(mCtx);
-        else
-            LocalBroadcastManager.getInstance(mCtx).sendBroadcast(new Intent(Constants.NO_BLOCK_SCREEN));
-    }
-
     public static void showBlockDeviceScreen(Context mCtx){
-        Intent intent = new Intent(mCtx, ForegroundService.class);
-        intent.setAction(Constants.FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            mCtx.startForegroundService(intent);
-        else
-            mCtx.startService(intent);
+        Log.d(TAG,"Creant Intent cap a BlockAppActivity");
+        Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
+        lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+        mCtx.startActivity(lockIntent);
     }
 
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {

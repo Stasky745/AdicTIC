@@ -1,4 +1,4 @@
-package com.adictic.client.workers.block_apps;
+package com.adictic.client.workers;
 
 import android.content.Context;
 
@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
 
@@ -27,6 +28,12 @@ public class BlockSingleAppWorker extends Worker {
             currentBlockedApps = new ArrayList<>();
 
         currentBlockedApps.add(pkgName);
+
+        if(Funcions.accessibilityServiceOn()){
+            AccessibilityScreenService.instance.addBlockedApp(pkgName);
+            AccessibilityScreenService.instance.removeAppLimitada(pkgName);
+            AccessibilityScreenService.instance.updateDeviceBlock();
+        }
 
         Funcions.write2File(getApplicationContext(), Constants.FILE_CURRENT_BLOCKED_APPS, currentBlockedApps);
 
