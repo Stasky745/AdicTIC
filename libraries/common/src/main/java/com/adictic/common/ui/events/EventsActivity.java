@@ -206,12 +206,14 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                             + "\n" + Funcions.millisOfDay2String(event.endEvent);
                     holder.TV_eventTimes.setText(eventTimesString);
 
-                    holder.mRootView.setOnClickListener(view -> {
-                        FragmentManager fm = getSupportFragmentManager();
-                        EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), eventAdapterList.get(position));
-                        horarisEventFragment.show(fm, "fragment_edit_event");
-                        notifyDataSetChanged();
-                    });
+                    if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
+                        holder.mRootView.setOnClickListener(view -> {
+                            FragmentManager fm = getSupportFragmentManager();
+                            EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), eventAdapterList.get(position));
+                            horarisEventFragment.show(fm, "fragment_edit_event");
+                            notifyDataSetChanged();
+                        });
+                    }
 
                     break;
 
