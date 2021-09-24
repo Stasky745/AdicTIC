@@ -10,12 +10,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.client.R;
 
+import java.util.Objects;
+
 public class PermisosMIUI extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.miui_permisos_layout);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.xiaomi));
 
         Button BT_miui_perm = findViewById(R.id.BT_miui_perm);
         BT_miui_perm.setOnClickListener(view -> {

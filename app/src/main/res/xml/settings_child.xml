@@ -6,13 +6,18 @@
         app:entries="@array/languages"
         app:entryValues="@array/language_alias"
         app:key="setting_change_language"
-        app:icon="@drawable/ic_language_change"
+        app:icon="@drawable/ic_baseline_language_24"
         app:title="@string/change_language" />
 
     <Preference
         app:key="setting_notifications"
         app:icon="@drawable/ic_baseline_notifications_24"
         app:title="@string/setting_notifications" />
+
+    <Preference
+        app:key="setting_permission"
+        app:icon="@drawable/ic_baseline_admin_panel_settings_24"
+        app:title="@string/permisos" />
 
     <PreferenceCategory
         app:key="pcdebug"
