@@ -118,6 +118,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     private boolean horarisActius = false;
     public void setHorarisActius(boolean b) { horarisActius = b; }
 
+    private Long lastAccessibilityEvent = 0L;
+
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -191,6 +193,12 @@ public class AccessibilityScreenService extends AccessibilityService {
                 !ignoreActivities.contains(event.getClassName().toString()) &&
                 isActivity(event)) {
 
+            long newTime = DateTime.now().getMillis();
+            if(newTime<(lastAccessibilityEvent+1000)){
+                return;
+            }
+            lastAccessibilityEvent = newTime;
+
             KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
             if(myKM.isDeviceLocked()) {
                 currentPackage = "";
@@ -230,8 +238,10 @@ public class AccessibilityScreenService extends AccessibilityService {
             boolean shouldDeviceBeBlocked = !freeUse && (blockDevice || activeEvents > 0 || horarisActius);
 
             // --- LIVE APP ---
-            if (liveApp && !shouldDeviceBeBlocked)
+            if (liveApp && !shouldDeviceBeBlocked) {
+                Log.e(TAG, "Entra a liveapp");
                 enviarLiveApp(currentPackage, currentAppName);
+            }
 
             // --- FREE USE ---
             // Si és FreeUse, tornem sense fer res
