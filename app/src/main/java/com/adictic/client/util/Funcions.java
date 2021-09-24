@@ -471,7 +471,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
 
-        if(totalTime - lastTotalUsage < 5 * 60 * 1000)
+        long now = System.currentTimeMillis();
+        long lastUpdate = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
+
+        if(now - lastUpdate < 5 * 60 * 1000 && totalTime - lastTotalUsage < 5 * 60 * 1000)
             return;
 
         Call<String> call = api.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
@@ -481,7 +484,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, DateTime.now().getMillis()).apply();
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, now).apply();
                 }
             }
 

@@ -409,7 +409,7 @@ public class Funcions {
 
         for(int i = 0; i <= nDies; i++){
             DateTime initialDate = new DateTime();
-            initialDate = initialDate.withTimeAtStartOfDay().withZone(DateTimeZone.UTC);
+            initialDate = initialDate.withTimeAtStartOfDay();
             initialDate = initialDate.minusDays(i);
 
             DateTime finalDate = new DateTime(initialDate).plusDays(1);

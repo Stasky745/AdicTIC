@@ -228,25 +228,21 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
 
-                    if(active && (!sharedPreferences.contains(Constants.SHARED_PREFS_APPUSAGEWORKERUPDATE) ||
-                            DateTime.now().getMillis() - sharedPreferences.getLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER,Constants.HOUR_IN_MILLIS+1) > Constants.HOUR_IN_MILLIS)) {
-
+                    if(active) {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                        if(!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
+                        if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.enviarLiveApp();
 
                         Funcions.startAppUsageWorker24h(getApplicationContext());
                         Funcions.sendAppUsage(getApplicationContext());
 
-                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LASTUPDATEAPPUSAGEWORKER, DateTime.now().getMillis()).apply();
-                    }
-
-                    long now = Calendar.getInstance().getTimeInMillis();
-                    long minute = 1000*60;
-                    if(updateGeoloc == -1 || now - updateGeoloc > minute) {
-                        Funcions.runGeoLocWorkerOnce(getApplicationContext());
-                        updateGeoloc = now;
+                        long now = System.currentTimeMillis();
+                        long minute = 1000*60;
+                        if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                            Funcions.runGeoLocWorkerOnce(getApplicationContext());
+                            updateGeoloc = now;
+                        }
                     }
 
                     Log.d(TAG, "Token liveApp: " + s);
