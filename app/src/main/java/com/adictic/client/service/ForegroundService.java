@@ -1,8 +1,5 @@
 package com.adictic.client.service;
 
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -33,16 +30,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.adictic.client.R;
+import com.adictic.client.receiver.checkInstalledApps;
 import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.ui.BlockDeviceActivity;
+import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
-import com.adictic.client.receiver.checkInstalledApps;
-import com.adictic.client.ui.main.NavActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -269,23 +265,6 @@ public class ForegroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public void showBlockDeviceScreen(){
-        // Si és MIUI
-        try {
-            if(Funcions.isXiaomi() && false)
-                Funcions.addOverlayView(ForegroundService.this, true);
-            else{
-                Log.d(TAG,"Creant Intent cap a BlockAppActivity");
-                Intent lockIntent = new Intent(ForegroundService.this, BlockDeviceActivity.class);
-                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
-                ForegroundService.this.startActivity(lockIntent);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     class MyLocationListener implements LocationListener {
