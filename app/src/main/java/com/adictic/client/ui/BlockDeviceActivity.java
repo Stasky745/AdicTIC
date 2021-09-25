@@ -54,7 +54,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
         setContentView(R.layout.block_device_layout);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
-                new IntentFilter(Constants.NO_BLOCK_SCREEN));
+                new IntentFilter(Constants.NO_DEVICE_BLOCK_SCREEN));
 
         setText();
         setCallButton();

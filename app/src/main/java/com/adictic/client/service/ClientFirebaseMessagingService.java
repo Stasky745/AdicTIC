@@ -123,8 +123,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             AccessibilityScreenService.instance.setChangedBlockedApps(true);
 
             // Ensenyar pantalla bloqueig si és una app bloquejada
-            if(AccessibilityScreenService.instance.isCurrentAppBlocked())
-                Funcions.showBlockAppScreen(ClientFirebaseMessagingService.this, AccessibilityScreenService.instance.getCurrentPackage(), AccessibilityScreenService.instance.getCurrentAppName());
+            AccessibilityScreenService.instance.isCurrentAppBlocked();
         }
     }
 
