@@ -39,6 +39,18 @@ public class BlockAppActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_layout);

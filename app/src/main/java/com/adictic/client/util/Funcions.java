@@ -1,7 +1,7 @@
 package com.adictic.client.util;
 
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -54,10 +54,10 @@ import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
+import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.client.workers.UpdateTokenWorker;
-import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
@@ -887,8 +887,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void showBlockDeviceScreen(Context mCtx){
         Log.d(TAG,"Creant Intent cap a BlockAppActivity");
         Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
-        lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
+        lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
         mCtx.startActivity(lockIntent);
     }
 
@@ -900,7 +899,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
             else{
                 Log.d(TAG,"Creant Intent cap a BlockAppActivity");
                 Intent lockIntent = new Intent(ctx, BlockAppActivity.class);
-                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
                 lockIntent.putExtra("pkgName", pkgName);
                 lockIntent.putExtra("appName", appName);
                 ctx.startActivity(lockIntent);
