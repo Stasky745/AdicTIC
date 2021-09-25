@@ -79,6 +79,12 @@ public class BlockDeviceActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
     private void setAlarmButton() {
 
     }
