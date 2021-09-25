@@ -172,6 +172,10 @@ public class AccessibilityScreenService extends AccessibilityService {
             LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_BLOCK_SCREEN));
     }
 
+    public boolean isDeviceBlocked(){
+        return !freeUse && (horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked());
+    }
+
     private void fetchDades() {
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
