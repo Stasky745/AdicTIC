@@ -43,7 +43,8 @@
         <activity android:name="com.adictic.client.ui.inici.Login" />
         <activity
             android:name="com.adictic.client.ui.BlockAppActivity"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:launchMode="singleInstance" />
         <activity android:name="com.adictic.client.ui.inici.Register" />
         <activity android:name="com.adictic.client.ui.inici.NomFill" />
         <activity android:name="com.adictic.common.ui.DayUsageActivity" />
@@ -97,7 +98,8 @@
         <activity android:name="com.adictic.client.ui.inici.Permisos" />
         <activity android:name="com.adictic.client.ui.inici.AppLock" />
         <activity android:name="com.adictic.client.ui.BlockDeviceActivity"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:launchMode="singleInstance" />
         <activity android:name="com.adictic.client.ui.inici.PermisosMIUI" />
 
         <receiver android:name="com.adictic.client.receiver.checkInstalledApps"

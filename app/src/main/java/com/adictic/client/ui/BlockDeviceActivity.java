@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -53,12 +54,35 @@ public class BlockDeviceActivity extends AppCompatActivity {
         setContentView(R.layout.block_device_layout);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
-                new IntentFilter(Constants.NO_BLOCK_SCREEN));
+                new IntentFilter(Constants.NO_DEVICE_BLOCK_SCREEN));
 
         setText();
         setCallButton();
         setAlarmButton();
         postIntentAccesDisp();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(Funcions.accessibilityServiceOn()) {
+            if (!AccessibilityScreenService.instance.isDeviceBlocked())
+                finish();
+        }
+        else
+            finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
     }
 
     private void setAlarmButton() {

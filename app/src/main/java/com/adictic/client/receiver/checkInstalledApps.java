@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
@@ -32,21 +33,15 @@ public class checkInstalledApps extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         mTodoService = ((AdicticApp) context.getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(context);
-        String pkgName = intent.getDataString();
-        String regexPkgName = "[a-zA-Z]+\\.[a-zA-Z]+\\.[a-zA-Z]+";
-        if(!pkgName.matches("^"+regexPkgName+"$")){
-            Log.e(TAG, "PkgName no és vàlid: "+pkgName+", intentant extreure'l");
-            Pattern pattern = Pattern.compile(regexPkgName);
-            Matcher matcher = pattern.matcher(pkgName);
-            if (matcher.find()) pkgName = matcher.group();
-        }
-        if(intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)){
-            Log.i(TAG,"S'intenta afegir l'app: " + pkgName);
-            enviarAppInstall(context, pkgName);
-        }
-        else if(intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)){
-            Log.i(TAG,"S'intenta esborrar l'app: " + pkgName);
-            enviarAppUninstall(pkgName);
+        String pkgName = intent.getData().getEncodedSchemeSpecificPart();
+        if(intent.getComponent() != null && intent.getComponent().getPackageName().equals(context.getPackageName())) {
+            if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
+                Log.i(TAG, "S'intenta afegir l'app: " + pkgName);
+                enviarAppInstall(context, pkgName);
+            } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
+                Log.i(TAG, "S'intenta esborrar l'app: " + pkgName);
+                enviarAppUninstall(pkgName);
+            }
         }
     }
 
@@ -67,8 +62,10 @@ public class checkInstalledApps extends BroadcastReceiver {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     super.onResponse(call, response);
-                    if(response.isSuccessful()) Log.i(TAG,"S'ha enviat l'app Instal·lada correctament.");
-                    else Log.i(TAG,"No s'ha pogut enviar l'app Instal·lada correctament.");
+                    if(response.isSuccessful())
+                        Log.i(TAG,"S'ha enviat l'app Instal·lada correctament.");
+                    else
+                        Log.i(TAG,"No s'ha pogut enviar l'app Instal·lada correctament.");
                 }
 
                 @Override

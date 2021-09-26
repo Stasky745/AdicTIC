@@ -62,7 +62,8 @@ public class Constants {
     public static final String WORKER_TAG_GEOLOC_PERIODIC = "geoloc_worker_periodic_tag";
 
     public static final String FOREGROUND_SERVICE_ACTION_DEVICE_BLOCK_SCREEN = "device_block_screen";
-    public static final String NO_BLOCK_SCREEN = "no_block_screen";
+    public static final String NO_DEVICE_BLOCK_SCREEN = "no_device_block_screen";
+    public static final String NO_APP_BLOCK_SCREEN = "no_app_block_screen";
 
     public static int CORRECT_USAGE_DAY = 3;
     public static int DANGEROUS_USAGE_DAY = 5;

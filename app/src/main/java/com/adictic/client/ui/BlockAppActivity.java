@@ -1,13 +1,17 @@
 package com.adictic.client.ui;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.util.Callback;
@@ -28,12 +32,33 @@ public class BlockAppActivity extends AppCompatActivity {
     private int retryCountAccessApp;
     private final int TOTAL_RETRIES = 6;
 
+    private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_layout);
 
         ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
+                new IntentFilter(Constants.NO_APP_BLOCK_SCREEN));
 
         String pkgName = getIntent().getStringExtra("pkgName");
         String appName = getIntent().getStringExtra("appName");

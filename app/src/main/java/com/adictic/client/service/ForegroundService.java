@@ -1,8 +1,5 @@
 package com.adictic.client.service;
 
-import static android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP;
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -33,16 +30,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import com.adictic.client.R;
+import com.adictic.client.receiver.checkInstalledApps;
 import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.ui.BlockDeviceActivity;
+import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
-import com.adictic.client.receiver.checkInstalledApps;
-import com.adictic.client.ui.main.NavActivity;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -103,14 +99,6 @@ public class ForegroundService extends Service {
     private void startLocationReceiver() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Comencem el receiver
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addDataScheme("package");
-        checkInstalledAppsReceiver = new checkInstalledApps();
-        registerReceiver(checkInstalledAppsReceiver, intentFilter);
-
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -134,8 +122,7 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
 
-        if(checkInstalledAppsReceiver != null)
-            unregisterReceiver(checkInstalledAppsReceiver);
+        registerInstallApps();
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
         wakeLock.acquire();
@@ -143,6 +130,19 @@ public class ForegroundService extends Service {
         startLocationReceiver();
 
         return START_STICKY;
+    }
+
+    private void registerInstallApps() {
+        if(checkInstalledAppsReceiver != null)
+            unregisterReceiver(checkInstalledAppsReceiver);
+
+        // Comencem el receiver
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        checkInstalledAppsReceiver = new checkInstalledApps();
+        registerReceiver(checkInstalledAppsReceiver, intentFilter);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -269,23 +269,6 @@ public class ForegroundService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    public void showBlockDeviceScreen(){
-        // Si és MIUI
-        try {
-            if(Funcions.isXiaomi() && false)
-                Funcions.addOverlayView(ForegroundService.this, true);
-            else{
-                Log.d(TAG,"Creant Intent cap a BlockAppActivity");
-                Intent lockIntent = new Intent(ForegroundService.this, BlockDeviceActivity.class);
-                lockIntent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-                lockIntent.addFlags(FLAG_ACTIVITY_CLEAR_TOP);
-                ForegroundService.this.startActivity(lockIntent);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     class MyLocationListener implements LocationListener {
