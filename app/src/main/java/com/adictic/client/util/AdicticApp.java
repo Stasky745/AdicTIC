@@ -37,6 +37,7 @@ public class AdicticApp extends App {
             "Ensenya temps total a l'apartat d'agafar informació d'ús",
             "Ja no entra en bucle quan surt la pàgina de bloqueig de dispositiu",
             "Ara ja es tanca bé la pàgina de bloqueig de dispositiu",
+            "Ara es tanca la pàgina de bloqueig d'apps",
             "Les dades entre l'apartat d'agafar informació d'ús i la gràfica inicial ja són iguals"
     };
 

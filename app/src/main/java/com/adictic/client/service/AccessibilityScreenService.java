@@ -5,6 +5,7 @@ import static android.content.Intent.ACTION_SCREEN_ON;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -43,6 +44,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -87,13 +89,32 @@ public class AccessibilityScreenService extends AccessibilityService {
         changedBlockedApps = true;
     }
     public boolean isCurrentAppBlocked() {
-        return currentPackage != null && blockedApps.contains(currentPackage);
+
+        // Si estem a la pantalla de bloqueig d'apps
+        if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity")){
+            // Si l'últim package no esta bloquejat, acabem l'activitat
+            if(!blockedApps.contains(lastPackage))
+                LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_APP_BLOCK_SCREEN));
+
+            return false;
+        }
+        else {
+            boolean blocked = currentPackage != null && blockedApps.contains(currentPackage);
+            if(blocked)
+                Funcions.showBlockAppScreen(AccessibilityScreenService.this, currentPackage, currentAppName);
+
+            return blocked;
+        }
     }
 
     private String lastAppName = "";
     private String lastPackage = "";
+    public String getLastPackage() { return lastPackage; }
+
+    private String lastClassName = "";
     private String currentPackage = "";
     private String currentAppName = "";
+    private String currentClassName = "";
     public String getCurrentPackage() { return currentPackage; }
     public String getCurrentAppName() { return currentAppName; }
 
@@ -162,14 +183,20 @@ public class AccessibilityScreenService extends AccessibilityService {
         if(myKM.isDeviceLocked())
             return;
 
-        boolean deviceBlocked = !freeUse && (horarisActius || activeEvents > 0 || blockDevice || isCurrentAppBlocked());
+        boolean deviceBlocked = !freeUse && (horarisActius || activeEvents > 0 || blockDevice);
 
         if(deviceBlocked) {
             if(BlockDeviceActivity.instance == null || !BlockDeviceActivity.instance.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED))
                 Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
         }
-        else
-            LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_BLOCK_SCREEN));
+        else {
+            LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_DEVICE_BLOCK_SCREEN));
+            isCurrentAppBlocked();
+        }
+    }
+
+    public boolean isDeviceBlocked(){
+        return !freeUse && (horarisActius || activeEvents > 0 || blockDevice);
     }
 
     private void fetchDades() {
@@ -219,6 +246,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             }
 
             currentPackage = event.getPackageName().toString();
+            currentClassName = event.getClassName().toString();
             try {
                 ApplicationInfo appInfo = getPackageManager().getApplicationInfo(event.getPackageName().toString(), 0);
                 currentAppName = appInfo.loadLabel(getPackageManager()).toString();
@@ -268,17 +296,13 @@ public class AccessibilityScreenService extends AccessibilityService {
                 return;
             }
 
+            //Mirem si l'app està bloquejada
+            isCurrentAppBlocked();
+
             // --- TRACTAR APP ACTUAL ---
             lastPackage = currentPackage;
             lastAppName = currentAppName;
-
-            //Mirem si l'app està bloquejada
-            boolean isBlocked = false;
-            if(blockedApps != null && !blockedApps.isEmpty())
-                isBlocked = blockedApps.contains(lastPackage);
-
-            if (isBlocked)
-                Funcions.showBlockAppScreen(getApplicationContext(), lastPackage, lastAppName);
+            lastClassName = currentClassName;
         }
     }
 
