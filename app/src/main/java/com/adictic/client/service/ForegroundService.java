@@ -99,14 +99,6 @@ public class ForegroundService extends Service {
     private void startLocationReceiver() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Comencem el receiver
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        intentFilter.addDataScheme("package");
-        checkInstalledAppsReceiver = new checkInstalledApps();
-        registerReceiver(checkInstalledAppsReceiver, intentFilter);
-
         LocationCallback mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
@@ -130,8 +122,7 @@ public class ForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         actiu = true;
 
-        if(checkInstalledAppsReceiver != null)
-            unregisterReceiver(checkInstalledAppsReceiver);
+        registerInstallApps();
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
         wakeLock.acquire();
@@ -139,6 +130,19 @@ public class ForegroundService extends Service {
         startLocationReceiver();
 
         return START_STICKY;
+    }
+
+    private void registerInstallApps() {
+        if(checkInstalledAppsReceiver != null)
+            unregisterReceiver(checkInstalledAppsReceiver);
+
+        // Comencem el receiver
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        checkInstalledAppsReceiver = new checkInstalledApps();
+        registerReceiver(checkInstalledAppsReceiver, intentFilter);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
