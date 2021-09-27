@@ -459,4 +459,15 @@
     <string name="continue_">Continuar</string>
 
     <string name="apps_blocked">Aplicaciones bloqueadas</string>
+
+<!--    Informe RESUM -->
+    <string name="recomanacio_bona">Se ha hecho un uso responsable del tiempo diario del dispositivo móvil. ¡Enhorabuena! ¡Os animamos a que sigáis así!</string>
+
+    <string name="recomanacio_abus">Se ha hecho un abuso del dispositivo móvil. ¡Alerta! Seria conveniente incorporar límites que afavorecieran un uso responsable del dispositivo. También podéis contactar con profesionales especializados para recibir asesoramiento psicológico para una gestión saludable de las tecnologías.</string>
+    <string name="recomanacio_abus_limits_aux"> límites </string>
+    <string name="recomanacio_abus_contacte_aux"> contactar con profesionales especializados </string>
+
+    <string name="recomanacio_alarma">Se observan señales de alarma que podrían indicar un problema en el uso de las tecnologías. Os animamos a revisar cómo ha sido la gestión de los límites para poder incorporar las medidas pertinentes.</string>
+    <string name="recomanacio_alarma_aux"> gestión de los límites </string>
+
 </resources>
