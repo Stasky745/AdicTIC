@@ -61,12 +61,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             holder.TV_eventVellDies.setText(R.string.new_event);
             holder.TV_eventVellDies.setTextColor(Color.GREEN);
             holder.TV_eventVellDies.setTypeface(holder.TV_eventVellDies.getTypeface(), Typeface.BOLD);
+            holder.TV_eventVellDies.setSingleLine(false);
         }
         else{
             holder.TV_eventVellTitol.setText(canvisEvents.eventAntic.name);
 
             String dies = crearStringDies(canvisEvents.eventAntic);
             holder.TV_eventVellDies.setText(dies);
+            holder.TV_eventVellDies.setSelected(true);
 
             DateTime iniciDate = new DateTime().withMillisOfDay(canvisEvents.eventAntic.startEvent);
             DateTime fiDate = new DateTime().withMillisOfDay(canvisEvents.eventAntic.endEvent);
@@ -83,12 +85,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
             holder.TV_eventNouDies.setText(R.string.delete_event);
             holder.TV_eventNouDies.setTextColor(Color.RED);
             holder.TV_eventNouDies.setTypeface(holder.TV_eventNouDies.getTypeface(), Typeface.BOLD);
+            holder.TV_eventNouDies.setSingleLine(false);
         }
         else{
             holder.TV_eventNouTitol.setText(canvisEvents.eventNou.name);
 
             String dies = crearStringDies(canvisEvents.eventNou);
             holder.TV_eventNouDies.setText(dies);
+            holder.TV_eventNouDies.setSelected(true);
 
             DateTime iniciDate = new DateTime().withMillisOfDay(canvisEvents.eventNou.startEvent);
             DateTime fiDate = new DateTime().withMillisOfDay(canvisEvents.eventNou.endEvent);
