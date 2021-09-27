@@ -1,6 +1,14 @@
 package com.adictic.common.ui.informe;
 
+import android.content.Intent;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.client.ui.chat.ChatActivity;
 import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockInfo;
@@ -23,6 +32,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.rest.Api;
+import com.adictic.common.ui.events.EventsActivity;
 import com.adictic.common.ui.informe.adapters.AppsAdapter;
 import com.adictic.common.ui.informe.adapters.EventsAdapter;
 import com.adictic.common.ui.informe.adapters.HorarisNitAdapter;
@@ -64,6 +74,9 @@ public class InformeDetallatFragment extends Fragment {
     private int activeMonth;
     private int activeYear;
 
+    private boolean flag_usPerillos = false;
+    private boolean flag_massaIntents = false;
+
     public static InformeDetallatFragment newInstance(Collection<GeneralUsage> col, long totalUsageT, int edat, long id){
         final InformeDetallatFragment informeDetallatFragment = new InformeDetallatFragment();
 
@@ -89,8 +102,58 @@ public class InformeDetallatFragment extends Fragment {
 
         setIntro(root);
         setLimitsMarcats(root);
+        setRecomendacions(root);
 
         return root;
+    }
+
+    private void setRecomendacions(View root) {
+        TextView TV_informeRecomanacionsText = root.findViewById(R.id.TV_informeRecomanacionsText);
+
+        if(!flag_massaIntents && !flag_usPerillos){
+            String recomanacio = getString(R.string.recomanacio_bona);
+            TV_informeRecomanacionsText.setText(recomanacio);
+        }
+        else{
+            SpannableStringBuilder ss = new SpannableStringBuilder("");
+
+            // Si s'ha utilitzat massa el dispositiu, posem text d'error
+            if (flag_usPerillos) {
+                ss.append(new SpannableString(getString(R.string.recomanacio_abus)));
+
+                // Click per límits
+                ClickableSpan clickableSpanLimits = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), EventsActivity.class));
+                int initialIndex = getString(R.string.recomanacio_abus).indexOf(getString(R.string.recomanacio_abus_limits_aux));
+                int finalIndex = initialIndex + getString(R.string.recomanacio_abus_limits_aux).length();
+                ss.setSpan(clickableSpanLimits, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                // Click per contacte
+                if(requireContext().getPackageName().equals("com.adictic.client")) {
+                    ClickableSpan clickableSpanContacte = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), ChatActivity.class));
+                    initialIndex = getString(R.string.recomanacio_abus).indexOf(getString(R.string.recomanacio_abus_contacte_aux));
+                    finalIndex = initialIndex + getString(R.string.recomanacio_abus_contacte_aux).length();
+                    ss.setSpan(clickableSpanContacte, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+
+            if(flag_massaIntents) {
+                ss.append(new SpannableString(getString(R.string.recomanacio_alarma)));
+
+                // Click per límits
+                ClickableSpan clickableSpanLimits = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), EventsActivity.class));
+                int initialIndex = getString(R.string.recomanacio_alarma).indexOf(getString(R.string.recomanacio_alarma_aux));
+                int finalIndex = initialIndex + getString(R.string.recomanacio_alarma_aux).length();
+                ss.setSpan(clickableSpanLimits, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            // Creem TV
+            TV_informeRecomanacionsText.setText(ss);
+            TV_informeRecomanacionsText.setMovementMethod(LinkMovementMethod.getInstance());
+            TV_informeRecomanacionsText.setHighlightColor(requireContext().getColor(R.color.colorPrimary));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    TV_informeRecomanacionsText.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            }
+        }
     }
 
     private void getBundle() {
@@ -122,7 +185,7 @@ public class InformeDetallatFragment extends Fragment {
         call.enqueue(new Callback<BlockInfo>() {
             @Override
             public void onResponse(@NonNull Call<BlockInfo> call, @NonNull Response<BlockInfo> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if(response.isSuccessful()){
                     BlockInfo blockInfo = response.body();
                     if(blockInfo == null)
@@ -136,7 +199,7 @@ public class InformeDetallatFragment extends Fragment {
 
             @Override
             public void onFailure(@NonNull Call<BlockInfo> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -175,11 +238,18 @@ public class InformeDetallatFragment extends Fragment {
         }
 
         TextView TV_informeIntentsAcces = root.findViewById(R.id.TV_informeIntentsAcces);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            TV_informeIntentsAcces.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+        }
 
-        if(mitjanaIntents > 9)
+        if(mitjanaIntents > 9) {
             TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_dolenta, (int) mitjanaIntents)); //Text dolent
-        else
+            flag_massaIntents = true;
+        }
+        else {
             TV_informeIntentsAcces.setText(getString(R.string.access_mitjana_bona, (int) mitjanaIntents)); //text bo
+            flag_massaIntents = false;
+        }
     }
 
     private void setHorarisNit(View root) {
@@ -334,12 +404,20 @@ public class InformeDetallatFragment extends Fragment {
         String intro;
         long millisRecomanats = Constants.AGE_TIMES_MILLIS[age];
 
-        if(mitjanaMillisDia <= millisRecomanats)
+        if(mitjanaMillisDia <= millisRecomanats) {
             intro = getString(R.string.intro_bona, age, Funcions.millis2horaString(getContext(), millisRecomanats), Funcions.millis2horaString(getContext(), mitjanaMillisDia));
-        else
+            flag_usPerillos = false;
+        }
+        else {
             intro = getString(R.string.intro_dolenta, age, Funcions.millis2horaString(getContext(), millisRecomanats), Funcions.millis2horaString(getContext(), mitjanaMillisDia));
+            flag_usPerillos = true;
+        }
 
         TV_informeIntro.setText(intro);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            TV_informeIntro.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+        }
 
         setMostUsedApps(root);
     }

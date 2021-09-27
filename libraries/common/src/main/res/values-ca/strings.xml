@@ -439,4 +439,11 @@
     <string name="language_not_supported">Idioma no suportat</string>
     <string name="continue_">Continuar</string>
     <string name="apps_blocked">Aplicacions bloquejadas</string>
+
+    <string name="recomanacio_bona">\"S\'ha fet un ús responsable de temps diari del dispositiu mòbil. Enhorabona! Us animem a seguir així!\"</string>
+    <string name="recomanacio_abus">S’ha fet un abús del dispositiu mòbil. Alerta! Seria convenient incorporar límits que afavoreixin un ús responsable del dispositiu. També podeu contactar amb professionals especialitzats per rebre assessorament psicològic per una gestió saludable de les tecnologies.</string>
+    <string name="recomanacio_abus_limits_aux"> límits </string>
+    <string name="recomanacio_abus_contacte_aux"> contactar amb professionals especialitzats </string>
+    <string name="recomanacio_alarma">S’observen senyals d’alarma que podrien indicar un problema en l’ús de les tecnologies. Us animem a revisar quina ha estat la gestió dels límits d’incorporar les mesures pertinents.</string>
+    <string name="recomanacio_alarma_aux"> gestió dels límits </string>
 </resources>

@@ -10,6 +10,8 @@ import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.CanvisHoraris;
 import com.adictic.common.entity.ChangePassword;
 import com.adictic.common.entity.ChatsMain;
+import com.adictic.common.entity.Dubte;
+import com.adictic.common.entity.DubteLocalitzacions;
 import com.adictic.common.entity.EventsAPI;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.GeneralUsage;
@@ -198,4 +200,13 @@ public interface Api {
     Call<String> answerCallOfAdmin(@Path("adminId") Long adminId, @Body String answer);
 
     ///////////////////////////////////////
+
+    @GET("/users/dubtes/{childId}/poblacions")
+    Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte(@Path("childId") Long childId);
+
+    @POST("/users/dubtes/{childId}")
+    Call<String> postDubte(@Path("childId") Long childId, @Body Dubte dubte);
+
+    @POST("/message/{childId}/access")
+    Call<String> giveAccess(@Path("childId") Long idChild, @Body Boolean access);
 }
