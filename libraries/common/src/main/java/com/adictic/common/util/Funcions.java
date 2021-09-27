@@ -127,6 +127,10 @@ public class Funcions {
     }
 
     public static String millis2horaString(Context context, long l){
+
+        if(l == 0)
+            return "0 " + context.getString(R.string.minutes);
+
         Pair<Integer, Integer> temps = millisToString(l);
         String hora = "";
         String minuts = "";

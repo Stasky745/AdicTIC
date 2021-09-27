@@ -219,7 +219,7 @@ public class InformeDetallatFragment extends Fragment {
 
         long tempsFreeUse = 0;
         for(TimeFreeUse timeFreeUse : blockInfo.tempsFreeUse){
-            tempsFreeUse += timeFreeUse.end - timeFreeUse.start;
+            tempsFreeUse += (timeFreeUse.end - timeFreeUse.start);
         }
         TV_informeFreeUse.setText(getString(R.string.info_freeuse, blockInfo.tempsFreeUse.size(), Funcions.millis2horaString(getContext(), tempsFreeUse)));
 
