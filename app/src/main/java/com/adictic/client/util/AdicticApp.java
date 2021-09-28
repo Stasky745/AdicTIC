@@ -29,7 +29,8 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-
+            "Informe mensual acabat",
+            "Opcions de notificacions"
     };
 
     public static String[] fixes = {
@@ -42,7 +43,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] changes = {
-
+            "Canvis en la pantalla de permisos i opcions"
     };
 
     @Override
