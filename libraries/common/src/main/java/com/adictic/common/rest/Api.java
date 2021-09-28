@@ -169,7 +169,7 @@ public interface Api {
     @GET("/usage/{idChild}/accessInfo/{data}")
     Call<BlockInfo> getAccessInfo(@Path("idChild") Long idChild, @Path("data") String data);
 
-    @POST("/usage/{idChild}/tempsFreeuse")
+    @POST("/usage/{idChild}/tempsFreeUse")
     Call<String> postTempsFreeUse(@Path("idChild") Long idChild, @Body TimeFreeUse timeFreeUse);
 
     @POST("/usage/{idChild}/tempsBloqueig")
