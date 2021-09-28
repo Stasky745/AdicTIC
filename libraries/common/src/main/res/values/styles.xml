@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/raleway</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="android:textColorLink">@color/colorPrimary</item>
     </style>
 
     <!--    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
