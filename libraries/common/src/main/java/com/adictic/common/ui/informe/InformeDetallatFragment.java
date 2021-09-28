@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -256,6 +257,16 @@ public class InformeDetallatFragment extends Fragment {
         RecyclerView RV_informeHoraris = root.findViewById(R.id.RV_informeHorarisNit);
         RV_informeHoraris.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        RV_informeHoraris.setVisibility(View.GONE);
+        ConstraintLayout CL_informeCanvisHoraris = root.findViewById(R.id.CL_informeCanvisHoraris);
+        CL_informeCanvisHoraris.setOnClickListener(view -> {
+            if (RV_informeHoraris.getVisibility() == View.GONE)
+                RV_informeHoraris.setVisibility(View.VISIBLE);
+            else
+                RV_informeHoraris.setVisibility(View.GONE);
+        });
+
+
         Call<Collection<CanvisHoraris>> call = api.getCanvisHoraris(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisHoraris>>() {
             @Override
@@ -305,6 +316,15 @@ public class InformeDetallatFragment extends Fragment {
         RecyclerView RV_informeEvents = root.findViewById(R.id.RV_informeEvents);
         RV_informeEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        RV_informeEvents.setVisibility(View.GONE);
+        ConstraintLayout CL_informeCanvisEvents = root.findViewById(R.id.CL_informeCanvisEvents);
+        CL_informeCanvisEvents.setOnClickListener(view -> {
+            if (RV_informeEvents.getVisibility() == View.GONE)
+                RV_informeEvents.setVisibility(View.VISIBLE);
+            else
+                RV_informeEvents.setVisibility(View.GONE);
+        });
+
         Call<Collection<CanvisEvents>> call = api.getCanvisEvents(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisEvents>>() {
             @Override
@@ -353,6 +373,15 @@ public class InformeDetallatFragment extends Fragment {
     private void setBlockedApps(View root) {
         RecyclerView RV_informeApps = root.findViewById(R.id.RV_informeBlockApps);
         RV_informeApps.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        RV_informeApps.setVisibility(View.GONE);
+        ConstraintLayout CL_informeCanviBlock = root.findViewById(R.id.CL_informeCanviBlock);
+        CL_informeCanviBlock.setOnClickListener(view -> {
+            if (RV_informeApps.getVisibility() == View.GONE)
+                RV_informeApps.setVisibility(View.VISIBLE);
+            else
+                RV_informeApps.setVisibility(View.GONE);
+        });
 
         Call<Collection<CanvisAppBlock>> call = api.getCanvisApps(idChild, activeDateString);
         call.enqueue(new Callback<Collection<CanvisAppBlock>>() {
