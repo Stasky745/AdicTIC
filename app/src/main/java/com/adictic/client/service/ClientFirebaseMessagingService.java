@@ -191,7 +191,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                 case "freeUse":
                     if (Objects.equals(messageMap.get("freeUse"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
-                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, DateTime.now().getMillis()).apply();
+                        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, System.currentTimeMillis()).apply();
 
                         if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setFreeUse(true);
@@ -409,30 +409,20 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         timeFreeUse.start = sharedPreferences.getLong(Constants.SHARED_PREFS_FREEUSE_START, -1);
         if(timeFreeUse.start == -1 || idChild == -1)
             return;
-        timeFreeUse.end = DateTime.now().getMillis();
+        timeFreeUse.end = System.currentTimeMillis();
         retryCount = 0;
         Call<String> call = mTodoService.postTempsFreeUse(idChild, timeFreeUse);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                if(!response.isSuccessful() && retryCount++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
-                else {
-                    retryCount = 0;
+                super.onResponse(call, response);
+                if(response.isSuccessful())
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, -1).apply();
-                }
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                if(retryCount++ < TOTAL_RETRIES)
-                    call.clone().enqueue(this);
-                else {
-                    retryCount = 0;
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, -1).apply();
-                }
+                super.onFailure(call, t);
             }
         });
     }
