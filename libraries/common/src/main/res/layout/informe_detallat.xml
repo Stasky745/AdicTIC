@@ -95,18 +95,35 @@
                 app:layout_constraintTop_toBottomOf="@+id/TV_informeBlockDevice"
                 tools:text="Temps lliure sense límits: 3 vegades (9 hores)" />
 
-            <TextView
-                android:id="@+id/TV_informeCanvisBlock"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_informeCanviBlock"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:text="@string/canvis_de_bloqueig_d_aplicacions"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_rectangle_received"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.584"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TV_informeFreeUse" />
+                app:layout_constraintTop_toBottomOf="@+id/TV_informeFreeUse">
+
+                <TextView
+                    android:id="@+id/TV_informeCanvisBlock"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/canvis_de_bloqueig_d_aplicacions"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TextContrastCheck" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeBlockApps"
@@ -121,19 +138,37 @@
                 android:scrollbarAlwaysDrawVerticalTrack="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisBlock" />
+                app:layout_constraintTop_toBottomOf="@+id/CL_informeCanviBlock" />
 
-            <TextView
-                android:id="@+id/TV_informeCanvisEvents"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_informeCanvisEvents"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:text="@string/canvis_en_horaris_lliures_de_tecnologies"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_rectangle_received"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/RV_informeBlockApps" />
+                app:layout_constraintTop_toBottomOf="@+id/RV_informeBlockApps">
+
+                <TextView
+                    android:id="@+id/TV_informeCanvisEvents"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/canvis_en_horaris_lliures_de_tecnologies"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TextContrastCheck" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeEvents"
@@ -146,19 +181,37 @@
                 android:overScrollMode="never"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisEvents" />
+                app:layout_constraintTop_toBottomOf="@+id/CL_informeCanvisEvents" />
 
-            <TextView
-                android:id="@+id/TV_informeCanvisHorarisNit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/CL_informeCanvisHoraris"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="24dp"
-                android:text="@string/cambios_en_horarios_nocturnos"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_rectangle_received"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/RV_informeEvents" />
+                app:layout_constraintTop_toBottomOf="@+id/RV_informeEvents">
+
+                <TextView
+                    android:id="@+id/TV_informeCanvisHorarisNit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/cambios_en_horarios_nocturnos"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_informeHorarisNit"
@@ -171,7 +224,7 @@
                 android:overScrollMode="never"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TV_informeCanvisHorarisNit" />
+                app:layout_constraintTop_toBottomOf="@+id/CL_informeCanvisHoraris" />
 
             <TextView
                 android:id="@+id/TV_informeGestioLimits"
@@ -249,6 +302,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="16dp"
+                android:textColorLink="@color/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

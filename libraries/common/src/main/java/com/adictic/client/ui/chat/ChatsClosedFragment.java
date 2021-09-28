@@ -13,9 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.common.R;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.ChatInfo;
-import com.adictic.client.R;
 
 import java.util.ArrayList;
 import java.util.List;

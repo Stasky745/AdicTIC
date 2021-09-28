@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
 import com.adictic.common.entity.ChatsMain;
 import com.adictic.common.rest.Api;
+import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
+import com.adictic.common.util.Funcions;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -34,7 +34,7 @@ public class ChatActivity extends AppCompatActivity {
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
 
-        Api mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        Api mTodoService = ((App) getApplicationContext()).getAPI();
 
         _vpChats = findViewById(R.id.VP_chats);
         _tabChat = findViewById(R.id.TABL_chats);

@@ -17,15 +17,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.rest.Api;
 import com.adictic.common.ui.AdminProfileActivity;
+import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
+import com.adictic.common.util.Funcions;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -49,8 +49,9 @@ public class ClosedChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        mTodoService = ((App) getApplicationContext()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
 
         // Agafem la nostra id
         myId = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);

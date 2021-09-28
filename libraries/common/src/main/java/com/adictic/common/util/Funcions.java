@@ -6,6 +6,7 @@ import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -15,7 +16,9 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.text.SpannableString;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.style.BulletSpan;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -44,6 +47,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.MonthEntity;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
+import com.adictic.common.ui.events.EventsActivity;
 import com.adictic.common.workers.UpdateTokenWorker;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -123,6 +127,10 @@ public class Funcions {
     }
 
     public static String millis2horaString(Context context, long l){
+
+        if(l == 0)
+            return "0 " + context.getString(R.string.minutes);
+
         Pair<Integer, Integer> temps = millisToString(l);
         String hora = "";
         String minuts = "";
@@ -594,5 +602,21 @@ public class Funcions {
         else
             spannableString = new SpannableString(string);
         return HtmlCompat.fromHtml(spannableString.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY);
+    }
+
+    public static ClickableSpan getClickableSpan(Context ctx, Intent intent) {
+        return new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View view) {
+                ctx.startActivity(intent);
+            }
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setFakeBoldText(true);
+                ds.setUnderlineText(false);
+            }
+        };
     }
 }

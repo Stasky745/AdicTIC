@@ -25,15 +25,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
 import com.adictic.common.entity.ChatInfo;
 import com.adictic.common.entity.UserMessage;
+import com.adictic.common.rest.Api;
 import com.adictic.common.ui.AdminProfileActivity;
+import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
+import com.adictic.common.util.Funcions;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -51,7 +51,7 @@ public class ChatFragment extends Fragment {
     public static Long adminUserId;
     private RecyclerView mMessageRecycler;
     private MessageListAdapter mMessageAdapter;
-    private AdicticApi mTodoService;
+    private Api mTodoService;
     private boolean active;
     private boolean access;
     private ChatInfo chatInfo;
@@ -95,7 +95,7 @@ public class ChatFragment extends Fragment {
         adminUserId = chatInfo.admin.idUser;
 
         assert activity != null;
-        mTodoService = ((AdicticApp) activity.getApplication()).getAPI();
+        mTodoService = ((App) activity.getApplication()).getAPI();
 
         // Agafem la nostra id
         assert sharedPreferences != null;
