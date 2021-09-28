@@ -141,18 +141,9 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
     @GET("/poblacions")
     Call<Collection<Localitzacio>> getLocalitzacions();
 
-    @GET("/users/dubtes/{childId}/poblacions")
-    Call<DubteLocalitzacions> getLocalitzacionsAndOpenDubte(@Path("childId") Long childId);
-
-    @POST("/users/dubtes/{childId}")
-    Call<String> postDubte(@Path("childId") Long childId, @Body Dubte dubte);
-
     ////////////////////////////////////
     //Chat
     ///////////////////////////////////
-
-    @POST("/message/{childId}/access")
-    Call<String> giveAccess(@Path("childId") Long idChild, @Body Boolean access);
 
     @GET("/message/client/{childId}/info")
     Call<ChatsMain> getChatsInfo(@Path("childId") Long childId);

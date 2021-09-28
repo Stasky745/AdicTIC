@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.adictic.common.R;
 import com.adictic.common.entity.ChatsMain;
-import com.adictic.client.R;
 
 import java.util.ArrayList;
 

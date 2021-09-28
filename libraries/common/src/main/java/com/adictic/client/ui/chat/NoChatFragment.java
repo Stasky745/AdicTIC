@@ -12,15 +12,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.DubteLocalitzacions;
 import com.adictic.common.entity.Localitzacio;
+import com.adictic.common.rest.Api;
+import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
+import com.adictic.common.util.Funcions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -37,7 +37,7 @@ import retrofit2.Response;
 
 public class NoChatFragment extends Fragment {
     private HashMap<Long,Localitzacio> localitzacioMap;
-    private AdicticApi mTodoService;
+    private Api mTodoService;
     private TextInputEditText TIET_dubteTitol, TIET_dubteDesc;
     private ChipGroup CG_localitats;
     private Boolean hasDubte;
@@ -52,7 +52,7 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
-        mTodoService = ((AdicticApp) requireActivity().getApplication()).getAPI();
+        mTodoService = ((App) requireActivity().getApplication()).getAPI();
 
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
@@ -105,7 +105,7 @@ public class NoChatFragment extends Fragment {
                     super.onResponse(call, response);
                         if (response.isSuccessful()) {
                             Toast.makeText(getActivity(), R.string.dubte_success, Toast.LENGTH_LONG).show();
-                            getActivity().finish();
+                            requireActivity().finish();
                         } else {
                             Toast toast = Toast.makeText(getContext(), R.string.error_sending_data, Toast.LENGTH_SHORT);
                             toast.show();
