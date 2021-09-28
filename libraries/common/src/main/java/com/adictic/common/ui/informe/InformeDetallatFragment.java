@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -110,9 +111,6 @@ public class InformeDetallatFragment extends Fragment {
 
     private void setRecomendacions(View root) {
         TextView TV_informeRecomanacionsText = root.findViewById(R.id.TV_informeRecomanacionsText);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            TV_informeRecomanacionsText.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
-        }
 
         if(!flag_massaIntents && !flag_usPerillos){
             String recomanacio = getString(R.string.recomanacio_bona);
@@ -153,7 +151,10 @@ public class InformeDetallatFragment extends Fragment {
             // Creem TV
             TV_informeRecomanacionsText.setText(ss);
             TV_informeRecomanacionsText.setMovementMethod(LinkMovementMethod.getInstance());
-            TV_informeRecomanacionsText.setHighlightColor(requireContext().getColor(R.color.colorPrimary));
+            //TV_informeRecomanacionsText.setHighlightColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            TV_informeRecomanacionsText.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
         }
     }
 
