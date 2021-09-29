@@ -18,6 +18,7 @@
 
     <string name="app_name" translatable="false">AdicTIC</string>
     <string name="last_time_used">Abierta última vez:</string>
+    <string name="times_opened">Veces que se ha usado:</string>
     <string name="time_span">Tiempo de uso:</string>
     <string name="lastXDays">Ver actividad de los últimos:</string>
     <string name="alfabeticament">Alfabéticamente</string>
