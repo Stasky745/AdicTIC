@@ -228,7 +228,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
         mAdapter = new UsageStatsAdapter(appList, DayUsageActivity.this);
         listView.setAdapter(mAdapter);
-        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(3);
         listView.addItemDecoration(rvSpaceDecoration);
         //setSpinner ha d'anar després de l'adapter
         setSpinner();
