@@ -436,7 +436,7 @@
     <string name="notif_night_sleep">Descans nocturn.<b> El dispositiu ha estat bloquejat perquè puguis tenir un son de qualitat</b></string>
 
     <string name="settings_android">Opcions d\'Android</string>
-    <string name="language_not_supported">Idioma no suportat</string>
+    <string name="language_not_supported">Idioma del sistema no suportat</string>
     <string name="continue_">Continuar</string>
     <string name="apps_blocked">Aplicacions bloquejadas</string>
 
@@ -447,4 +447,6 @@
     <string name="recomanacio_alarma">S’observen senyals d’alarma que podrien indicar un problema en l’ús de les tecnologies. Us animem a revisar quina ha estat la gestió dels límits d’incorporar les mesures pertinents.</string>
     <string name="recomanacio_alarma_aux"> gestió dels límits </string>
     <string name="times_opened">Vegades que s\'ha utilitzat:</string>
+    <string name="channel_title_notif_install">Notificacions d\'aplicacions instal·lades o desinstal·lades</string>
+    <string name="channel_desc_notif_install">Les notificacions de quan una nova aplicació és instal·lada o desinstal·lada</string>
 </resources>

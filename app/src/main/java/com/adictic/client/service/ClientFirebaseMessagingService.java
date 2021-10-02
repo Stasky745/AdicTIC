@@ -199,6 +199,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
 
                         title = getString(R.string.free_use_activation);
+                        channel = MyNotificationManager.Channels.BLOCK;
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
@@ -210,6 +211,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sendFreeUseTime(sharedPreferences);
 
                         title = getString(R.string.free_use_deactivation);
+                        channel = MyNotificationManager.Channels.BLOCK;
                     }
                     break;
                 case "blockApp":
@@ -255,6 +257,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                 case "horaris":
                     Funcions.checkHoraris(getApplicationContext());
                     title = getString(R.string.horaris_notification);
+                    channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "events":
                     Funcions.checkEvents(getApplicationContext());
@@ -276,6 +279,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     String appNameInsApp = messageMap.get("installedApp");
                     String childNameInsApp = messageMap.get("childName");
                     title = getString(R.string.title_installed_app, childNameInsApp);
+                    channel = MyNotificationManager.Channels.INSTALL;
                     body = appNameInsApp;
                     activitatClass = BlockAppsActivity.class;
                     break;
@@ -283,6 +287,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     String appNameUninsApp = messageMap.get("uninstalledApp");
                     String childNameUninsApp = messageMap.get("childName");
                     title = getString(R.string.title_uninstalled_app, childNameUninsApp);
+                    channel = MyNotificationManager.Channels.INSTALL;
                     body = appNameUninsApp;
                     activitatClass = BlockAppsActivity.class;
                     break;
