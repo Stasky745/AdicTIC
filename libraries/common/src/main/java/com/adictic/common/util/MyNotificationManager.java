@@ -25,10 +25,11 @@ public class MyNotificationManager {
         channel_info.put(Channels.CHAT, new Channel("CHAT", "Chat notification", "New message in the chat", NotificationManager.IMPORTANCE_HIGH)); //TODO: Posar a strings.xml
         channel_info.put(Channels.VIDEOCHAT, new Channel("VIDEOCHAT", "Videochat notification", "Calling to a videochat", NotificationManager.IMPORTANCE_MAX)); //TODO: Posar a strings.xml
         channel_info.put(Channels.BLOCK, new Channel("BLOCK", context.getString(R.string.channel_title_notif_block), context.getString(R.string.channel_desc_notif_block), NotificationManager.IMPORTANCE_MAX));
+        channel_info.put(Channels.INSTALL, new Channel("INSTALL",context.getString(R.string.channel_title_notif_block), context.getString(R.string.channel_desc_notif_block), NotificationManager.IMPORTANCE_DEFAULT));
     }
 
     public enum Channels {
-        GENERAL, CHAT, VIDEOCHAT, BLOCK
+        GENERAL, CHAT, VIDEOCHAT, BLOCK, INSTALL
     }
 
     protected static class Channel {
