@@ -158,11 +158,11 @@ public class AccessibilityScreenService extends AccessibilityService {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
 
-        registerScreenLockReceiver();
-
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             disableSelf();
+        }
         else {
+            registerScreenLockReceiver();
             fetchDades();
 
             lastAppName = "";
