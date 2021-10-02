@@ -436,7 +436,7 @@
     <string name="notif_night_sleep">Descans nocturn.<b> El dispositiu ha estat bloquejat perquè puguis tenir un son de qualitat</b></string>
 
     <string name="settings_android">Opcions d\'Android</string>
-    <string name="language_not_supported">Idioma no suportat</string>
+    <string name="language_not_supported">Idioma del sistema no suportat</string>
     <string name="continue_">Continuar</string>
     <string name="apps_blocked">Aplicacions bloquejadas</string>
 
