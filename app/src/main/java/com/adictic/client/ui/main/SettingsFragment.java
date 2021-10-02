@@ -159,7 +159,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         assert language_preference != null;
         language_preference.setValue(selectedLanguage);
-        if(language_preference.getEntry().length()==0) language_preference.setSummary(getString(R.string.language_not_supported));
+        if(language_preference.getEntry() == null || language_preference.getEntry().length()==0) language_preference.setSummary(getString(R.string.language_not_supported));
         else language_preference.setSummary(language_preference.getEntry());
 
         language_preference.setOnPreferenceChangeListener((preference, newValue) -> {
