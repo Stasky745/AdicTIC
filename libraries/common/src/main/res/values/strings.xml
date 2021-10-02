@@ -446,6 +446,9 @@
 
     <string name="channel_title_notif_block">Notificaciones de bloqueos</string>
     <string name="channel_desc_notif_block">Las notificaciones de cuando el dispositivo es bloqueado o alguna aplicación es bloqueada</string>
+    <string name="channel_title_notif_install">Notificaciones de aplicaciones instaladas o desinstaladas</string>
+    <string name="channel_desc_notif_install">Las notificaciones de cuando una nueva aplicación és instalada o desinstalada</string>
+
     <string name="phone_locked">Dispositivo bloqueado</string>
     <string name="new_app_blocked">Nueva aplicación bloqueada</string>
     <string name="notif_phone_locked">Este dispositivo ha sido bloqueado temporalmente</string>
