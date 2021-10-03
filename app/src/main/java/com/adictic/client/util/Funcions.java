@@ -59,7 +59,6 @@ import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
-import com.adictic.client.workers.UpdateTokenWorker;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
@@ -728,25 +727,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("geoLocWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
-    }
-
-    // UpdateTokenWorker
-
-    public static void runUpdateTokenWorker(Context mContext, long idUser, String token, long delay){
-        Data.Builder data = new Data.Builder();
-        data.putLong("idUser", idUser);
-        data.putString("token", token);
-
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(UpdateTokenWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
     // **************** END WORKERS ****************

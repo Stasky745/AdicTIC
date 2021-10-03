@@ -65,21 +65,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-        assert sharedPreferences != null;
-
-        if (Objects.equals(Crypt.getAES(token), sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "")))
-            return;
-
-        long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
-        if(idUser!=-1) {
-            if (sharedPreferences.getBoolean("isTutor", false))
-                idUser = -1;
-            else
-                idUser = sharedPreferences.getLong("idUser", -1);
-
-            Funcions.runUpdateTokenWorker(getApplicationContext(), idUser, token, 0);
-        }
+        Funcions.runUpdateTokenWorker(getApplicationContext());
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
