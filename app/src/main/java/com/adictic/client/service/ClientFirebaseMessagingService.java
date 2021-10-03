@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.WorkManager;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -236,8 +238,16 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.enviarLiveApp();
 
-                        Funcions.startAppUsageWorker24h(getApplicationContext());
-                        Funcions.sendAppUsage(getApplicationContext());
+                        // També actualitzem les dades d'ús al servidor
+                        try {
+                            if(WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_APP_USAGE).get().isEmpty())
+                                Funcions.startAppUsageWorker24h(getApplicationContext());
+                            else
+                                Funcions.sendAppUsage(getApplicationContext());
+
+                        } catch (ExecutionException | InterruptedException e) {
+                            Funcions.startAppUsageWorker24h(getApplicationContext());
+                        }
 
                         long now = System.currentTimeMillis();
                         long minute = 1000*60;
