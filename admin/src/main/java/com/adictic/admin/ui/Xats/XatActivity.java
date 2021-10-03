@@ -24,6 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.admin.BuildConfig;
 import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.ui.Usuari.MainUserActivity;
@@ -91,6 +92,12 @@ public class XatActivity extends AppCompatActivity {
         setContentView(R.layout.chat_layout);
 
         userProfile = getIntent().getParcelableExtra("chat");
+        if(userProfile==null || userProfile.userId==null){
+            if(BuildConfig.DEBUG) Toast.makeText(this,"UserProfile invalid",Toast.LENGTH_LONG).show();
+            finish();
+        } else if(userProfile.childId==null){
+            userProfile.childId = -1L;
+        }
         active = getIntent().getBooleanExtra("active",true);
 
         mService = ((AdminApp) getApplication()).getAPI();

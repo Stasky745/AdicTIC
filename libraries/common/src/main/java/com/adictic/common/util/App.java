@@ -78,6 +78,16 @@ public class App extends Application {
 
     protected OkHttpClient getOkHttpClient(Authenticator authenticator) {
 
+        OkHttpClient.Builder builder = createOkHttpClientBuilder(authenticator);
+        String currentURL = BuildConfig.DEBUG ? Global.BASE_URL_DEBUG : Global.BASE_URL_RELEASE;
+        if(currentURL.contains("adicticapp.ribera.cat:8443")){
+            builder = addCertOkHttpClient(builder, "ca_bundle.crt");
+        }
+
+        return builder.build();
+    }
+
+    private OkHttpClient.Builder createOkHttpClientBuilder(Authenticator authenticator){
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
         if(BuildConfig.DEBUG) {
@@ -92,36 +102,13 @@ public class App extends Application {
 
         return httpClient
                 .cookieJar(cookieJar)
-                .authenticator(authenticator)
-                .build();
+                .authenticator(authenticator);
     }
 
-    protected int responseCount(Response response) {
-        int result = 1;
-        while ((response = response.priorResponse()) != null) {
-            result++;
-        }
-        return result;
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-
-        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
-        builder.withBuildConfigClass(BuildConfig.class)
-                .withReportFormat(StringFormat.JSON);
-        builder.getPluginConfigurationBuilder(LimiterConfigurationBuilder.class)
-                .withDeleteReportsOnAppUpdate(true)
-                .withStacktraceLimit(1)
-                .withResetLimitsOnAppUpdate(true);
-        ACRA.init(this, builder);
-    }
-    
-    protected OkHttpClient getCertOkHttpClient(Authenticator authenticator){
+    private OkHttpClient.Builder addCertOkHttpClient(OkHttpClient.Builder builder, String cert) {
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream caInput = new BufferedInputStream(getAssets().open("ca_bundle.crt"));
+            InputStream caInput = new BufferedInputStream(getAssets().open(cert));
             Certificate ca;
             try {
                 ca = cf.generateCertificate(caInput);
@@ -145,30 +132,15 @@ public class App extends Application {
             SSLContext context = SSLContext.getInstance("TLS");
             context.init(null, tmf.getTrustManagers(), null);
 
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            return builder.sslSocketFactory(context.getSocketFactory(), (X509TrustManager) tmf.getTrustManagers()[0]);
 
-            if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-                httpClient.addInterceptor(interceptor);
-            }
-
-            ClearableCookieJar cookieJar =
-                    new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
-
-            return httpClient
-                    .cookieJar(cookieJar)
-                    .authenticator(authenticator)
-                    .sslSocketFactory(context.getSocketFactory(), (X509TrustManager) tmf.getTrustManagers()[0])
-                    .build();
-
-        } catch (Exception e){
-            throw new RuntimeException(e);
+        } catch(Exception e){
+            e.printStackTrace();
+            return builder;
         }
     }
 
-    protected OkHttpClient getUnsafeOkHttpClient(Authenticator authenticator) {
+    private OkHttpClient.Builder addUnsafeOkHttpClient(OkHttpClient.Builder builder){
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[]{
@@ -190,33 +162,39 @@ public class App extends Application {
                     }
             };
 
-            // Install the all-trusting trust manager
             final SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-            //okhttp3.Credentials.basic("username", "password");
-            OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-            if(BuildConfig.DEBUG) {
-                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-                builder.addInterceptor(interceptor);
-            }
-
-            ClearableCookieJar cookieJar =
-                    new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
-            //builder.addInterceptor(new BasicAuthInterceptor("username", "password"));
             builder.hostnameVerifier((hostname, session) -> true);
-            builder.cookieJar(cookieJar);
-            builder.authenticator(authenticator);
 
-            return builder.build();
+            return builder;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return builder;
         }
+    }
 
+    protected int responseCount(Response response) {
+        int result = 1;
+        while ((response = response.priorResponse()) != null) {
+            result++;
+        }
+        return result;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+
+        CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this);
+        builder.withBuildConfigClass(BuildConfig.class)
+                .withReportFormat(StringFormat.JSON);
+        builder.getPluginConfigurationBuilder(LimiterConfigurationBuilder.class)
+                .withDeleteReportsOnAppUpdate(true)
+                .withStacktraceLimit(1)
+                .withResetLimitsOnAppUpdate(true);
+        ACRA.init(this, builder);
     }
 }
