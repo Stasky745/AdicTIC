@@ -27,11 +27,8 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-        assert sharedPreferences != null;
-        long idUser = -1;
 
-        Funcions.runUpdateTokenWorker(getApplicationContext(), idUser, token, 0);
+        Funcions.runUpdateTokenWorker(getApplicationContext());
 
     }
     @Override

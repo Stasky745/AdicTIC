@@ -37,9 +37,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
@@ -57,7 +59,6 @@ import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
-import com.adictic.client.workers.UpdateTokenWorker;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
@@ -455,7 +456,19 @@ public class Funcions extends com.adictic.common.util.Funcions {
         assert sharedPreferences != null;
         AdicticApi api = ((AdicticApp) ctx.getApplicationContext()).getAPI();
 
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 6));
+        // Agafem quants dies fa que no s'agafen dades (màxim 6)
+        long lastMillisAppUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
+        int daysToFetch;
+        if(lastMillisAppUsage == 0)
+            daysToFetch = 6;
+        else {
+            long lastDay = new DateTime(lastMillisAppUsage).withTimeAtStartOfDay().getMillis();
+            long today = new DateTime().withTimeAtStartOfDay().getMillis();
+            daysToFetch = Math.min(Math.round(TimeUnit.MILLISECONDS.toDays(Math.abs(today-lastDay))), 6);
+        }
+
+        // Agafem les dades
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, daysToFetch));
 
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)
@@ -596,18 +609,23 @@ public class Funcions extends com.adictic.common.util.Funcions {
     // AppUsageWorkers
 
     public static void startAppUsageWorker24h(Context mCtx){
-        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-        // Agafem dades dels últims X dies per inicialitzar dades al servidor
-        assert sharedPreferences != null;
-        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAYOFYEAR, 6).apply();
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
 
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(AppUsageWorker.class, 24, TimeUnit.HOURS)
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                5,
+                                TimeUnit.MINUTES)
+                        .addTag(Constants.WORKER_TAG_APP_USAGE)
                         .build();
 
         WorkManager.getInstance(mCtx)
                 .enqueueUniquePeriodicWork("pujarAppInfo",
-                        ExistingPeriodicWorkPolicy.KEEP,
+                        ExistingPeriodicWorkPolicy.REPLACE,
                         myWork);
 
         Log.d(TAG,"Worker AppUsage 24h Configurat");
@@ -698,32 +716,17 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void runGeoLocWorkerOnce(Context mContext) {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(GeoLocWorker.class)
-                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .setConstraints(constraints)
                         .build();
 
         WorkManager.getInstance(mContext)
                 .enqueueUniqueWork("geoLocWorkerOnce", ExistingWorkPolicy.REPLACE, myWork);
-    }
-
-    // UpdateTokenWorker
-
-    public static void runUpdateTokenWorker(Context mContext, long idUser, String token, long delay){
-        Data.Builder data = new Data.Builder();
-        data.putLong("idUser", idUser);
-        data.putString("token", token);
-
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(UpdateTokenWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
-                        .build();
-
-        WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
-
-        Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
     }
 
     // **************** END WORKERS ****************

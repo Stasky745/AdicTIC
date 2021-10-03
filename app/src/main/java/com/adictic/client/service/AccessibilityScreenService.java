@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
             "BlockDeviceActivity",
             "com.adictic.client.ui.BlockDeviceActivity",
-            "com.android.contacts.activities.PeopleActivity"
+            "com.android.contacts"
     ));
 
     private final List<String> ignoreActivities = new ArrayList<>(Arrays.asList(
@@ -158,11 +159,11 @@ public class AccessibilityScreenService extends AccessibilityService {
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
         assert sharedPreferences != null;
 
-        registerScreenLockReceiver();
-
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
             disableSelf();
+        }
         else {
+            registerScreenLockReceiver();
             fetchDades();
 
             lastAppName = "";
@@ -291,7 +292,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             // --- BLOCK DEVICE ---
             String className = event.getClassName().toString();
-            if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className)) {
+            if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className) && !allowedApps.contains(currentPackage)) {
                 Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
                 return;
             }
@@ -455,8 +456,15 @@ public class AccessibilityScreenService extends AccessibilityService {
             liveApp.time = DateTime.now().getMillis();
 
             // També actualitzem les dades d'ús al servidor
-            Funcions.startAppUsageWorker24h(instance.getApplicationContext());
-            Funcions.sendAppUsage(instance.getApplicationContext());
+            try {
+                if(WorkManager.getInstance(instance.getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_APP_USAGE).get().isEmpty())
+                    Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+                else
+                    Funcions.sendAppUsage(instance.getApplicationContext());
+
+            } catch (ExecutionException | InterruptedException e) {
+                Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+            }
 
             Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
             call.enqueue(new Callback<String>(){

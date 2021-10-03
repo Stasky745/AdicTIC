@@ -29,6 +29,8 @@ import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.joda.time.DateTime;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -133,21 +135,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         assert pujar_informe != null;
         pujar_informe.setOnPreferenceClickListener(preference -> {
-            List<GeneralUsage> gul = Funcions.getGeneralUsages(getContext(), sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 6));
-
-            Funcions.canviarMesosAServidor(gul);
-
-            Call<String> call = mTodoService.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
-
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);}
-
-                @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);}
-            });
+            Funcions.sendAppUsage(requireContext());
             return true;
         });
 
