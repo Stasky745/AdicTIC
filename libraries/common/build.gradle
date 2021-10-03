@@ -57,6 +57,7 @@ dependencies {
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$versions_glide"
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
     annotationProcessor "com.github.bumptech.glide:compiler:$versions_glide"
     implementation "com.github.bumptech.glide:okhttp3-integration:$versions_glide" // Glide's OkHttp3 integration.
 

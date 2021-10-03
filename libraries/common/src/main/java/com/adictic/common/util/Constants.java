@@ -56,6 +56,7 @@ public class Constants {
 
     public static final String WORKER_TAG_BLOCK_APPS = "blocked_apps_worker_tag";
     public static final String WORKER_TAG_EVENT_BLOCK = "event_block_worker_tag";
+    public static final String WORKER_TAG_APP_USAGE = "app_usage_worker_tag";
     public static final String WORKER_TAG_EVENT_MANAGER = "event_manager_tag";
     public static final String WORKER_TAG_HORARIS_BLOCK = "horaris_worker_tag";
     public static final String WORKER_TAG_HORARIS_EVENTS_MANAGER = "horaris_manager_tag";

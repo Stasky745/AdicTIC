@@ -86,7 +86,6 @@ public class Permisos extends AppCompatActivity {
             sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, sixDaysAgo).apply();
 
             Funcions.startAppUsageWorker24h(Permisos.this);
-            Funcions.sendAppUsage(Permisos.this);
         }
 
         if(Funcions.isMIUI())

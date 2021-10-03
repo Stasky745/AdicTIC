@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
@@ -23,7 +24,10 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -67,9 +71,6 @@ public class AppUsageWorker extends Worker {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                     super.onResponse(call, response);
-                    if (response.isSuccessful()) {
-//                        sharedPreferences.edit().putBoolean("installedApps",true).apply();
-                    }
                 }
 
                 @Override
@@ -81,38 +82,32 @@ public class AppUsageWorker extends Worker {
     }
 
     private List<AppInfo> getLaunchableApps() {
-        Intent main = new Intent(Intent.ACTION_MAIN);
+        Intent main = new Intent(Intent.ACTION_MAIN, null);
         main.addCategory(Intent.CATEGORY_LAUNCHER);
 
         PackageManager mPm = getApplicationContext().getPackageManager();
 
-        List<AppInfo> res = new ArrayList<>();
-
         @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
 
-        //List<String> launcherApps = getLauncherApps();
-
-        List<String> duplicatesList = new ArrayList<>();
+        Map<String, AppInfo> hashMap = new HashMap<>();
 
         for (ResolveInfo ri : list) {
             ApplicationInfo ai = ri.activityInfo.applicationInfo;
-            // if((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0 && launcherApps.contains(ai.packageName) && !duplicatesList.contains(ai.packageName)) {
-            if (!duplicatesList.contains(ai.packageName)) {
-                duplicatesList.add(ai.packageName);
+            if(!hashMap.containsKey(ai.packageName)){
                 AppInfo appInfo = new AppInfo();
                 appInfo.appName = mPm.getApplicationLabel(ai).toString();
                 appInfo.pkgName = ai.packageName;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     appInfo.category = ai.category;
                 }
-                res.add(appInfo);
+                hashMap.put(ai.packageName, appInfo);
             }
         }
 
-        return res;
+        return new ArrayList<>(hashMap.values());
     }
 
-//    private List<String> getLauncherApps(){
+//    private List<String> getLauncherApps(PackageManager mPm){
 //        List<ApplicationInfo> list = mPm.getInstalledApplications(0);
 //
 //        List<String> res = new ArrayList<>();
