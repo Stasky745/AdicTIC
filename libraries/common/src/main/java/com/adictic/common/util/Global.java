@@ -24,9 +24,9 @@ public class Global {
 
     //public static final String BASE_URL_PORTFORWARDING = "http://localhost:8080";
     //public static final String BASE_URL_PORTFORWARDING = "https://192.168.1.130:8443";
-    public static final String BASE_URL_RELEASE = "https://adictic-master.herokuapp.com/";
-    public static final String BASE_URL_DEBUG = "https://adicticapp.ribera.cat:8443/";
-//    public static final String BASE_URL_DEBUG = "https://adictic-test.herokuapp.com/";
+//    public static final String BASE_URL_RELEASE = "https://adictic-master.herokuapp.com/";
+    public static final String BASE_URL_RELEASE = "https://adicticapp.ribera.cat:8443/";
+    public static final String BASE_URL_DEBUG = "https://adictic-test.herokuapp.com/";
     //public static final String BASE_URL_PORTFORWARDING = "https://private-8a27bb-adictic.apiary-mock.com/";
     public static final String BASE_URL_GENYMOTION = "http://10.0.3.2:8080";
 

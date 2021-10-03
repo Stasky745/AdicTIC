@@ -37,8 +37,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] changes = {
-            "Canvi de servidor per preparar prova pilot",
-            "Canvis en la pàgina de ús diari d'aplicacions"
+
     };
 
     @Override
