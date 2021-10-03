@@ -587,9 +587,8 @@ public class Funcions {
             string.startsWith("* ") ||
             string.startsWith("· ")){
             spannableString = new SpannableString(string.substring(2));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 spannableString.setSpan(new BulletSpan(BulletSpan.STANDARD_GAP_WIDTH, context.getColor(R.color.colorPrimary)), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
             else
                 spannableString.setSpan(new BulletSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
