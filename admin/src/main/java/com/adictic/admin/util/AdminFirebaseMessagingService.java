@@ -58,7 +58,7 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
 
                 switch (Objects.requireNonNull(messageMap.get("chat"))) {  //Message with Chat
                     case "0": // Access
-                        if (XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
+                        if (XatActivity.userProfile!=null && XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
                             intent = new Intent("chatAccess");
                             intent.putExtra("idUser", userID);
                             intent.putExtra("idChild", childID);
@@ -70,7 +70,7 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
                         break;
                     case "1":  //Message with Chat
                         String body = remoteMessage.getData().get("body");
-                        if (XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
+                        if (XatActivity.userProfile!=null && XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
                             intent = new Intent("NewMessage");
                             intent.putExtra("message", body);
                             intent.putExtra("senderId", userID);
@@ -84,7 +84,7 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
                         }
                         break;
                     case "2":
-                        if (XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
+                        if (XatActivity.userProfile!=null && XatActivity.userProfile.userId == userID && XatActivity.userProfile.childId == childID) {
                             intent = new Intent("CloseChat");
                             LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                         }
