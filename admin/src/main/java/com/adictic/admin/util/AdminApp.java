@@ -42,7 +42,7 @@ public class AdminApp extends App {
     @Override
     public void onCreate() {
         super.onCreate();
-        adminApi = createRetrofit(getOkHttpClient(new AdminAuthenticator())).create(AdminApi.class);
+        adminApi = createRetrofit(getCertOkHttpClient(new AdminAuthenticator())).create(AdminApi.class);
     }
 
     public AdminApi getAPI() {
