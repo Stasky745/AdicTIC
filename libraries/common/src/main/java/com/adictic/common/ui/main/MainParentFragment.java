@@ -207,21 +207,21 @@ public class MainParentFragment extends Fragment {
                 ex.printStackTrace();
                 return;
             }
+
+            TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
+
+            DateTime hora = new DateTime(liveApp.time);
+            String liveAppText;
+            DateTimeFormatter fmt;
+            if (DateTime.now().getMillis() - hora.getMillis() < Constants.TOTAL_MILLIS_IN_DAY) {
+                fmt = DateTimeFormat.forPattern("HH:mm");
+            } else {
+                fmt = DateTimeFormat.forPattern("dd/MM");
+            }
+            liveAppText = liveApp.appName + "\n" + hora.toString(fmt);
+
+            currentApp.setText(liveAppText);
         }
-
-        TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
-
-        DateTime hora = new DateTime(liveApp.time);
-        String liveAppText;
-        DateTimeFormatter fmt;
-        if (DateTime.now().getMillis() - hora.getMillis() < Constants.TOTAL_MILLIS_IN_DAY) {
-            fmt = DateTimeFormat.forPattern("HH:mm");
-        } else {
-            fmt = DateTimeFormat.forPattern("dd/MM");
-        }
-        liveAppText = liveApp.appName + "\n" + hora.toString(fmt);
-
-        currentApp.setText(liveAppText);
     }
 
     private void setButtons() {
