@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.work.WorkManager;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -63,21 +65,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
-        assert sharedPreferences != null;
-
-        if (Objects.equals(Crypt.getAES(token), sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "")))
-            return;
-
-        long idUser = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
-        if(idUser!=-1) {
-            if (sharedPreferences.getBoolean("isTutor", false))
-                idUser = -1;
-            else
-                idUser = sharedPreferences.getLong("idUser", -1);
-
-            Funcions.runUpdateTokenWorker(getApplicationContext(), idUser, token, 0);
-        }
+        Funcions.runUpdateTokenWorker(getApplicationContext());
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
@@ -159,7 +147,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             switch(action){
                 // ************* Accions del dispositiu fill *************
                 case "geolocActive":
-                    Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
+                    //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
@@ -199,7 +187,6 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
 
                         title = getString(R.string.free_use_activation);
-                        channel = MyNotificationManager.Channels.BLOCK;
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
@@ -211,8 +198,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sendFreeUseTime(sharedPreferences);
 
                         title = getString(R.string.free_use_deactivation);
-                        channel = MyNotificationManager.Channels.BLOCK;
                     }
+                    channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "blockApp":
                     updateBlockedAppsList(messageMap);
@@ -236,12 +223,20 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.enviarLiveApp();
 
-                        Funcions.startAppUsageWorker24h(getApplicationContext());
-                        Funcions.sendAppUsage(getApplicationContext());
+                        // També actualitzem les dades d'ús al servidor
+                        try {
+                            if(WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_APP_USAGE).get().isEmpty())
+                                Funcions.startAppUsageWorker24h(getApplicationContext());
+                            else
+                                Funcions.sendAppUsage(getApplicationContext());
+
+                        } catch (ExecutionException | InterruptedException e) {
+                            Funcions.startAppUsageWorker24h(getApplicationContext());
+                        }
 
                         long now = System.currentTimeMillis();
-                        long minute = 1000*60;
-                        if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                        long timeout = 1000*60*3;
+                        if(updateGeoloc == -1 || now - updateGeoloc > timeout) {
                             Funcions.runGeoLocWorkerOnce(getApplicationContext());
                             updateGeoloc = now;
                         }

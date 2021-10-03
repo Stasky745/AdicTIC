@@ -29,27 +29,21 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-            "Informe mensual acabat",
-            "Opcions de notificacions"
+
     };
 
     public static String[] fixes = {
-            "Agafa bé les dates a l'apartat d'agafar informació d'ús",
-            "Ensenya temps total a l'apartat d'agafar informació d'ús",
-            "Ja no entra en bucle quan surt la pàgina de bloqueig de dispositiu",
-            "Ara ja es tanca bé la pàgina de bloqueig de dispositiu",
-            "Ara es tanca la pàgina de bloqueig d'apps",
-            "Les dades entre l'apartat d'agafar informació d'ús i la gràfica inicial ja són iguals"
+
     };
 
     public static String[] changes = {
-            "Canvis en la pantalla de permisos i opcions"
+
     };
 
     @Override
     public void onCreate() {
         super.onCreate();
-        adicticApi = createRetrofit(getOkHttpClient(new AdicticAuthenticator())).create(AdicticApi.class);
+        adicticApi = createRetrofit(getCertOkHttpClient(new AdicticAuthenticator())).create(AdicticApi.class);
         notificationManager = new ClientNotificationManager(this);
     }
 

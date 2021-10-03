@@ -83,7 +83,7 @@ public class DayUsageActivity extends AppCompatActivity {
         // Creem la llista dels elements
         List<String> spinnerArray = new ArrayList<>();
         spinnerArray.add(getString(R.string.time_span));
-        spinnerArray.add(getString(R.string.last_time_used));
+        spinnerArray.add(getString(R.string.times_opened));
         spinnerArray.add(getString(R.string.alfabeticament));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -100,7 +100,7 @@ public class DayUsageActivity extends AppCompatActivity {
                 String selected = SP_sort.getSelectedItem().toString();
                 if(selected.equals(getString(R.string.time_span)))
                     mAdapter.sortList(_DISPLAY_ORDER_USAGE_TIME);
-                else if(selected.equals(getString(R.string.last_time_used)))
+                else if(selected.equals(getString(R.string.times_opened)))
                     mAdapter.sortList(_DISPLAY_ORDER_LAST_TIME_USED);
                 else
                     mAdapter.sortList(_DISPLAY_ORDER_APP_NAME);
@@ -228,7 +228,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
         mAdapter = new UsageStatsAdapter(appList, DayUsageActivity.this);
         listView.setAdapter(mAdapter);
-        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(8);
+        RVSpaceDecoration rvSpaceDecoration = new RVSpaceDecoration(3);
         listView.addItemDecoration(rvSpaceDecoration);
         //setSpinner ha d'anar després de l'adapter
         setSpinner();
@@ -407,6 +407,13 @@ public class DayUsageActivity extends AppCompatActivity {
         }
     }
 
+    public static class TimesUsedComparator implements Comparator<AppUsage> {
+        @Override
+        public int compare(AppUsage appUsage, AppUsage t1) {
+            return t1.timesOpened.compareTo(appUsage.timesOpened);
+        }
+    }
+
     public static class UsageTimeComparator implements Comparator<AppUsage> {
         @Override
         public final int compare(AppUsage a, AppUsage b) {
@@ -416,6 +423,7 @@ public class DayUsageActivity extends AppCompatActivity {
 
     class UsageStatsAdapter extends RecyclerView.Adapter<UsageStatsAdapter.MyViewHolder> {
         private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
+        private final TimesUsedComparator mTimesUsedComparator = new TimesUsedComparator();
         private final UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
         private final AppNameComparator mAppLabelComparator = new AppNameComparator();
         private final ArrayList<AppUsage> mPackageStats;
@@ -449,11 +457,12 @@ public class DayUsageActivity extends AppCompatActivity {
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
 
-                long now = Calendar.getInstance().getTimeInMillis();
-                if(now - pkgStats.lastTimeUsed < Constants.TOTAL_MILLIS_IN_DAY)
-                    holder.lastTimeUsed.setText(formatterTime.format(pkgStats.lastTimeUsed));
-                else
-                    holder.lastTimeUsed.setText(formatterDate.format(pkgStats.lastTimeUsed));
+                holder.timesUsed.setText(String.valueOf(pkgStats.timesOpened));
+
+                // Perquè rodi si és massa llarg
+                holder.timesUsed.setSelected(true);
+                holder.usageTime.setSelected(true);
+
                 // Change format from HH:dd:ss to "X Days Y Hours Z Minutes"
                 long secondsInMilli = 1000;
                 long minutesInMilli = secondsInMilli * 60;
@@ -519,7 +528,7 @@ public class DayUsageActivity extends AppCompatActivity {
                 mPackageStats.sort(mUsageTimeComparator);
             } else if (mDisplayOrder == _DISPLAY_ORDER_LAST_TIME_USED) {
                 Log.i(TAG, "Sorting by last time used");
-                mPackageStats.sort(mLastTimeUsedComparator);
+                mPackageStats.sort(mTimesUsedComparator);
             } else if (mDisplayOrder == _DISPLAY_ORDER_APP_NAME) {
                 Log.i(TAG, "Sorting by application name");
                 mPackageStats.sort(mAppLabelComparator);
@@ -528,7 +537,7 @@ public class DayUsageActivity extends AppCompatActivity {
         }
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            TextView pkgName, lastTimeUsed, usageTime;
+            TextView pkgName, timesUsed, usageTime;
             ImageView icon;
 
             protected View mRootView;
@@ -539,7 +548,7 @@ public class DayUsageActivity extends AppCompatActivity {
                 mRootView = itemView;
 
                 pkgName = mRootView.findViewById(R.id.package_name);
-                lastTimeUsed = mRootView.findViewById(R.id.last_time_used);
+                timesUsed = mRootView.findViewById(R.id.last_time_used);
                 usageTime = mRootView.findViewById(R.id.usage_time);
                 icon = mRootView.findViewById(R.id.usage_icon);
             }

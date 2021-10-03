@@ -3,7 +3,6 @@ package com.adictic.common.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.usage.UsageEvents;
-import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -33,9 +32,11 @@ import androidx.core.text.HtmlCompat;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.adictic.common.BuildConfig;
@@ -47,34 +48,24 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.MonthEntity;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
-import com.adictic.common.ui.events.EventsActivity;
 import com.adictic.common.workers.UpdateTokenWorker;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeField;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -570,21 +561,24 @@ public class Funcions {
         });
     }
 
-    public static void runUpdateTokenWorker(Context mContext, long idUser, String token, long delay){
-        Data.Builder data = new Data.Builder();
-        data.putLong("idUser", idUser);
-        data.putString("token", token);
+    public static void runUpdateTokenWorker(Context mContext){
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
 
-        OneTimeWorkRequest myWork =
-                new OneTimeWorkRequest.Builder(UpdateTokenWorker.class)
-                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                        .setInputData(data.build())
+        PeriodicWorkRequest myWork =
+                new PeriodicWorkRequest.Builder(UpdateTokenWorker.class, 1, TimeUnit.HOURS)
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                5,
+                                TimeUnit.MINUTES)
                         .build();
 
         WorkManager.getInstance(mContext)
-                .enqueueUniqueWork("UpdateTokenWorker", ExistingWorkPolicy.REPLACE, myWork);
+                .enqueueUniquePeriodicWork("UpdateTokenWorker", ExistingPeriodicWorkPolicy.REPLACE, myWork);
 
-        Log.d(TAG,"Worker UpdateToken Configurat - ID=" + idUser + " | delay=" + delay);
+        Log.d(TAG,"Worker UpdateToken Configurat");
     }
 
     public static Spanned getSpannedText(Context context, String string){
@@ -593,9 +587,8 @@ public class Funcions {
             string.startsWith("* ") ||
             string.startsWith("· ")){
             spannableString = new SpannableString(string.substring(2));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 spannableString.setSpan(new BulletSpan(BulletSpan.STANDARD_GAP_WIDTH, context.getColor(R.color.colorPrimary)), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
             else
                 spannableString.setSpan(new BulletSpan(), 0, spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
