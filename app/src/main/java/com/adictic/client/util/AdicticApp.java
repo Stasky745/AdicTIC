@@ -43,7 +43,7 @@ public class AdicticApp extends App {
     @Override
     public void onCreate() {
         super.onCreate();
-        adicticApi = createRetrofit(getCertOkHttpClient(new AdicticAuthenticator())).create(AdicticApi.class);
+        adicticApi = createRetrofit(getOkHttpClient(new AdicticAuthenticator())).create(AdicticApi.class);
         notificationManager = new ClientNotificationManager(this);
     }
 
