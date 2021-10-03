@@ -84,16 +84,6 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ForegroundService.this);
-        assert sharedPreferences != null;
-
-        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
-            stopSelf();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotification();
-        }
     }
 
     private void startLocationReceiver() {
@@ -120,6 +110,15 @@ public class ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ForegroundService.this);
+        assert sharedPreferences != null;
+
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
+            stopSelf();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotification();
+
         actiu = true;
 
         registerInstallApps();
