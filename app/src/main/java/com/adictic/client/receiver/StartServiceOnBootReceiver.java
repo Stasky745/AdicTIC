@@ -7,15 +7,11 @@ import android.os.Build;
 import android.util.Log;
 
 import com.adictic.client.service.ForegroundService;
+import com.adictic.client.util.Funcions;
 
 public class StartServiceOnBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent it = new Intent(context, ForegroundService.class);
-        Log.i("StartServiceOnBootReceiver", "Starting service");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            context.startForegroundService(it);
-        else
-            context.startService(it);
+        Funcions.startServiceWorker(context);
     }
 }
