@@ -717,9 +717,13 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void runGeoLocWorkerOnce(Context mContext) {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
         OneTimeWorkRequest myWork =
                 new OneTimeWorkRequest.Builder(GeoLocWorker.class)
-                        .setInitialDelay(0, TimeUnit.MILLISECONDS)
+                        .setConstraints(constraints)
                         .build();
 
         WorkManager.getInstance(mContext)

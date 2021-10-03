@@ -161,7 +161,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             switch(action){
                 // ************* Accions del dispositiu fill *************
                 case "geolocActive":
-                    Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
+                    //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
@@ -201,7 +201,6 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
 
                         title = getString(R.string.free_use_activation);
-                        channel = MyNotificationManager.Channels.BLOCK;
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
@@ -213,8 +212,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sendFreeUseTime(sharedPreferences);
 
                         title = getString(R.string.free_use_deactivation);
-                        channel = MyNotificationManager.Channels.BLOCK;
                     }
+                    channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "blockApp":
                     updateBlockedAppsList(messageMap);
@@ -250,8 +249,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
 
                         long now = System.currentTimeMillis();
-                        long minute = 1000*60;
-                        if(updateGeoloc == -1 || now - updateGeoloc > minute) {
+                        long timeout = 1000*60*3;
+                        if(updateGeoloc == -1 || now - updateGeoloc > timeout) {
                             Funcions.runGeoLocWorkerOnce(getApplicationContext());
                             updateGeoloc = now;
                         }
