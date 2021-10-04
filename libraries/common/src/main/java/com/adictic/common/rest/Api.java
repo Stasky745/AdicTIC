@@ -209,4 +209,7 @@ public interface Api {
 
     @POST("/message/{childId}/access")
     Call<String> giveAccess(@Path("childId") Long idChild, @Body Boolean access);
+
+    @POST("/logFirebase/{firebaseId}")
+    Call<String> postFirebaseLog(@Path("firebaseId") Long firebaseId);
 }
