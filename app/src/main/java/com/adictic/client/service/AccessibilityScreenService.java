@@ -174,7 +174,12 @@ public class AccessibilityScreenService extends AccessibilityService {
             registerScreenLockReceiver();
             fetchDades();
 
+            excessUsageDevice = false;
             dayUsage = Math.toIntExact(Funcions.getGeneralUsages(AccessibilityScreenService.this, 0).get(0).totalTime);
+            if(dailyLimitDevice > 0) {
+                if(dayUsage > dailyLimitDevice)
+                    excessUsageDevice = true;
+            }
             unlockedDeviceTime = System.currentTimeMillis();
             lastTimeChecked = System.currentTimeMillis();
 
