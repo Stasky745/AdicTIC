@@ -8,12 +8,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +69,12 @@ public class MainParentFragment extends Fragment {
     private final static String ARG_FILL = "arg_fill";
 
     private final static String TAG = "MainParentFragment";
+
+    private final int STATE_NEUTRAL = 1;
+    private final int STATE_BLOCKDEVICE = 2;
+    private final int STATE_FREEUSE = 0;
+
+    private int lastDeviceState;
 
     private Api mTodoService;
     private long idChildSelected = -1;
@@ -278,43 +286,8 @@ public class MainParentFragment extends Fragment {
         else
             CL_Geoloc.setVisibility(View.GONE);
 
-        // Bloquejar dispositiu
-        Button blockButton = root.findViewById(R.id.BT_BlockDevice);
-        blockButton.setVisibility(View.GONE);
-
-        if (isTutor) {
-            blockButton.setVisibility(View.VISIBLE);
-
-            if(fill != null && fill.blocked)
-                blockButton.setText(getString(R.string.unblock_device));
-
-            blockButton.setOnClickListener(v -> {
-                Call<String> call;
-                if (blockButton.getText().equals(getString(R.string.block_device)))
-                    call = mTodoService.blockChild(idChildSelected);
-                else
-                    call = mTodoService.unblockChild(idChildSelected);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                        if (response.isSuccessful()) {
-                            if (blockButton.getText().equals(getString(R.string.block_device)))
-                                blockButton.setText(getString(R.string.unblock_device));
-                            else blockButton.setText(getString(R.string.block_device));
-                        }
-                        else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
+        // seekbar
+        setSeekbar(root);
 
         // HorarisActivity
         Button nitButton = root.findViewById(R.id.BT_Horaris);
@@ -323,45 +296,6 @@ public class MainParentFragment extends Fragment {
             i.putExtra("idChild", idChildSelected);
             startActivity(i);
         });
-
-        // FreeTime
-        Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
-        BT_FreeTime.setVisibility(View.GONE);
-        if (isTutor) {
-            BT_FreeTime.setVisibility(View.VISIBLE);
-
-            if(fill != null && fill.freeuse) {
-                BT_FreeTime.setText(getString(R.string.stop_free_time));
-            }
-
-            BT_FreeTime.setOnClickListener(v -> {
-                Call<String> call;
-                if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
-                    call = mTodoService.freeUse(idChildSelected, true);
-                } else
-                    call = mTodoService.freeUse(idChildSelected, false);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                        if (response.isSuccessful()) {
-                            if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
-                                BT_FreeTime.setText(getString(R.string.stop_free_time));
-                            else
-                                BT_FreeTime.setText(getString(R.string.free_time));
-                        }
-                        else
-                            Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
 
         // CL_Informes
         ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
@@ -413,6 +347,146 @@ public class MainParentFragment extends Fragment {
         } else {
             ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
+        }
+    }
+
+    private void freeTimeServer(boolean freetime) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+
+        Call<String> call = mTodoService.freeUse(idChildSelected, freetime);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()){
+                    if(freetime){
+                        TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                        TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                        lastDeviceState = STATE_FREEUSE;
+                    }
+                    else {
+                        TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_freeTime.setTypeface(Typeface.DEFAULT);
+                        lastDeviceState = STATE_NEUTRAL;
+                    }
+                }
+                else
+                    SB_deviceState.setProgress(lastDeviceState);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+            super.onFailure(call, t);
+                SB_deviceState.setProgress(lastDeviceState);
+            }
+        });
+    }
+
+    private void blockDeviceServer(boolean blockDevice) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+
+        Call<String> call;
+        if (blockDevice)
+            call = mTodoService.blockChild(idChildSelected);
+        else
+            call = mTodoService.unblockChild(idChildSelected);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    if(blockDevice) {
+                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                        TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                        lastDeviceState = STATE_BLOCKDEVICE;
+                    }
+                    else {
+                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_blockDevice.setTypeface(Typeface.DEFAULT);
+                        lastDeviceState = STATE_NEUTRAL;
+                    }
+                }
+                else {
+                    SB_deviceState.setProgress(lastDeviceState);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                SB_deviceState.setProgress(lastDeviceState);
+            }
+        });
+    }
+
+    private void setSeekbar(View root) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        SB_deviceState.setVisibility(View.GONE);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+        TV_blockDevice.setVisibility(View.GONE);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+        TV_freeTime.setVisibility(View.GONE);
+
+        if(isTutor){
+            SB_deviceState.setVisibility(View.VISIBLE);
+            TV_blockDevice.setVisibility(View.VISIBLE);
+            TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+            TV_blockDevice.setTypeface(Typeface.DEFAULT);
+            TV_freeTime.setVisibility(View.VISIBLE);
+            TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+            TV_freeTime.setTypeface(Typeface.DEFAULT);
+
+            if(fill.freeuse) {
+                SB_deviceState.setProgress(STATE_FREEUSE);
+                TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                lastDeviceState = STATE_FREEUSE;
+            }
+            else if(fill.blocked) {
+                SB_deviceState.setProgress(STATE_BLOCKDEVICE);
+                TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                lastDeviceState = STATE_BLOCKDEVICE;
+            }
+            else {
+                SB_deviceState.setProgress(STATE_NEUTRAL);
+                lastDeviceState = STATE_NEUTRAL;
+            }
+
+            SB_deviceState.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if(!fromUser)
+                        return;
+
+                    switch (progress) {
+                        case STATE_NEUTRAL :
+                            if(lastDeviceState == STATE_BLOCKDEVICE)
+                                blockDeviceServer(false);
+                            else if(lastDeviceState == STATE_FREEUSE)
+                                freeTimeServer(false);
+                            break;
+
+                        case STATE_BLOCKDEVICE :
+                            blockDeviceServer(true);
+                            break;
+
+                        case STATE_FREEUSE :
+                            freeTimeServer(true);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
         }
     }
 
