@@ -97,6 +97,7 @@
     <string name="horaris">Momentos libres de tecnologías</string>
     <string name="app_usage">Uso de aplicaciones</string>
     <string name="block_apps">Bloqueo de aplicaciones</string>
+    <string name="daily_limit_device">Límite diario del dispositivo</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contenido informativo</string>

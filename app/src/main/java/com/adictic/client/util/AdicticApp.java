@@ -37,7 +37,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] changes = {
-
+                "Canvi en els butons de \"Bloquejar Dispositiu\" i \"Temps Lliure\""
     };
 
     @Override
