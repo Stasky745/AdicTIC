@@ -39,6 +39,8 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/daily_usage"
                 android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -58,6 +60,19 @@
                 app:layout_constraintHeight_min="30dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/CG_category" />
+
+            <TextView
+                android:id="@+id/TV_usMensualApps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/app_usage"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/graphDivider" />
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/Ch_Pie"
@@ -89,10 +104,10 @@
                 android:id="@+id/CG_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/graphDivider"
+                app:layout_constraintTop_toBottomOf="@+id/TV_usMensualApps"
                 app:singleLine="true"
                 app:singleSelection="true">
 

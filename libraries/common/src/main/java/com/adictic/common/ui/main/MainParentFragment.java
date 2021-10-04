@@ -515,7 +515,7 @@ public class MainParentFragment extends Fragment {
         Pair<Integer, Integer> totalTime = Funcions.millisToString(totalUsageTime);
 
         if(!(mapUsage.size() < 5))
-            yValues.add(new PieEntry(others, "Altres"));
+            yValues.add(new PieEntry(others, getString(R.string.other)));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
