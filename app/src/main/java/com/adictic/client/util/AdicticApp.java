@@ -33,7 +33,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-
+                "Ja no surt \"Altres\" duplicat en la gràfica de categories."
     };
 
     public static String[] changes = {
