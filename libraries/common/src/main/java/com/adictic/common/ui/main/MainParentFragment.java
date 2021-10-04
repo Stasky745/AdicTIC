@@ -1,14 +1,15 @@
 package com.adictic.common.ui.main;
 
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -97,6 +99,7 @@ public class MainParentFragment extends Fragment {
                 else {
                     TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
                     try {
+                        IV_liveIcon.setVisibility(View.VISIBLE);
                         Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
                         String appName = intent.getStringExtra("appName");
                         currentApp.setText(appName);
@@ -135,10 +138,11 @@ public class MainParentFragment extends Fragment {
 
         isTutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false);
 
-        root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
-        root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+        root.findViewById(R.id.Ch_Pie).setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.TV_PieApp).setVisibility(View.INVISIBLE);
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
+        IV_liveIcon.setVisibility(View.INVISIBLE);
 
         // LiveApp Broadcast
         if (isTutor) {
@@ -210,6 +214,7 @@ public class MainParentFragment extends Fragment {
     private void setLiveAppMenu(LiveApp liveApp){
         if(liveApp.pkgName != null && !liveApp.pkgName.equals("-1")) {
             try {
+                IV_liveIcon.setVisibility(View.VISIBLE);
                 Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
             } catch (IllegalStateException ex) {
                 ex.printStackTrace();
@@ -233,6 +238,47 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setButtons() {
+        final ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
+        CL_info.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
+        CL_infoButtons.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
+        CL_limit.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
+        CL_limitButtons.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
+
+        // DailyLimit
+        Button BT_dailyLimit = root.findViewById(R.id.BT_dailyLimit);
+        if(fill.dailyLimit != null && fill.dailyLimit > 0){
+            LocalTime limit = new LocalTime().withMillisOfDay(fill.dailyLimit);
+            String bt_string = getString(R.string.daily_limit_device) + "   (" + Funcions.millis2horaString(requireContext(), fill.dailyLimit) + ")";
+            BT_dailyLimit.setText(bt_string);
+        }
+
+        View.OnClickListener dailyLimit = v -> {
+            TimePickerDialog.OnTimeSetListener timeSetListener = (view, hourOfDay, minute) -> {
+                enviarTempsLimit(BT_dailyLimit, hourOfDay, minute);
+            };
+            int hourOfDay;
+            int minute;
+            if(fill.dailyLimit != null) {
+                LocalTime localTime = new LocalTime().withMillisOfDay(fill.dailyLimit);
+                hourOfDay = localTime.getHourOfDay();
+                minute = localTime.getMinuteOfHour();
+            }
+            else{
+                hourOfDay = 0;
+                minute = 0;
+            }
+            TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), R.style.datePicker, timeSetListener, hourOfDay, minute, true);
+            timePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.esborrar), (dialogInterface, i) -> enviarTempsLimit(BT_dailyLimit, 0, 0));
+            timePickerDialog.show();
+        };
+
+        if(isTutor)
+            BT_dailyLimit.setOnClickListener(dailyLimit);
+
         // BlockAppsActivity
         View.OnClickListener blockApps = v -> {
             Intent i = new Intent(getActivity(), BlockAppsActivity.class);
@@ -280,7 +326,6 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         if(isTutor)
             CL_Geoloc.setOnClickListener(geoloc);
         else
@@ -298,8 +343,6 @@ public class MainParentFragment extends Fragment {
         });
 
         // CL_Informes
-        ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
-        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
         CL_info.setOnClickListener(v -> {
             if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
@@ -324,8 +367,6 @@ public class MainParentFragment extends Fragment {
         }
 
         // CL_Limits
-        ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
-        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
         CL_limit.setOnClickListener(v -> {
             if (CL_limitButtons.getVisibility() == View.GONE) {
                 CL_limitButtons.setVisibility(View.VISIBLE);
@@ -348,6 +389,30 @@ public class MainParentFragment extends Fragment {
             ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
+    }
+
+    private void enviarTempsLimit(Button BT_dailyLimit, int hourOfDay, int minute) {
+        // Enviar nou temps límit
+        int newDailyLimit = (hourOfDay * 1000 * 60 * 60) + (minute * 1000 * 60);
+        Call<String> call = mTodoService.postDailyLimit(fill.idChild, newDailyLimit);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful()){
+                    fill.dailyLimit = newDailyLimit;
+                    if(newDailyLimit == 0)
+                        BT_dailyLimit.setText(getString(R.string.daily_limit_device));
+                    else{
+                        String bt_string = getString(R.string.daily_limit_device) + "   (" + Funcions.millis2horaString(requireContext(), newDailyLimit) + ")";
+                        BT_dailyLimit.setText(bt_string);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { super.onFailure(call, t); }
+        });
     }
 
     private void freeTimeServer(boolean freetime) {
@@ -521,6 +586,7 @@ public class MainParentFragment extends Fragment {
         if (genericAppUsage.isEmpty() || genericAppUsage.get(0) == null || genericAppUsage.get(0).totalTime < 1000 * 60) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+            setVisibilities();
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
@@ -543,6 +609,7 @@ public class MainParentFragment extends Fragment {
             
             setUsageMenu();
         }
+
     }
 
     private void setUsageMenu(){
@@ -653,6 +720,22 @@ public class MainParentFragment extends Fragment {
             }
         });
         pieChart.invalidate();
+
+        setVisibilities();
+    }
+
+    private void setVisibilities() {
+        ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
+        CL_info.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
+        CL_infoButtons.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
+        CL_limit.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
+        CL_limitButtons.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
+        if(isTutor)
+            CL_Geoloc.setVisibility(View.VISIBLE);
     }
 
     @Override

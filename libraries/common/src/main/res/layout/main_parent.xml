@@ -260,11 +260,25 @@
                 app:layout_constraintTop_toBottomOf="@id/CL_LimitsApps">
 
                 <Button
-                    android:id="@+id/BT_BlockApps"
+                    android:id="@+id/BT_dailyLimit"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/daily_limit_device"
+                    android:textAlignment="textStart"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/BT_BlockApps"
+                    style="@style/ButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:text="@string/block_apps"
@@ -272,7 +286,7 @@
                     android:textAllCaps="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/BT_dailyLimit" />
 
                 <Button
                     android:id="@+id/BT_Events"

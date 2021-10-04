@@ -90,6 +90,7 @@
     <string name="horaris">Moments lliures de tecnologies</string>
     <string name="app_usage">Ús d\'aplicacions</string>
     <string name="block_apps">Bloqueig d\'aplicacions</string>
+    <string name="daily_limit_device">Límit diari del dispositiu</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contingut informatiu</string>
