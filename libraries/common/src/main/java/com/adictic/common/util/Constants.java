@@ -36,6 +36,7 @@ public class Constants {
     public static final String SHARED_PREFS_LAST_DAY_SENT_DATA = "daysToSendData";
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
+    public static final String SHARED_PREFS_DAILY_USAGE_LIMIT = "dailyUsageLimit";
 
     public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
 

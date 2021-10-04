@@ -962,16 +962,16 @@ public class Funcions extends com.adictic.common.util.Funcions {
 //        Funcions.write2File(ctx, Constants.FILE_BLOCKED_APPS, blockedApps);
 
         // Actualitzem mapa Accessibility amb dades noves
-        Map<String, Integer> tempsAppsLimitades = new HashMap<>();
+        Map<String, Long> tempsAppsLimitades = new HashMap<>();
         if(Funcions.accessibilityServiceOn()){
             for(BlockedApp limitedApp : appsLimitades) {
-                int dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
+                long dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
                 if (dayAppUsage > limitedApp.timeLimit)
                     blockedApps.add(limitedApp.pkgName);
                 else
                     tempsAppsLimitades.put(limitedApp.pkgName, dayAppUsage);
             }
-            AccessibilityScreenService.instance.setTempsAppsLimitades(tempsAppsLimitades);
+            AccessibilityScreenService.instance.setTempsApps(tempsAppsLimitades);
         }
 
     }
