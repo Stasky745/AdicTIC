@@ -29,7 +29,7 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-
+                "Límit diari de dispositiu"
     };
 
     public static String[] fixes = {

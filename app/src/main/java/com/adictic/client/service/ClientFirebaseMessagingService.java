@@ -95,15 +95,15 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
         // Actualitzem mapa Accessibility amb dades noves
-        HashMap<String, Integer> timeMap = new HashMap<>();
+        HashMap<String, Long> timeMap = new HashMap<>();
         for(BlockedApp limitedApp : limitedAppsList) {
-            int dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
+            long dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
             if (dayAppUsage > limitedApp.timeLimit)
                 AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
             else
                 timeMap.put(limitedApp.pkgName, dayAppUsage);
         }
-        AccessibilityScreenService.instance.setTempsAppsLimitades(timeMap);
+        AccessibilityScreenService.instance.setTempsApps(timeMap);
 
         AccessibilityScreenService.instance.setChangedBlockedApps(true);
 
@@ -147,6 +147,12 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
             switch(action){
                 // ************* Accions del dispositiu fill *************
+                case "dailyLimit":
+                    int dailyLimit = Integer.parseInt(Objects.requireNonNull(messageMap.get("dailyLimit")));
+                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, dailyLimit).apply();
+                    if(Funcions.accessibilityServiceOn())
+                        AccessibilityScreenService.instance.setLimitDevice(dailyLimit);
+                    break;
                 case "geolocActive":
                     //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
                 case "blockDevice":

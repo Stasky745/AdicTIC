@@ -619,6 +619,7 @@ public class MainParentFragment extends Fragment {
 
     private void setMascot(long totalUsageTime) {
         ImageView IV_mascot = root.findViewById(R.id.IV_mascot);
+        IV_mascot.setVisibility(View.INVISIBLE);
 
         if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 21) {
             if (totalUsageTime < TimeUnit.HOURS.toMillis(1))
@@ -632,6 +633,8 @@ public class MainParentFragment extends Fragment {
         } else {
             IV_mascot.setImageResource(R.drawable.mascot_nit);
         }
+
+        IV_mascot.setVisibility(View.VISIBLE);
     }
 
     private void setPieChart(Map<String, AppUsage> mapUsage, long totalUsageTime) {
