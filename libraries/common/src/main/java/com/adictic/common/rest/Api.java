@@ -212,4 +212,7 @@ public interface Api {
 
     @POST("/usage/{idChild}/dailyLimit")
     Call<String> postDailyLimit(@Path("idChild") Long idChild, @Body Integer dailyLimit);
+
+    @POST("/logFirebase/{firebaseId}")
+    Call<String> postFirebaseLog(@Path("firebaseId") Long firebaseId);
 }
