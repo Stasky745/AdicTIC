@@ -25,7 +25,6 @@ import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.common.util.Crypt;
 import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -35,7 +34,6 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +142,9 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                 Log.e(TAG,"La clau 'action' de firebase és null");
                 return;
             }
+
+            sendFirebaseLog(messageMap.get("logID"));
+
             switch(action){
                 // ************* Accions del dispositiu fill *************
                 case "geolocActive":
@@ -364,6 +365,24 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
             if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel);
             else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel);
+        }
+    }
+
+    private void sendFirebaseLog(String logID) {
+        try {
+            mTodoService.postFirebaseLog(Long.parseLong(logID)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 
