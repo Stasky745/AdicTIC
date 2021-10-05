@@ -478,4 +478,7 @@
     <string name="recomanacio_alarma">Se observan señales de alarma que podrían indicar un problema en el uso de las tecnologías. Os animamos a revisar cómo ha sido la gestión de los límites para poder incorporar las medidas pertinentes.</string>
     <string name="recomanacio_alarma_aux"> gestión de los límites </string>
 
+    <string name="trucar_confirmacio">Llamar?</string>
+    <string name="trucar_confirmacio_pares">Llamar a los padres?</string>
+    <string name="trucar_desc"> </string>
 </resources>

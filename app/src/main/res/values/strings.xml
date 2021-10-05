@@ -2,4 +2,6 @@
 <resources>
     <string name="callNotifTitle">Llamando</string>
     <string name="callNotifDesc">El profesional %s está llamando</string>
+    <string name="callChildNotifTitle">%s está llamando</string>
+    <string name="callChildNotifDesc">Pulsa aquí para contestar</string>
 </resources>
