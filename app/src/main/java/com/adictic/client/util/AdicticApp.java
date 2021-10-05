@@ -34,7 +34,8 @@ public class AdicticApp extends App {
 
     public static String[] fixes = {
             "Ja no surt \"Altres\" duplicat en la gràfica de categories.",
-            "Ja funcionen horaris lliures de tecnologies i horaris nocturns"
+            "Ja funcionen horaris lliures de tecnologies i horaris nocturns",
+            "Botó d'avisar a pares ja funciona"
     };
 
     public static String[] changes = {
