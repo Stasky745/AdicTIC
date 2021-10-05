@@ -39,6 +39,8 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
 
     private Api api;
 
+    private boolean parentCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +59,8 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
         userProfile.username = getIntent().getStringExtra("username");
         textUsername.setText(userProfile==null ? "Unknown" : userProfile.username);
 
+        parentCall = getIntent().getBooleanExtra("parentCall", false);
+
         meetingRoom = getIntent().getStringExtra("meetingRoom");
 
         ImageView imageStopInvitation = findViewById(R.id.imageStopInvitation);
@@ -66,11 +70,13 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
     }
 
     private void cancelInvitation() {
-        Call<String> call = api.cancelCallToUser(userProfile.userId, userProfile.childId);
+        Call<String> call;
+        if(parentCall) call = api.cancelCallParents(userProfile.childId);
+        else call = api.cancelCallToUser(userProfile.userId, userProfile.childId);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 Log.d(TAG,"CancelInvitation send successfully");
             }
 

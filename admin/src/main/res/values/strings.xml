@@ -153,7 +153,4 @@
     <string name="noves_implementacions">Noves implementacions</string>
     <string name="problemes_arreglats">Problemes arreglats</string>
     <string name="canvis">Canvis</string>
-
-    <string name="trucar_confirmacio">Trucar?</string>
-    <string name="trucar_desc"> </string>
 </resources>

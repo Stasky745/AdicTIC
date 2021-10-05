@@ -33,14 +33,14 @@ public class MyNotificationManager {
         channel_info.put(Channels.VIDEOCHAT, new Channel("VIDEOCHAT", "Videochat notification", "Calling to a videochat", NotificationManager.IMPORTANCE_MAX)); //TODO: Posar a strings.xml
         channel_info.put(Channels.BLOCK, new Channel("BLOCK", context.getString(R.string.channel_title_notif_block), context.getString(R.string.channel_desc_notif_block), NotificationManager.IMPORTANCE_MAX));
         channel_info.put(Channels.INSTALL, new Channel("INSTALL",context.getString(R.string.channel_title_notif_block), context.getString(R.string.channel_desc_notif_block), NotificationManager.IMPORTANCE_DEFAULT));
-        channel_info.put(Channels.FOREGROUND_SERVICE, new Channel("SERVICE", "Service notification", "Calling to a videochat", NotificationManager.IMPORTANCE_MAX)); //TODO: Posar a strings.xml
+        channel_info.put(Channels.FOREGROUND_SERVICE, new Channel("SERVICE", "Service notification", "Calling to a videochat", NotificationManager.IMPORTANCE_NONE)); //TODO: Posar a strings.xml
     }
 
     public enum Channels {
         GENERAL, CHAT, VIDEOCHAT, BLOCK, INSTALL, FOREGROUND_SERVICE
     }
 
-    protected static class Channel {
+    public static class Channel {
         public String id;
         public String name;
         public String description;
@@ -54,7 +54,7 @@ public class MyNotificationManager {
         }
     }
 
-    protected static final Map<Channels, Channel> channel_info = new HashMap<>();
+    public static final Map<Channels, Channel> channel_info = new HashMap<>();
 
     protected NotificationCompat.Builder createNotificationBuilder(String title, String body, Channels channel, PendingIntent pendingIntent, int icon){
         Channel channelInfo = Objects.requireNonNull(channel_info.get(channel));
