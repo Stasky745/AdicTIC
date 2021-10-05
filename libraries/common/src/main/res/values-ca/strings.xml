@@ -90,6 +90,7 @@
     <string name="horaris">Moments lliures de tecnologies</string>
     <string name="app_usage">Ús d\'aplicacions</string>
     <string name="block_apps">Bloqueig d\'aplicacions</string>
+    <string name="daily_limit_device">Límit diari del dispositiu</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contingut informatiu</string>
@@ -188,7 +189,8 @@
 
     <string name="update_blocked_apps">"S'ha actualitzat la llista d'apps bloquejades"</string>
 
-    <string name="horaris_notification">"S'han actualitzat els horaris"</string>
+    <string name="horaris_notification">"S'han actualitzat els horaris nocturns"</string>
+    <string name="events_notification">"S'han actualitzat els horaris lliures de tecnologies"</string>
 
     <string name="informe_graphs">"Gràfiques"</string>
     <string name="informe_resum">"Resum"</string>
@@ -428,8 +430,10 @@
     <string name="channel_title_notif_block">Notificacions de bloquejos</string>
     <string name="channel_desc_notif_block">Les notificacions de quan el dispositiu és bloquejat o alguna aplicació és bloquejada</string>
     <string name="phone_locked">Dispositiu bloquejat</string>
+    <string name="phone_unlocked">Dispositiu desbloquejat</string>
     <string name="new_app_blocked">Nova aplicació bloquejada</string>
     <string name="notif_phone_locked">Aquest dispositiu està bloquejat temporalment</string>
+    <string name="notif_phone_unlocked">El dispositiu s\'ha desbloquejat</string>
     <string name="notif_app_locked">Aquesta aplicació ha estat bloquejada "%s"</string>
     <string name="notif_surpass_limit"><b>Has superat el límit diari acordat</b></string>
     <string name="notif_free_use">%s.<b> El dispositiu està bloquejat perquè puguis realitzar l\'activitat prevista sense tecnologies</b></string>
