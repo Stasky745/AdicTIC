@@ -27,10 +27,12 @@ import retrofit2.Response;
 
 public class IncomingInvitationActivity extends AppCompatActivity {
 
-    private String admin_name;
-    private Long admin_id;
+    private String name;
+    private Long id;
 
     private Api api;
+
+    private boolean parentCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +45,19 @@ public class IncomingInvitationActivity extends AppCompatActivity {
         TextView textUserName = findViewById(R.id.textUserName);
         ImageView adminPhoto = findViewById(R.id.IV_incom_admin_picture);
 
-        admin_name = getIntent().getStringExtra("admin_name");
-        admin_id = Long.parseLong(getIntent().getStringExtra("admin_id"));
-        //admin_picture = Base64.decode(getIntent().getStringExtra("admin_picture"), Base64.DEFAULT);
-        //adminPhoto.setImageBitmap(BitmapFactory.decodeByteArray(admin_picture, 0, admin_picture.length));
+        parentCall = getIntent().getBooleanExtra("parentCall", false);
+
+        if(parentCall){
+            name = getIntent().getStringExtra("child_name");
+            id = Long.parseLong(getIntent().getStringExtra("child_id"));
+        } else {
+            name = getIntent().getStringExtra("admin_name");
+            id = Long.parseLong(getIntent().getStringExtra("admin_id"));
+        }
+
+        textUserName.setText(name);
 
         api = ((App) getApplication()).getAPI();
-
-        textUserName.setText(admin_name);
 
         ImageView imageAcceptInvitation = findViewById(R.id.imageAcceptInvitation);
         imageAcceptInvitation.setOnClickListener(view -> sendInvitationResponse(Constants.REMOTE_MSG_INVITATION_ACCEPTED));
@@ -68,7 +75,9 @@ public class IncomingInvitationActivity extends AppCompatActivity {
             notificationManager.cancel(notifId);
         }
 
-        Call<String> call = api.answerCallOfAdmin(admin_id, type);
+        Call<String> call;
+        if(parentCall) call = api.answerCallParents(id, type);
+        else call = api.answerCallOfAdmin(id, type);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {

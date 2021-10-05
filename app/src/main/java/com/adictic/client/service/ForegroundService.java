@@ -148,14 +148,16 @@ public class ForegroundService extends Service {
     private void createNotification() {
 //        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
 //        clientNotificationManager.displayGeneralNotification(getString(R.string.app_name), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
-        createNotificationChannel();
+        MyNotificationManager.Channel foreground_channel = MyNotificationManager.channel_info.get(MyNotificationManager.Channels.FOREGROUND_SERVICE);
+        if(foreground_channel==null) return;
+        createNotificationChannel(foreground_channel);
 
         Intent notificationIntent = new Intent(this, NavActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification =
-                new Notification.Builder(this, "SERVICE")
+                new Notification.Builder(this, foreground_channel.id)
                         .setContentTitle(getText(R.string.app_name))
                         .setContentText(getText(R.string.service_notification_message))
                         .setSmallIcon(R.drawable.adictic_nolletra)
@@ -238,19 +240,17 @@ public class ForegroundService extends Service {
         });
     }
 
-    private void createNotificationChannel() {
+    private void createNotificationChannel(MyNotificationManager.Channel foreground_channel) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, importance);
+            NotificationChannel channel = new NotificationChannel(foreground_channel.id, foreground_channel.name, foreground_channel.notif_importance);
+            channel.setDescription(foreground_channel.description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             assert notificationManager != null;
-            NotificationChannel currChannel = notificationManager.getNotificationChannel(CHANNEL_ID);
-            if (currChannel == null)
-                notificationManager.createNotificationChannel(channel);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 

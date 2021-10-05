@@ -453,4 +453,8 @@
     <string name="times_opened">Vegades que s\'ha utilitzat:</string>
     <string name="channel_title_notif_install">Notificacions d\'aplicacions instal·lades o desinstal·lades</string>
     <string name="channel_desc_notif_install">Les notificacions de quan una nova aplicació és instal·lada o desinstal·lada</string>
+
+    <string name="trucar_confirmacio">Trucar?</string>
+    <string name="trucar_confirmacio_pares">Trucar als pares?</string>
+    <string name="trucar_desc"> </string>
 </resources>

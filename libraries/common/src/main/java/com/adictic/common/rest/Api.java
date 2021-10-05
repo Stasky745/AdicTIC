@@ -215,4 +215,13 @@ public interface Api {
 
     @POST("/logFirebase/{firebaseId}")
     Call<String> postFirebaseLog(@Path("firebaseId") Long firebaseId);
+
+    @POST("/message/videochat/{idChild}")
+    Call<String> callParents(@Path("idChild") Long idChild);
+
+    @POST("/message/videochat/{idChild}/answer")
+    Call<String> answerCallParents(@Path("idChild") Long idChild, @Body String type);
+
+    @POST("/message/videochat/{idChild}/cancel")
+    Call<String> cancelCallParents(@Path("idChild") Long idChild);
 }
