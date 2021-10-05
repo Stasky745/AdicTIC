@@ -17,14 +17,11 @@ public class EventWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if(!Funcions.accessibilityServiceOn()) {
+        if(!Funcions.accessibilityServiceOn())
             return Result.failure();
-        }
 
         boolean start = getInputData().getBoolean("start", false);
-        int events = 0;
-        if(start)
-            events = 1;
+        int events = start ? 1 : 0;
 
         AccessibilityScreenService.instance.setActiveEvents(events);
         AccessibilityScreenService.instance.updateDeviceBlock();

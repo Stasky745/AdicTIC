@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GraphsFragment extends Fragment {
+public class InformeGraphsFragment extends Fragment {
 
     private static final String LIST_ARG = "list_arg";
     private static final String ID_ARG = "ID_arg";
@@ -61,18 +61,18 @@ public class GraphsFragment extends Fragment {
     private ChipGroup chipGroup;
     private Chip CH_appName;
 
-    public GraphsFragment(){ }
+    public InformeGraphsFragment(){ }
 
-    public static GraphsFragment newInstance(long id, Collection<GeneralUsage> col) {
-        final GraphsFragment graphsFragment = new GraphsFragment();
+    public static InformeGraphsFragment newInstance(long id, Collection<GeneralUsage> col) {
+        final InformeGraphsFragment informeGraphsFragment = new InformeGraphsFragment();
 
         final Bundle args = new Bundle(2);
 
         args.putParcelableArrayList(LIST_ARG, new ArrayList<>(col));
         args.putLong(ID_ARG, id);
 
-        graphsFragment.setArguments(args);
-        return graphsFragment;
+        informeGraphsFragment.setArguments(args);
+        return informeGraphsFragment;
     }
 
     @Override
@@ -170,7 +170,7 @@ public class GraphsFragment extends Fragment {
             if(mapUsage.size() < 5)
                 yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
             else{
-                if (entry.getValue() >= totalUsageTime * 0.05)
+                if (entry.getValue() >= totalUsageTime * 0.05 && !entry.getKey().equals(getString(R.string.other)))
                     yValues.add(new PieEntry(entry.getValue(), entry.getKey()));
                 else {
                     others += entry.getValue();
@@ -179,7 +179,7 @@ public class GraphsFragment extends Fragment {
         }
 
         if(!(mapUsage.size() < 5))
-            yValues.add(new PieEntry(others, "Altres"));
+            yValues.add(new PieEntry(others, getString(R.string.other)));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);

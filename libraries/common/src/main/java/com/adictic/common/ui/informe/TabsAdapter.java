@@ -49,7 +49,7 @@ public class TabsAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0)
-            return GraphsFragment.newInstance(childId, genericAppUsage);
+            return InformeGraphsFragment.newInstance(childId, genericAppUsage);
         else
             return InformeDetallatFragment.newInstance(genericAppUsage, totalUsageTime, age, childId);
     }

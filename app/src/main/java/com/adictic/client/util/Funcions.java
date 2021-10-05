@@ -210,10 +210,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void checkEvents(Context ctx) {
         Log.d(TAG,"Check Events");
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
 
         Api mTodoService = ((AdicticApp) (ctx.getApplicationContext())).getAPI();
-
-        assert sharedPreferences != null;
 
         // Agafem els horaris de la nit i Events
         Call<EventsAPI> call = mTodoService.getEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
@@ -227,8 +226,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
                     eventsAPI.events = eventsAPI.events != null ? eventsAPI.events : new ArrayList<>();
 
-                    write2File(ctx, Constants.FILE_EVENT_BLOCK, response.body().events);
-                    setEvents(ctx, new ArrayList<>(response.body().events));
+                    write2File(ctx, Constants.FILE_EVENT_BLOCK, eventsAPI.events);
+                    setEvents(ctx, new ArrayList<>(eventsAPI.events));
                 }
                 else {
                     List<EventBlock> list = Funcions.readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
@@ -244,7 +243,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         });
     }
 
-    private static void setEvents(Context ctx, List<EventBlock> events) {
+    public static void setEvents(Context ctx, List<EventBlock> events) {
         // Aturem tots els workers d'Events que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
@@ -323,21 +322,21 @@ public class Funcions extends com.adictic.common.util.Funcions {
             else if(endTimeDelay > 0){
                 setUpEventWorker(ctx, endTimeDelay, false);
 
-                if(Funcions.accessibilityServiceOn()){
+                if(Funcions.accessibilityServiceOn())
                     AccessibilityScreenService.instance.setActiveEvents(1);
-                    AccessibilityScreenService.instance.updateDeviceBlock();
-                }
             }
         }
+
+        if(Funcions.accessibilityServiceOn())
+            AccessibilityScreenService.instance.updateDeviceBlock();
     }
 
     public static void checkHoraris(Context ctx) {
         Log.d(TAG,"Check Horaris");
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
 
         Api mTodoService = ((AdicticApp) (ctx.getApplicationContext())).getAPI();
-
-        assert sharedPreferences != null;
 
         // Agafem els horaris de la nit i Events
         Call<HorarisAPI> call = mTodoService.getHoraris(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
@@ -352,31 +351,23 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     horarisAPI.tipus = horarisAPI.tipus != null ? horarisAPI.tipus : 1;
 
                     write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(horarisAPI.horarisNit));
-                    setHoraris(ctx, horarisAPI);
+                    setHoraris(ctx, new ArrayList<>(horarisAPI.horarisNit));
                 }
                 else {
-                    HorarisAPI horarisAPI = new HorarisAPI();
-                    horarisAPI.tipus = 1;
-                    horarisAPI.actiu = false;
-                    horarisAPI.horarisNit = Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false);
-
-                    setHoraris(ctx, horarisAPI);
+                    ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false)));
+                    setHoraris(ctx, horarisNit);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                HorarisAPI horarisAPI = new HorarisAPI();
-                horarisAPI.tipus = 1;
-                horarisAPI.actiu = false;
-                horarisAPI.horarisNit = Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false);
-
-                setHoraris(ctx, horarisAPI);
+                ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false)));
+                setHoraris(ctx, horarisNit);
             }
         });
     }
 
-    public static void setHoraris(Context ctx, HorarisAPI horarisAPI){
+    public static void setHoraris(Context ctx, ArrayList<HorarisNit> horarisNit){
         // Aturem tots els workers d'Horaris que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
@@ -386,7 +377,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         AccessibilityScreenService.instance.setHorarisActius(false);
 
-        List<HorarisNit> horaris = new ArrayList<>(horarisAPI.horarisNit);
+        List<HorarisNit> horaris = new ArrayList<>(horarisNit);
 
         if(horaris.isEmpty()) {
             AccessibilityScreenService.instance.updateDeviceBlock();
@@ -394,37 +385,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
         }
 
         int now = DateTime.now().getMillisOfDay();
-        // Si és genèric, fem que els workers vagin cada dia
-        if(horarisAPI.tipus.equals(3)){
-            HorarisNit horari = horaris.get(0);
-
-            int wakeTimeDelay = horari.despertar - now;
-            int sleepTimeDelay = horari.dormir - now;
-
-            if(wakeTimeDelay < 0) {
-                wakeTimeDelay += Constants.TOTAL_MILLIS_IN_DAY;
-
-                if(sleepTimeDelay < 0) {
-                    sleepTimeDelay += Constants.TOTAL_MILLIS_IN_DAY;
-                    AccessibilityScreenService.instance.setHorarisActius(true);
-                }
-            }
-            else {
-                AccessibilityScreenService.instance.setHorarisActius(true);
-            }
-
-            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, true);
-            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, true);
-
-            AccessibilityScreenService.instance.updateDeviceBlock();
-
-            return;
-        }
-
         int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
         HorarisNit horariAvui = horaris.stream()
-                .filter(horarisNit -> diaSetmana == horarisNit.dia)
+                .filter(horarisNit2 -> diaSetmana == horarisNit2.dia)
                 .findFirst()
                 .orElse(null);
 
@@ -437,13 +401,13 @@ public class Funcions extends com.adictic.common.util.Funcions {
         int sleepTimeDelay = horariAvui.dormir - now;
 
         if(wakeTimeDelay > 0) {
-            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false, false);
-            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
+            Funcions.setUpHorariWorker(ctx, wakeTimeDelay, false);
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true);
 
             AccessibilityScreenService.instance.setHorarisActius(true);
         }
         else if(sleepTimeDelay > 0)
-            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true, false);
+            Funcions.setUpHorariWorker(ctx, sleepTimeDelay, true);
         else
             AccessibilityScreenService.instance.setHorarisActius(true);
 
@@ -654,7 +618,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     // Horaris Worker
 
     public static void startHorarisEventsManagerWorker(Context mCtx){
-        long startOfDay = DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillisOfDay();
+        long startOfDay = DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillisOfDay() + 500;
         long delay = startOfDay - DateTime.now().getMillis();
 
         PeriodicWorkRequest myWork =
@@ -676,25 +640,17 @@ public class Funcions extends com.adictic.common.util.Funcions {
         Log.d(TAG,"Worker HorarisEventManager Configurat");
     }
 
-    private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep, boolean daily){
+    private static void setUpHorariWorker(Context mContext, long delay, boolean startSleep){
         Data data = new Data.Builder()
                 .putBoolean("start", startSleep)
                 .build();
 
         WorkRequest myWork;
 
-        if(daily) {
-             myWork = new PeriodicWorkRequest.Builder(HorarisWorker.class, 7, TimeUnit.DAYS)
-                            .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                            .addTag(Constants.WORKER_TAG_HORARIS_BLOCK)
-                            .setInputData(data)
-                            .build();
-        }
-        else {
-            myWork = new OneTimeWorkRequest.Builder(HorarisWorker.class)
-                    .setInitialDelay(0, TimeUnit.MILLISECONDS)
-                    .build();
-        }
+        myWork = new OneTimeWorkRequest.Builder(HorarisWorker.class)
+                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                .setInputData(data)
+                .build();
 
         WorkManager.getInstance(mContext)
                 .enqueue(myWork);
@@ -897,7 +853,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
-            if(Funcions.isXiaomi() && false) //TODO: Perquè està desactivat?
+            if(Funcions.isXiaomi() && false)
                 addOverlayView(ctx, false);
             else{
                 Log.d(TAG,"Creant Intent cap a BlockAppActivity");
@@ -962,16 +918,16 @@ public class Funcions extends com.adictic.common.util.Funcions {
 //        Funcions.write2File(ctx, Constants.FILE_BLOCKED_APPS, blockedApps);
 
         // Actualitzem mapa Accessibility amb dades noves
-        Map<String, Integer> tempsAppsLimitades = new HashMap<>();
+        Map<String, Long> tempsAppsLimitades = new HashMap<>();
         if(Funcions.accessibilityServiceOn()){
             for(BlockedApp limitedApp : appsLimitades) {
-                int dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
+                long dayAppUsage = Funcions.getDayAppUsage(ctx, limitedApp.pkgName);
                 if (dayAppUsage > limitedApp.timeLimit)
                     blockedApps.add(limitedApp.pkgName);
                 else
                     tempsAppsLimitades.put(limitedApp.pkgName, dayAppUsage);
             }
-            AccessibilityScreenService.instance.setTempsAppsLimitades(tempsAppsLimitades);
+            AccessibilityScreenService.instance.setTempsApps(tempsAppsLimitades);
         }
 
     }
