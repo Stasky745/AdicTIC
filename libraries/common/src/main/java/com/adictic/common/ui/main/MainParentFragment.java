@@ -332,7 +332,7 @@ public class MainParentFragment extends Fragment {
             CL_Geoloc.setVisibility(View.GONE);
 
         // seekbar
-        setSeekbar(root);
+        setSeekbar();
 
         // HorarisActivity
         Button nitButton = root.findViewById(R.id.BT_Horaris);
@@ -415,9 +415,10 @@ public class MainParentFragment extends Fragment {
         });
     }
 
-    private void freeTimeServer(boolean freetime) {
+    private void freeTimeServer(boolean freetime, int newState) {
         SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
         TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
 
         Call<String> call = mTodoService.freeUse(idChildSelected, freetime);
         call.enqueue(new Callback<String>() {
@@ -427,13 +428,22 @@ public class MainParentFragment extends Fragment {
                     if(freetime){
                         TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
                         TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
-                        lastDeviceState = STATE_FREEUSE;
+
+                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_blockDevice.setTypeface(Typeface.DEFAULT);
+
                     }
                     else {
                         TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
                         TV_freeTime.setTypeface(Typeface.DEFAULT);
-                        lastDeviceState = STATE_NEUTRAL;
+
+                        if(newState == STATE_BLOCKDEVICE) {
+                            TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                            TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                        }
+
                     }
+                    lastDeviceState = newState;
                 }
                 else
                     SB_deviceState.setProgress(lastDeviceState);
@@ -447,9 +457,10 @@ public class MainParentFragment extends Fragment {
         });
     }
 
-    private void blockDeviceServer(boolean blockDevice) {
+    private void blockDeviceServer(boolean blockDevice, int newState) {
         SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
         TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
 
         Call<String> call;
         if (blockDevice)
@@ -464,13 +475,22 @@ public class MainParentFragment extends Fragment {
                     if(blockDevice) {
                         TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
                         TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
-                        lastDeviceState = STATE_BLOCKDEVICE;
+
+                        TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_freeTime.setTypeface(Typeface.DEFAULT);
+
                     }
                     else {
                         TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
                         TV_blockDevice.setTypeface(Typeface.DEFAULT);
-                        lastDeviceState = STATE_NEUTRAL;
+
+                        if(newState == STATE_FREEUSE) {
+                            TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                            TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                        }
+
                     }
+                    lastDeviceState = newState;
                 }
                 else {
                     SB_deviceState.setProgress(lastDeviceState);
@@ -484,7 +504,7 @@ public class MainParentFragment extends Fragment {
         });
     }
 
-    private void setSeekbar(View root) {
+    private void setSeekbar() {
         SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
         SB_deviceState.setVisibility(View.GONE);
         TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
@@ -527,17 +547,17 @@ public class MainParentFragment extends Fragment {
                     switch (progress) {
                         case STATE_NEUTRAL :
                             if(lastDeviceState == STATE_BLOCKDEVICE)
-                                blockDeviceServer(false);
+                                blockDeviceServer(false, STATE_NEUTRAL);
                             else if(lastDeviceState == STATE_FREEUSE)
-                                freeTimeServer(false);
+                                freeTimeServer(false, STATE_NEUTRAL);
                             break;
 
                         case STATE_BLOCKDEVICE :
-                            blockDeviceServer(true);
+                            blockDeviceServer(true, STATE_BLOCKDEVICE);
                             break;
 
                         case STATE_FREEUSE :
-                            freeTimeServer(true);
+                            freeTimeServer(true, STATE_FREEUSE);
                             break;
                     }
                 }
@@ -553,6 +573,49 @@ public class MainParentFragment extends Fragment {
                 }
             });
         }
+
+        setSeekBarTextViews();
+    }
+
+    private void setSeekBarTextViews() {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+
+        TV_blockDevice.setFocusable(true);
+        TV_blockDevice.setClickable(true);
+        TV_blockDevice.setOnClickListener(view -> {
+            // Si ja estava clicat, el descliquem
+            if(lastDeviceState == STATE_BLOCKDEVICE) {
+                blockDeviceServer(false, STATE_NEUTRAL);
+                SB_deviceState.setProgress(STATE_NEUTRAL);
+                return;
+            }
+
+            if(lastDeviceState == STATE_FREEUSE)
+                freeTimeServer(false, STATE_BLOCKDEVICE);
+
+            SB_deviceState.setProgress(STATE_BLOCKDEVICE);
+            blockDeviceServer(true, STATE_BLOCKDEVICE);
+        });
+
+        TV_freeTime.setFocusable(true);
+        TV_freeTime.setClickable(true);
+        TV_freeTime.setOnClickListener(view -> {
+            // Si ja estava clicat, el descliquem
+            if(lastDeviceState == STATE_FREEUSE) {
+                freeTimeServer(false, STATE_NEUTRAL);
+                SB_deviceState.setProgress(STATE_NEUTRAL);
+                return;
+            }
+
+            if(lastDeviceState == STATE_BLOCKDEVICE)
+                blockDeviceServer(false, STATE_FREEUSE);
+
+            SB_deviceState.setProgress(STATE_FREEUSE);
+            freeTimeServer(true, STATE_FREEUSE);
+        });
+
     }
 
     private void getUsageFromServer() {
