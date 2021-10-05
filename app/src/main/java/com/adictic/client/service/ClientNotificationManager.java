@@ -23,13 +23,14 @@ public class ClientNotificationManager extends MyNotificationManager {
         super(context);
     }
 
-    public void displayGeneralNotification(String title, String body, @NotNull Class<?> activityIntent, Channels channel) {
-        displayGeneralNotification(title, body, new Intent(mCtx, activityIntent), channel);
+    public void displayGeneralNotification(String title, String body, @NotNull Class<?> activityIntent, Channels channel, int id) {
+        displayGeneralNotification(title, body, new Intent(mCtx, activityIntent), channel, id);
     }
 
-    public void displayGeneralNotification(String title, String body, Intent activityIntent, Channels channel) {
+    public void displayGeneralNotification(String title, String body, Intent activityIntent, Channels channel, int notifID) {
+        if(notifID == -1)
+            notifID = new Random().nextInt();
 
-        Integer notifID = new Random().nextInt();
         if(activityIntent==null) activityIntent = new Intent(mCtx, NavActivity.class);
         activityIntent.putExtra("notification_id", notifID);
 

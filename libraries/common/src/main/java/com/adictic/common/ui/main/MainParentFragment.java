@@ -1,7 +1,9 @@
 package com.adictic.common.ui.main;
 
+import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +51,7 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -67,6 +71,12 @@ public class MainParentFragment extends Fragment {
     private final static String ARG_FILL = "arg_fill";
 
     private final static String TAG = "MainParentFragment";
+
+    private final int STATE_NEUTRAL = 1;
+    private final int STATE_BLOCKDEVICE = 2;
+    private final int STATE_FREEUSE = 0;
+
+    private int lastDeviceState;
 
     private Api mTodoService;
     private long idChildSelected = -1;
@@ -89,6 +99,7 @@ public class MainParentFragment extends Fragment {
                 else {
                     TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
                     try {
+                        IV_liveIcon.setVisibility(View.VISIBLE);
                         Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
                         String appName = intent.getStringExtra("appName");
                         currentApp.setText(appName);
@@ -127,10 +138,11 @@ public class MainParentFragment extends Fragment {
 
         isTutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false);
 
-        root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
-        root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+        root.findViewById(R.id.Ch_Pie).setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.TV_PieApp).setVisibility(View.INVISIBLE);
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
+        IV_liveIcon.setVisibility(View.INVISIBLE);
 
         // LiveApp Broadcast
         if (isTutor) {
@@ -202,6 +214,7 @@ public class MainParentFragment extends Fragment {
     private void setLiveAppMenu(LiveApp liveApp){
         if(liveApp.pkgName != null && !liveApp.pkgName.equals("-1")) {
             try {
+                IV_liveIcon.setVisibility(View.VISIBLE);
                 Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
             } catch (IllegalStateException ex) {
                 ex.printStackTrace();
@@ -225,6 +238,47 @@ public class MainParentFragment extends Fragment {
     }
 
     private void setButtons() {
+        final ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
+        CL_info.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
+        CL_infoButtons.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
+        CL_limit.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
+        CL_limitButtons.setVisibility(View.INVISIBLE);
+        final ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
+
+        // DailyLimit
+        Button BT_dailyLimit = root.findViewById(R.id.BT_dailyLimit);
+        if(fill.dailyLimit != null && fill.dailyLimit > 0){
+            LocalTime limit = new LocalTime().withMillisOfDay(fill.dailyLimit);
+            String bt_string = getString(R.string.daily_limit_device) + "   (" + Funcions.millis2horaString(requireContext(), fill.dailyLimit) + ")";
+            BT_dailyLimit.setText(bt_string);
+        }
+
+        View.OnClickListener dailyLimit = v -> {
+            TimePickerDialog.OnTimeSetListener timeSetListener = (view, hourOfDay, minute) -> {
+                enviarTempsLimit(BT_dailyLimit, hourOfDay, minute);
+            };
+            int hourOfDay;
+            int minute;
+            if(fill.dailyLimit != null) {
+                LocalTime localTime = new LocalTime().withMillisOfDay(fill.dailyLimit);
+                hourOfDay = localTime.getHourOfDay();
+                minute = localTime.getMinuteOfHour();
+            }
+            else{
+                hourOfDay = 0;
+                minute = 0;
+            }
+            TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), R.style.datePicker, timeSetListener, hourOfDay, minute, true);
+            timePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.esborrar), (dialogInterface, i) -> enviarTempsLimit(BT_dailyLimit, 0, 0));
+            timePickerDialog.show();
+        };
+
+        if(isTutor)
+            BT_dailyLimit.setOnClickListener(dailyLimit);
+
         // BlockAppsActivity
         View.OnClickListener blockApps = v -> {
             Intent i = new Intent(getActivity(), BlockAppsActivity.class);
@@ -272,49 +326,13 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         };
 
-        ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
         if(isTutor)
             CL_Geoloc.setOnClickListener(geoloc);
         else
             CL_Geoloc.setVisibility(View.GONE);
 
-        // Bloquejar dispositiu
-        Button blockButton = root.findViewById(R.id.BT_BlockDevice);
-        blockButton.setVisibility(View.GONE);
-
-        if (isTutor) {
-            blockButton.setVisibility(View.VISIBLE);
-
-            if(fill != null && fill.blocked)
-                blockButton.setText(getString(R.string.unblock_device));
-
-            blockButton.setOnClickListener(v -> {
-                Call<String> call;
-                if (blockButton.getText().equals(getString(R.string.block_device)))
-                    call = mTodoService.blockChild(idChildSelected);
-                else
-                    call = mTodoService.unblockChild(idChildSelected);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                        if (response.isSuccessful()) {
-                            if (blockButton.getText().equals(getString(R.string.block_device)))
-                                blockButton.setText(getString(R.string.unblock_device));
-                            else blockButton.setText(getString(R.string.block_device));
-                        }
-                        else Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
+        // seekbar
+        setSeekbar(root);
 
         // HorarisActivity
         Button nitButton = root.findViewById(R.id.BT_Horaris);
@@ -324,48 +342,7 @@ public class MainParentFragment extends Fragment {
             startActivity(i);
         });
 
-        // FreeTime
-        Button BT_FreeTime = root.findViewById(R.id.BT_FreeTime);
-        BT_FreeTime.setVisibility(View.GONE);
-        if (isTutor) {
-            BT_FreeTime.setVisibility(View.VISIBLE);
-
-            if(fill != null && fill.freeuse) {
-                BT_FreeTime.setText(getString(R.string.stop_free_time));
-            }
-
-            BT_FreeTime.setOnClickListener(v -> {
-                Call<String> call;
-                if (BT_FreeTime.getText().equals(getString(R.string.free_time))) {
-                    call = mTodoService.freeUse(idChildSelected, true);
-                } else
-                    call = mTodoService.freeUse(idChildSelected, false);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                        if (response.isSuccessful()) {
-                            if (BT_FreeTime.getText().equals(getString(R.string.free_time)))
-                                BT_FreeTime.setText(getString(R.string.stop_free_time));
-                            else
-                                BT_FreeTime.setText(getString(R.string.free_time));
-                        }
-                        else
-                            Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                        Toast.makeText(getActivity(), R.string.error_sending_data, Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
-
         // CL_Informes
-        ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
-        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
         CL_info.setOnClickListener(v -> {
             if (CL_infoButtons.getVisibility() == View.GONE) {
                 CL_infoButtons.setVisibility(View.VISIBLE);
@@ -390,8 +367,6 @@ public class MainParentFragment extends Fragment {
         }
 
         // CL_Limits
-        ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
-        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
         CL_limit.setOnClickListener(v -> {
             if (CL_limitButtons.getVisibility() == View.GONE) {
                 CL_limitButtons.setVisibility(View.VISIBLE);
@@ -413,6 +388,170 @@ public class MainParentFragment extends Fragment {
         } else {
             ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
+        }
+    }
+
+    private void enviarTempsLimit(Button BT_dailyLimit, int hourOfDay, int minute) {
+        // Enviar nou temps límit
+        int newDailyLimit = (hourOfDay * 1000 * 60 * 60) + (minute * 1000 * 60);
+        Call<String> call = mTodoService.postDailyLimit(fill.idChild, newDailyLimit);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful()){
+                    fill.dailyLimit = newDailyLimit;
+                    if(newDailyLimit == 0)
+                        BT_dailyLimit.setText(getString(R.string.daily_limit_device));
+                    else{
+                        String bt_string = getString(R.string.daily_limit_device) + "   (" + Funcions.millis2horaString(requireContext(), newDailyLimit) + ")";
+                        BT_dailyLimit.setText(bt_string);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) { super.onFailure(call, t); }
+        });
+    }
+
+    private void freeTimeServer(boolean freetime) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+
+        Call<String> call = mTodoService.freeUse(idChildSelected, freetime);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()){
+                    if(freetime){
+                        TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                        TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                        lastDeviceState = STATE_FREEUSE;
+                    }
+                    else {
+                        TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_freeTime.setTypeface(Typeface.DEFAULT);
+                        lastDeviceState = STATE_NEUTRAL;
+                    }
+                }
+                else
+                    SB_deviceState.setProgress(lastDeviceState);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+            super.onFailure(call, t);
+                SB_deviceState.setProgress(lastDeviceState);
+            }
+        });
+    }
+
+    private void blockDeviceServer(boolean blockDevice) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+
+        Call<String> call;
+        if (blockDevice)
+            call = mTodoService.blockChild(idChildSelected);
+        else
+            call = mTodoService.unblockChild(idChildSelected);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                if (response.isSuccessful()) {
+                    if(blockDevice) {
+                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                        TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                        lastDeviceState = STATE_BLOCKDEVICE;
+                    }
+                    else {
+                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+                        TV_blockDevice.setTypeface(Typeface.DEFAULT);
+                        lastDeviceState = STATE_NEUTRAL;
+                    }
+                }
+                else {
+                    SB_deviceState.setProgress(lastDeviceState);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                SB_deviceState.setProgress(lastDeviceState);
+            }
+        });
+    }
+
+    private void setSeekbar(View root) {
+        SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
+        SB_deviceState.setVisibility(View.GONE);
+        TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
+        TV_blockDevice.setVisibility(View.GONE);
+        TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+        TV_freeTime.setVisibility(View.GONE);
+
+        if(isTutor){
+            SB_deviceState.setVisibility(View.VISIBLE);
+            TV_blockDevice.setVisibility(View.VISIBLE);
+            TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+            TV_blockDevice.setTypeface(Typeface.DEFAULT);
+            TV_freeTime.setVisibility(View.VISIBLE);
+            TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+            TV_freeTime.setTypeface(Typeface.DEFAULT);
+
+            if(fill.freeuse) {
+                SB_deviceState.setProgress(STATE_FREEUSE);
+                TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                lastDeviceState = STATE_FREEUSE;
+            }
+            else if(fill.blocked) {
+                SB_deviceState.setProgress(STATE_BLOCKDEVICE);
+                TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                lastDeviceState = STATE_BLOCKDEVICE;
+            }
+            else {
+                SB_deviceState.setProgress(STATE_NEUTRAL);
+                lastDeviceState = STATE_NEUTRAL;
+            }
+
+            SB_deviceState.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if(!fromUser)
+                        return;
+
+                    switch (progress) {
+                        case STATE_NEUTRAL :
+                            if(lastDeviceState == STATE_BLOCKDEVICE)
+                                blockDeviceServer(false);
+                            else if(lastDeviceState == STATE_FREEUSE)
+                                freeTimeServer(false);
+                            break;
+
+                        case STATE_BLOCKDEVICE :
+                            blockDeviceServer(true);
+                            break;
+
+                        case STATE_FREEUSE :
+                            freeTimeServer(true);
+                            break;
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+
+                }
+            });
         }
     }
 
@@ -447,6 +586,7 @@ public class MainParentFragment extends Fragment {
         if (genericAppUsage.isEmpty() || genericAppUsage.get(0) == null || genericAppUsage.get(0).totalTime < 1000 * 60) {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
+            setVisibilities();
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
@@ -469,6 +609,7 @@ public class MainParentFragment extends Fragment {
             
             setUsageMenu();
         }
+
     }
 
     private void setUsageMenu(){
@@ -478,6 +619,7 @@ public class MainParentFragment extends Fragment {
 
     private void setMascot(long totalUsageTime) {
         ImageView IV_mascot = root.findViewById(R.id.IV_mascot);
+        IV_mascot.setVisibility(View.INVISIBLE);
 
         if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 21) {
             if (totalUsageTime < TimeUnit.HOURS.toMillis(1))
@@ -491,6 +633,8 @@ public class MainParentFragment extends Fragment {
         } else {
             IV_mascot.setImageResource(R.drawable.mascot_nit);
         }
+
+        IV_mascot.setVisibility(View.VISIBLE);
     }
 
     private void setPieChart(Map<String, AppUsage> mapUsage, long totalUsageTime) {
@@ -515,7 +659,7 @@ public class MainParentFragment extends Fragment {
         Pair<Integer, Integer> totalTime = Funcions.millisToString(totalUsageTime);
 
         if(!(mapUsage.size() < 5))
-            yValues.add(new PieEntry(others, "Altres"));
+            yValues.add(new PieEntry(others, getString(R.string.other)));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, "Ús d'apps");
         pieDataSet.setSliceSpace(3f);
@@ -579,6 +723,22 @@ public class MainParentFragment extends Fragment {
             }
         });
         pieChart.invalidate();
+
+        setVisibilities();
+    }
+
+    private void setVisibilities() {
+        ConstraintLayout CL_info = root.findViewById(R.id.CL_resumUs);
+        CL_info.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_infoButtons = root.findViewById(R.id.CL_ResumUsButons);
+        CL_infoButtons.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_limit = root.findViewById(R.id.CL_LimitsApps);
+        CL_limit.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_limitButtons = root.findViewById(R.id.CL_LimitsAppsButtons);
+        CL_limitButtons.setVisibility(View.VISIBLE);
+        ConstraintLayout CL_Geoloc = root.findViewById(R.id.CL_geoloc);
+        if(isTutor)
+            CL_Geoloc.setVisibility(View.VISIBLE);
     }
 
     @Override
