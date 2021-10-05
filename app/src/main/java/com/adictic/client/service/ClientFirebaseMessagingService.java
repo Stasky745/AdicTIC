@@ -341,31 +341,39 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     if (type == null)
                         Log.e(TAG, "Error en el missatge de firebase de callVideochat: No hi ha type");
                     else {
-                        if (type.equals("invitation")) {
-                            String meetingId = messageMap.get("chatId");
-                            Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
-                            intent.putExtra(
-                                    "admin_name",
-                                    messageMap.get("admin_name")
-                            );
-                            intent.putExtra(
-                                    "admin_id",
-                                    messageMap.get("admin_id")
-                            );
-                            intent.putExtra(
-                                    com.adictic.jitsi.utilities.Constants.REMOTE_MSG_MEETING_ROOM,
-                                    meetingId
-                            );
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT, notifID);
-                            startActivity(intent);
-                        } else if (type.equals("invitationResponse")) {
-                            Intent intent = new Intent("invitationResponse");
-                            intent.putExtra(
-                                    "invitationResponse",
-                                    messageMap.get("invitationResponse")
-                            );
-                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                        switch (type) {
+                            case "invitation": {
+                                String meetingId = messageMap.get("chatId");
+                                Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
+                                intent.putExtra("admin_name", messageMap.get("admin_name"));
+                                intent.putExtra("admin_id", messageMap.get("admin_id"));
+                                intent.putExtra(com.adictic.jitsi.utilities.Constants.REMOTE_MSG_MEETING_ROOM, meetingId);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT, notifID);
+                                startActivity(intent);
+                                break;
+                            }
+                            case "invitationResponse": {
+                                Intent intent = new Intent("invitationResponse");
+                                intent.putExtra(
+                                        "invitationResponse",
+                                        messageMap.get("invitationResponse")
+                                );
+                                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                                break;
+                            }
+                            case "invitation_child": {
+                                String meetingId = messageMap.get("chatId");
+                                Intent intent = new Intent(getApplicationContext(), IncomingInvitationActivity.class);
+                                intent.putExtra("child_name", messageMap.get("child_name"));
+                                intent.putExtra("child_id", messageMap.get("child_id"));
+                                intent.putExtra("parentCall", true);
+                                intent.putExtra(com.adictic.jitsi.utilities.Constants.REMOTE_MSG_MEETING_ROOM, meetingId);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                clientNotificationManager.displayGeneralNotification(getString(R.string.callChildNotifTitle, messageMap.get("child_name")), getString(R.string.callChildNotifDesc), intent, MyNotificationManager.Channels.VIDEOCHAT, notifID);
+                                startActivity(intent);
+                                break;
+                            }
                         }
                     }
                     break;
