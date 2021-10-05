@@ -19,6 +19,12 @@ public class MyNotificationManager {
 
     protected final Context mCtx;
 
+    public final static int NOTIF_ID_DEVICE_STATE = 1;
+    public final static int NOTIF_ID_HORARIS = 2;
+    public final static int NOTIF_ID_EVENTS = 3;
+    public final static int NOTIF_ID_DAILY_LIMIT = 4;
+    public final static int NOTIF_ID_BLOCK_APPS = 5;
+
     public MyNotificationManager(Context context) {
         mCtx = context;
         channel_info.put(Channels.GENERAL, new Channel("General", "GENERAL notification", "This is the description", NotificationManager.IMPORTANCE_DEFAULT)); //TODO: Posar a strings.xml

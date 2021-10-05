@@ -199,7 +199,8 @@
 
     <string name="update_blocked_apps">Se ha actualizado la lista de apps bloqueadas</string>
 
-    <string name="horaris_notification">Se han actualizado los horarios</string>
+    <string name="horaris_notification">Se han actualizado los horarios nocturnos</string>
+    <string name="events_notification">Se han actualizado los horarios libres de tecnologías</string>
 
     <string name="informe_graphs">Gráficas</string>
     <string name="informe_resum">Resumen</string>
@@ -452,8 +453,10 @@
     <string name="channel_desc_notif_install">Las notificaciones de cuando una nueva aplicación és instalada o desinstalada</string>
 
     <string name="phone_locked">Dispositivo bloqueado</string>
+    <string name="phone_unlocked">Dispositivo desbloqueado</string>
     <string name="new_app_blocked">Nueva aplicación bloqueada</string>
     <string name="notif_phone_locked">Este dispositivo ha sido bloqueado temporalmente</string>
+    <string name="notif_phone_unlocked">El dispositivo ha sido desbloqueado</string>
     <string name="notif_app_locked">Esta aplicación ha sido bloqueada</string>
     <string name="notif_surpass_limit"><b>Has superado el límite diario acordado</b></string>
     <string name="notif_free_use">%s.<b> El dispositivo está bloqueado para que puedas realizar la actividad prevista sin tecnologías</b></string>
