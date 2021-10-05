@@ -897,7 +897,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
-            if(Funcions.isXiaomi() && false) //TODO: Perquè està desactivat?
+            if(Funcions.isXiaomi() && false)
                 addOverlayView(ctx, false);
             else{
                 Log.d(TAG,"Creant Intent cap a BlockAppActivity");

@@ -201,9 +201,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         if(myKM.isDeviceLocked())
             return;
 
-        boolean deviceBlocked = !freeUse && (horarisActius || activeEvents > 0 || blockDevice || excessUsageDevice);
-
-        if(deviceBlocked) {
+        if(isDeviceBlocked()) {
             if(BlockDeviceActivity.instance == null || !BlockDeviceActivity.instance.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED))
                 Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
         }
@@ -221,7 +219,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         dailyLimitDevice = limit;
         if(limit == 0) {
             excessUsageDevice = false;
-            LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_DEVICE_BLOCK_SCREEN));
+            updateDeviceBlock();
             cancelarWorkerBlockDevice();
         }
         else{
@@ -230,7 +228,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             if(!excessUsageDevice)
                 programarWorkerBlockDevice(dailyLimitDevice - dayUsage);
             else
-                Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
+                updateDeviceBlock();
         }
     }
 
@@ -248,13 +246,14 @@ public class AccessibilityScreenService extends AccessibilityService {
             Funcions.checkEvents(AccessibilityScreenService.this);
             Funcions.checkHoraris(AccessibilityScreenService.this);
 
-            Call<Boolean> call2 = mTodoService.getBlockStatus(idChild);
-            call2.enqueue(new Callback<Boolean>() {
+            Call<Boolean> call = mTodoService.getBlockStatus(idChild);
+            call.enqueue(new Callback<Boolean>() {
                 @Override
                 public void onResponse(@NonNull Call<Boolean> call, @NonNull Response<Boolean> response) {
                     super.onResponse(call, response);
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
+                        blockDevice = response.body();
                         if(Funcions.accessibilityServiceOn())
                             AccessibilityScreenService.instance.updateDeviceBlock();
                     }
@@ -262,6 +261,23 @@ public class AccessibilityScreenService extends AccessibilityService {
 
                 @Override
                 public void onFailure(@NonNull Call<Boolean> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+
+            Call<Integer> dailyLimitCall = mTodoService.getDailyLimit(idChild);
+            dailyLimitCall.enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(@NonNull Call<Integer> call, @NonNull Response<Integer> response) {
+                    super.onResponse(call, response);
+                    if(response.isSuccessful() && response.body() != null){
+                        setLimitDevice(response.body());
+                        sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, response.body()).apply();
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Integer> call, @NonNull Throwable t) {
                     super.onFailure(call, t);
                 }
             });
@@ -299,7 +315,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             }
 
             Log.d(TAG, "Nou 'package' sense canvis en bloquejos");
-            boolean shouldDeviceBeBlocked = !freeUse && (blockDevice || activeEvents > 0 || horarisActius || excessUsageDevice);
+            boolean shouldDeviceBeBlocked = isDeviceBlocked();
 
             // --- LIVE APP ---
             if (liveApp && !shouldDeviceBeBlocked)
@@ -521,11 +537,24 @@ public class AccessibilityScreenService extends AccessibilityService {
             if(intent.getAction().equals(ACTION_SCREEN_OFF) && !wasLocked){
                 wasLocked = true;
                 AccessibilityScreenService.instance.dayUsage += Math.abs(AccessibilityScreenService.instance.unlockedDeviceTime - System.currentTimeMillis());
+
                 enviarLastApp();
             }
             else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0 && !instance.horarisActius && !instance.excessUsageDevice)) && !myKM.isDeviceLocked()) {
                 wasLocked = false;
                 AccessibilityScreenService.instance.unlockedDeviceTime = System.currentTimeMillis();
+
+                // Mirem si hi ha límit establert
+                if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
+                    int timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
+                    AccessibilityScreenService.instance.excessUsageDevice = timeUntilLimit < 0;
+                    if(AccessibilityScreenService.instance.excessUsageDevice)
+                        AccessibilityScreenService.instance.updateDeviceBlock();
+                    else
+                        AccessibilityScreenService.instance.programarWorkerBlockDevice(timeUntilLimit);
+                }
+                else
+                    AccessibilityScreenService.instance.excessUsageDevice = false;
             }
         }
 

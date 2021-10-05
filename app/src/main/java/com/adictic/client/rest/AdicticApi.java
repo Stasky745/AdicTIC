@@ -182,4 +182,7 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
 
     @GET("/update/adictic")
     Call<ResponseBody> getLatestVersion();
+
+    @GET("/usage/{idChild}/dailyLimit")
+    Call<Integer> getDailyLimit(@Path("idChild") Long idChild);
 }
