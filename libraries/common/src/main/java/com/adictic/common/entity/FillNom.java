@@ -9,6 +9,7 @@ public class FillNom implements Parcelable {
     public boolean blocked;
     public String birthday;
     public boolean freeuse;
+    public Integer dailyLimit;
 
     public FillNom() { }
 
@@ -18,6 +19,7 @@ public class FillNom implements Parcelable {
         blocked = in.readByte() != 0;
         birthday = in.readString();
         freeuse = in.readByte() != 0;
+        dailyLimit = in.readInt();
     }
 
     @Override
@@ -27,6 +29,10 @@ public class FillNom implements Parcelable {
         dest.writeByte((byte) (blocked ? 1 : 0));
         dest.writeString(birthday);
         dest.writeByte((byte) (freeuse ? 1 : 0));
+        if(dailyLimit == null)
+            dest.writeInt(0);
+        else
+            dest.writeInt(dailyLimit);
     }
 
     @Override

@@ -25,7 +25,6 @@ import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.ui.BlockAppsActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.common.util.Crypt;
 import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -35,7 +34,6 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,15 +95,15 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
         // Actualitzem mapa Accessibility amb dades noves
-        HashMap<String, Integer> timeMap = new HashMap<>();
+        HashMap<String, Long> timeMap = new HashMap<>();
         for(BlockedApp limitedApp : limitedAppsList) {
-            int dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
+            long dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
             if (dayAppUsage > limitedApp.timeLimit)
                 AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
             else
                 timeMap.put(limitedApp.pkgName, dayAppUsage);
         }
-        AccessibilityScreenService.instance.setTempsAppsLimitades(timeMap);
+        AccessibilityScreenService.instance.setTempsApps(timeMap);
 
         AccessibilityScreenService.instance.setChangedBlockedApps(true);
 
@@ -130,6 +128,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         Class<?> activitatClass = null;
         Intent activitatIntent = null;
         MyNotificationManager.Channels channel = MyNotificationManager.Channels.GENERAL;
+        int notifID = -1;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -144,8 +143,18 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                 Log.e(TAG,"La clau 'action' de firebase és null");
                 return;
             }
+
+            sendFirebaseLog(messageMap.get("logID"));
+
             switch(action){
                 // ************* Accions del dispositiu fill *************
+                case "dailyLimit":
+                    notifID = MyNotificationManager.NOTIF_ID_DAILY_LIMIT;
+                    int dailyLimit = Integer.parseInt(Objects.requireNonNull(messageMap.get("dailyLimit")));
+                    sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, dailyLimit).apply();
+                    if(Funcions.accessibilityServiceOn())
+                        AccessibilityScreenService.instance.setLimitDevice(dailyLimit);
+                    break;
                 case "geolocActive":
                     //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
                 case "blockDevice":
@@ -157,19 +166,21 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                             AccessibilityScreenService.instance.setBlockDevice(true);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
-                            boolean freeUse = AccessibilityScreenService.instance.getFreeUse();
-
-                            if(!freeUse) {
-                                title = getString(R.string.phone_locked);
-                                body = getString(R.string.notif_phone_locked);
-                                channel = MyNotificationManager.Channels.BLOCK;
-                            }
+                            title = getString(R.string.phone_locked);
+                            body = getString(R.string.notif_phone_locked);
+                            channel = MyNotificationManager.Channels.BLOCK;
+                            notifID = MyNotificationManager.NOTIF_ID_DEVICE_STATE;
                         }
                     }
                     else {
                         if(Funcions.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setBlockDevice(false);
                             AccessibilityScreenService.instance.updateDeviceBlock();
+
+                            title = getString(R.string.phone_unlocked);
+                            body = getString(R.string.notif_phone_unlocked);
+                            channel = MyNotificationManager.Channels.BLOCK;
+                            notifID = MyNotificationManager.NOTIF_ID_DEVICE_STATE;
                         }
 
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
@@ -199,6 +210,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
                         title = getString(R.string.free_use_deactivation);
                     }
+                    notifID = MyNotificationManager.NOTIF_ID_DEVICE_STATE;
                     channel = MyNotificationManager.Channels.BLOCK;
                     break;
                 case "blockApp":
@@ -207,6 +219,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     title = getString(R.string.update_blocked_apps);
                     activitatClass = BlockAppsActivity.class;
                     channel = MyNotificationManager.Channels.BLOCK;
+                    notifID = MyNotificationManager.NOTIF_ID_BLOCK_APPS;
                     break;
                 case "liveApp":
                     String s = messageMap.get("liveApp");
@@ -253,9 +266,13 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     Funcions.checkHoraris(getApplicationContext());
                     title = getString(R.string.horaris_notification);
                     channel = MyNotificationManager.Channels.BLOCK;
+                    notifID = MyNotificationManager.NOTIF_ID_HORARIS;
                     break;
                 case "events":
                     Funcions.checkEvents(getApplicationContext());
+                    title = getString(R.string.events_notification);
+                    channel = MyNotificationManager.Channels.BLOCK;
+                    notifID = MyNotificationManager.NOTIF_ID_EVENTS;
                     break;
                 // ************* Accions del dispositiu tutor *************
                 case "currentAppUpdate":
@@ -340,7 +357,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                                     meetingId
                             );
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT);
+                            clientNotificationManager.displayGeneralNotification(getString(R.string.callNotifTitle), getString(R.string.callNotifDesc, messageMap.get("admin_name")), intent, MyNotificationManager.Channels.VIDEOCHAT, notifID);
                             startActivity(intent);
                         } else if (type.equals("invitationResponse")) {
                             Intent intent = new Intent("invitationResponse");
@@ -362,8 +379,26 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         if (!title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel);
-            else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel);
+            if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel, notifID);
+            else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel, notifID);
+        }
+    }
+
+    private void sendFirebaseLog(String logID) {
+        try {
+            mTodoService.postFirebaseLog(Long.parseLong(logID)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 

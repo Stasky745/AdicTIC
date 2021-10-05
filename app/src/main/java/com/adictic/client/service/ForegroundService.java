@@ -37,8 +37,10 @@ import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
+import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.adictic.common.util.MyNotificationManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -84,16 +86,14 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ForegroundService.this);
         assert sharedPreferences != null;
 
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
             stopSelf();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotification();
-        }
+        registerInstallApps();
+        startLocationReceiver();
     }
 
     private void startLocationReceiver() {
@@ -120,21 +120,20 @@ public class ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        actiu = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            createNotification();
 
-        registerInstallApps();
+        actiu = true;
 
         wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
         wakeLock.acquire();
-
-        startLocationReceiver();
 
         return START_STICKY;
     }
 
     private void registerInstallApps() {
         if(checkInstalledAppsReceiver != null)
-            unregisterReceiver(checkInstalledAppsReceiver);
+            return;
 
         // Comencem el receiver
         IntentFilter intentFilter = new IntentFilter();
@@ -147,6 +146,8 @@ public class ForegroundService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotification() {
+//        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
+//        clientNotificationManager.displayGeneralNotification(getString(R.string.app_name), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
         createNotificationChannel();
 
         Intent notificationIntent = new Intent(this, NavActivity.class);
@@ -154,7 +155,7 @@ public class ForegroundService extends Service {
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification =
-                new Notification.Builder(this, CHANNEL_ID)
+                new Notification.Builder(this, "SERVICE")
                         .setContentTitle(getText(R.string.app_name))
                         .setContentText(getText(R.string.service_notification_message))
                         .setSmallIcon(R.drawable.adictic_nolletra)
@@ -256,6 +257,9 @@ public class ForegroundService extends Service {
     @Override
     public void onDestroy() {
         actiu = false;
+
+        unregisterReceiver(checkInstalledAppsReceiver);
+
         Intent intent = new Intent(getApplicationContext(), ForegroundService.class);
         intent.setPackage(getPackageName());
 

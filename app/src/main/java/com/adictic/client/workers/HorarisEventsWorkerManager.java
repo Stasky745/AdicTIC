@@ -12,13 +12,17 @@ import androidx.work.WorkerParameters;
 
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.entity.EventBlock;
+import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.util.Constants;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 public class HorarisEventsWorkerManager extends Worker {
     private final static String TAG = "HorarisEventsWorkerManager";
@@ -45,7 +49,13 @@ public class HorarisEventsWorkerManager extends Worker {
             return Result.retry();
         }
 
-        Funcions.checkHoraris(getApplicationContext());
+        // Agafem i apliquem horaris
+        ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(getApplicationContext(), Constants.FILE_HORARIS_NIT, false)));
+        Funcions.setHoraris(getApplicationContext(), horarisNit);
+
+        // Agafem i apliquem Events
+        List<EventBlock> eventList = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK, false);
+        Funcions.setEvents(getApplicationContext(), eventList);
 
         return Result.success();
     }

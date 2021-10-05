@@ -17,34 +17,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/mascot_min" />
 
-    <Button
-        android:id="@+id/BT_FreeTime"
-        style="@style/ButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/free_time"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
-        app:layout_constraintEnd_toEndOf="@+id/BT_BlockDevice"
-        app:layout_constraintStart_toStartOf="@+id/BT_BlockDevice"
-        app:layout_constraintTop_toBottomOf="@+id/BT_BlockDevice" />
-
-    <Button
-        android:id="@+id/BT_BlockDevice"
-        style="@style/ButtonStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/block_device"
-        android:textAllCaps="false"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline25"
-        app:layout_constraintTop_toTopOf="@+id/IV_mascot" />
-
     <ImageView
         android:id="@+id/IV_CurrentApp"
         android:layout_width="0dp"
@@ -288,11 +260,25 @@
                 app:layout_constraintTop_toBottomOf="@id/CL_LimitsApps">
 
                 <Button
-                    android:id="@+id/BT_BlockApps"
+                    android:id="@+id/BT_dailyLimit"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:text="@string/daily_limit_device"
+                    android:textAlignment="textStart"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/BT_BlockApps"
+                    style="@style/ButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:text="@string/block_apps"
@@ -300,7 +286,7 @@
                     android:textAllCaps="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/BT_dailyLimit" />
 
                 <Button
                     android:id="@+id/BT_Events"
@@ -379,5 +365,52 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/TV_blockDevice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/block_device"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline25"
+        app:layout_constraintTop_toTopOf="@+id/IV_mascot" />
+
+    <SeekBar
+        android:id="@+id/SB_deviceState"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="3dp"
+        android:max="2"
+        android:progress="1"
+        android:progressTint="@android:color/transparent"
+        android:rotation="270"
+        android:thumbTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/TV_freeTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline25"
+        app:layout_constraintTop_toBottomOf="@+id/TV_blockDevice" />
+
+    <TextView
+        android:id="@+id/TV_freeTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/free_time"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/IV_mascot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline25" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
