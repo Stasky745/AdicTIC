@@ -37,8 +37,10 @@ import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
+import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.adictic.common.util.MyNotificationManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -144,6 +146,8 @@ public class ForegroundService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotification() {
+//        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
+//        clientNotificationManager.displayGeneralNotification(getString(R.string.app_name), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
         createNotificationChannel();
 
         Intent notificationIntent = new Intent(this, NavActivity.class);
@@ -151,7 +155,7 @@ public class ForegroundService extends Service {
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
         Notification notification =
-                new Notification.Builder(this, CHANNEL_ID)
+                new Notification.Builder(this, "SERVICE")
                         .setContentTitle(getText(R.string.app_name))
                         .setContentText(getText(R.string.service_notification_message))
                         .setSmallIcon(R.drawable.adictic_nolletra)
