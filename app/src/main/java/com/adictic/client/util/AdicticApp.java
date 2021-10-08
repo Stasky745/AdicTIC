@@ -29,17 +29,16 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-            "Límit diari de dispositiu"
+
     };
 
     public static String[] fixes = {
-            "Ja no surt \"Altres\" duplicat en la gràfica de categories.",
-            "Ja funcionen horaris lliures de tecnologies i horaris nocturns",
-            "Botó d'avisar a pares ja funciona"
+            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig",
+            "Es pot fer videotrucada"
     };
 
     public static String[] changes = {
-            "Canvi en els butons de \"Bloquejar Dispositiu\" i \"Temps Lliure\""
+            "No es té en compte el menú principal dins d'apps instal·lades ni l'ús d'apps"
     };
 
     @Override
