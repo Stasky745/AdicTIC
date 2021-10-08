@@ -119,6 +119,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     public String getCurrentPackage() { return currentPackage; }
     public String getCurrentAppName() { return currentAppName; }
 
+    // PkgName/Classname que no són bloquejats
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
             "com.adictic.client.ui.BlockDeviceActivity",
             "com.android.contacts",
@@ -126,9 +127,11 @@ public class AccessibilityScreenService extends AccessibilityService {
             "com.android.dialer"
     ));
 
+    // Classname que no tenim en compte
     private final List<String> ignoreActivities = new ArrayList<>(Arrays.asList(
             "android.widget.FrameLayout",
-            "BlockAppActivity"
+            "com.adictic.client.ui.BlockDeviceActivity",
+            "com.adictic.client.ui.BlockAppActivity"
     ));
 
     private boolean liveApp = false;
@@ -539,6 +542,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = true;
                 AccessibilityScreenService.instance.dayUsage += Math.abs(AccessibilityScreenService.instance.unlockedDeviceTime - System.currentTimeMillis());
 
+                Funcions.sendAppUsage(context);
                 enviarLastApp();
             }
             else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0 && !instance.horarisActius && !instance.excessUsageDevice)) && !myKM.isDeviceLocked()) {
