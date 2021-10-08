@@ -20,6 +20,16 @@
         app:title="@string/setting_notifications" />
 
     <Preference
+        app:key="setting_report_suggestion"
+        app:icon="@drawable/ic_baseline_add_task_24"
+        app:title="@string/report_suggestion" />
+
+    <Preference
+        app:key="setting_report_bug"
+        app:icon="@drawable/ic_baseline_bug_report_24"
+        app:title="@string/report_bug" />
+
+    <Preference
         app:key="setting_android"
         app:icon="@drawable/ic_baseline_android_24"
         app:title="@string/settings_android" />

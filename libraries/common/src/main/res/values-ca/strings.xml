@@ -457,4 +457,9 @@
     <string name="trucar_confirmacio">Trucar?</string>
     <string name="trucar_confirmacio_pares">Trucar als pares?</string>
     <string name="trucar_desc"> </string>
+    <string name="report_message_bug">Si us plau, descrigui el problema ocorregut:</string>
+    <string name="report_message_suggestion">Escrigui el suggeriment aquí:</string>
+    <string name="sended_correctly">Enviat correctament</string>
+    <string name="report_suggestion">Enviar suggeriment</string>
+    <string name="report_bug">Informar error</string>
 </resources>

@@ -23,15 +23,12 @@ import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.ui.inici.SplashScreen;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
-import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.ui.ReportActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.joda.time.DateTime;
-
-import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -72,6 +69,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             settings_tancar_sessio();
             settings_change_password();
             settings_android();
+            settings_report_bug();
+            settings_report_suggestion();
             if(BuildConfig.DEBUG){
                 settings_change_theme();
             } else {
@@ -82,6 +81,30 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         }
         settings_change_notifications();
         settings_change_language();
+    }
+
+    private void settings_report_suggestion() {
+        Preference report_suggestion = findPreference("setting_report_suggestion");
+
+        assert report_suggestion != null;
+        report_suggestion.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(requireActivity(), ReportActivity.class);
+            intent.putExtra("isTypeBug", false);
+            startActivity(intent);
+            return true;
+        });
+    }
+
+    private void settings_report_bug() {
+        Preference report_bug = findPreference("setting_report_bug");
+
+        assert report_bug != null;
+        report_bug.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(requireActivity(), ReportActivity.class);
+            intent.putExtra("isTypeBug", true);
+            startActivity(intent);
+            return true;
+        });
     }
 
     private void settings_change_notifications() {
@@ -180,7 +203,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
+                                super.onResponse(call, response);
                                 if (response.isSuccessful()) {
                                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,null).apply();
                                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,null).apply();
@@ -191,7 +214,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                             @Override
                             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                                super.onFailure(call, t);
                             }
                         });
 

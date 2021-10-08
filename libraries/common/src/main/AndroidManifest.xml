@@ -17,5 +17,6 @@
         <activity android:name=".ui.AdminProfileActivity" />
         <activity android:name=".ui.events.EventsActivity" />
         <activity android:name=".ui.BlockAppsActivity" />
+        <activity android:name=".ui.ReportActivity" />
     </application>
 </manifest>
