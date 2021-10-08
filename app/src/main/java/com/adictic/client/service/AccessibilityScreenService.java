@@ -552,7 +552,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = false;
                 AccessibilityScreenService.instance.unlockedDeviceTime = System.currentTimeMillis();
 
-                sumarDesbloqueig(context);
+                //sumarDesbloqueig(context);
 
                 // Mirem si hi ha límit establert
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
