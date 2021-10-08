@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
@@ -66,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -448,11 +450,18 @@ public class Funcions {
 
         UsageEvents usageEvents = mUsageStatsManager.queryEvents(initialTime, finalTime);
 
+        //finding the launcher
+        List<String> launcherList = getLaunchers(mContext);
+
         //capturing all events in a array to compare with next element
 
         while (usageEvents.hasNextEvent()) {
             currentEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(currentEvent);
+
+            if(launcherList.contains(currentEvent.getPackageName()))
+                continue;
+
             if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED ||
                     currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED) {
                 allEvents.add(currentEvent);
@@ -537,6 +546,23 @@ public class Funcions {
         }
 
         return new ArrayList<>(map.values());
+    }
+
+    public static List<String> getLaunchers(Context mContext){
+        //finding the launcher
+        PackageManager localPackageManager = mContext.getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+
+        @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> lst = localPackageManager.queryIntentActivities(intent, 0);
+        List<String> launcherList = new ArrayList<>();
+        if (!lst.isEmpty()) {
+            launcherList = lst.stream()
+                    .map(resolveInfo -> resolveInfo.activityInfo.packageName)
+                    .collect(Collectors.toList());
+        }
+
+        return launcherList;
     }
 
     public static void askChildForLiveApp(Context ctx, long idChild, boolean liveApp) {

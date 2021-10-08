@@ -1,7 +1,5 @@
 package com.adictic.client.ui;
 
-import static android.content.Intent.ACTION_DIAL;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.common.entity.EventBlock;
-import com.adictic.common.entity.User;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.client.R;
@@ -70,8 +68,8 @@ public class BlockDeviceActivity extends AppCompatActivity {
             finish();
 
         setText();
-        setCallButton();
-        setAlarmButton();
+        setEmergencyCallButton();
+        setAlertParentsButton();
         postIntentAccesDisp();
     }
 
@@ -87,25 +85,15 @@ public class BlockDeviceActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         finish();
     }
 
-    private void setAlarmButton() {
+    private void setAlertParentsButton() {
+        ConstraintLayout CL_alertParents = findViewById(R.id.CL_block_device_alert);
 
-    }
-
-    private void setCallButton() {
-        ConstraintLayout CL_device_blocked_call = findViewById(R.id.CL_block_device_emergency_call);
-
-        CL_device_blocked_call.setOnClickListener(view -> new AlertDialog.Builder(this)
+        CL_alertParents.setOnClickListener(view -> new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.trucar_confirmacio_pares))
                 .setMessage(getString(R.string.trucar_desc))
                 .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
@@ -113,7 +101,8 @@ public class BlockDeviceActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                             super.onResponse(call, response);
-                            if (response.isSuccessful()) startCall(response.body());
+                            if (response.isSuccessful())
+                                startCall(response.body());
                         }
 
                         @Override
@@ -125,6 +114,16 @@ public class BlockDeviceActivity extends AppCompatActivity {
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.cancel())
                 .show());
+    }
+
+    private void setEmergencyCallButton() {
+        ConstraintLayout CL_emergencyCall = findViewById(R.id.CL_block_device_emergency_call);
+
+        CL_emergencyCall.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:112"));
+            startActivity(intent);
+        });
     }
 
     private void startCall(String chatId) {
