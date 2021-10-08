@@ -33,8 +33,7 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig",
-            "Es pot fer videotrucada"
+            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig"
     };
 
     public static String[] changes = {
