@@ -455,7 +455,7 @@ public class Funcions {
         UsageEvents usageEvents = mUsageStatsManager.queryEvents(initialTime, finalTime);
 
         //finding the launcher
-        List<String> launcherList = getLaunchers(mContext);
+//        List<String> launcherList = getLaunchers(mContext);
 
         //capturing all events in a array to compare with next element
         int timesUnlocked = 0;
@@ -463,8 +463,8 @@ public class Funcions {
             currentEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(currentEvent);
 
-            if(launcherList.contains(currentEvent.getPackageName()))
-                continue;
+//            if(launcherList.contains(currentEvent.getPackageName()))
+//                continue;
 
             if(currentEvent.getEventType() == UsageEvents.Event.KEYGUARD_HIDDEN){
                 timesUnlocked++;
