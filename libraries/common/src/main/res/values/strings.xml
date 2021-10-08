@@ -481,4 +481,10 @@
     <string name="trucar_confirmacio">Llamar?</string>
     <string name="trucar_confirmacio_pares">Llamar a los padres?</string>
     <string name="trucar_desc"> </string>
+
+    <string name="report_message_bug">Por favor, describa el problema ocurrido:</string>
+    <string name="report_message_suggestion">Escriba la sugerencia aquí:</string>
+    <string name="sended_correctly">Enviado correctamente</string>
+    <string name="report_suggestion">Enviar sugerencia</string>
+    <string name="report_bug">Reportar error</string>
 </resources>

@@ -22,6 +22,7 @@ import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.entity.Oficina;
+import com.adictic.common.entity.Report;
 import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.entity.User;
@@ -224,4 +225,7 @@ public interface Api {
 
     @POST("/message/videochat/{idChild}/cancel")
     Call<String> cancelCallParents(@Path("idChild") Long idChild);
+
+    @POST("/report")
+    Call<String> sendReport(@Body Report report);
 }
