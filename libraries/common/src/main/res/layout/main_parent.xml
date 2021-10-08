@@ -121,7 +121,7 @@
                 android:background="@color/colorBackgroundGrey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/TV_PieApp">
+                app:layout_constraintTop_toTopOf="@+id/TV_timesUnlocked">
 
                 <ImageView
                     android:id="@+id/IV_CL_Resum_us"
@@ -362,6 +362,19 @@
                     app:layout_constraintStart_toEndOf="@+id/IV_CL_geoloc"
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/TV_timesUnlocked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="24dp"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/TV_PieApp"
+                tools:text="El dispositiu s'ha desbloquejat 5 cops" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

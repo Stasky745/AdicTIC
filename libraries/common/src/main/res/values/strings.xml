@@ -481,4 +481,10 @@
     <string name="trucar_confirmacio">Llamar?</string>
     <string name="trucar_confirmacio_pares">Llamar a los padres?</string>
     <string name="trucar_desc"> </string>
+
+    <string name="cops_desbloquejat">
+        <![CDATA[
+           El dispositivo se ha desbloqueado <font color="#3c9df8"><b>%d</b></font> veces hoy
+        ]]>
+    </string>
 </resources>
