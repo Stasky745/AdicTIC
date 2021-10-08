@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spanned;
+import android.text.SpannedString;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,6 +89,7 @@ public class MainParentFragment extends Fragment {
     // ---------- CACHE -----------
     private long ultimaActualitzacioDades = 0L;
     private long totalUsageTime = 0;
+    private int timesUnlocked = 0;
     private final Map<String, AppUsage> appUsageMap = new HashMap<>();
 
     private ImageView IV_liveIcon;
@@ -140,6 +143,7 @@ public class MainParentFragment extends Fragment {
 
         root.findViewById(R.id.Ch_Pie).setVisibility(View.INVISIBLE);
         root.findViewById(R.id.TV_PieApp).setVisibility(View.INVISIBLE);
+        root.findViewById(R.id.TV_timesUnlocked).setVisibility(View.GONE);
 
         IV_liveIcon = root.findViewById(R.id.IV_CurrentApp);
         IV_liveIcon.setVisibility(View.INVISIBLE);
@@ -631,6 +635,10 @@ public class MainParentFragment extends Fragment {
                     makeGraph(collection);
                 } else {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
+                    TV_timesUnlocked.setVisibility(View.VISIBLE);
+                    Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+                    TV_timesUnlocked.setText(text);
                 }
             }
 
@@ -638,6 +646,10 @@ public class MainParentFragment extends Fragment {
             public void onFailure(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Throwable t) {
                 super.onFailure(call, t);
                 Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
+                TV_timesUnlocked.setVisibility(View.VISIBLE);
+                Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+                TV_timesUnlocked.setText(text);
             }
         });
     }
@@ -650,11 +662,24 @@ public class MainParentFragment extends Fragment {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.GONE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.GONE);
             setVisibilities();
+
+            TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
+            TV_timesUnlocked.setVisibility(View.VISIBLE);
+            Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+            TV_timesUnlocked.setText(text);
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
             root.findViewById(R.id.TV_PieApp).setVisibility(View.VISIBLE);
 
             totalUsageTime = genericAppUsage.get(0).totalTime;
+            timesUnlocked = genericAppUsage.get(0).timesUnlocked != null ? genericAppUsage.get(0).timesUnlocked : -1;
+
+            if (timesUnlocked != -1) {
+                TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
+                TV_timesUnlocked.setVisibility(View.VISIBLE);
+                Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, timesUnlocked));
+                TV_timesUnlocked.setText(text);
+            }
 
             GeneralUsage gu = genericAppUsage.stream().findFirst().orElse(null);
             if(gu.totalTime > 0) {
