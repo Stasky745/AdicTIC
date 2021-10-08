@@ -120,10 +120,10 @@ public class AccessibilityScreenService extends AccessibilityService {
     public String getCurrentAppName() { return currentAppName; }
 
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
-            "BlockDeviceActivity",
             "com.adictic.client.ui.BlockDeviceActivity",
             "com.android.contacts",
-            "com.adictic.client"
+            "com.adictic.client",
+            "com.android.dialer"
     ));
 
     private final List<String> ignoreActivities = new ArrayList<>(Arrays.asList(
