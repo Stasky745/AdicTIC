@@ -2,6 +2,8 @@ package com.adictic.client.service;
 
 import static android.content.Intent.ACTION_SCREEN_OFF;
 import static android.content.Intent.ACTION_SCREEN_ON;
+import static android.content.Intent.ACTION_USER_PRESENT;
+import static android.content.Intent.ACTION_USER_UNLOCKED;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -41,6 +43,7 @@ import org.joda.time.DateTimeFieldType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -322,7 +325,8 @@ public class AccessibilityScreenService extends AccessibilityService {
             boolean shouldDeviceBeBlocked = isDeviceBlocked();
 
             // --- LIVE APP ---
-            if (liveApp && !shouldDeviceBeBlocked)
+            if (liveApp && !shouldDeviceBeBlocked
+                && !lastPackage.equals(currentPackage))
                 enviarLiveApp(currentPackage, currentAppName);
 
             // --- FREE USE ---
@@ -497,7 +501,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     // ******************** END WORKERS ***********************
 
     public void enviarLiveApp(){
-        enviarLiveApp(lastPackage, lastAppName);
+        enviarLiveApp(currentPackage, currentAppName);
     }
 
     private void enviarLiveApp(String pkgName, String appName) {
@@ -526,8 +530,8 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private void registerScreenLockReceiver() {
         IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_USER_PRESENT);
         intentFilter.addAction(ACTION_SCREEN_OFF);
-        intentFilter.addAction(ACTION_SCREEN_ON);
         ScreenLockReceiver screenLockReceiver = new ScreenLockReceiver();
         AccessibilityScreenService.this.registerReceiver(screenLockReceiver, intentFilter);
     }
@@ -537,7 +541,6 @@ public class AccessibilityScreenService extends AccessibilityService {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            KeyguardManager myKM = (KeyguardManager) context.getSystemService(KEYGUARD_SERVICE);
             if(intent.getAction().equals(ACTION_SCREEN_OFF) && !wasLocked){
                 wasLocked = true;
                 AccessibilityScreenService.instance.dayUsage += Math.abs(AccessibilityScreenService.instance.unlockedDeviceTime - System.currentTimeMillis());
@@ -545,9 +548,11 @@ public class AccessibilityScreenService extends AccessibilityService {
                 Funcions.sendAppUsage(context);
                 enviarLastApp();
             }
-            else if(intent.getAction().equals(ACTION_SCREEN_ON) && (instance.freeUse || (!instance.blockDevice && instance.activeEvents == 0 && !instance.horarisActius && !instance.excessUsageDevice)) && !myKM.isDeviceLocked()) {
+            else if(intent.getAction().equals(ACTION_USER_PRESENT) && !instance.isDeviceBlocked()) {
                 wasLocked = false;
                 AccessibilityScreenService.instance.unlockedDeviceTime = System.currentTimeMillis();
+
+                sumarDesbloqueig(context);
 
                 // Mirem si hi ha límit establert
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
@@ -561,6 +566,26 @@ public class AccessibilityScreenService extends AccessibilityService {
                 else
                     AccessibilityScreenService.instance.excessUsageDevice = false;
             }
+        }
+
+        private void sumarDesbloqueig(Context context){
+            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.instance);
+            assert sharedPreferences != null;
+
+            long date = new Date().getTime();
+
+            Call<String> call = ((AdicticApp) context.getApplicationContext()).getAPI().addTimeUnlocked(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), date);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
         }
 
         private void enviarLastApp() {
