@@ -93,7 +93,8 @@
     <string name="stop_free_time">Parar uso ilimitado</string>
     <string name="block_device">Bloquear dispositivo</string>
     <string name="disconnected">Desconectado</string>
-    <string name="informe">Informe Mensual</string>
+    <string name="informe">Uso mensual de aplicaciones</string>
+    <string name="informe_mes">Informe del mes: </string>
     <string name="horaris">Momentos libres de tecnologías</string>
     <string name="app_usage">Uso de aplicaciones</string>
     <string name="block_apps">Bloqueo de aplicaciones</string>
