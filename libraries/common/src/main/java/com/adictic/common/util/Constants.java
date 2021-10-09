@@ -5,6 +5,8 @@ import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 import android.graphics.Color;
 
+import com.adictic.common.R;
+
 import java.util.Arrays;
 
 public class Constants {
@@ -89,12 +91,12 @@ public class Constants {
 
     private static String[] createAgeTimesString(){
         String[] array = new String[30];
-        Arrays.fill(array, 0, 3, "0 hores");
-        array[3] = "30 minuts";
-        array[4] = "45 minuts";
-        Arrays.fill(array, 5, 13, "1 hora");
-        Arrays.fill(array, 13, 16, "1:30 hores");
-        Arrays.fill(array, 16, 30, "2 hores");
+        Arrays.fill(array, 0, 3, "0 " + App.getRes().getString(R.string.hours));
+        array[3] = "30 " + App.getRes().getString(R.string.minutes);
+        array[4] = "45 " + App.getRes().getString(R.string.minutes);
+        Arrays.fill(array, 5, 13, "1 " + App.getRes().getString(R.string.hours));
+        Arrays.fill(array, 13, 16, "1 " + App.getRes().getString(R.string.hours) + "30 " + App.getRes().getString(R.string.minutes));
+        Arrays.fill(array, 16, 30, "2 " + App.getRes().getString(R.string.hours));
 
         return array;
     }

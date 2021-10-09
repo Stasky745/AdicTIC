@@ -77,7 +77,6 @@ public class InformeActivity extends AppCompatActivity {
 
         TV_percentageUsage.setOnClickListener(v -> {
             String deviceTime = TV_totalUsage.getText().toString().substring(0, TV_totalUsage.getText().toString().indexOf('/') - 2);
-            String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/') + 2, TV_totalUsage.getText().length() - 1);
             DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
             AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
