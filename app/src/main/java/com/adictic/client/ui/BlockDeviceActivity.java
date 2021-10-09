@@ -1,21 +1,27 @@
 package com.adictic.client.ui;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.client.service.AccessibilityScreenService;
@@ -85,9 +91,27 @@ public class BlockDeviceActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         finish();
+    }
+
+    private void createCall(){
+        mTodoService.callParents(idChild).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if (response.isSuccessful()) {
+                    startCall(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                super.onFailure(call, t);
+                Toast.makeText(getApplicationContext(), "No s'ha pogut connectar amb el servidor", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setAlertParentsButton() {
@@ -96,25 +120,65 @@ public class BlockDeviceActivity extends AppCompatActivity {
         CL_alertParents.setOnClickListener(view -> new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.trucar_confirmacio_pares))
                 .setMessage(getString(R.string.trucar_desc))
-                .setPositiveButton(R.string.accept, (dialogInterface, i) -> {
-                    mTodoService.callParents(idChild).enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            super.onResponse(call, response);
-                            if (response.isSuccessful())
-                                startCall(response.body());
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                            super.onFailure(call, t);
-                            Toast.makeText(getApplicationContext(), "No s'ha pogut connectar amb el servidor", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                })
+                .setPositiveButton(R.string.accept, (dialogInterface, i) -> checkPermissionsEnabled())
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.cancel())
                 .show());
     }
+
+    private void checkPermissionsEnabled() {
+        boolean cameraPermissionEnabled = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED;
+        boolean micPermissionEnabled = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        if (cameraPermissionEnabled && micPermissionEnabled) {
+            // You can use the API that requires the permission.
+            createCall();
+        } else {
+            if(!cameraPermissionEnabled) {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)){
+                    // In an educational UI, explain to the user why your app requires this
+                    // permission for a specific feature to behave as expected. In this UI,
+                    // include a "cancel" or "no thanks" button that allows the user to
+                    // continue using your app without granting the permission.
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(com.adictic.common.R.string.permission_camera))
+                            .setMessage(getString(com.adictic.common.R.string.permission_camera_text))
+                            .setPositiveButton(getString(com.adictic.common.R.string.accept), (dialogInterface, i) -> requestPermissionLauncher.launch(Manifest.permission.CAMERA))
+                            .setNegativeButton(getString(com.adictic.common.R.string.cancel), (dialogInterface, i) -> dialogInterface.cancel())
+                            .show();
+                } else{
+                    // You can directly ask for the permission.
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+                }
+            }
+            else {
+                if (shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO)){
+                    // In an educational UI, explain to the user why your app requires this
+                    // permission for a specific feature to behave as expected. In this UI,
+                    // include a "cancel" or "no thanks" button that allows the user to
+                    // continue using your app without granting the permission.
+                    new AlertDialog.Builder(this)
+                            .setTitle(getString(com.adictic.common.R.string.permission_mic))
+                            .setMessage(getString(com.adictic.common.R.string.permission_mic_text))
+                            .setPositiveButton(getString(com.adictic.common.R.string.accept), (dialogInterface, i) -> requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO))
+                            .setNegativeButton(getString(com.adictic.common.R.string.cancel), (dialogInterface, i) -> dialogInterface.cancel())
+                            .show();
+                } else{
+                    // You can directly ask for the permission.
+                    requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
+                }
+            }
+        }
+    }
+
+    // Register the permissions callback, which handles the user's response to the
+    // system permissions dialog. Save the return value, an instance of
+    // ActivityResultLauncher, as an instance variable.
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    checkPermissionsEnabled();
+                }
+            });
+
 
     private void setEmergencyCallButton() {
         ConstraintLayout CL_emergencyCall = findViewById(R.id.CL_block_device_emergency_call);
