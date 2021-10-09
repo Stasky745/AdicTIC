@@ -240,6 +240,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     private void fetchDades() {
+        tempsApps = Funcions.getTodayAppUsage(AccessibilityScreenService.this);
+
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
         blockDevice = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false);
