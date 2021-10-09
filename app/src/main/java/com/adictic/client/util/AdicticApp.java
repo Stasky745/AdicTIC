@@ -30,17 +30,15 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-            "Surten les vegades que s'ha desbloquejat el dispositiu a la pàgina principal",
-            "Pàgina nova per enviar suggerencies o errors"
+
     };
 
     public static String[] fixes = {
-            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig",
-            "Ara ja surt la gràfica diària des de bon principi"
+
     };
 
     public static String[] changes = {
-
+            "Canvis de disseny"
     };
 
     @Override
