@@ -443,7 +443,7 @@ public class Funcions {
         return gul;
     }
 
-    private static Pair<List<AppUsage>,Integer> getAppUsages(Context mContext, long initialTime, long finalTime) {
+    public static Pair<List<AppUsage>,Integer> getAppUsages(Context mContext, long initialTime, long finalTime) {
         UsageEvents.Event currentEvent;
         List<UsageEvents.Event> allEvents = new ArrayList<>();
         HashMap<String, AppUsage> map = new HashMap<>();

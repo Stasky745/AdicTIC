@@ -127,7 +127,8 @@ public class AccessibilityScreenService extends AccessibilityService {
             "com.adictic.client.ui.BlockDeviceActivity",
             "com.android.contacts",
             "com.adictic.client",
-            "com.android.dialer"
+            "com.android.dialer",
+            "com.google.android.permissioncontroller"
     ));
 
     // Classname que no tenim en compte
@@ -240,6 +241,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     private void fetchDades() {
+        tempsApps = Funcions.getTodayAppUsage(AccessibilityScreenService.this);
+
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
         blockDevice = sharedPreferences.getBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false);

@@ -93,10 +93,11 @@
     <string name="stop_free_time">Parar uso ilimitado</string>
     <string name="block_device">Bloquear dispositivo</string>
     <string name="disconnected">Desconectado</string>
-    <string name="informe">Uso mensual de aplicaciones</string>
+    <string name="informe">Informe mensual</string>
     <string name="informe_mes">Informe del mes: </string>
     <string name="horaris">Momentos libres de tecnologías</string>
     <string name="app_usage">Uso de aplicaciones</string>
+    <string name="app_usage_month">Uso mensual de aplicaciones</string>
     <string name="block_apps">Bloqueo de aplicaciones</string>
     <string name="daily_limit_device">Límite diario del dispositivo</string>
     <string name="home_second">Home Second</string>
@@ -135,12 +136,12 @@
 
     <string name="percentage_info_bo">
         <![CDATA[
-            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso diario de tecnologías, ha estado un <font color="#3c9df8"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Enhorabuena, seguid así!</b>
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s, ha estado un <font color="#3c9df8"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Enhorabuena, seguid así!</b>
         ]]>
     </string>
     <string name="percentage_info_dolent">
         <![CDATA[
-            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso diario de tecnologías, ha estado un <font color="#F44336"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Alerta: seria conveniente reducir su uso!</b>
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s, ha estado un <font color="#F44336"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Alerta: seria conveniente reducir su uso!</b>
         ]]>
     </string>
     <string name="error_liveApp">No se pudo leer la aplicación actual del hijo</string>
@@ -494,4 +495,14 @@
     <string name="sended_correctly">Enviado correctamente</string>
     <string name="report_suggestion">Enviar sugerencia</string>
     <string name="report_bug">Reportar error</string>
+
+    <string name="permission_camera">Permiso para usar la cámara</string>
+    <string name="permission_camera_text">Necesitamos que se permita que la aplicación utilice la cámara para poder empezar la videollamada.</string>
+    <string name="permission_mic">Permiso para usar la micrófono</string>
+    <string name="permission_mic_text">Necesitamos que se permita que la aplicación utilice el micrófono para poder empezar la videollamada.</string>
+
+    <string name="callNotifTitle">Llamando</string>
+    <string name="callNotifDesc">El profesional %s está llamando</string>
+    <string name="callChildNotifTitle">%s está llamando</string>
+    <string name="callChildNotifDesc">Pulsa aquí para contestar</string>
 </resources>

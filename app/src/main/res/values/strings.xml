@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="callNotifTitle">Llamando</string>
-    <string name="callNotifDesc">El profesional %s está llamando</string>
-    <string name="callChildNotifTitle">%s está llamando</string>
-    <string name="callChildNotifDesc">Pulsa aquí para contestar</string>
-</resources>

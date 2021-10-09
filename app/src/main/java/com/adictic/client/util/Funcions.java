@@ -59,6 +59,7 @@ import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.ServiceWorker;
+import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
@@ -956,5 +957,15 @@ public class Funcions extends com.adictic.common.util.Funcions {
         }
 
         return res;
+    }
+
+    public static Map<String, Long> getTodayAppUsage(Context mContext) {
+        long startOfDay = new DateTime().withTimeAtStartOfDay().getMillis();
+        long now = System.currentTimeMillis();
+
+        List<AppUsage> listUsages = getAppUsages(mContext, startOfDay, now).first;
+
+        return listUsages.stream()
+                .collect(Collectors.toMap(appUsage -> appUsage.app.pkgName,appUsage -> appUsage.totalTime));
     }
 }

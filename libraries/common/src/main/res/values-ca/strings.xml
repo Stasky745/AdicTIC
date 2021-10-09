@@ -86,10 +86,11 @@
     <string name="stop_free_time">Aturar ús il·limitat</string>
     <string name="block_device">"Bloquejar dispositiu"</string>
     <string name="disconnected">"Desconnectat"</string>
-    <string name="informe">Ús mensual d\'aplicacions</string>
+    <string name="informe">Informe mensual</string>
     <string name="informe_mes">Informe del mes: </string>
     <string name="horaris">Moments lliures de tecnologies</string>
     <string name="app_usage">Ús d\'aplicacions</string>
+    <string name="app_usage_month">Ús mensual d\'aplicacions</string>
     <string name="block_apps">Bloqueig d\'aplicacions</string>
     <string name="daily_limit_device">Límit diari del dispositiu</string>
     <string name="home_second">Home Second</string>
@@ -126,12 +127,12 @@
 
     <string name="percentage_info_bo">
         <![CDATA[
-            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús diari de tecnologies, ha estat un <font color="#3c9df8"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Enhorabona, seguiu així!</b>
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s, ha estat un <font color="#3c9df8"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Enhorabona, seguiu així!</b>
         ]]>
     </string>
     <string name="percentage_info_dolent">
         <![CDATA[
-            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús diari de tecnologies, ha estat un <font color="#F44336"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Alerta: seria convenient reduir-ne l\'ús!</b>
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s, ha estat un <font color="#F44336"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Alerta: seria convenient reduir-ne l\'ús!</b>
         ]]>
     </string>
     <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
@@ -469,4 +470,14 @@
     <string name="sended_correctly">Enviat correctament</string>
     <string name="report_suggestion">Enviar suggeriment</string>
     <string name="report_bug">Informar error</string>
+
+    <string name="permission_camera">Permís para utilitzar la càmera</string>
+    <string name="permission_camera_text">Necessitem que es permeti que l\'aplicació utilitzi la càmera per començar la videotrucada.</string>
+    <string name="permission_mic">Permís para utilitzar el micròfon</string>
+    <string name="permission_mic_text">Necessitem que es permeti que l\'aplicació utilitzi el micròfon per començar la videotrucada.</string>
+
+    <string name="callNotifTitle">Trucant</string>
+    <string name="callNotifDesc">El professional %s està trucant</string>
+    <string name="callChildNotifTitle">%s està trucant</string>
+    <string name="callChildNotifDesc">Pressiona aquí per contestar</string>
 </resources>
