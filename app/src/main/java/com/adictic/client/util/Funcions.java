@@ -570,6 +570,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
     // ForegroundService Worker
 
     public static void startServiceWorker(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, true))
+            return;
+
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(ServiceWorker.class, 20, TimeUnit.MINUTES)
                     .build();
