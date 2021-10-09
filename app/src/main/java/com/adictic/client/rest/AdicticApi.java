@@ -26,6 +26,7 @@ import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.entity.YearEntity;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.MultipartBody;
@@ -185,4 +186,7 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
 
     @GET("/usage/{idChild}/dailyLimit")
     Call<Integer> getDailyLimit(@Path("idChild") Long idChild);
+
+    @PUT("/usage/{idChild}/timesUnlocked")
+    Call<String> addTimeUnlocked(@Path("idChild") Long idChild, @Body Long dateTime);
 }

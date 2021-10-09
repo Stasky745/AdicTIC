@@ -419,7 +419,9 @@ public class Funcions {
 
             finalTime = Math.min(finalDate.getMillis(), DateTime.now().getMillis());
 
-            List<AppUsage> appUsages = getAppUsages(mContext, initialTime, finalTime);
+            Pair<List<AppUsage>, Integer> pair = getAppUsages(mContext, initialTime, finalTime);
+            List<AppUsage> appUsages = pair.first;
+            int timesUnlocked = pair.second;
 
             GeneralUsage gu = new GeneralUsage();
             gu.day = initialDate.getDayOfMonth();
@@ -431,6 +433,8 @@ public class Funcions {
                     .mapToLong(appUsage -> appUsage.totalTime)
                     .sum();
 
+            gu.timesUnlocked=timesUnlocked;
+
             gul.add(gu);
         }
 
@@ -439,7 +443,7 @@ public class Funcions {
         return gul;
     }
 
-    private static List<AppUsage> getAppUsages(Context mContext, long initialTime, long finalTime) {
+    private static Pair<List<AppUsage>,Integer> getAppUsages(Context mContext, long initialTime, long finalTime) {
         UsageEvents.Event currentEvent;
         List<UsageEvents.Event> allEvents = new ArrayList<>();
         HashMap<String, AppUsage> map = new HashMap<>();
@@ -451,17 +455,21 @@ public class Funcions {
         UsageEvents usageEvents = mUsageStatsManager.queryEvents(initialTime, finalTime);
 
         //finding the launcher
-        List<String> launcherList = getLaunchers(mContext);
+//        List<String> launcherList = getLaunchers(mContext);
 
         //capturing all events in a array to compare with next element
-
+        int timesUnlocked = 0;
         while (usageEvents.hasNextEvent()) {
             currentEvent = new UsageEvents.Event();
             usageEvents.getNextEvent(currentEvent);
 
-            if(launcherList.contains(currentEvent.getPackageName()))
-                continue;
+//            if(launcherList.contains(currentEvent.getPackageName()))
+//                continue;
 
+            if(currentEvent.getEventType() == UsageEvents.Event.KEYGUARD_HIDDEN){
+                timesUnlocked++;
+                continue;
+            }
             if (currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_RESUMED ||
                     currentEvent.getEventType() == UsageEvents.Event.ACTIVITY_PAUSED) {
                 allEvents.add(currentEvent);
@@ -500,7 +508,7 @@ public class Funcions {
         }
 
         if(allEvents.isEmpty())
-            return new ArrayList<>();
+            return new Pair<>(new ArrayList<>(), timesUnlocked);
 
         allEvents.sort(Comparator.comparing(UsageEvents.Event::getTimeStamp));
 
@@ -545,7 +553,7 @@ public class Funcions {
             }
         }
 
-        return new ArrayList<>(map.values());
+        return new Pair<>(new ArrayList<>(map.values()), timesUnlocked);
     }
 
     public static List<String> getLaunchers(Context mContext){
