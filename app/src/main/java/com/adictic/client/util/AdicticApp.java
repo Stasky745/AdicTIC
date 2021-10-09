@@ -30,18 +30,17 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-
+            "Es demanen permisos de càmera i micro si no es tenen quan es comença videotrucada"
     };
 
     public static String[] fixes = {
-
+            "Arreglar els textos de l'informe",
+            "Ara ja bloqueja apps limitades bé",
+            "Treure repetició del text del % a informe"
     };
 
     public static String[] changes = {
-            "Canvi a hores diàries recomanades en el % de l'informe",
-            "Especificar les apps més utilitzades al mes a Informe Detallat",
-            "Canvi de títol d'informe Mensual",
-            "A Informe Mensual, no es recarreguen les dues gràfiques quan es canvia entre 'Categoria' i 'Apps'"
+
     };
 
     @Override

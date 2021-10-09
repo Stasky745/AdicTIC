@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="callNotifTitle">Trucant</string>
-    <string name="callNotifDesc">El professional %s està trucant</string>
-    <string name="callChildNotifTitle">%s està trucant</string>
-    <string name="callChildNotifDesc">Pressiona aquí per contestar</string>
-</resources>
