@@ -15,6 +15,7 @@ import com.adictic.common.util.Global;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
@@ -29,15 +30,17 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-
+            "Surten les vegades que s'ha desbloquejat el dispositiu a la pàgina principal",
+            "Pàgina nova per enviar suggerencies o errors"
     };
 
     public static String[] fixes = {
-            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig"
+            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig",
+            "Ara ja surt la gràfica diària des de bon principi"
     };
 
     public static String[] changes = {
-            "No es té en compte el menú principal dins d'apps instal·lades ni l'ús d'apps"
+
     };
 
     @Override
