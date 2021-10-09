@@ -38,7 +38,8 @@ public class AdicticApp extends App {
     };
 
     public static String[] changes = {
-            "Canvis de disseny"
+            "Canvi a hores diàries recomanades en el % de l'informe",
+            "Especificar les apps més utilitzades al mes a Informe Detallat"
     };
 
     @Override

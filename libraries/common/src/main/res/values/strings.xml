@@ -384,7 +384,7 @@
     <string name="service_notification_message">AdicTIC está activo en este dispositivo</string>
 
     <!-- INFORME -->
-    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Las cinco aplicaciones más utilizadas han sido:</string>
+    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Las cinco aplicaciones más utilizadas este mes han sido:</string>
     <string name="l_mits_marcats">Límites marcados</string>
     <string name="canvis_de_bloqueig_d_aplicacions">Cambios en bloqueos de aplicaciones</string>
     <string name="canvis_en_horaris_lliures_de_tecnologies">Cambios en horarios libres de tecnologías</string>
