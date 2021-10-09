@@ -23,9 +23,9 @@
     <!-- label for usage time -->
     <string name="total_use">Temps total: </string>
 
-    <string name="days">" dies "</string>
-    <string name="hours">" hores "</string>
-    <string name="minutes">" minuts"</string>
+    <string name="days">"dies"</string>
+    <string name="hours">"hores"</string>
+    <string name="minutes">"minuts"</string>
 
     <string name="days_tag">"d "</string>
     <string name="hours_tag">"h "</string>
@@ -125,12 +125,12 @@
 
     <string name="percentage_info_bo">
         <![CDATA[
-            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús de tecnologies, ha estat un <font color="#3c9df8"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Enhorabona, seguiu així!</b>
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús diari de tecnologies, ha estat un <font color="#3c9df8"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Enhorabona, seguiu així!</b>
         ]]>
     </string>
     <string name="percentage_info_dolent">
         <![CDATA[
-            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús de tecnologies, ha estat un <font color="#F44336"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Alerta: seria convenient reduir-ne l\'ús!</b>
+            Aquest usuari ha utilitzat el dispositiu %s durant aquest mes. Tenint en compte que les hores diàries recomanades per la seva edat són de %s d\'ús diari de tecnologies, ha estat un <font color="#F44336"><b>%s%%</b></font> del temps recomanat utilitzant-lo. <b>Alerta: seria convenient reduir-ne l\'ús!</b>
         ]]>
     </string>
     <string name="error_liveApp">"No s'ha pogut llegir l'aplicació actual del fill"</string>
@@ -371,7 +371,7 @@
     <string name="event_desc">Aquesta funció permet programar franges horàries en què l\'usuari no pot fer ús del dispositiu mòbil.</string>
     <string name="afegir_event">Afegir un nou horari lliure de tecnologies</string>
     <string name="service_notification_message">AdicTIC està actiu en aquest dispositiu</string>
-    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Les cinc aplicacions més utilitzades han estat:</string>
+    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Les cinc aplicacions més utilitzades aquest mes han estat:</string>
     <string name="l_mits_marcats">Límits marcats</string>
     <string name="canvis_en_horaris_lliures_de_tecnologies">Canvis en horaris lliures de tecnologies</string>
     <string name="gestio_dels_limits">Gestió dels límits</string>
@@ -457,6 +457,12 @@
     <string name="trucar_confirmacio">Trucar?</string>
     <string name="trucar_confirmacio_pares">Trucar als pares?</string>
     <string name="trucar_desc"> </string>
+
+    <string name="cops_desbloquejat">
+        <![CDATA[
+           El dispositiu s\'ha desbloquejat <font color="#3c9df8"><b>%d</b></font> vegades avui
+        ]]>
+    </string>
     <string name="report_message_bug">Si us plau, descrigui el problema ocorregut:</string>
     <string name="report_message_suggestion">Escrigui el suggeriment aquí:</string>
     <string name="sended_correctly">Enviat correctament</string>

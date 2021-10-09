@@ -87,7 +87,7 @@ public class AppUsageWorker extends Worker {
 
         PackageManager mPm = getApplicationContext().getPackageManager();
 
-        List<String> launchers = Funcions.getLaunchers(getApplicationContext());
+//        List<String> launchers = Funcions.getLaunchers(getApplicationContext());
 
         @SuppressLint("QueryPermissionsNeeded") List<ResolveInfo> list = mPm.queryIntentActivities(main, 0);
 
@@ -95,8 +95,8 @@ public class AppUsageWorker extends Worker {
 
         for (ResolveInfo ri : list) {
             // Si és launcher l'ignorem
-            if(launchers.contains(ri.activityInfo.packageName))
-                continue;
+//            if(launchers.contains(ri.activityInfo.packageName))
+//                continue;
 
             ApplicationInfo ai = ri.activityInfo.applicationInfo;
             if(!hashMap.containsKey(ai.packageName)){

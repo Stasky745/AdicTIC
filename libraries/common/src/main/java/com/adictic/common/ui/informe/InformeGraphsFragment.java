@@ -104,8 +104,10 @@ public class InformeGraphsFragment extends Fragment {
 
         genericAppUsage = arguments.getParcelableArrayList(LIST_ARG);
 
-        if (genericAppUsage.isEmpty()) currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        else currentYear = genericAppUsage.get(0).year;
+        if (genericAppUsage.isEmpty())
+            currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        else
+            currentYear = genericAppUsage.get(0).year;
 
         idChild = arguments.getLong(ID_ARG);
     }

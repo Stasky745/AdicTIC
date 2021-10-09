@@ -77,14 +77,13 @@ public class InformeActivity extends AppCompatActivity {
 
         TV_percentageUsage.setOnClickListener(v -> {
             String deviceTime = TV_totalUsage.getText().toString().substring(0, TV_totalUsage.getText().toString().indexOf('/') - 2);
-            String totalTime = TV_totalUsage.getText().toString().substring(TV_totalUsage.getText().toString().indexOf('/') + 2, TV_totalUsage.getText().length() - 1);
             DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
             AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
             if(percentage < 100)
-                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_bo, deviceTime, totalTime, decimalFormat.format(percentage))));
+                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_bo, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
             else
-                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_dolent, deviceTime, totalTime, decimalFormat.format(percentage))));
+                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_dolent, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), (dialog1, which) -> dialog1.dismiss());
             dialog.show();
         });

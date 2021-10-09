@@ -15,6 +15,7 @@ import com.adictic.common.util.Global;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
@@ -33,11 +34,12 @@ public class AdicticApp extends App {
     };
 
     public static String[] fixes = {
-            "Es pot fer trucada d'emergència sense que es torni a obrir pantalla de bloqueig"
+
     };
 
     public static String[] changes = {
-            "No es té en compte el menú principal dins d'apps instal·lades ni l'ús d'apps"
+            "Canvi a hores diàries recomanades en el % de l'informe",
+            "Especificar les apps més utilitzades al mes a Informe Detallat"
     };
 
     @Override

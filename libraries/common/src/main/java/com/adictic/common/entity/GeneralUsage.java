@@ -12,6 +12,7 @@ public class GeneralUsage implements Parcelable {
     public Collection<AppUsage> usage;
 
     public Long totalTime;
+    public Integer timesUnlocked;
 
     public GeneralUsage(){ }
 
@@ -35,6 +36,11 @@ public class GeneralUsage implements Parcelable {
             totalTime = null;
         } else {
             totalTime = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            timesUnlocked = null;
+        } else {
+            timesUnlocked = in.readInt();
         }
     }
 
@@ -80,6 +86,12 @@ public class GeneralUsage implements Parcelable {
         } else {
             parcel.writeByte((byte) 1);
             parcel.writeLong(totalTime);
+        }
+        if(timesUnlocked == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(timesUnlocked);
         }
     }
 }

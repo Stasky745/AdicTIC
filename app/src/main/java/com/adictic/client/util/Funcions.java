@@ -422,6 +422,11 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         // Agafem quants dies fa que no s'agafen dades (màxim 6)
         long lastMillisAppUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
+
+        // Si hem enviat dades fa menys de 5 minuts, no tornem a enviar
+        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60*5)
+            return;
+
         int daysToFetch;
         if(lastMillisAppUsage == 0)
             daysToFetch = 6;
@@ -440,10 +445,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
 
-        long now = System.currentTimeMillis();
-        long lastUpdate = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
-
-        if(now - lastUpdate < 5 * 60 * 1000 && totalTime - lastTotalUsage < 5 * 60 * 1000)
+        // Si és el mateix dia i no ha pujat més de 5 minuts el total, tornem
+        if(sameDay(lastMillisAppUsage, System.currentTimeMillis()) && totalTime - lastTotalUsage < 5 * 60 * 1000)
             return;
 
         Call<String> call = api.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
@@ -453,7 +456,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 super.onResponse(call, response);
                 if(response.isSuccessful()) {
                     sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, totalTime).apply();
-                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, now).apply();
+                    sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, System.currentTimeMillis()).apply();
                 }
             }
 
@@ -462,6 +465,13 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 super.onFailure(call, t);
             }
         });
+    }
+
+    public static boolean sameDay(long millisDay1, long millisDay2){
+        DateTime date1 = new DateTime(millisDay1);
+        DateTime date2 = new DateTime(millisDay2);
+
+        return date1.withTimeAtStartOfDay().getMillis() == date2.withTimeAtStartOfDay().getMillis();
     }
 
     // To check if app has PACKAGE_USAGE_STATS enabled
@@ -560,6 +570,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
     // ForegroundService Worker
 
     public static void startServiceWorker(Context mCtx){
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, true))
+            return;
+
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(ServiceWorker.class, 20, TimeUnit.MINUTES)
                     .build();

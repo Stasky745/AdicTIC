@@ -134,12 +134,12 @@
 
     <string name="percentage_info_bo">
         <![CDATA[
-            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso de tecnologías, ha estado un <font color="#3c9df8"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Enhorabuena, seguid así!</b>
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso diario de tecnologías, ha estado un <font color="#3c9df8"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Enhorabuena, seguid así!</b>
         ]]>
     </string>
     <string name="percentage_info_dolent">
         <![CDATA[
-            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso de tecnologías, ha estado un <font color="#F44336"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Alerta: seria conveniente reducir su uso!</b>
+            Este usuario ha utilizado el dispositivo %s durante este mes. Teniendo en cuenta que las horas diarias recomendadas para su edad son de %s de uso diario de tecnologías, ha estado un <font color="#F44336"><b>%s%%</b></font> del tiempo recomendado utilizándolo. <b>Alerta: seria conveniente reducir su uso!</b>
         ]]>
     </string>
     <string name="error_liveApp">No se pudo leer la aplicación actual del hijo</string>
@@ -384,7 +384,7 @@
     <string name="service_notification_message">AdicTIC está activo en este dispositivo</string>
 
     <!-- INFORME -->
-    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Las cinco aplicaciones más utilizadas han sido:</string>
+    <string name="les_cinc_aplicacions_m_s_utilitzades_han_estat">Las cinco aplicaciones más utilizadas este mes han sido:</string>
     <string name="l_mits_marcats">Límites marcados</string>
     <string name="canvis_de_bloqueig_d_aplicacions">Cambios en bloqueos de aplicaciones</string>
     <string name="canvis_en_horaris_lliures_de_tecnologies">Cambios en horarios libres de tecnologías</string>
@@ -481,6 +481,12 @@
     <string name="trucar_confirmacio">Llamar?</string>
     <string name="trucar_confirmacio_pares">Llamar a los padres?</string>
     <string name="trucar_desc"> </string>
+
+    <string name="cops_desbloquejat">
+        <![CDATA[
+           El dispositivo se ha desbloqueado <font color="#3c9df8"><b>%d</b></font> veces hoy
+        ]]>
+    </string>
 
     <string name="report_message_bug">Por favor, describa el problema ocurrido:</string>
     <string name="report_message_suggestion">Escriba la sugerencia aquí:</string>

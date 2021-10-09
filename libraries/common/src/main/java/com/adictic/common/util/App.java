@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.rest.Api;
+import com.bumptech.glide.load.engine.Resource;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -45,6 +47,8 @@ public class App extends Application {
 
     private Api api;
 
+    private static Resources res;
+
     private static Drawable adminPic = null;
     public static Drawable getAdminPic() { return adminPic; }
     public static void setAdminPic(Drawable d) { adminPic = d; }
@@ -53,6 +57,16 @@ public class App extends Application {
 
     public static SharedPreferences getSharedPreferences() { return  sharedPreferences; }
     public static void setSharedPreferences(SharedPreferences sharedPreferences1) { sharedPreferences = sharedPreferences1; }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        res = getResources();
+    }
+
+    public static Resources getRes(){
+        return res;
+    }
 
     protected Retrofit createRetrofit(OkHttpClient httpClient){
         Gson gson = new GsonBuilder()
