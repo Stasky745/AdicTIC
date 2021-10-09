@@ -470,4 +470,14 @@
     <string name="sended_correctly">Enviat correctament</string>
     <string name="report_suggestion">Enviar suggeriment</string>
     <string name="report_bug">Informar error</string>
+
+    <string name="permission_camera">Permís para utilitzar la càmera</string>
+    <string name="permission_camera_text">Necessitem que es permeti que l\'aplicació utilitzi la càmera per començar la videotrucada.</string>
+    <string name="permission_mic">Permís para utilitzar el micròfon</string>
+    <string name="permission_mic_text">Necessitem que es permeti que l\'aplicació utilitzi el micròfon per començar la videotrucada.</string>
+
+    <string name="callNotifTitle">Trucant</string>
+    <string name="callNotifDesc">El professional %s està trucant</string>
+    <string name="callChildNotifTitle">%s està trucant</string>
+    <string name="callChildNotifDesc">Pressiona aquí per contestar</string>
 </resources>

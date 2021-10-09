@@ -495,4 +495,14 @@
     <string name="sended_correctly">Enviado correctamente</string>
     <string name="report_suggestion">Enviar sugerencia</string>
     <string name="report_bug">Reportar error</string>
+
+    <string name="permission_camera">Permiso para usar la cámara</string>
+    <string name="permission_camera_text">Necesitamos que se permita que la aplicación utilice la cámara para poder empezar la videollamada.</string>
+    <string name="permission_mic">Permiso para usar la micrófono</string>
+    <string name="permission_mic_text">Necesitamos que se permita que la aplicación utilice el micrófono para poder empezar la videollamada.</string>
+
+    <string name="callNotifTitle">Llamando</string>
+    <string name="callNotifDesc">El profesional %s está llamando</string>
+    <string name="callChildNotifTitle">%s está llamando</string>
+    <string name="callChildNotifDesc">Pulsa aquí para contestar</string>
 </resources>

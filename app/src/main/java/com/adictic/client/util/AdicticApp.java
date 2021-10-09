@@ -30,12 +30,13 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-
+            "Es demanen permisos de càmera i micro si no es tenen quan es comença videotrucada"
     };
 
     public static String[] fixes = {
             "Arreglar els textos de l'informe",
-            "Ara ja bloqueja apps limitades bé"
+            "Ara ja bloqueja apps limitades bé",
+            "Treure repetició del text del % a informe"
     };
 
     public static String[] changes = {
