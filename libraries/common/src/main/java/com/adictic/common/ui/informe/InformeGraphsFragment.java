@@ -91,7 +91,7 @@ public class InformeGraphsFragment extends Fragment {
 
         pieCategory = false;
 
-        makeGraphs();
+        makeGraphs(true);
 
         return root;
     }
@@ -112,13 +112,13 @@ public class InformeGraphsFragment extends Fragment {
         idChild = arguments.getLong(ID_ARG);
     }
 
-    private void makeGraphs() {
+    private void makeGraphs(boolean barGraph) {
         Map<String, Long> mapUsage = new HashMap<>();
 
         chipGroup.setVisibility(View.VISIBLE);
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             pieCategory = checkedId != CH_appName.getId();
-            makeGraphs();
+            makeGraphs(false);
         });
         chipGroup.setSelectionRequired(true);
 
@@ -160,7 +160,9 @@ public class InformeGraphsFragment extends Fragment {
             }
         }
 
-        setBarChart(barEntries);
+        if(barGraph)
+            setBarChart(barEntries);
+
         setPieChart(mapUsage, totalUsageTime);
     }
 
