@@ -35,8 +35,10 @@ android {
             debuggable true
         }
         release {
+            // https://github.com/android/ndk-samples/blob/8132651aba8db36b14e0d0461c7cb46d3778f99c/other-builds/ndkbuild/hello-neon/app/build.gradle
+            // https://developer.android.com/ndk/guides/abis
             ndk {
-                abiFilters "" // includes ARM SO files only, so no x86 SO file
+                abiFilters "armeabi-v7a", "x86" // includes ARM SO files only, so no x86 SO file
             }
             minifyEnabled false
             shrinkResources false
@@ -60,6 +62,17 @@ android {
         exclude("META-INF/kotlinx-coroutines-io.kotlin_module")
         exclude("META-INF/kotlinx-coroutines-core.kotlin_module")
     }
+//    flavorDimensions "abi"
+//    productFlavors {
+//        arm7 {
+//            dimension "abi"
+//            ndk.abiFilters 'armeabi-v7a'
+//        }
+//        x86 {
+//            dimension "abi"
+//            ndk.abiFilters 'x86'
+//        }
+//    }
 }
 
 def getCustomVersionCode() {

@@ -67,6 +67,9 @@
     <string name="error_password">Contrasenya no vàlida.</string>
     <string name="error_noData">"No s'ha pogut extreure informació del servidor"</string>
 
+    <string name="error_dadesBuides">No hi ha dades al servidor</string>
+    <string name="error_dadesBuides_body">No hi ha dades al servidor. Això acostuma a passar just després d\'instal·lar l\'aplicació. Entra a l\'aplicació del fill i accepta tots els permisos abans de tornar a intentar-ho.</string>
+
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
