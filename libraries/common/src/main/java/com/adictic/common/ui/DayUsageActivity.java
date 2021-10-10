@@ -1,6 +1,7 @@
 package com.adictic.common.ui;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -175,6 +176,17 @@ public class DayUsageActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
                     super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().isEmpty()) {
+                        Button BT_pickDates = findViewById(R.id.BT_pickDates);
+                        BT_pickDates.setOnClickListener(view -> {
+                            new AlertDialog.Builder(getApplicationContext())
+                                    .setTitle(getString(R.string.error_dadesBuides))
+                                    .setMessage(getString(R.string.error_dadesBuides_body))
+                                    .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
+                                    .show();
+                        });
+                        return;
+                    }
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
                     makeList(generalUsages);

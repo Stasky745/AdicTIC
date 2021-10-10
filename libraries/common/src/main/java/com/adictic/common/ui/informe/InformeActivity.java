@@ -1,6 +1,7 @@
 package com.adictic.common.ui.informe;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
@@ -124,6 +125,7 @@ public class InformeActivity extends AppCompatActivity {
                 currentYear = yearList.get(0);
                 btnMonth();
             } else {
+                currentYear = Calendar.getInstance().get(Calendar.YEAR);
                 btnYear();
             }
         });
@@ -265,7 +267,11 @@ public class InformeActivity extends AppCompatActivity {
                     btnMonth();
                 }, currentYear, currentMonth);
 
-        if (yearList.size() == 1) builder.showMonthOnly();
+        if(yearList.isEmpty())
+            yearList.add(currentYear);
+
+        if (yearList.size() == 1)
+            builder.showMonthOnly();
 
         int startYear = Collections.min(yearList);
         int endYear = Collections.max(yearList);
@@ -318,6 +324,16 @@ public class InformeActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<List<YearEntity>> call, @NonNull Response<List<YearEntity>> response) {
                     super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
+                    if(response.body().isEmpty()){
+                        dateButton.setOnClickListener(view -> {
+                            new AlertDialog.Builder(getApplicationContext())
+                                    .setTitle(getString(R.string.error_dadesBuides))
+                                    .setMessage(getString(R.string.error_dadesBuides_body))
+                                    .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
+                                    .show();
+                        });
+                        return;
+                    }
                     /* Agafem les dades de response i convertim en map **/
                     List<YearEntity> yEntityList = response.body();
                     Funcions.canviarMesosDeServidor(yEntityList);
