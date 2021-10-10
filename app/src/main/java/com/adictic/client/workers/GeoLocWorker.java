@@ -97,51 +97,39 @@ public class GeoLocWorker extends Worker {
         boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        if (isNetworkEnabled) {
-            MyLocationListener myLocationListener = new MyLocationListener();
-            Looper.prepare();
-
-            float oldAccuracy = 100;
-            while(iterations <10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
-                iterations++;
-            }
-
-            locationManager.removeUpdates(myLocationListener);
-
-            Log.d(TAG, "Network Enabled");
-
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (location != null) {
-                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-            }
-
-            enviarLoc();
-        } else if (isGPSEnabled) {
-            MyLocationListener myLocationListener = new MyLocationListener();
-            Looper.prepare();
-
-            float oldAccuracy = 100;
-            while(iterations <10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, myLocationListener);
-                iterations++;
-            }
-
-            locationManager.removeUpdates(myLocationListener);
-
-            Log.d(TAG, "GPS Enabled");
-
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (location != null) {
-                currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-            }
-
-            enviarLoc();
+        if(!isNetworkEnabled && !isGPSEnabled){
+            success = false;
+            return;
         }
-        else success = false;
+
+        MyLocationListener myLocationListener = new MyLocationListener();
+
+        float oldAccuracy = 100;
+        while(iterations <10 && (accuracy == 0 || Math.abs(oldAccuracy-accuracy) > 0.5 || currentLocation == null)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, myLocationListener);
+            iterations++;
+        }
+
+        locationManager.removeUpdates(myLocationListener);
+
+        Location location;
+        if(isNetworkEnabled){
+            Log.d(TAG, "Network Enabled");
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        } else {
+            Log.d(TAG, "GPS Enabled");
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
+        if (location != null) {
+            currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+        }
+
+        enviarLoc();
     }
 
     private void enviarLoc() {
+        if(currentLocation == null) return;
         GeoFill fill = new GeoFill();
         fill.longitud = currentLocation.getLongitude();
         fill.latitud = currentLocation.getLatitude();
