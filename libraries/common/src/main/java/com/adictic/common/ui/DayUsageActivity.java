@@ -174,7 +174,7 @@ public class DayUsageActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<Collection<GeneralUsage>> call, @NonNull Response<Collection<GeneralUsage>> response) {
                     super.onResponse(call, response);
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                     Collection<GeneralUsage> generalUsages = response.body();
                     Funcions.canviarMesosDeServidor(generalUsages);
                     makeList(generalUsages);

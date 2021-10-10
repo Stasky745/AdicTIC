@@ -917,6 +917,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
         List<BlockedApp> appsLimitades = new ArrayList<>();
         List<String> blockedApps = new ArrayList<>();
 
+        if(body.limitApps == null)
+            body.limitApps = new ArrayList<>();
+
         for(LimitedApps limitedApp : body.limitApps){
             if(limitedApp.time > 0) {
                 BlockedApp blockedApp = new BlockedApp();
