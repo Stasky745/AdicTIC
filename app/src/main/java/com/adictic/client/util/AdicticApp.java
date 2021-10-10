@@ -30,13 +30,11 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-            "Es demanen permisos de càmera i micro si no es tenen quan es comença videotrucada"
+            "Benvinguts a AdicTIC! El dispositiu adult no ensenyarà dades fins que el dispositiu fill tingui l'aplicació instal·lada, amb els permisos activats i hagi pogut agafar dades. Això pot trigar un minut un cop després d'instal·lar-ho (probablement molt menys). Per mirar si ja hi ha noves dades podeu prémer el botó 'inici' a la barra de baix. Un cop es vegi la gràfica d'ús del dia o dins l'apartat d'Informe Mensual hi hagi gràfiques amb dades ja estarà tot llest per utilitzar l'aplicació! Moltes gràcies per utilitzar AdicTIC!"
     };
 
     public static String[] fixes = {
-            "Arreglar els textos de l'informe",
-            "Ara ja bloqueja apps limitades bé",
-            "Treure repetició del text del % a informe"
+
     };
 
     public static String[] changes = {

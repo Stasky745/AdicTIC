@@ -58,13 +58,19 @@ public class NavActivity extends MainActivityAbstractClass {
         assert sharedPreferences != null;
         if(!BuildConfig.VERSION_NAME.equals(sharedPreferences.getString(Constants.SHARED_PREFS_PATCH_NOTES,""))){
             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PATCH_NOTES, BuildConfig.VERSION_NAME).apply();
-            AlertDialog.Builder builder = new AlertDialog.Builder(NavActivity.this);
-            View dialogView = getLayoutInflater().inflate(R.layout.patch_notes, null);
-            setTexts(dialogView);
-            builder.setView(dialogView)
-                    .create()
-                    .show();
+            if(hiHaPatchNotes()) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(NavActivity.this);
+                View dialogView = getLayoutInflater().inflate(R.layout.patch_notes, null);
+                setTexts(dialogView);
+                builder.setView(dialogView)
+                        .create()
+                        .show();
+            }
         }
+    }
+
+    private boolean hiHaPatchNotes() {
+        return AdicticApp.newFeatures.length > 0 && AdicticApp.fixes.length > 0 && AdicticApp.changes.length > 0;
     }
 
     private void setTexts(View dialogView) {
