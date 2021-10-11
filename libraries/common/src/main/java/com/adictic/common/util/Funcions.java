@@ -404,6 +404,8 @@ public class Funcions {
     public static List<GeneralUsage> getGeneralUsages(Context mContext, int nDies) {
         List<GeneralUsage> gul = new ArrayList<>();
 
+        nDies = Math.min(nDies, 6);
+
         long timer = System.currentTimeMillis();
 
         long initialTime, finalTime;
