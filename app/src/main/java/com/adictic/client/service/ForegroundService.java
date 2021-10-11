@@ -37,7 +37,6 @@ import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.GeoFill;
-import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.MyNotificationManager;

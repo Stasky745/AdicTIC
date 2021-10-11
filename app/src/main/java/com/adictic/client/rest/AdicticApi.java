@@ -6,8 +6,6 @@ import com.adictic.common.entity.BlockAppEntity;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.ChangePassword;
 import com.adictic.common.entity.ChatsMain;
-import com.adictic.common.entity.Dubte;
-import com.adictic.common.entity.DubteLocalitzacions;
 import com.adictic.common.entity.EventsAPI;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.GeneralUsage;
@@ -26,7 +24,6 @@ import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.entity.YearEntity;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import okhttp3.MultipartBody;
