@@ -1,9 +1,7 @@
 package com.adictic.client.service;
 
 import static android.content.Intent.ACTION_SCREEN_OFF;
-import static android.content.Intent.ACTION_SCREEN_ON;
 import static android.content.Intent.ACTION_USER_PRESENT;
-import static android.content.Intent.ACTION_USER_UNLOCKED;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -27,19 +25,18 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.workers.BlockDeviceWorker;
+import com.adictic.client.workers.BlockSingleAppWorker;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.entity.BlockedApp;
-import com.adictic.client.workers.BlockSingleAppWorker;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeFieldType;
 
 import java.util.ArrayList;
 import java.util.Arrays;

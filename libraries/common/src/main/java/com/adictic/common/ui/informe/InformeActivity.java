@@ -1,7 +1,6 @@
 package com.adictic.common.ui.informe;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;

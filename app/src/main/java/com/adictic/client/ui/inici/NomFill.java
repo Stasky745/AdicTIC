@@ -33,6 +33,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
@@ -43,7 +44,6 @@ import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.client.R;
 
 import java.util.Calendar;
 import java.util.List;

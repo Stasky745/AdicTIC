@@ -4,14 +4,12 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,14 +22,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.adictic.client.R;
+import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
+import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.client.R;
-import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;

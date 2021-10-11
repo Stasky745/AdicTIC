@@ -1,26 +1,20 @@
 package com.adictic.client.workers;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
-import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.EventBlock;
-import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.util.Constants;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
