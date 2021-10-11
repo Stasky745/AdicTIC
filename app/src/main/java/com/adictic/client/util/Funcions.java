@@ -424,8 +424,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
         // Agafem quants dies fa que no s'agafen dades (màxim 6)
         long lastMillisAppUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
 
-        // Si hem enviat dades fa menys de 5 minuts, no tornem a enviar
-        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60*5)
+        // Si hem enviat dades fa menys de 1 minuts, no tornem a enviar
+        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60)
             return;
 
         int daysToFetch;
@@ -438,17 +438,17 @@ public class Funcions extends com.adictic.common.util.Funcions {
         }
 
         // Agafem les dades
-        List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, sharedPreferences.getInt(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, daysToFetch));
+        List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, daysToFetch);
 
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)
                 .sum();
 
-        long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
+//        long lastTotalUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_TOTAL_USAGE, 0);
 
-        // Si és el mateix dia i no ha pujat més de 5 minuts el total, tornem
-        if(sameDay(lastMillisAppUsage, System.currentTimeMillis()) && totalTime - lastTotalUsage < 5 * 60 * 1000)
-            return;
+//        // Si és el mateix dia i no ha pujat més de 5 minuts el total, tornem
+//        if(sameDay(lastMillisAppUsage, System.currentTimeMillis()) && totalTime - lastTotalUsage < 5 * 60 * 1000)
+//            return;
 
         Call<String> call = api.sendAppUsage(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), gul);
         call.enqueue(new Callback<String>() {
