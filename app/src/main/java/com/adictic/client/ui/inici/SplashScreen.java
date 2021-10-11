@@ -57,7 +57,7 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         api = ((AdicticApp) this.getApplication()).getAPI();
-        checkForUpdates();
+        //checkForUpdates(); //TODO: Desactivat de moment
     }
 
     @Override
@@ -133,7 +133,7 @@ public class SplashScreen extends AppCompatActivity {
 
                         @Override
                         public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                            super.onFailure(call, t);
                             Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                             toast.show();
                         }
@@ -190,7 +190,7 @@ public class SplashScreen extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body()!=null && !response.body().equals("NO")) {
                     installUpdate(response.body());
                 }
@@ -207,7 +207,7 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
                 toast.show();
             }
@@ -234,7 +234,7 @@ public class SplashScreen extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                    super.onResponse(call, response);
+                super.onResponse(call, response);
                 if (response.isSuccessful() && response.body()!=null) {
                     try {
                         String PATH = getExternalCacheDir().getPath();
@@ -256,9 +256,10 @@ public class SplashScreen extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                super.onFailure(call, t);
                 Toast toast = Toast.makeText(SplashScreen.this, "Error checking login status", Toast.LENGTH_SHORT);
-                toast.show(); }
+                toast.show();
+            }
         });
     }
 
