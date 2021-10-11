@@ -58,6 +58,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
         api = ((AdicticApp) this.getApplication()).getAPI();
         //checkForUpdates(); //TODO: Desactivat de moment
+        startApp();
     }
 
     @Override
