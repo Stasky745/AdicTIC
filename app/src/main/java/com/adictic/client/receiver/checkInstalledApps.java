@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
@@ -18,9 +17,6 @@ import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Response;

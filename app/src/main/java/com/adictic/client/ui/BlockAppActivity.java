@@ -13,13 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.adictic.common.entity.IntentsAccesApp;
-import com.adictic.common.util.Callback;
-import com.adictic.common.util.Constants;
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.entity.IntentsAccesApp;
+import com.adictic.common.util.Callback;
+import com.adictic.common.util.Constants;
 
 import org.joda.time.DateTime;
 

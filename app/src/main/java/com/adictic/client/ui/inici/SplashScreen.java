@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.adictic.client.BuildConfig;
+import com.adictic.client.R;
 import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
@@ -32,7 +33,6 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.client.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
