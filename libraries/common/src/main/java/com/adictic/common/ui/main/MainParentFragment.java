@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -429,24 +428,25 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful()){
-                    if(freetime){
-                        TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
-                        TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                    try {
+                        if (freetime) {
+                            TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                            TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
 
-                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
-                        TV_blockDevice.setTypeface(Typeface.DEFAULT);
+                            TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+                            TV_blockDevice.setTypeface(Typeface.DEFAULT);
 
-                    }
-                    else {
-                        TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
-                        TV_freeTime.setTypeface(Typeface.DEFAULT);
+                        } else {
+                            TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+                            TV_freeTime.setTypeface(Typeface.DEFAULT);
 
-                        if(newState == STATE_BLOCKDEVICE) {
-                            TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
-                            TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                            if (newState == STATE_BLOCKDEVICE) {
+                                TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                                TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                            }
+
                         }
-
-                    }
+                    } catch (IllegalStateException ignored){}
                     lastDeviceState = newState;
                 }
                 else
@@ -476,24 +476,25 @@ public class MainParentFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 if (response.isSuccessful()) {
-                    if(blockDevice) {
-                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
-                        TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
+                    try {
+                        if (blockDevice) {
+                            TV_blockDevice.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                            TV_blockDevice.setTypeface(Typeface.DEFAULT_BOLD);
 
-                        TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
-                        TV_freeTime.setTypeface(Typeface.DEFAULT);
+                            TV_freeTime.setTextColor(requireContext().getColor(R.color.gris));
+                            TV_freeTime.setTypeface(Typeface.DEFAULT);
 
-                    }
-                    else {
-                        TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
-                        TV_blockDevice.setTypeface(Typeface.DEFAULT);
+                        } else {
+                            TV_blockDevice.setTextColor(requireContext().getColor(R.color.gris));
+                            TV_blockDevice.setTypeface(Typeface.DEFAULT);
 
-                        if(newState == STATE_FREEUSE) {
-                            TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
-                            TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                            if (newState == STATE_FREEUSE) {
+                                TV_freeTime.setTextColor(requireContext().getColor(R.color.colorPrimary));
+                                TV_freeTime.setTypeface(Typeface.DEFAULT_BOLD);
+                            }
+
                         }
-
-                    }
+                    } catch (IllegalStateException ignored){}
                     lastDeviceState = newState;
                 }
                 else {

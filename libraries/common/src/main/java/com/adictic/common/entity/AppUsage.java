@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
-import com.adictic.common.util.App;
-
 public class AppUsage implements Parcelable {
     public AppInfo app;
     public Long lastTimeUsed;

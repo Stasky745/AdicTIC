@@ -50,6 +50,7 @@ public class MainUserActivity extends MainActivityAbstractClass {
             public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
                     super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
+                    findViewById(R.id.TV_noFills).setVisibility(View.GONE);
                     ArrayList<FillNom> fills = new ArrayList<>(response.body());
 
                     TabFillsAdapter adapter = new TabFillsAdapter(getSupportFragmentManager(), getLifecycle(), fills);
@@ -60,16 +61,14 @@ public class MainUserActivity extends MainActivityAbstractClass {
                             (tab, position) -> tab.setText(adapter.getPageTitle(position))
                     ).attach();
                 } else {
-                    TextView error = findViewById(R.id.TV_noFills);
-                    error.setVisibility(View.VISIBLE);
+                    findViewById(R.id.TV_noFills).setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
                     super.onFailure(call, t);
-                TextView error = findViewById(R.id.TV_noFills);
-                error.setVisibility(View.VISIBLE);
+                findViewById(R.id.TV_noFills).setVisibility(View.VISIBLE);
             }
         });
     }

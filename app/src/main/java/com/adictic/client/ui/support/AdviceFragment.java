@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import com.adictic.client.R;
 import com.adictic.client.ui.chat.ChatActivity;
 import com.adictic.common.ui.OficinesActivity;
-import com.adictic.client.R;
 
 public class AdviceFragment extends Fragment {
 
