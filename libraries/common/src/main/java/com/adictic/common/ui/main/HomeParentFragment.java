@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,9 +21,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -70,21 +67,18 @@ public class HomeParentFragment extends Fragment {
             public void onResponse(@NonNull Call<Collection<FillNom>> call, @NonNull Response<Collection<FillNom>> response) {
                 super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null && response.body().size() > 0) {
-                    TextView error = root.findViewById(R.id.TV_noFills);
-                    error.setVisibility(View.GONE);
+                    root.findViewById(R.id.TV_noFills).setVisibility(View.GONE);
 
                     setupTabLayout(new ArrayList<>(response.body()));
                 } else {
-                    TextView error = root.findViewById(R.id.TV_noFills);
-                    error.setVisibility(View.VISIBLE);
+                    root.findViewById(R.id.TV_noFills).setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Collection<FillNom>> call, @NonNull Throwable t) {
                 super.onFailure(call, t);
-                TextView error = root.findViewById(R.id.TV_noFills);
-                error.setVisibility(View.VISIBLE);
+                root.findViewById(R.id.TV_noFills).setVisibility(View.VISIBLE);
             }
         });
     }

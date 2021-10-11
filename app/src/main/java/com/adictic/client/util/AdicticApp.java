@@ -14,9 +14,6 @@ import com.adictic.common.util.Constants;
 import com.adictic.common.util.Global;
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.util.Locale;
-
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
 import okhttp3.Request;

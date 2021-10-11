@@ -1,6 +1,5 @@
 package com.adictic.common.rest;
 
-import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
 import com.adictic.common.entity.BlockInfo;
 import com.adictic.common.entity.BlockList;

@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.adictic.common.util.Funcions;
 import com.adictic.client.R;
+import com.adictic.common.util.Funcions;
 
 import java.util.ArrayList;
 
