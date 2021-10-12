@@ -177,6 +177,8 @@ public class InformeActivity extends AppCompatActivity {
         Map<String, Long> map = new HashMap<>();
         for (IntentsAccesApp ata : list) {
             Long times = map.getOrDefault(ata.pkgName, (long)0);
+            if(times == null)
+                times = 0L;
             map.put(ata.pkgName, ++times);
         }
         tabsAdapter.setTimesBlockedMap(map);
@@ -328,13 +330,11 @@ public class InformeActivity extends AppCompatActivity {
                     super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().isEmpty()){
-                        dateButton.setOnClickListener(view -> {
-                            new AlertDialog.Builder(getApplicationContext())
-                                    .setTitle(getString(R.string.error_dadesBuides))
-                                    .setMessage(getString(R.string.error_dadesBuides_body))
-                                    .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
-                                    .show();
-                        });
+                        dateButton.setOnClickListener(view -> new AlertDialog.Builder(getApplicationContext())
+                                .setTitle(getString(R.string.error_dadesBuides))
+                                .setMessage(getString(R.string.error_dadesBuides_body))
+                                .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show());
                         return;
                     }
                     /* Agafem les dades de response i convertim en map **/
