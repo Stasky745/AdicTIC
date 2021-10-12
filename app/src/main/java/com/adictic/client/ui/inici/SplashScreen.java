@@ -177,7 +177,7 @@ public class SplashScreen extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
         }
-        String lang = sharedPreferences.getString("language", "none");
+        String lang = sharedPreferences != null ? sharedPreferences.getString("language", "none") : "none";
         if (lang.equals("none")) super.attachBaseContext(newBase);
         else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }

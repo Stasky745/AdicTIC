@@ -53,11 +53,11 @@
 
     <string name="login">Iniciar\nSessió</string>
 
-    <string name="hint_nomDisp">Nom del dispositiu</string>
+    <string name="hint_nomDisp">Nom de l\'usuari del dispositiu</string>
 
     <string name="good_register">Registre correcte!</string>
 
-    <string name="error_noDeviceName">Camp del nom de dispositiu buit.</string>
+    <string name="error_noDeviceName">Camp del nom d\'usuari buit.</string>
     <string name="error_noTipus">Camp de tipus de dispositiu buit.</string>
     <string name="error_noValidEmail">Format de correu no vàlid.</string>
     <string name="error_noPwMatch">Les contrasenyes no són iguals.</string>
@@ -73,7 +73,7 @@
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
     <string name="current_names">Els noms que tens assignats fins ara són:</string>
-    <string name="new_name_entry">"Entra el nom d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
+    <string name="new_name_entry">"Entra el nom de l'usuari d'aquest dispositiu. Per substituir un anterior, entra el mateix nom."</string>
     <string name="accessibility_service_description">\"Aquest servei s\'utilitza per bloquejar aplicacions\"</string>
     <string name="nomfill_enter">Entrar</string>
 

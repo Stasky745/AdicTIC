@@ -140,7 +140,8 @@ public class BlockAppsActivity extends AppCompatActivity {
         BT_limitApp.setOnClickListener(v -> {
             if (selectedApps.isEmpty())
                 Toast.makeText(getApplicationContext(), R.string.select_apps_lock, Toast.LENGTH_LONG).show();
-            else useTimePicker();
+            else
+                useTimePicker();
         });
 
         BT_unlock.setOnClickListener(v -> {
