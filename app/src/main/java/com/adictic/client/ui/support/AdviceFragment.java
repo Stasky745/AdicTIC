@@ -29,6 +29,9 @@ public class AdviceFragment extends Fragment {
 
         Button BT_ContingutInformatiu = root.findViewById(R.id.BT_ContingutInformatiu);
         Button BT_faqs = root.findViewById(R.id.BT_faqs);
+        //Per prova pilot
+        BT_faqs.setVisibility(View.GONE);
+
         Button BT_ConsultaPrivada = root.findViewById(R.id.BT_ConsultaPrivada);
         Button BT_oficines = root.findViewById(R.id.BT_oficines);
 
