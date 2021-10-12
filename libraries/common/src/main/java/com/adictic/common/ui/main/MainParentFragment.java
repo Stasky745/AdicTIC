@@ -423,6 +423,8 @@ public class MainParentFragment extends Fragment {
         TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
         TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
 
+        SB_deviceState.setEnabled(false);
+
         Call<String> call = mTodoService.freeUse(idChildSelected, freetime);
         call.enqueue(new Callback<String>() {
             @Override
@@ -451,12 +453,15 @@ public class MainParentFragment extends Fragment {
                 }
                 else
                     SB_deviceState.setProgress(lastDeviceState);
+
+                SB_deviceState.setEnabled(true);
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
             super.onFailure(call, t);
                 SB_deviceState.setProgress(lastDeviceState);
+                SB_deviceState.setEnabled(true);
             }
         });
     }
@@ -465,6 +470,9 @@ public class MainParentFragment extends Fragment {
         SeekBar SB_deviceState = root.findViewById(R.id.SB_deviceState);
         TextView TV_blockDevice = root.findViewById(R.id.TV_blockDevice);
         TextView TV_freeTime = root.findViewById(R.id.TV_freeTime);
+
+        // Bloquegem el SeekBar fins que s'hagin modificat dades al servidor
+        SB_deviceState.setEnabled(false);
 
         Call<String> call;
         if (blockDevice)
@@ -500,11 +508,13 @@ public class MainParentFragment extends Fragment {
                 else {
                     SB_deviceState.setProgress(lastDeviceState);
                 }
+                SB_deviceState.setEnabled(true);
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                 SB_deviceState.setProgress(lastDeviceState);
+                SB_deviceState.setEnabled(true);
             }
         });
     }
@@ -546,8 +556,39 @@ public class MainParentFragment extends Fragment {
             SB_deviceState.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if(!fromUser)
-                        return;
+//                    if(!fromUser)
+//                        return;
+//
+//                    switch (progress) {
+//                        case STATE_NEUTRAL :
+//                            if(lastDeviceState == STATE_BLOCKDEVICE)
+//                                blockDeviceServer(false, STATE_NEUTRAL);
+//                            else if(lastDeviceState == STATE_FREEUSE)
+//                                freeTimeServer(false, STATE_NEUTRAL);
+//                            break;
+//
+//                        case STATE_BLOCKDEVICE :
+//                            if(lastDeviceState == STATE_FREEUSE)
+//                                freeTimeServer(false, STATE_NEUTRAL);
+//                            blockDeviceServer(true, STATE_BLOCKDEVICE);
+//                            break;
+//
+//                        case STATE_FREEUSE :
+//                            if(lastDeviceState == STATE_BLOCKDEVICE)
+//                                blockDeviceServer(false, STATE_NEUTRAL);
+//                            freeTimeServer(true, STATE_FREEUSE);
+//                            break;
+//                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    int progress = seekBar.getProgress();
 
                     switch (progress) {
                         case STATE_NEUTRAL :
@@ -558,23 +599,17 @@ public class MainParentFragment extends Fragment {
                             break;
 
                         case STATE_BLOCKDEVICE :
+                            if(lastDeviceState == STATE_FREEUSE)
+                                freeTimeServer(false, STATE_NEUTRAL);
                             blockDeviceServer(true, STATE_BLOCKDEVICE);
                             break;
 
                         case STATE_FREEUSE :
+                            if(lastDeviceState == STATE_BLOCKDEVICE)
+                                blockDeviceServer(false, STATE_NEUTRAL);
                             freeTimeServer(true, STATE_FREEUSE);
                             break;
                     }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-
                 }
             });
         }

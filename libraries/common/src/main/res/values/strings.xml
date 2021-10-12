@@ -56,12 +56,12 @@
 
     <string name="login">Iniciar \nSessión</string>
 
-    <string name="hint_nomDisp">Número del dispositivo</string>
+    <string name="hint_nomDisp">Nombre del usuario del dispositivo</string>
 
     <string name="title_activity_splash_screen" translatable="false">AdicTIC</string>
     <string name="good_register">Registro correcto!</string>
 
-    <string name="error_noDeviceName">Campo del nombre de dispositivo vacío.</string>
+    <string name="error_noDeviceName">Campo del nombre de usuario vacío.</string>
     <string name="error_noTipus">Campo de tipo de dispositivo vacío.</string>
     <string name="error_noValidEmail">Formato de correo no válido.</string>
     <string name="error_noPwMatch">Las contraseñas no son iguales.</string>
@@ -77,7 +77,7 @@
     <string name="the_image_of_the_other_app">The image of the other app.</string>
 
     <string name="current_names">Los nombres asignados actualmente hasta ahora son:</string>
-    <string name="new_name_entry">Entra el nombre de este dispositivo. Para sustituir uno anterior, entra el mismo nombre.</string>
+    <string name="new_name_entry">Entra el nombre del usuario de este dispositivo. Para sustituir uno anterior, entra el mismo nombre.</string>
     <string name="accessibility_service_name" translatable="false">\"Adictic Accessibility Service\"</string>
     <string name="accessibility_service_description">\"Este servicio es utiliza para bloquear aplicaciones\"</string>
     <string name="nomfill_enter">Entrar</string>

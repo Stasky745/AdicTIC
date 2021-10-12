@@ -177,6 +177,8 @@ public class InformeActivity extends AppCompatActivity {
         Map<String, Long> map = new HashMap<>();
         for (IntentsAccesApp ata : list) {
             Long times = map.getOrDefault(ata.pkgName, (long)0);
+            if(times == null)
+                times = 0L;
             map.put(ata.pkgName, ++times);
         }
         tabsAdapter.setTimesBlockedMap(map);
@@ -224,8 +226,12 @@ public class InformeActivity extends AppCompatActivity {
             viewPager.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
 
+
         long totalRecomanat = col.size() * Constants.AGE_TIMES_MILLIS[age];
-        percentage = totalUsageTime * 100.0f / totalRecomanat;
+        if(totalRecomanat > 0)
+            percentage = totalUsageTime * 100.0f / totalRecomanat;
+        else
+            percentage = 300;
         if(percentage>100)
             TV_percentageUsage.setTextColor(getColor(R.color.vermell));
         TV_percentageUsage.setText(getString(R.string.percentage, Math.round(percentage)));
@@ -324,13 +330,11 @@ public class InformeActivity extends AppCompatActivity {
                     super.onResponse(call, response);
                 if (response.isSuccessful() && response.body() != null) {
                     if(response.body().isEmpty()){
-                        dateButton.setOnClickListener(view -> {
-                            new AlertDialog.Builder(getApplicationContext())
-                                    .setTitle(getString(R.string.error_dadesBuides))
-                                    .setMessage(getString(R.string.error_dadesBuides_body))
-                                    .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
-                                    .show();
-                        });
+                        dateButton.setOnClickListener(view -> new AlertDialog.Builder(getApplicationContext())
+                                .setTitle(getString(R.string.error_dadesBuides))
+                                .setMessage(getString(R.string.error_dadesBuides_body))
+                                .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
+                                .show());
                         return;
                     }
                     /* Agafem les dades de response i convertim en map **/

@@ -174,8 +174,10 @@ public class NoChatFragment extends Fragment {
 
             CG_localitats.addView(chip);
         }
-        if(enabledLocations.isEmpty())
-            CG_localitats.getChildAt(0).performClick();
+        if(enabledLocations.isEmpty()) {
+            if(CG_localitats.getChildAt(0) != null)
+                CG_localitats.getChildAt(0).performClick();
+        }
         else{
             try {
                 for (Localitzacio loc : enabledLocations) {

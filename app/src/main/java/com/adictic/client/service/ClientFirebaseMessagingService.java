@@ -157,6 +157,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     break;
                 case "geolocActive":
                     //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
+                    break;
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
