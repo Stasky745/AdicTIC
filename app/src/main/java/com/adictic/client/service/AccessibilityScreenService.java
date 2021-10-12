@@ -75,6 +75,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private Map<String, Long> tempsApps = new HashMap<>();
     public void setTempsApps(Map<String, Long> map) { tempsApps = map; }
+    public Map<String, Long> getTempsApps() { return tempsApps; }
     public void putTempsApp (String pkgName, Long time) { tempsApps.put(pkgName, time); }
 
     private long startAppTime = 0;
@@ -92,7 +93,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     public boolean isCurrentAppBlocked() {
 
         // Si estem a la pantalla de bloqueig d'apps
-        if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity")){
+        if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity") || !blockedApps.contains(currentPackage)){
             // Si l'últim package no esta bloquejat, acabem l'activitat
             if(!blockedApps.contains(lastPackage))
                 LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_APP_BLOCK_SCREEN));
