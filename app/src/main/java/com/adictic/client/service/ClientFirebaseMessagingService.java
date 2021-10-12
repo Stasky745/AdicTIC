@@ -95,19 +95,18 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
 
         // Actualitzem mapa Accessibility amb dades noves
-        HashMap<String, Long> timeMap = new HashMap<>();
+        AccessibilityScreenService.instance.setTempsApps(Funcions.getTodayAppUsage(this));
+        Map<String, Long> tempsApps = AccessibilityScreenService.instance.getTempsApps();
+        if(tempsApps == null)
+            tempsApps = new HashMap<>();
         for(BlockedApp limitedApp : limitedAppsList) {
-            long dayAppUsage = Funcions.getDayAppUsage(getApplicationContext(), limitedApp.pkgName);
-            if (dayAppUsage > limitedApp.timeLimit)
+            if(limitedApp.pkgName == null)
+                continue;
+            long tempsUsat = tempsApps.getOrDefault(limitedApp.pkgName, 0L);
+            if (tempsUsat > limitedApp.timeLimit)
                 AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
-            else
-                timeMap.put(limitedApp.pkgName, dayAppUsage);
         }
-        AccessibilityScreenService.instance.setTempsApps(timeMap);
 
-        AccessibilityScreenService.instance.setChangedBlockedApps(true);
-
-        // Ensenyar pantalla bloqueig si és una app bloquejada
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }
 
