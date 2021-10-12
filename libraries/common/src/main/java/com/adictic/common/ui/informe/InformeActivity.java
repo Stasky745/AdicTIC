@@ -224,8 +224,12 @@ public class InformeActivity extends AppCompatActivity {
             viewPager.getChildAt(i).setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
 
+
         long totalRecomanat = col.size() * Constants.AGE_TIMES_MILLIS[age];
-        percentage = totalUsageTime * 100.0f / totalRecomanat;
+        if(totalRecomanat > 0)
+            percentage = totalUsageTime * 100.0f / totalRecomanat;
+        else
+            percentage = 300;
         if(percentage>100)
             TV_percentageUsage.setTextColor(getColor(R.color.vermell));
         TV_percentageUsage.setText(getString(R.string.percentage, Math.round(percentage)));
