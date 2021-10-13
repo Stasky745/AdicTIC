@@ -546,6 +546,15 @@ public class AccessibilityScreenService extends AccessibilityService {
                 wasLocked = true;
                 AccessibilityScreenService.instance.dayUsage += Math.abs(AccessibilityScreenService.instance.unlockedDeviceTime - System.currentTimeMillis());
 
+                AccessibilityScreenService.instance.cancelarWorkerBlockDevice();
+
+                if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
+                    int timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
+                    AccessibilityScreenService.instance.excessUsageDevice = timeUntilLimit < 0;
+                }
+                else
+                    AccessibilityScreenService.instance.excessUsageDevice = false;
+
                 Funcions.sendAppUsage(context);
                 enviarLastApp();
             }
