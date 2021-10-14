@@ -198,7 +198,7 @@ public class ConsultesFragment extends Fragment {
             for (Localitzacio localitzacio : dubteItem.localitzacio){
                 localitzacions = localitzacions.concat(localitzacio.poblacio).concat(", ");
             }
-            localitzacions = localitzacions.substring(0,localitzacions.length()-2);
+            localitzacions = localitzacions.length() > 2 ? localitzacions.substring(0,localitzacions.length()-2) : localitzacions;
             holder.TV_dubteLocalitats.setText(localitzacions);
 
             String finalLocalitzacions = localitzacions;
