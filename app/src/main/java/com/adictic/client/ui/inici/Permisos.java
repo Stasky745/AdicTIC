@@ -139,14 +139,12 @@ public class Permisos extends AppCompatActivity {
         batteryPerm = mPm.isIgnoringBatteryOptimizations(getPackageName());
         SW_permiso_battery_optimisation_status.setChecked(batteryPerm);
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
+        @SuppressLint("BatteryLife") AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                 .setTitle(getString(R.string.battery_optimisation))
                 .setMessage(getString(R.string.battery_optimisation_info))
                 .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
-                    //TODO: Aixo activa per no pots desactivar
-                    @SuppressLint("BatteryLife") Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:"+getPackageName()));
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
+                    startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+                    dialogInterface.dismiss();
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> {
                     SW_permiso_battery_optimisation_status.setChecked(batteryPerm);
