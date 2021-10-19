@@ -407,6 +407,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     public void onInterrupt() { }
 
     private boolean isActivity(AccessibilityEvent event) {
+//        return true;
         ComponentName componentName = new ComponentName(event.getPackageName().toString(), event.getClassName().toString());
         try {
             if(getPackageManager().getActivityInfo(componentName, 0) != null)
