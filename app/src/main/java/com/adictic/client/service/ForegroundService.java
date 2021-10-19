@@ -119,13 +119,22 @@ public class ForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Notification notification = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            createNotification();
+            notification = createNotification();
+
+        if (notification == null)
+            stopSelf();
+
+        // Notification ID cannot be 0.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+        else
+            startForeground(1, notification);
 
         actiu = true;
-
-        wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
-        wakeLock.acquire();
+//        wakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ForegroundService::wakelock");
+//        wakeLock.acquire();
 
         return START_STICKY;
     }
@@ -144,18 +153,19 @@ public class ForegroundService extends Service {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void createNotification() {
+    private Notification createNotification() {
 //        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
 //        clientNotificationManager.displayGeneralNotification(getString(R.string.app_name), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
         MyNotificationManager.Channel foreground_channel = MyNotificationManager.channel_info.get(MyNotificationManager.Channels.FOREGROUND_SERVICE);
-        if(foreground_channel==null) return;
+        if(foreground_channel==null)
+            return null;
         createNotificationChannel(foreground_channel);
 
         Intent notificationIntent = new Intent(this, NavActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
-        Notification notification =
+        return
                 new Notification.Builder(this, foreground_channel.id)
                         .setContentTitle(getText(R.string.app_name))
                         .setContentText(getText(R.string.service_notification_message))
@@ -164,11 +174,6 @@ public class ForegroundService extends Service {
                         .setTicker(getText(R.string.service_notification_message))
                         .build();
 
-        // Notification ID cannot be 0.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
-        else
-            startForeground(1, notification);
     }
 
     private void getLastLocation() {
