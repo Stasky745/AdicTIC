@@ -211,7 +211,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                             FragmentManager fm = getSupportFragmentManager();
                             EventFragment horarisEventFragment = EventFragment.newInstance(getString(R.string.events), eventAdapterList.get(position));
                             horarisEventFragment.show(fm, "fragment_edit_event");
-                            notifyDataSetChanged();
+//                            notifyDataSetChanged();
                         });
                     }
 

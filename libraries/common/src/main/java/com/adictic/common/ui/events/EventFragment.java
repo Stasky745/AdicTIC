@@ -27,8 +27,8 @@ import org.joda.time.DateTime;
 import java.util.Objects;
 
 public class EventFragment extends DialogFragment {
-    private final EventBlock event;
-    private final EventBlock oldEvent;
+    private EventBlock event;
+    private EventBlock oldEvent;
 
     private EditText ET_eventName, ET_eventStart, ET_eventEnd;
     private ChipGroup CG_eventDays;
@@ -38,15 +38,13 @@ public class EventFragment extends DialogFragment {
 
     private IEventDialog mCallback;
 
-    public EventFragment(EventBlock he) {
-        event = he;
-        oldEvent = new EventBlock(he);
-    }
+    public EventFragment() { }
 
     public static EventFragment newInstance(String title, EventBlock horarisEvent) {
-        EventFragment frag = new EventFragment(horarisEvent);
+        EventFragment frag = new EventFragment();
         Bundle args = new Bundle();
         args.putString("title", title);
+        args.putParcelable("eventBlock", horarisEvent);
         frag.setArguments(args);
         return frag;
     }
@@ -54,7 +52,6 @@ public class EventFragment extends DialogFragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
         try {
             mCallback = (IEventDialog) context;
         } catch (ClassCastException e) {
@@ -65,6 +62,10 @@ public class EventFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        assert getArguments() != null;
+        event = getArguments().getParcelable("eventBlock");
+        oldEvent = new EventBlock(event);
+
         return inflater.inflate(R.layout.horaris_event_fragment, container);
     }
 
