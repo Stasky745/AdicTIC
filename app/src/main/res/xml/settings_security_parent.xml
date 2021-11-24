@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="preferenceParent">
+
+    <Preference
+        app:key="setting_change_password"
+        app:icon="@drawable/ic_baseline_password_24"
+        app:title="@string/changePassword" />
+
+    <SwitchPreference
+        app:key="setting_require_biometric"
+        app:icon="@drawable/ic_baseline_app_blocking"
+        app:title="@string/requireUnlock" />
+
+</PreferenceScreen>
