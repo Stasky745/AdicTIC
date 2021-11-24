@@ -37,6 +37,7 @@ public class Crypt {
     }
 
     public static String decryptAES(String message) {
+        if(message==null || message.trim().equals("")) return "";
         MessageDigest sha = null;
         byte[] key;
         SecretKeySpec secretKey = null;

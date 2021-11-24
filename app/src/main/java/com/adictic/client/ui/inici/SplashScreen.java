@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -26,6 +27,7 @@ import com.adictic.client.BuildConfig;
 import com.adictic.client.R;
 import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.BiometricAuthUtil;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.util.LocaleHelper;
 import com.adictic.common.entity.User;
@@ -87,8 +89,7 @@ public class SplashScreen extends AppCompatActivity {
                             if (response.isSuccessful()) {
                                 Log.d(TAG, "Firebase Token = " + token);
                                 if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
-                                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
-                                    SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+                                    checkBiometricAuth();
                                 }
                                 else if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false) && sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1) > 0)
                                     mirarPermisos();
@@ -287,4 +288,48 @@ public class SplashScreen extends AppCompatActivity {
             }
         }
     );
+
+    private void checkBiometricAuth(){
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, false)){
+            BiometricPrompt.AuthenticationCallback autCallback = new BiometricPrompt.AuthenticationCallback() {
+                @Override
+                public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                    super.onAuthenticationError(errorCode, errString);
+                    if(errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+                        Intent intent = new Intent(SplashScreen.this, Login.class);
+                        intent.putExtra("fromBiometric", true);
+                        SplashScreen.this.startActivity(intent);
+                    } else {
+                        Toast.makeText(SplashScreen.this, errString, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                    super.onAuthenticationSucceeded(result);
+                    goToMainActivity();
+                }
+
+                @Override
+                public void onAuthenticationFailed() {
+                    super.onAuthenticationFailed();
+                    Log.e(TAG, "Authentication failed");
+                    finish();
+                }
+            };
+            try {
+                BiometricAuthUtil.startAuthentication(SplashScreen.this, autCallback);
+            } catch (UnsupportedOperationException ex){
+                //This shouldn't happen. Disable the setting?
+                goToMainActivity();
+            }
+        } else goToMainActivity();
+    }
+
+    private void goToMainActivity(){
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+        SplashScreen.this.startActivity(new Intent(SplashScreen.this, NavActivity.class));
+    }
 }

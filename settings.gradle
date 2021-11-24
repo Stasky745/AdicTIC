@@ -1,4 +1,3 @@
 include ':app', ':admin'
 rootProject.name='AdicTIC'
-include ':libraries:common', ':libraries:persistentcookie'
-include ':libraries:jitsiVideocall'
+include ':libraries:common', ':libraries:persistentcookie', ':libraries:jitsiVideocall'

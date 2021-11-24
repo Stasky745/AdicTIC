@@ -1,13 +1,15 @@
-package com.adictic.client.ui.main;
+package com.adictic.client.ui.setting;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.client.R;
@@ -35,6 +37,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.changePassword));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         api = ((AdicticApp) this.getApplication()).getAPI();
 
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
@@ -104,5 +107,15 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
