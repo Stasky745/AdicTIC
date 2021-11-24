@@ -94,13 +94,14 @@
         <activity android:name="com.adictic.common.ui.GeoLocActivity" />
         <activity android:name="com.adictic.client.ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
-        <activity android:name="com.adictic.client.ui.main.ChangePasswordActivity" />
+        <activity android:name="com.adictic.client.ui.setting.ChangePasswordActivity" />
         <activity android:name="com.adictic.client.ui.inici.Permisos" />
         <activity android:name="com.adictic.client.ui.inici.AppLock" />
         <activity android:name="com.adictic.client.ui.BlockDeviceActivity"
             android:noHistory="true"
             android:launchMode="singleInstance" />
         <activity android:name="com.adictic.client.ui.inici.PermisosMIUI" />
+        <activity android:name="com.adictic.client.ui.setting.SettingsActivity" />
 
         <receiver android:name="com.adictic.client.receiver.checkInstalledApps"
             android:exported="true">

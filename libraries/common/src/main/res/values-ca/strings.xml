@@ -483,4 +483,9 @@
     <string name="callNotifDesc">El professional %s està trucant</string>
     <string name="callChildNotifTitle">%s està trucant</string>
     <string name="callChildNotifDesc">Pressiona aquí per contestar</string>
+
+    <string name="unlockAdictic">Desbloquejar AdicTIC</string>
+    <string name="enterWithPassword">Entrar amb contrasenya</string>
+    <string name="requireUnlock">Requereix desbloqueig</string>
+    <string name="security">Seguretat</string>
 </resources>

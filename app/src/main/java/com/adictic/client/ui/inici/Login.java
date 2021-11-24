@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -55,16 +56,30 @@ public class Login extends AppCompatActivity {
 
         mTodoService = ((AdicticApp) this.getApplication()).getAPI();
 
-        Button b_log = findViewById(R.id.login_button);
-        TextView b_reg = findViewById(R.id.TV_register);
+        final EditText u = Login.this.findViewById(R.id.login_username);
+        final EditText p = Login.this.findViewById(R.id.login_password);
+        final RadioButton tutor = findViewById(R.id.RB_tutor);
+        final RadioButton tutelat = findViewById(R.id.RB_tutelat);
+        final TextView noTypeDevice = findViewById(R.id.TV_noTypeDevice);
+        final Button b_log = findViewById(R.id.login_button);
+        final TextView b_reg = findViewById(R.id.TV_register);
+        final TextView t_reg = findViewById(R.id.TV_login_register);
+
+        if(getIntent().getBooleanExtra("fromBiometric", false)){
+            u.setText(Crypt.decryptAES(sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME,"")));
+            tutor.setChecked(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false));
+            tutelat.setChecked(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, true));
+            tutor.setEnabled(false);
+            tutelat.setEnabled(false);
+            if(p.requestFocus()) {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+            t_reg.setVisibility(View.GONE);
+            b_reg.setVisibility(View.GONE);
+        }
+
         // This is the listener that will be used when the user presses the "Login" button
         b_log.setOnClickListener(v -> {
-            final EditText u = Login.this.findViewById(R.id.login_username);
-            final EditText p = Login.this.findViewById(R.id.login_password);
-            final RadioButton tutor = findViewById(R.id.RB_tutor);
-            final RadioButton tutelat = findViewById(R.id.RB_tutelat);
-            final TextView noTypeDevice = findViewById(R.id.TV_noTypeDevice);
-
             if (u.getText().length() == 0) {
                 u.setHint(getString(R.string.error_noUsername));
                 u.setHintTextColor(Color.parseColor("#fc8279"));
