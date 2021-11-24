@@ -508,4 +508,9 @@
     <string name="callNotifDesc">El profesional %s está llamando</string>
     <string name="callChildNotifTitle">%s está llamando</string>
     <string name="callChildNotifDesc">Pulsa aquí para contestar</string>
+
+    <string name="unlockAdictic">Desbloquear AdicTIC</string>
+    <string name="enterWithPassword">Entrar con contraseña</string>
+    <string name="requireUnlock">Requiere desbloqueo</string>
+    <string name="security">Seguridad</string>
 </resources>

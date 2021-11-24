@@ -57,7 +57,6 @@ dependencies {
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$versions_glide"
-    implementation 'com.google.firebase:firebase-messaging:22.0.0'
     annotationProcessor "com.github.bumptech.glide:compiler:$versions_glide"
     implementation "com.github.bumptech.glide:okhttp3-integration:$versions_glide" // Glide's OkHttp3 integration.
 
@@ -70,6 +69,10 @@ dependencies {
     implementation "org.osmdroid:osmdroid-wms:$osmdroid_version"
     implementation "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
     //implementation "org.osmdroid:osmdroid-geopackage:$osmdroid_version"
+
+    // Firebase
+    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
+    implementation 'com.google.firebase:firebase-messaging'
 
     //ACRA
     implementation "ch.acra:acra-core:$acra_version"

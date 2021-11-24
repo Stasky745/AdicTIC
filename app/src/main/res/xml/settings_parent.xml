@@ -10,9 +10,9 @@
         app:title="@string/change_language" />
 
     <Preference
-        app:key="setting_change_password"
-        app:icon="@drawable/ic_baseline_password_24"
-        app:title="@string/changePassword" />
+        app:key="setting_security"
+        app:icon="@drawable/ic_baseline_security_24"
+        app:title="@string/security" />
 
     <Preference
         app:key="setting_notifications"
