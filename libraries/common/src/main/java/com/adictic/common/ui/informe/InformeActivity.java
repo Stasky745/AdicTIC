@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -67,6 +68,7 @@ public class InformeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.informe_tabs);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.informe));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mTodoService = ((App) getApplication()).getAPI();
 
         idChild = getIntent().getLongExtra("idChild", -1);
@@ -369,5 +371,15 @@ public class InformeActivity extends AppCompatActivity {
                 showError();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
