@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -121,6 +122,7 @@ public class DayUsageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.usage_stats_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_usage));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mTodoService = ((App) getApplication()).getAPI();
 
         listView = findViewById(R.id.pkg_list);
@@ -565,6 +567,16 @@ public class DayUsageActivity extends AppCompatActivity {
                 icon = mRootView.findViewById(R.id.usage_icon);
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

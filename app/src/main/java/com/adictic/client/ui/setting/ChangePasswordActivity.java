@@ -101,12 +101,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
             }
         });
 
-        b_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        b_cancel.setOnClickListener(view -> finish());
     }
 
     @Override

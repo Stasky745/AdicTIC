@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Spanned;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -74,6 +75,7 @@ public class HorarisActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.descans_nocturn));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mTodoService = ((App) getApplication()).getAPI();
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
@@ -596,5 +598,15 @@ public class HorarisActivity extends AppCompatActivity {
                     .setNeutralButton(getString(R.string.accept), null)
                     .show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
