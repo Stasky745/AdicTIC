@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -51,6 +52,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.horaris_event);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.horaris));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mTodoService = ((App) getApplication()).getAPI();
         sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
 
@@ -266,5 +268,15 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

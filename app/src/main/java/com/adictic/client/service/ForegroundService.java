@@ -292,10 +292,5 @@ public class ForegroundService extends Service {
         public void onProviderDisabled(@NonNull String provider) {
 
         }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
     }
 }
