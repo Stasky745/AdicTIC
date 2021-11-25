@@ -295,15 +295,11 @@ public class SplashScreen extends AppCompatActivity {
                 @Override
                 public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                     super.onAuthenticationError(errorCode, errString);
-                    if(errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
-                        Intent intent = new Intent(SplashScreen.this, Login.class);
-                        intent.putExtra("fromBiometric", true);
-                        SplashScreen.this.startActivity(intent);
-                    } else {
-                        Toast.makeText(SplashScreen.this, errString, Toast.LENGTH_LONG).show();
-                        finish();
-                    }
+                    Toast.makeText(SplashScreen.this, errString, Toast.LENGTH_LONG).show();
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+                    Intent intent = new Intent(SplashScreen.this, Login.class);
+                    intent.putExtra("fromBiometric", true);
+                    SplashScreen.this.startActivity(intent);
                 }
 
                 @Override

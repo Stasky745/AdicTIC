@@ -1,6 +1,7 @@
 package com.adictic.common.ui;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ public class ReportActivity extends AppCompatActivity {
 
         isTypeBug = getIntent().getBooleanExtra("isTypeBug", false);
         Objects.requireNonNull(getSupportActionBar()).setTitle(isTypeBug ? getString(R.string.report_bug) : getString(R.string.report_suggestion));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (isTypeBug) {
             textView.setText(getString(R.string.report_message_bug));
@@ -72,5 +74,15 @@ public class ReportActivity extends AppCompatActivity {
             });
         }
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

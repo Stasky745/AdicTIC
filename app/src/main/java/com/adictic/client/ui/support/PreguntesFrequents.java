@@ -2,11 +2,15 @@ package com.adictic.client.ui.support;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.client.R;
+
+import java.util.Objects;
 
 public class PreguntesFrequents extends AppCompatActivity {
 
@@ -23,9 +27,21 @@ public class PreguntesFrequents extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contingut_informatiu);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.advice_infoContent));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setViews();
         setButtons();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setButtons() {

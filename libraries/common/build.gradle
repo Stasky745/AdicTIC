@@ -23,60 +23,69 @@ android {
 
 dependencies {
     //AndroidX
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core:1.6.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    implementation 'androidx.navigation:navigation-fragment:2.3.5'
-    implementation 'androidx.navigation:navigation-ui:2.3.5'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation "androidx.security:security-crypto:1.1.0-alpha03"
-    implementation "androidx.work:work-runtime:2.6.0"
+    api 'androidx.cardview:cardview:1.0.0'
+    api 'androidx.recyclerview:recyclerview:1.2.1'
+    api 'androidx.preference:preference:1.1.1'
+    api 'androidx.legacy:legacy-support-v4:1.0.0'
+    api 'androidx.appcompat:appcompat:1.4.0'
+    api 'androidx.core:core:1.7.0'
+    api 'androidx.constraintlayout:constraintlayout:2.1.2'
+    api 'androidx.navigation:navigation-fragment:2.3.5'
+    api 'androidx.navigation:navigation-ui:2.3.5'
+    api 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    api "androidx.security:security-crypto:1.1.0-alpha03"
+    api "androidx.work:work-runtime:2.7.1"
+    api 'androidx.biometric:biometric:1.1.0'
+    api 'androidx.vectordrawable:vectordrawable:1.1.0'
+    api 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 
     //Google
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'com.google.android.gms:play-services-location:18.0.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    api 'com.google.android.material:material:1.4.0'
+    api 'com.google.android.gms:play-services-location:18.0.0'
+    api 'com.google.android.gms:play-services-maps:18.0.0'
+    api 'com.google.guava:guava:29.0-android'
+    api 'com.google.code.gson:gson:2.8.8'
 
     //Retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    api "com.squareup.retrofit2:retrofit:$retrofit_version"
+    api "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
     //Gràfiques
-    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     // OkHttp
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:$okhttp_version"))
-    implementation 'com.squareup.okhttp3:okhttp'
-    implementation 'com.squareup.okhttp3:okhttp-urlconnection'
-    implementation 'com.squareup.okhttp3:logging-interceptor'
+    api(platform("com.squareup.okhttp3:okhttp-bom:$okhttp_version"))
+    api 'com.squareup.okhttp3:okhttp'
+    api 'com.squareup.okhttp3:okhttp-urlconnection'
+    api 'com.squareup.okhttp3:logging-interceptor'
 
     // Glide
-    implementation "com.github.bumptech.glide:glide:$versions_glide"
+    api "com.github.bumptech.glide:glide:$versions_glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$versions_glide"
-    implementation "com.github.bumptech.glide:okhttp3-integration:$versions_glide" // Glide's OkHttp3 integration.
+    api "com.github.bumptech.glide:okhttp3-integration:$versions_glide" // Glide's OkHttp3 integration.
 
     //Local files
-    implementation(name:'joda-time-2.10.10', ext:'jar')
-    implementation(name:'monthandyearpicker-1.3.0', ext:'aar')
+    api(name:'joda-time-2.10.10', ext:'jar')
+    api(name:'monthandyearpicker-1.3.0', ext:'aar')
 
     //Osmdroid
-    implementation "org.osmdroid:osmdroid-android:$osmdroid_version"
-    implementation "org.osmdroid:osmdroid-wms:$osmdroid_version"
-    implementation "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
+    api "org.osmdroid:osmdroid-android:$osmdroid_version"
+    api "org.osmdroid:osmdroid-wms:$osmdroid_version"
+    api "org.osmdroid:osmdroid-mapsforge:$osmdroid_version"
     //implementation "org.osmdroid:osmdroid-geopackage:$osmdroid_version"
 
     // Firebase
-    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
-    implementation 'com.google.firebase:firebase-messaging'
+    api platform("com.google.firebase:firebase-bom:$firebase_version")
+    api 'com.google.firebase:firebase-core'
+    api 'com.google.firebase:firebase-auth'
+    api 'com.google.firebase:firebase-messaging'
+    api 'com.google.firebase:firebase-crashlytics'
+    api 'com.google.firebase:firebase-analytics'
+    api 'com.google.firebase:firebase-firestore'
 
     //ACRA
-    implementation "ch.acra:acra-core:$acra_version"
-    implementation "ch.acra:acra-limiter:$acra_version"
+    api "ch.acra:acra-core:$acra_version"
+    api "ch.acra:acra-limiter:$acra_version"
     //Used by ACRA
     compileOnly "com.google.auto.service:auto-service-annotations:1.0"
     annotationProcessor "com.google.auto.service:auto-service:1.0"

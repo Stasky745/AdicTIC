@@ -78,6 +78,7 @@ public class BlockAppsActivity extends AppCompatActivity {
             Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
         else
             Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.apps_blocked));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         assert sharedPreferences != null;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
@@ -405,5 +406,15 @@ public class BlockAppsActivity extends AppCompatActivity {
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -254,12 +254,11 @@ public class FuncionsSettings {
                 int bioType2 = BiometricAuthUtil.isAuthenticationSupported(context.requireContext());
                 if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && bioType2 == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED){
                     BiometricAuthUtil.createBiometricCredentials(context);
-                    setting_require_biometric.setChecked(false);
+                    return false;
                 } else if (bioType2 == BiometricManager.BIOMETRIC_SUCCESS){
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, true).apply();
-                } else {
-                    setting_require_biometric.setChecked(false);
-                }
+                } else
+                    return false;
             } else if(newValue.toString().equals("false")){
                 sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, false).apply();
             }
