@@ -155,7 +155,7 @@ public class ForegroundService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Notification createNotification() {
 //        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
-//        clientNotificationManager.displayGeneralNotification(getString(R.string.app_name), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
+//        clientNotificationManager.displayGeneralNotification(getString(R.string.adictic), getString(R.string.service_notification_message), MainActivityAbstractClass.class, MyNotificationManager.Channels.FOREGROUND_SERVICE, MyNotificationManager.NOTIF_ID_FOREGROUND_SERVICE);
         MyNotificationManager.Channel foreground_channel = MyNotificationManager.channel_info.get(MyNotificationManager.Channels.FOREGROUND_SERVICE);
         if(foreground_channel==null)
             return null;
@@ -167,7 +167,7 @@ public class ForegroundService extends Service {
 
         return
                 new Notification.Builder(this, foreground_channel.id)
-                        .setContentTitle(getText(R.string.app_name))
+                        .setContentTitle(getText(R.string.adictic))
                         .setContentText(getText(R.string.service_notification_message))
                         .setSmallIcon(R.drawable.adictic_nolletra)
                         .setContentIntent(pendingIntent)
