@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AdicTIC_Admin</string>
+    <string name="adictic_admin">AdicTIC_Admin</string>
     <string name="dra">Dra.</string>
     <string name="name">Nom i Cognoms</string>
     <string name="desc">Descripció</string>
