@@ -1,10 +1,13 @@
 package com.adictic.common.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 
 import java.util.Comparator;
 
-public class EventBlock implements Comparator<Object> {
+public class EventBlock implements Comparator<Object>, Parcelable {
     public long id;
 
     public String name;
@@ -40,6 +43,33 @@ public class EventBlock implements Comparator<Object> {
         this.saturday = other.saturday;
         this.sunday = other.sunday;
     }
+
+    protected EventBlock(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+        startEvent = in.readInt();
+        endEvent = in.readInt();
+        activeNow = in.readByte() != 0;
+        monday = in.readByte() != 0;
+        tuesday = in.readByte() != 0;
+        wednesday = in.readByte() != 0;
+        thursday = in.readByte() != 0;
+        friday = in.readByte() != 0;
+        saturday = in.readByte() != 0;
+        sunday = in.readByte() != 0;
+    }
+
+    public static final Creator<EventBlock> CREATOR = new Creator<EventBlock>() {
+        @Override
+        public EventBlock createFromParcel(Parcel in) {
+            return new EventBlock(in);
+        }
+
+        @Override
+        public EventBlock[] newArray(int size) {
+            return new EventBlock[size];
+        }
+    };
 
     @Override
     public int compare(Object o, Object t1) {
@@ -88,5 +118,26 @@ public class EventBlock implements Comparator<Object> {
         friday = false;
         saturday = false;
         sunday = false;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeString(name);
+        parcel.writeInt(startEvent);
+        parcel.writeInt(endEvent);
+        parcel.writeByte((byte) (activeNow ? 1 : 0));
+        parcel.writeByte((byte) (monday ? 1 : 0));
+        parcel.writeByte((byte) (tuesday ? 1 : 0));
+        parcel.writeByte((byte) (wednesday ? 1 : 0));
+        parcel.writeByte((byte) (thursday ? 1 : 0));
+        parcel.writeByte((byte) (friday ? 1 : 0));
+        parcel.writeByte((byte) (saturday ? 1 : 0));
+        parcel.writeByte((byte) (sunday ? 1 : 0));
     }
 }
