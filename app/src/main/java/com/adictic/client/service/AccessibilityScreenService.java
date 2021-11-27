@@ -56,6 +56,8 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     public static AccessibilityScreenService instance;
 
+    private ScreenLockReceiver screenLockReceiver = null;
+
     private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
             "com.google.android.apps.nexuslauncher",
@@ -404,7 +406,10 @@ public class AccessibilityScreenService extends AccessibilityService {
     }
 
     @Override
-    public void onInterrupt() { }
+    public void onInterrupt() {
+        if(screenLockReceiver != null)
+            AccessibilityScreenService.this.unregisterReceiver(screenLockReceiver);
+    }
 
     private boolean isActivity(AccessibilityEvent event) {
 //        return true;
@@ -534,7 +539,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_USER_PRESENT);
         intentFilter.addAction(ACTION_SCREEN_OFF);
-        ScreenLockReceiver screenLockReceiver = new ScreenLockReceiver();
+        screenLockReceiver = new ScreenLockReceiver();
         AccessibilityScreenService.this.registerReceiver(screenLockReceiver, intentFilter);
     }
 

@@ -186,4 +186,7 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
 
     @PUT("/usage/{idChild}/timesUnlocked")
     Call<String> addTimeUnlocked(@Path("idChild") Long idChild, @Body Long dateTime);
+
+    @POST("/users/checkPassword")
+    Call<String> checkPassword(@Body UserLogin login);
 }

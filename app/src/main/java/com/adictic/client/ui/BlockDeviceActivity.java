@@ -4,12 +4,18 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.text.LineBreaker;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +34,11 @@ import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.EventBlock;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
+import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;
@@ -74,7 +83,93 @@ public class BlockDeviceActivity extends AppCompatActivity {
         setText();
         setEmergencyCallButton();
         setAlertParentsButton();
+        setUnlockButton();
         postIntentAccesDisp();
+    }
+
+    private void setUnlockButton() {
+        Button BT_desbloquejar = findViewById(R.id.BT_desbloqueig);
+        BT_desbloquejar.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            final View dialogLayout = getLayoutInflater().inflate(R.layout.desbloqueig_dialog, null);
+            builder.setView(dialogLayout);
+            builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
+                dialog.cancel();
+            });
+
+            TextView TV_unlock_text = dialogLayout.findViewById(R.id.TV_unlock_text);
+            TV_unlock_text.setText(getString(R.string.unlock_freeuse_text));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                TV_unlock_text.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            }
+
+            TextView TV_pwd_error = dialogLayout.findViewById(R.id.TV_pwd_error);
+            TV_pwd_error.setVisibility(View.INVISIBLE);
+
+            AlertDialog alertDialog = builder.show();
+
+            Button BT_unlock = dialogLayout.findViewById(R.id.BT_dialog_unlock);
+            BT_unlock.setOnClickListener(v1 -> {
+                TV_pwd_error.setVisibility(View.INVISIBLE);
+
+                EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
+                String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
+
+                UserLogin userLogin = new UserLogin();
+                userLogin.password = pwd;
+                userLogin.username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME, "");
+                userLogin.token = "";
+                userLogin.tutor = -1;
+
+                Call<String> call = mTodoService.checkPassword(userLogin);
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                        super.onResponse(call, response);
+                        if(response.isSuccessful() && response.body() != null){
+                            boolean valid = false;
+                            if(response.body().equals("ok"))
+                                valid = true;
+                            else if(sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd))
+                                valid = true;
+
+                            if(valid){
+                                alertDialog.dismiss();
+
+                                if(Funcions.accessibilityServiceOn()) {
+                                    AccessibilityScreenService.instance.setBlockDevice(false);
+                                    AccessibilityScreenService.instance.updateDeviceBlock();
+                                }
+
+                                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
+
+                                Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+                                Call<String> call2 = mTodoService.freeUse(idChild, true);
+                                call2.enqueue(new Callback<String>() {
+                                    @Override
+                                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                                        super.onResponse(call, response);
+                                    }
+
+                                    @Override
+                                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                        super.onFailure(call, t);
+                                    }
+                                });
+                            }
+                            else
+                                TV_pwd_error.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        super.onFailure(call, t);
+                    }
+                });
+            });
+        });
     }
 
     @Override

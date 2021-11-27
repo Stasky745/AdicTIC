@@ -488,4 +488,7 @@
     <string name="enterWithPassword">Entrar amb contrasenya</string>
     <string name="requireUnlock">Requereix desbloqueig</string>
     <string name="security">Seguretat</string>
+
+    <string name="unlock_freeuse_text">"Aquesta funció posarà el dispositiu en l'estat de \"Temps Lliure d'Ús\". Per tornar a activar les funcions de bloqueig en aquest dispositiu s'haurà de desactivar la funció des del dispositiu tutor.\n\nPer desbloquejar el dispositiu, entreu la vostra contrasenya del compte:"</string>
+    <string name="unlock_app">"Aquesta funció desbloquejarà aquesta aplicació. Per tornar a bloquejar-la, s'haurà d'utilitzar la funcionalitat de l'aplicació tutor.\n\nPer desbloquejar el dispositiu, entreu la vostra contrasenya del compte:"</string>
 </resources>
