@@ -113,9 +113,9 @@ dependencies {
     implementation 'com.github.judemanutd:autostarter:1.1.0'
 
     //Modules
-    implementation project(path: ':libraries:jitsiVideocall')
-    implementation project(path: ':libraries:persistentcookie')
     implementation project(path: ':libraries:common')
+    implementation project(path: ':libraries:persistentcookie')
+    implementation project(path: ':libraries:jitsiVideocall')
 }
 
 task downloadDrivers(type: Copy) {

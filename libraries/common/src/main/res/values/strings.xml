@@ -16,7 +16,7 @@
     <string name="device_admin" translatable="false">AdicTIC Device Admin</string>
     <string name="device_admin_description">AdicTIC necesita permisos de administrador para evitar que se desinstale la aplicación, y poder bloquear el dispositivo cuando se requiera.</string>
 
-    <string name="app_name" translatable="false">AdicTIC</string>
+    <string name="adictic" translatable="false">AdicTIC</string>
     <string name="last_time_used">Abierta última vez:</string>
     <string name="times_opened">Veces que se ha usado:</string>
     <string name="time_span">Tiempo de uso:</string>
