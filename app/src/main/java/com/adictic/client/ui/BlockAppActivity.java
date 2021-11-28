@@ -22,6 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
+import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.IntentsAccesApp;
@@ -127,6 +128,7 @@ public class BlockAppActivity extends AppCompatActivity {
                 TV_pwd_error.setVisibility(View.INVISIBLE);
 
                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+                assert sharedPreferences != null;
                 AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
 
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
@@ -144,42 +146,56 @@ public class BlockAppActivity extends AppCompatActivity {
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
                         if(response.isSuccessful() && response.body() != null){
-                            boolean valid = false;
-                            if(response.body().equals("ok"))
-                                valid = true;
-                            else if(sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd))
-                                valid = true;
+                            boolean valid = response.body().equals("ok");
+                            if(valid)
+                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, pwd).apply();
 
-                            if(valid){
-                                alertDialog.dismiss();
-                                Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-                                List<String> unlockApp = new ArrayList<>();
-                                unlockApp.add(pkgName);
-                                Call<String> call2 = mTodoService.unlockApps(idChild, unlockApp);
-                                call2.enqueue(new Callback<String>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                        super.onResponse(call, response);
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                                        super.onFailure(call, t);
-                                    }
-                                });
-                            }
-                            else
-                                TV_pwd_error.setVisibility(View.VISIBLE);
+                            unlockApp(valid, sharedPreferences, pwd, alertDialog, pkgName, mTodoService, TV_pwd_error);
                         }
+                        else
+                            unlockApp(false, sharedPreferences, pwd, alertDialog, pkgName, mTodoService, TV_pwd_error);
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        super.onFailure(call, t);
+                        unlockApp(false, sharedPreferences, pwd, alertDialog, pkgName, mTodoService, TV_pwd_error);
                     }
                 });
             });
         });
+    }
+
+    private void unlockApp(boolean valid, @NonNull SharedPreferences sharedPreferences, String pwd, AlertDialog alertDialog, String pkgName, AdicticApi mTodoService, TextView TV_pwd_error) {
+        if(!valid)
+            valid = sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd);
+
+        if(valid){
+            alertDialog.dismiss();
+
+            if(Funcions.accessibilityServiceOn()) {
+                AccessibilityScreenService.instance.removeAppLimitada(pkgName);
+                AccessibilityScreenService.instance.removeBlockedApp(pkgName);
+                AccessibilityScreenService.instance.isCurrentAppBlocked();
+            }
+
+            Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            List<String> unlockApp = new ArrayList<>();
+            unlockApp.add(pkgName);
+            Call<String> call2 = mTodoService.unlockApps(idChild, unlockApp);
+            call2.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        }
+        else
+            TV_pwd_error.setVisibility(View.VISIBLE);
     }
 
     private void setIcon(String pkgName, String appName) {
