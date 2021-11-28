@@ -56,6 +56,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     private AdicticApi mTodoService;
     private long idChild;
     private SharedPreferences sharedPreferences;
+    private AlertDialog alertDialog = null;
 
     private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -94,10 +95,9 @@ public class BlockDeviceActivity extends AppCompatActivity {
 
             final View dialogLayout = getLayoutInflater().inflate(R.layout.desbloqueig_dialog, null);
             builder.setView(dialogLayout);
-            builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> {
-                dialog.cancel();
-            });
+            builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.cancel());
 
+            // Posem el text adequat al dialog
             TextView TV_unlock_text = dialogLayout.findViewById(R.id.TV_unlock_text);
             TV_unlock_text.setText(getString(R.string.unlock_freeuse_text));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -107,7 +107,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
             TextView TV_pwd_error = dialogLayout.findViewById(R.id.TV_pwd_error);
             TV_pwd_error.setVisibility(View.INVISIBLE);
 
-            AlertDialog alertDialog = builder.show();
+            alertDialog = builder.show();
 
             Button BT_unlock = dialogLayout.findViewById(R.id.BT_dialog_unlock);
             BT_unlock.setOnClickListener(v1 -> {
@@ -126,50 +126,61 @@ public class BlockDeviceActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        super.onResponse(call, response);
                         if(response.isSuccessful() && response.body() != null){
-                            boolean valid = false;
-                            if(response.body().equals("ok"))
-                                valid = true;
-                            else if(sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd))
-                                valid = true;
+                            boolean valid = response.body().equals("ok");
+                            if(valid)
+                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, pwd).apply();
 
-                            if(valid){
-                                alertDialog.dismiss();
-
-                                if(Funcions.accessibilityServiceOn()) {
-                                    AccessibilityScreenService.instance.setBlockDevice(false);
-                                    AccessibilityScreenService.instance.updateDeviceBlock();
-                                }
-
-                                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
-
-                                Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-                                Call<String> call2 = mTodoService.freeUse(idChild, true);
-                                call2.enqueue(new Callback<String>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                        super.onResponse(call, response);
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                                        super.onFailure(call, t);
-                                    }
-                                });
-                            }
-                            else
-                                TV_pwd_error.setVisibility(View.VISIBLE);
+                            unlockDevice(valid, pwd, TV_pwd_error);
                         }
+                        else
+                            unlockDevice(false, pwd, TV_pwd_error);
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        super.onFailure(call, t);
+                        unlockDevice(false, pwd, TV_pwd_error);
                     }
                 });
             });
         });
+    }
+
+    private void unlockDevice(boolean valid, String pwd, TextView TV_pwd_error){
+        // Si la contrasenya és correcta la guardem
+        if(!valid)
+            valid = sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd);
+
+        if(valid){
+            // Tanquem el Dialog perquè no peti quan es tanqui l'activitat
+            alertDialog.dismiss();
+
+            // Actualitzem les dades del servei d'accessibilitat
+            if(Funcions.accessibilityServiceOn()) {
+                AccessibilityScreenService.instance.setBlockDevice(false);
+                AccessibilityScreenService.instance.setFreeUse(true);
+                AccessibilityScreenService.instance.updateDeviceBlock();
+            }
+
+            sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false).apply();
+            sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
+
+            Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            Call<String> call2 = mTodoService.freeUse(idChild, true);
+            call2.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        }
+        else
+            TV_pwd_error.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -186,6 +197,10 @@ public class BlockDeviceActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if(alertDialog != null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+        }
         finish();
     }
 
