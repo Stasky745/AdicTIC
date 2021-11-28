@@ -92,6 +92,11 @@ public class AccessibilityScreenService extends AccessibilityService {
         blockedApps = list;
         changedBlockedApps = true;
     }
+    public void removeBlockedApp(String pkgName){
+        blockedApps.remove(pkgName);
+        changedBlockedApps = true;
+    }
+
     public boolean isCurrentAppBlocked() {
 
         // Si estem a la pantalla de bloqueig d'apps

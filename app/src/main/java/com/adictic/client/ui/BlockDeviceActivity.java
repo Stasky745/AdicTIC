@@ -126,50 +126,58 @@ public class BlockDeviceActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        super.onResponse(call, response);
                         if(response.isSuccessful() && response.body() != null){
-                            boolean valid = false;
-                            if(response.body().equals("ok"))
-                                valid = true;
-                            else if(sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd))
-                                valid = true;
+                            boolean valid = response.body().equals("ok");
+                            if(valid)
+                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, pwd).apply();
 
-                            if(valid){
-                                alertDialog.dismiss();
-
-                                if(Funcions.accessibilityServiceOn()) {
-                                    AccessibilityScreenService.instance.setBlockDevice(false);
-                                    AccessibilityScreenService.instance.updateDeviceBlock();
-                                }
-
-                                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,false).apply();
-
-                                Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-                                Call<String> call2 = mTodoService.freeUse(idChild, true);
-                                call2.enqueue(new Callback<String>() {
-                                    @Override
-                                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                        super.onResponse(call, response);
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                                        super.onFailure(call, t);
-                                    }
-                                });
-                            }
-                            else
-                                TV_pwd_error.setVisibility(View.VISIBLE);
+                            unlockDevice(valid, pwd, alertDialog, TV_pwd_error);
                         }
+                        else
+                            unlockDevice(false, pwd, alertDialog, TV_pwd_error);
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        super.onFailure(call, t);
+                        unlockDevice(false, pwd, alertDialog, TV_pwd_error);
                     }
                 });
             });
         });
+    }
+
+    private void unlockDevice(boolean valid, String pwd, AlertDialog alertDialog, TextView TV_pwd_error){
+        if(!valid)
+            valid = sharedPreferences.getString(Constants.SHARED_PREFS_PASSWORD, "").equals(pwd);
+
+        if(valid){
+            alertDialog.dismiss();
+
+            if(Funcions.accessibilityServiceOn()) {
+                AccessibilityScreenService.instance.setBlockDevice(false);
+                AccessibilityScreenService.instance.setFreeUse(true);
+                AccessibilityScreenService.instance.updateDeviceBlock();
+            }
+
+            sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE, false).apply();
+            sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
+
+            Long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+            Call<String> call2 = mTodoService.freeUse(idChild, true);
+            call2.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    super.onFailure(call, t);
+                }
+            });
+        }
+        else
+            TV_pwd_error.setVisibility(View.VISIBLE);
     }
 
     @Override
