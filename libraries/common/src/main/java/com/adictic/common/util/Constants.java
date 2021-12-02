@@ -42,6 +42,8 @@ public class Constants {
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
     public static final String SHARED_PREFS_DAILY_USAGE_LIMIT = "dailyUsageLimit";
 
+    public static final String SHARED_PREFS_NOTIFS = "notificationList";
+
     public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
 
     public static final String SHARED_PREFS_APPUSAGEWORKERUPDATE = "appUsageWorkerUpdate";

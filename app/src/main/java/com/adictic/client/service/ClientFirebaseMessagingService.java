@@ -294,6 +294,9 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     channel = MyNotificationManager.Channels.INSTALL;
                     body = appNameInsApp;
                     activitatClass = BlockAppsActivity.class;
+
+                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, title, body);
+
                     break;
                 case "uninstalledApp":
                     String appNameUninsApp = messageMap.get("uninstalledApp");
@@ -302,6 +305,9 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     channel = MyNotificationManager.Channels.INSTALL;
                     body = appNameUninsApp;
                     activitatClass = BlockAppsActivity.class;
+
+                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, title, body);
+
                     break;
                 case "geolocFills":
                     Intent intentGeoFill = new Intent("actualitzarLoc");
