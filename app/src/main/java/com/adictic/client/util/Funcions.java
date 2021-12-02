@@ -49,6 +49,7 @@ import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
+import com.adictic.client.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.ui.BlockAppActivity;
@@ -971,5 +972,50 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         return listUsages.stream()
                 .collect(Collectors.toMap(appUsage -> appUsage.app.pkgName,appUsage -> appUsage.totalTime));
+    }
+
+    public static void addNotificationToList(Context context, NotificationInformation notificationInformation) {
+        final int MAX_NOTIF_SIZE = 20;
+
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type);
+
+        // Si la llista té 15 elements
+        if(notifList.size() == 15){
+            NotificationInformation oldNotif = notifList.stream()
+                    .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+            notifList.remove(oldNotif);
+        }
+        else if(notifList.size() > MAX_NOTIF_SIZE){
+            for(int i = 0; i < notifList.size() - (MAX_NOTIF_SIZE-1); i++){
+                NotificationInformation oldNotif = notifList.stream()
+                        .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+                notifList.remove(oldNotif);
+            }
+        }
+
+        notifList.add(notificationInformation);
+
+        String newJson = gson.toJson(notifList);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
+    }
+
+    public static ArrayList<NotificationInformation> getNotificationList(Context context){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        return gson.fromJson(json, type);
     }
 }

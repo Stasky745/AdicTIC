@@ -16,7 +16,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
-import com.adictic.common.entity.NotificationInformation;
+import com.adictic.client.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
@@ -303,6 +303,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
                     notificationInformation.title = title;
                     notificationInformation.message = body;
+                    notificationInformation.childName = childNameInsApp;
 
                     Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
 
@@ -317,6 +318,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
                     notificationInformation.title = title;
                     notificationInformation.message = body;
+                    notificationInformation.childName = childNameUninsApp;
 
                     Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
 
