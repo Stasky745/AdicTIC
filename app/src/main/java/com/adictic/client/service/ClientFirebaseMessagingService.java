@@ -16,6 +16,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
@@ -144,6 +145,11 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             }
 
             sendFirebaseLog(messageMap.get("logID"));
+
+            NotificationInformation notificationInformation = new NotificationInformation();
+            notificationInformation.dateMillis = System.currentTimeMillis();
+            notificationInformation.read = false;
+            notificationInformation.important = false;
 
             switch(action){
                 // ************* Accions del dispositiu fill *************
@@ -295,7 +301,10 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     body = appNameInsApp;
                     activitatClass = BlockAppsActivity.class;
 
-                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, title, body);
+                    notificationInformation.title = title;
+                    notificationInformation.message = body;
+
+                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
 
                     break;
                 case "uninstalledApp":
@@ -306,7 +315,10 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     body = appNameUninsApp;
                     activitatClass = BlockAppsActivity.class;
 
-                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, title, body);
+                    notificationInformation.title = title;
+                    notificationInformation.message = body;
+
+                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
 
                     break;
                 case "geolocFills":
