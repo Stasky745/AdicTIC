@@ -516,4 +516,9 @@
 
     <string name="unlock_freeuse_text">"Esta función pondrá el dispositivo en el estado de \"Tiempo Libre de Uso\". Para volver a tener las funciones de bloqueo activas se deberá desactivar la función desde el dispositivo tutor.\n\nEscribe la contraseña de tu cuenta para desbloquear el dispositivo:"</string>
     <string name="unlock_app">"Esta función desbloqueará esta aplicación. Para volver a bloquearla, se deberá usar la funcionalidad disponible en la aplicación tutor.\n\nEscribe la contraseña de tu cuenta para desbloquear el dispositivo:"</string>
+
+    <string name="notif_empty">No se han recibido notificaciones.</string>
+
+    <string name="critical">Crítico</string>
+    <string name="undo">Deshacer</string>
 </resources>

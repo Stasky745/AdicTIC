@@ -975,7 +975,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     public static void addNotificationToList(Context context, NotificationInformation notificationInformation) {
-        final int MAX_NOTIF_SIZE = 20;
+        final int MAX_NOTIF_SIZE = 25;
 
         SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
         assert sharedPreferences != null;
@@ -987,7 +987,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         ArrayList<NotificationInformation> notifList = gson.fromJson(json, type);
 
         // Si la llista té 15 elements
-        if(notifList.size() == 15){
+        if(notifList.size() == MAX_NOTIF_SIZE){
             NotificationInformation oldNotif = notifList.stream()
                     .min(Comparator.comparing(v -> v.dateMillis)).get();
 
@@ -1017,5 +1017,15 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         Gson gson = new Gson();
         return gson.fromJson(json, type);
+    }
+
+    public static void setNotificationList(Context context, List<NotificationInformation> list){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        Gson gson = new Gson();
+
+        String newJson = gson.toJson(list);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
     }
 }
