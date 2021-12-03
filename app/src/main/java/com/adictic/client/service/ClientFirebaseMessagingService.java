@@ -68,7 +68,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
-        if(!Funcions.accessibilityServiceOn())
+        if(!Funcions.accessibilityServiceOn(getApplicationContext()))
             return;
 
         List<BlockedApp> limitedAppsList = new ArrayList<>();
@@ -157,7 +157,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     notifID = MyNotificationManager.NOTIF_ID_DAILY_LIMIT;
                     int dailyLimit = Integer.parseInt(Objects.requireNonNull(messageMap.get("dailyLimit")));
                     sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, dailyLimit).apply();
-                    if(Funcions.accessibilityServiceOn())
+                    if(Funcions.accessibilityServiceOn(getApplicationContext()))
                         AccessibilityScreenService.instance.setLimitDevice(dailyLimit);
                     break;
                 case "geolocActive":
@@ -168,7 +168,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
 
-                        if(Funcions.accessibilityServiceOn()) {
+                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                             AccessibilityScreenService.instance.setBlockDevice(true);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
@@ -179,7 +179,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                     else {
-                        if(Funcions.accessibilityServiceOn()) {
+                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                             AccessibilityScreenService.instance.setBlockDevice(false);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
@@ -198,7 +198,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, System.currentTimeMillis()).apply();
 
-                        if(Funcions.accessibilityServiceOn()) {
+                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                             AccessibilityScreenService.instance.setFreeUse(true);
                             AccessibilityScreenService.instance.updateDeviceBlock();
                         }
@@ -207,7 +207,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
-                        if(Funcions.accessibilityServiceOn()) {
+                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                             AccessibilityScreenService.instance.setFreeUse(false);
                             AccessibilityScreenService.instance.updateDeviceBlock();
                         }
@@ -231,7 +231,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     String s = messageMap.get("liveApp");
                     boolean active = Boolean.parseBoolean(messageMap.get("bool"));
 
-                    if(Funcions.accessibilityServiceOn())
+                    if(Funcions.accessibilityServiceOn(getApplicationContext()))
                         AccessibilityScreenService.instance.setLiveApp(active);
 
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
@@ -239,7 +239,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     if(active) {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                        if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn())
+                        if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn(getApplicationContext()))
                             AccessibilityScreenService.instance.enviarLiveApp();
 
                         // També actualitzem les dades d'ús al servidor
@@ -328,6 +328,20 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     LocalBroadcastManager.getInstance(this).sendBroadcast(intentGeoFill);
 
                     Log.d(TAG,"Actualitzar fills");
+                    break;
+                case "notification":
+                    String notifChildName = messageMap.get("childName");
+                    title = messageMap.get("title");
+                    body = messageMap.get("message");
+
+                    channel = MyNotificationManager.Channels.IMPORTANT;
+
+                    notificationInformation.title = title;
+                    notificationInformation.message = body;
+                    notificationInformation.childName = notifChildName;
+
+                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+
                     break;
                 case "chat":
                     switch (Objects.requireNonNull(remoteMessage.getData().get("chat"))) {

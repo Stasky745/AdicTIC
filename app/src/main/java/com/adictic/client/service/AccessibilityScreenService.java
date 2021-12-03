@@ -269,7 +269,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
                         blockDevice = response.body();
-                        if(Funcions.accessibilityServiceOn())
+                        if(Funcions.accessibilityServiceOn(AccessibilityScreenService.this))
                             AccessibilityScreenService.instance.updateDeviceBlock();
                     }
                 }
@@ -610,7 +610,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
 
         private void enviarLastApp() {
-            if(!Funcions.accessibilityServiceOn())
+            if(!Funcions.accessibilityServiceOn(instance.getApplicationContext()))
                 return;
 
             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.instance);

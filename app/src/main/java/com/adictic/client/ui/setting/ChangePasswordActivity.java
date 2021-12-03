@@ -66,7 +66,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
                 call.enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
+                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
                         if(response.isSuccessful()){
                             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChangePasswordActivity.this);
@@ -77,6 +77,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             finish();
                         } else {
                             try {
+                                assert response.errorBody() != null;
                                 JSONObject obj = new JSONObject(response.errorBody().string());
                                 if (obj.getString("message").trim().equals("OldPass does not match")) {
                                     err_pOld.setVisibility(View.VISIBLE);
@@ -92,7 +93,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                         Toast toast = Toast.makeText(ChangePasswordActivity.this, getString(R.string.error_sending_data), Toast.LENGTH_LONG);
                         toast.show();
                     }

@@ -494,4 +494,7 @@
     <string name="notif_empty">No s\'han rebut notificacions.</string>
     <string name="critical">Crític</string>
     <string name="undo">Desfer</string>
+
+    <string name="notif_accessibility_error_title">Error del servei d\'accessibilitat</string>
+    <string name="notif_accessibility_error_body">El servei sembla apagat. Caldria tornar-lo activar.</string>
 </resources>
