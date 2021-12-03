@@ -17,7 +17,7 @@ public class BlockDeviceWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if(Funcions.accessibilityServiceOn()){
+        if(Funcions.accessibilityServiceOn(getApplicationContext())){
             AccessibilityScreenService.instance.setExcessUsageDevice(true);
             AccessibilityScreenService.instance.updateDeviceBlock();
             return Result.success();

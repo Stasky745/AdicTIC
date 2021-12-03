@@ -521,4 +521,6 @@
 
     <string name="critical">Crítico</string>
     <string name="undo">Deshacer</string>
+    <string name="notif_accessibility_error_title">Error del servicio de accesibilidad</string>
+    <string name="notif_accessibility_error_body">El servicio parece apagado. Haría falta volver activarlo.</string>
 </resources>

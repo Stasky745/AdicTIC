@@ -59,6 +59,7 @@ import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
+import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedLimitedLists;
@@ -71,6 +72,7 @@ import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.adictic.common.workers.UpdateTokenWorker;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -250,7 +252,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
-        if(!Funcions.accessibilityServiceOn()) {
+        if(!Funcions.accessibilityServiceOn(ctx)) {
             return;
         }
 
@@ -324,12 +326,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
             else if(endTimeDelay > 0){
                 setUpEventWorker(ctx, endTimeDelay, false);
 
-                if(Funcions.accessibilityServiceOn())
+                if(Funcions.accessibilityServiceOn(ctx))
                     AccessibilityScreenService.instance.setActiveEvents(1);
             }
         }
 
-        if(Funcions.accessibilityServiceOn())
+        if(Funcions.accessibilityServiceOn(ctx))
             AccessibilityScreenService.instance.updateDeviceBlock();
     }
 
@@ -374,7 +376,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
 
-        if(!Funcions.accessibilityServiceOn())
+        if(!Funcions.accessibilityServiceOn(ctx))
             return;
 
         AccessibilityScreenService.instance.setHorarisActius(false);
@@ -912,7 +914,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     private static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        if(!Funcions.accessibilityServiceOn())
+        if(!Funcions.accessibilityServiceOn(ctx))
             return;
 
         List<BlockedApp> appsLimitades = new ArrayList<>();
@@ -954,14 +956,65 @@ public class Funcions extends com.adictic.common.util.Funcions {
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }
 
-    public static boolean accessibilityServiceOn(){
+    public static boolean accessibilityServiceOn(Context mCtx){
         boolean res = AccessibilityScreenService.instance != null;
 
         if(!res){
-            //TODO: Crida al servidor per avisar pare
+            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+            assert sharedPreferences != null;
+
+            AdicticApi api = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
+            long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+
+            NotificationInformation notif = new NotificationInformation();
+            notif.title = mCtx.getString(R.string.notif_accessibility_error_title);
+            notif.message = mCtx.getString(R.string.notif_accessibility_error_body);
+            notif.important = true;
+            notif.dateMillis = System.currentTimeMillis();
+            notif.read = false;
+
+            Call<String> call = api.sendNotification(idChild, notif);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                    super.onResponse(call, response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                    startNotificationWorker(mCtx, notif, idChild);
+                }
+            });
         }
 
         return res;
+    }
+
+    private static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
+        Data data = new Data.Builder()
+                .putString("title", notif.title)
+                .putString("body", notif.message)
+                .putBoolean("important", notif.important)
+                .putLong("dateMillis", notif.dateMillis)
+                .putLong("idChild", idChild)
+                .build();
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        WorkRequest myWork =
+                new OneTimeWorkRequest.Builder(NotifWorker.class)
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                5,
+                                TimeUnit.MINUTES)
+                        .setInputData(data)
+                        .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueue(myWork);
     }
 
     public static Map<String, Long> getTodayAppUsage(Context mContext) {

@@ -156,7 +156,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
             alertDialog.dismiss();
 
             // Actualitzem les dades del servei d'accessibilitat
-            if(Funcions.accessibilityServiceOn()) {
+            if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                 AccessibilityScreenService.instance.setBlockDevice(false);
                 AccessibilityScreenService.instance.setFreeUse(true);
                 AccessibilityScreenService.instance.updateDeviceBlock();
@@ -186,7 +186,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(Funcions.accessibilityServiceOn()) {
+        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
             if (!AccessibilityScreenService.instance.isDeviceBlocked())
                 finish();
         }
