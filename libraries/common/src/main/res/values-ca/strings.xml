@@ -498,4 +498,6 @@
     <string name="notif_accessibility_error_title">Error del servei d\'accessibilitat</string>
     <string name="notif_accessibility_error_body">El servei sembla apagat. Caldria tornar-lo activar.</string>
     <string name="setting_notification_history">Historial de notificacions</string>
+    <string name="notif_admin_permission_disabled_title">El permís d\'administrador s\'ha desactivat.</string>
+    <string name="notif_admin_permission_disabled_body">Sense el permís és possible desinstal·lar l\'aplicació del dispositiu del menor i afectar negativament a moltes altres funcionalitats. Si us plau, reactiveu el permís quan abans millor.</string>
 </resources>

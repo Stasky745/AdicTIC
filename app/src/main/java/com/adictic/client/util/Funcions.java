@@ -72,7 +72,6 @@ import com.adictic.common.entity.LimitedApps;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.common.workers.UpdateTokenWorker;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -960,12 +959,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
         boolean res = AccessibilityScreenService.instance != null;
 
         if(!res){
-            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
-            assert sharedPreferences != null;
-
-            AdicticApi api = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
-            long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-
             NotificationInformation notif = new NotificationInformation();
             notif.title = mCtx.getString(R.string.notif_accessibility_error_title);
             notif.message = mCtx.getString(R.string.notif_accessibility_error_body);
@@ -973,21 +966,32 @@ public class Funcions extends com.adictic.common.util.Funcions {
             notif.dateMillis = System.currentTimeMillis();
             notif.read = false;
 
-            Call<String> call = api.sendNotification(idChild, notif);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                    super.onResponse(call, response);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                    startNotificationWorker(mCtx, notif, idChild);
-                }
-            });
+            sendNotifToParent(mCtx, notif);
         }
 
         return res;
+    }
+
+    public static void sendNotifToParent(Context mCtx, NotificationInformation notif) {
+        AdicticApi api = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
+
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+
+        Call<String> call = api.sendNotification(idChild, notif);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                startNotificationWorker(mCtx, notif, idChild);
+            }
+        });
     }
 
     private static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
@@ -1037,7 +1041,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
 
         Gson gson = new Gson();
-        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type);
+        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type) != null ? gson.fromJson(json, type) : new ArrayList<>();
 
         // Si la llista té 15 elements
         if(notifList.size() == MAX_NOTIF_SIZE){

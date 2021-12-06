@@ -339,6 +339,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     notificationInformation.title = title;
                     notificationInformation.message = body;
                     notificationInformation.childName = notifChildName;
+                    notificationInformation.important = Boolean.parseBoolean(messageMap.get("important"));
+                    notificationInformation.dateMillis = messageMap.get("dateMillis") != null ? Long.parseLong(Objects.requireNonNull(messageMap.get("dateMillis"))) : notificationInformation.dateMillis;
 
                     Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
 
