@@ -32,7 +32,7 @@ public class NotificationActivity extends AppCompatActivity {
 
         ArrayList<NotificationInformation> notifList = Funcions.getNotificationList(NotificationActivity.this);
 
-        if(notifList.isEmpty()){
+        if(notifList == null || notifList.isEmpty()){
             TL_notif_tabs.setVisibility(View.GONE);
             VP_notif_content.setVisibility(View.GONE);
             TV_notif_empty.setVisibility(View.VISIBLE);

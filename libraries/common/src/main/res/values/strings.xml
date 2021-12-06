@@ -451,6 +451,7 @@
     <string name="title_message">Tienes un nuevo mensaje!</string>
 
     <string name="setting_notifications">Notificaciones</string>
+    <string name="setting_notification_history">Historial de notificaciones</string>
 
     <string name="channel_title_notif_block">Notificaciones de bloqueos</string>
     <string name="channel_desc_notif_block">Las notificaciones de cuando el dispositivo es bloqueado o alguna aplicación es bloqueada</string>
