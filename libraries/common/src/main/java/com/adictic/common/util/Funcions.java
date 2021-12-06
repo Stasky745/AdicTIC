@@ -78,7 +78,7 @@ public class Funcions {
 
     public static String millis2dateTime(long millis){
             DateTime date = new DateTime(millis);
-            return date.toString("dd/MM/yyyy - hh:mm", Locale.getDefault());
+            return date.toString("dd/MM/yyyy - HH:mm", Locale.getDefault());
     }
 
     public static String formatHora(int hora, int min){

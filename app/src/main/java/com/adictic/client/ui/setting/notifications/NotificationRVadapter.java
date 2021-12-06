@@ -2,6 +2,8 @@ package com.adictic.client.ui.setting.notifications;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.text.LineBreaker;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVadapter.notifViewHolder> {
-    private Context mContext;
-    private List<NotificationInformation> notifList;
-    private LayoutInflater mInflater;
+    private final Context mContext;
+    private final List<NotificationInformation> notifList;
+    private final LayoutInflater mInflater;
 
     NotificationRVadapter(Context context,List<NotificationInformation> list) {
         mContext = context;
@@ -49,6 +51,9 @@ public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVad
             holder.CL_notif_bground.setBackgroundResource(R.drawable.rounded_rectangle_received);
 
         holder.TV_body.setText(notif.message);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            holder.TV_body.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+
         holder.TV_title.setText(notif.title);
         holder.TV_childName.setText(notif.childName);
         holder.TV_date.setText(Funcions.millis2dateTime(notif.dateMillis));

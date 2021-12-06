@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.client.R;
@@ -53,6 +54,7 @@ public class NotificationFragment extends Fragment {
         RecyclerView RV_notif_list = root.findViewById(R.id.RV_notif_list);
         NotificationRVadapter adapter = new NotificationRVadapter(requireContext(), notifList);
 
+        RV_notif_list.setLayoutManager(new LinearLayoutManager(requireContext()));
         RV_notif_list.setAdapter(adapter);
 
         //https://www.geeksforgeeks.org/swipe-to-delete-and-undo-in-android-recyclerview/
