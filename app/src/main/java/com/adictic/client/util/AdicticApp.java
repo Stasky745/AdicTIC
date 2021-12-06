@@ -30,7 +30,8 @@ public class AdicticApp extends App {
             "Historial de notificacions a l'apartat d'opcions",
             "El tutor rep notificació que s'ha desactivat el permís d'administrador quan això passa",
             "El tutor rep notificació quan s'ha desconnectat el servei d'accessibilitat",
-            "Ara es pot desbloquejar el dispositiu des del dispositiu fill amb la contrasenya"
+            "Ara es pot desbloquejar el dispositiu des del dispositiu fill amb la contrasenya",
+            "Entrar al dispositiu tutor amb contrasenya o emprempta (des d'opcions)"
     };
 
     public static String[] fixes = {
