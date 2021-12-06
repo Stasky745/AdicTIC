@@ -36,6 +36,7 @@ public class MainSettings extends PreferenceFragmentCompat {
             // Settings de pare
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
             FuncionsSettings.settings_tancar_sessio(this);
+            FuncionsSettings.settings_notification_history(this);
             FuncionsSettings.settings_security(this);
             FuncionsSettings.settings_android(this);
             FuncionsSettings.settings_report_bug(this);

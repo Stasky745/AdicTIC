@@ -497,4 +497,5 @@
 
     <string name="notif_accessibility_error_title">Error del servei d\'accessibilitat</string>
     <string name="notif_accessibility_error_body">El servei sembla apagat. Caldria tornar-lo activar.</string>
+    <string name="setting_notification_history">Historial de notificacions</string>
 </resources>

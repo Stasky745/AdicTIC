@@ -19,6 +19,7 @@ import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.inici.Login;
 import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.ui.inici.SplashScreen;
+import com.adictic.client.ui.setting.notifications.NotificationActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.BiometricAuthUtil;
 import com.adictic.client.util.Funcions;
@@ -219,6 +220,16 @@ public class FuncionsSettings {
         assert change_password != null;
         change_password.setOnPreferenceClickListener(preference -> {
             context.requireActivity().startActivity(new Intent(context.getActivity(), ChangePasswordActivity.class));
+            return true;
+        });
+    }
+
+    public static void settings_notification_history(PreferenceFragmentCompat context) {
+        Preference setting_notification_history = context.findPreference("setting_notification_history");
+        assert setting_notification_history != null;
+
+        setting_notification_history.setOnPreferenceClickListener(preference -> {
+            context.requireActivity().startActivity(new Intent(context.getActivity(), NotificationActivity.class));
             return true;
         });
     }
