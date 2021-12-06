@@ -57,27 +57,36 @@ public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVad
         holder.TV_title.setText(notif.title);
         holder.TV_childName.setText(notif.childName);
         holder.TV_date.setText(Funcions.millis2dateTime(notif.dateMillis));
+
+        holder.mRootView.setOnClickListener(v -> {
+            notif.read = !notif.read;
+            this.editItem(position);
+        });
     }
 
     @Override
     public int getItemCount() { return notifList.size(); }
 
-    public void insertItem(int position){
-        this.notifyItemInserted(position);
-
+    private void updateList() {
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
         assert sharedPreferences != null;
 
         Funcions.setNotificationList(mContext, notifList);
     }
 
+    public void editItem(int position){
+        this.notifyItemChanged(position);
+        updateList();
+    }
+
+    public void insertItem(int position){
+        this.notifyItemInserted(position);
+        updateList();
+    }
+
     public void deleteItem(int position){
         this.notifyItemRemoved(position);
-
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
-        assert sharedPreferences != null;
-
-        Funcions.setNotificationList(mContext, notifList);
+        updateList();
     }
 
     public static class notifViewHolder extends RecyclerView.ViewHolder {
