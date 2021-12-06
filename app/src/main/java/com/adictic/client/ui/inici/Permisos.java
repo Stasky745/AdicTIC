@@ -28,6 +28,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.R;
+import com.adictic.client.entity.NotificationInformation;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
@@ -289,6 +290,15 @@ public class Permisos extends AppCompatActivity {
         public void onDisabled(Context context, Intent intent) {
             Toast.makeText(context, "AdicTIC's Device Admin Disabled",
                     Toast.LENGTH_SHORT).show();
+
+            NotificationInformation notif = new NotificationInformation();
+            notif.important = true;
+            notif.dateMillis = System.currentTimeMillis();
+            notif.read = false;
+            notif.title = context.getString(R.string.notif_admin_permission_disabled_title);
+            notif.message = context.getString(R.string.notif_admin_permission_disabled_body);
+
+            Funcions.sendNotifToParent(context, notif);
         }
 
         @Override
