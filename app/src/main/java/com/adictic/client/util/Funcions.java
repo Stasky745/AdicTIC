@@ -862,13 +862,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return null;
     }
 
-    public static void showBlockDeviceScreen(Context mCtx){
-        Log.d(TAG,"Creant Intent cap a BlockAppActivity");
-        Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
-        lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
-        mCtx.startActivity(lockIntent);
-    }
-
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
