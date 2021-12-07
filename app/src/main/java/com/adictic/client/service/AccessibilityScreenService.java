@@ -2,6 +2,8 @@ package com.adictic.client.service;
 
 import static android.content.Intent.ACTION_SCREEN_OFF;
 import static android.content.Intent.ACTION_USER_PRESENT;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
@@ -25,6 +27,7 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
@@ -32,6 +35,7 @@ import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.workers.BlockDeviceWorker;
 import com.adictic.client.workers.BlockSingleAppWorker;
+import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -40,9 +44,11 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -216,7 +222,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
         if(isDeviceBlocked()) {
             if(BlockDeviceActivity.instance == null || !BlockDeviceActivity.instance.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED))
-                Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
+                showBlockDeviceScreen(AccessibilityScreenService.this);
         }
         else {
             LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_DEVICE_BLOCK_SCREEN));
@@ -226,6 +232,26 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     public boolean isDeviceBlocked(){
         return !freeUse && (horarisActius || activeEvents > 0 || blockDevice || excessUsageDevice);
+    }
+
+    public void showBlockDeviceScreen(Context mCtx){
+        Log.d(TAG,"Creant Intent cap a BlockAppActivity");
+        Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
+        lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
+
+        String message = "";
+
+        if(excessUsageDevice)
+            message = mCtx.getString(R.string.daily_limit_pass);
+        else if(horarisActius)
+            message = mCtx.getString(R.string.sleep_time);
+        else if (activeEvents > 0)
+            message = "activeEvent";
+        else
+            message = mCtx.getString(R.string.locked_device);
+
+        lockIntent.putExtra("message", message);
+        mCtx.startActivity(lockIntent);
     }
 
     public void setLimitDevice(int limit){
@@ -347,7 +373,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             // --- BLOCK DEVICE ---
             String className = event.getClassName().toString();
             if (shouldDeviceBeBlocked && !myKM.isDeviceLocked() && !allowedApps.contains(className) && !allowedApps.contains(currentPackage)) {
-                Funcions.showBlockDeviceScreen(AccessibilityScreenService.this);
+                showBlockDeviceScreen(AccessibilityScreenService.this);
                 return;
             }
 
