@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -38,7 +37,6 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;
@@ -54,8 +52,6 @@ import retrofit2.Response;
 public class BlockDeviceActivity extends AppCompatActivity {
 
     public static BlockDeviceActivity instance;
-    private int retryCountAccessDisp;
-    private final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
     private long idChild;
     private SharedPreferences sharedPreferences;
@@ -315,7 +311,6 @@ public class BlockDeviceActivity extends AppCompatActivity {
     }
 
     private void postIntentAccesDisp() {
-        retryCountAccessDisp = 0;
         long now = DateTime.now().getMillis();
 
         Call<String> call = mTodoService.postIntentAccesDisp(idChild, now);
