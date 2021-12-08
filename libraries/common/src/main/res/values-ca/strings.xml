@@ -501,5 +501,5 @@
     <string name="notif_admin_permission_disabled_title">El permís d\'administrador s\'ha desactivat.</string>
     <string name="notif_admin_permission_disabled_body">Sense el permís és possible desinstal·lar l\'aplicació del dispositiu del menor i afectar negativament a moltes altres funcionalitats. Si us plau, reactiveu el permís quan abans millor.</string>
     <string name="daily_limit_pass">S\'ha superat el límit diari d\'ús.</string>
-    <string name="sleep_time">Hora de dormir!\\nBona nit!</string>
+    <string name="sleep_time">Hora de dormir!\nBona nit!</string>
 </resources>
