@@ -529,5 +529,5 @@
     <string name="notif_admin_permission_disabled_body">Sin el permiso es posible desinstalar la aplicación del dispositivo del menor y afectar negativamente a muchas otras funcionalidades. Por favor, reactivar el permiso lo antes posible.</string>
 
     <string name="daily_limit_pass">Se ha superado el límite diario de uso.</string>
-    <string name="sleep_time">Hora de ir a dormir!\\nBuenas noches!</string>
+    <string name="sleep_time">Hora de ir a dormir!\nBuenas noches!</string>
 </resources>
