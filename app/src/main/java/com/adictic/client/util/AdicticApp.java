@@ -31,7 +31,8 @@ public class AdicticApp extends App {
             "El tutor rep notificació que s'ha desactivat el permís d'administrador quan això passa",
             "El tutor rep notificació quan s'ha desconnectat el servei d'accessibilitat",
             "Ara es pot desbloquejar el dispositiu des del dispositiu fill amb la contrasenya",
-            "Entrar al dispositiu tutor amb contrasenya o emprempta (des d'opcions)"
+            "Entrar al dispositiu tutor amb contrasenya o emprempta (des d'opcions)",
+            "Text de la pantalla de bloqueig canvia depenent de la raó de bloqueig"
     };
 
     public static String[] fixes = {
