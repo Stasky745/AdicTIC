@@ -23,6 +23,7 @@ import com.adictic.client.ui.setting.notifications.NotificationActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.BiometricAuthUtil;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.ui.NotificationSettings;
 import com.adictic.common.ui.ReportActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -63,24 +64,13 @@ public class FuncionsSettings {
 
     public static void settings_change_notifications(PreferenceFragmentCompat context) {
         Preference change_notif = context.findPreference("setting_notifications");
-        ApplicationInfo appInfo = context.requireContext().getApplicationContext().getApplicationInfo();
-
         assert change_notif != null;
+
         change_notif.setOnPreferenceClickListener(preference -> {
-            Intent intent = new Intent();
-            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-
-            //for Android 5-7
-            intent.putExtra("app_package", appInfo.packageName);
-            intent.putExtra("app_uid", appInfo.uid);
-
-            // for Android 8 and above
-            intent.putExtra("android.provider.extra.APP_PACKAGE", appInfo.packageName);
-
+            Intent intent = new Intent(context.requireContext(), NotificationSettings.class);
             context.startActivity(intent);
             return true;
         });
-
     }
 
     public static void settings_android(PreferenceFragmentCompat context) {

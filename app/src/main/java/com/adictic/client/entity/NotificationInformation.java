@@ -10,6 +10,7 @@ public class NotificationInformation implements Parcelable {
     public Boolean read;
     public Boolean important;
     public String childName;
+    public String notifCode;
 
     public NotificationInformation(){
         title = "";
@@ -18,6 +19,7 @@ public class NotificationInformation implements Parcelable {
         read = false;
         important = false;
         childName = "";
+        notifCode = "";
     }
 
     protected NotificationInformation(Parcel in) {
@@ -33,6 +35,7 @@ public class NotificationInformation implements Parcelable {
         byte tmpImportant = in.readByte();
         important = tmpImportant == 0 ? null : tmpImportant == 1;
         childName = in.readString();
+        notifCode = in.readString();
     }
 
     public static final Creator<NotificationInformation> CREATOR = new Creator<NotificationInformation>() {
@@ -65,5 +68,6 @@ public class NotificationInformation implements Parcelable {
         dest.writeByte((byte) (read == null ? 0 : read ? 1 : 2));
         dest.writeByte((byte) (important == null ? 0 : important ? 1 : 2));
         dest.writeString(childName);
+        dest.writeString(notifCode);
     }
 }
