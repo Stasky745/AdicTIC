@@ -34,6 +34,7 @@ public class NotifWorker extends Worker {
         notif.message = data.getString("body");
         notif.dateMillis = data.getLong("dateMillis", System.currentTimeMillis());
         notif.important = data.getBoolean("important", true);
+        notif.notifCode = data.getString("notifCode");
         notif.read = false;
 
         Long idChild = data.getLong("idChild", -1);

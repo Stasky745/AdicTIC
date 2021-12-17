@@ -958,6 +958,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
             notif.important = true;
             notif.dateMillis = System.currentTimeMillis();
             notif.read = false;
+            notif.notifCode = Constants.NOTIF_SETTINGS_ACCESSIBILITY_ERROR;
 
             sendNotifToParent(mCtx, notif);
         }
@@ -994,6 +995,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 .putBoolean("important", notif.important)
                 .putLong("dateMillis", notif.dateMillis)
                 .putLong("idChild", idChild)
+                .putString("notifCode", notif.notifCode)
                 .build();
 
         Constraints constraints = new Constraints.Builder()

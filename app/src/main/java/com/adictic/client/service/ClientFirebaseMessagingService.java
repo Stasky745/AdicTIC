@@ -129,6 +129,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         Intent activitatIntent = null;
         MyNotificationManager.Channels channel = MyNotificationManager.Channels.GENERAL;
         int notifID = -1;
+        boolean showNotif = true;
 
         // Check if message contains a data payload.
         if (messageMap.size() > 0) {
@@ -150,6 +151,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             notificationInformation.dateMillis = System.currentTimeMillis();
             notificationInformation.read = false;
             notificationInformation.important = false;
+            notificationInformation.notifCode = messageMap.get("notifCode");
 
             switch(action){
                 // ************* Accions del dispositiu fill *************
@@ -294,33 +296,41 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     Log.d(TAG, "Current AppUpdate: " + aux + " |Time: " + messageMap.get("time"));
                     break;
                 case "installedApp":
-                    String appNameInsApp = messageMap.get("installedApp");
-                    String childNameInsApp = messageMap.get("childName");
-                    title = getString(R.string.title_installed_app, childNameInsApp);
-                    channel = MyNotificationManager.Channels.INSTALL;
-                    body = appNameInsApp;
-                    activitatClass = BlockAppsActivity.class;
+                    if(sharedPreferences.getBoolean(Constants.NOTIF_SETTINGS_INSTALL_APPS, true)) {
+                        String appNameInsApp = messageMap.get("installedApp");
+                        String childNameInsApp = messageMap.get("childName");
+                        title = getString(R.string.title_installed_app, childNameInsApp);
+                        channel = MyNotificationManager.Channels.INSTALL;
+                        body = appNameInsApp;
+                        activitatClass = BlockAppsActivity.class;
 
-                    notificationInformation.title = title;
-                    notificationInformation.message = body;
-                    notificationInformation.childName = childNameInsApp;
+                        notificationInformation.title = title;
+                        notificationInformation.message = body;
+                        notificationInformation.childName = childNameInsApp;
 
-                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                    }
+                    else
+                        showNotif = false;
 
                     break;
                 case "uninstalledApp":
-                    String appNameUninsApp = messageMap.get("uninstalledApp");
-                    String childNameUninsApp = messageMap.get("childName");
-                    title = getString(R.string.title_uninstalled_app, childNameUninsApp);
-                    channel = MyNotificationManager.Channels.INSTALL;
-                    body = appNameUninsApp;
-                    activitatClass = BlockAppsActivity.class;
+                    if(sharedPreferences.getBoolean(Constants.NOTIF_SETTINGS_UNINSTALL_APPS, true)) {
+                        String appNameUninsApp = messageMap.get("uninstalledApp");
+                        String childNameUninsApp = messageMap.get("childName");
+                        title = getString(R.string.title_uninstalled_app, childNameUninsApp);
+                        channel = MyNotificationManager.Channels.INSTALL;
+                        body = appNameUninsApp;
+                        activitatClass = BlockAppsActivity.class;
 
-                    notificationInformation.title = title;
-                    notificationInformation.message = body;
-                    notificationInformation.childName = childNameUninsApp;
+                        notificationInformation.title = title;
+                        notificationInformation.message = body;
+                        notificationInformation.childName = childNameUninsApp;
 
-                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                    }
+                    else
+                        showNotif = false;
 
                     break;
                 case "geolocFills":
@@ -330,19 +340,28 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     Log.d(TAG,"Actualitzar fills");
                     break;
                 case "notification":
-                    String notifChildName = messageMap.get("childName");
-                    title = messageMap.get("title");
-                    body = messageMap.get("message");
+                    String notifCode = messageMap.get("notifCode");
 
-                    channel = MyNotificationManager.Channels.IMPORTANT;
+                    if(notifCode == null)
+                        break;
 
-                    notificationInformation.title = title;
-                    notificationInformation.message = body;
-                    notificationInformation.childName = notifChildName;
-                    notificationInformation.important = Boolean.parseBoolean(messageMap.get("important"));
-                    notificationInformation.dateMillis = messageMap.get("dateMillis") != null ? Long.parseLong(Objects.requireNonNull(messageMap.get("dateMillis"))) : notificationInformation.dateMillis;
+                    if(sharedPreferences.getBoolean(notifCode, true)) {
+                        String notifChildName = messageMap.get("childName");
+                        title = messageMap.get("title");
+                        body = messageMap.get("message");
 
-                    Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        channel = MyNotificationManager.Channels.IMPORTANT;
+
+                        notificationInformation.title = title;
+                        notificationInformation.message = body;
+                        notificationInformation.childName = notifChildName;
+                        notificationInformation.important = Boolean.parseBoolean(messageMap.get("important"));
+                        notificationInformation.dateMillis = messageMap.get("dateMillis") != null ? Long.parseLong(Objects.requireNonNull(messageMap.get("dateMillis"))) : notificationInformation.dateMillis;
+
+                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                    }
+                    else
+                        showNotif = false;
 
                     break;
                 case "chat":
@@ -420,11 +439,13 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        if (!title.equals("")) {
+        if (showNotif && title != null && !title.equals("")) {
             Log.d(TAG, "Message Notification Body: " + body);
 
-            if(activitatClass == null) clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel, notifID);
-            else clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel, notifID);
+            if(activitatClass == null)
+                clientNotificationManager.displayGeneralNotification(title, body, activitatIntent, channel, notifID);
+            else
+                clientNotificationManager.displayGeneralNotification(title, body, activitatClass, channel, notifID);
         }
     }
 

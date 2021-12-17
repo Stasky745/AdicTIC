@@ -530,4 +530,14 @@
 
     <string name="daily_limit_pass">Se ha superado el límite diario de uso.</string>
     <string name="sleep_time">Hora de ir a dormir!\nBuenas noches!</string>
+
+    <string name="android_notif_settings">Ir a las opciones de notificaciones de Android</string>
+    <string name="notif_settings_title">Recibir las notificaciones de:</string>
+
+    <string name="notif_install_apps">El menor instala una aplicación.</string>
+    <string name="notif_uninstall_apps">El menor desinstala una aplicación.</string>
+    <string name="notif_accessibility_error">El servicio de accesibilidad se ha desconectado.</string>
+    <string name="notif_accessibility_error_info">Android puede pausar o desactivar el servicio de Accesibilidad a su conveniencia. Esta notificación avisa cuando el servicio no funciona. Si esto ocurre, hace falta ir al dispositivo del menor y reactivarlo (a veces detenerlo y volver a encenderlo).\nSe puede hacer desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de Configuración → Permisos.</string>
+    <string name="notif_admin_error">El menor ha desactivado el servicio de administrador.</string>
+    <string name="notif_admin_error_info">La única forma de desinstalar la aplicación de AdicTIC es desactivando antes el permiso de Administrador. Si se recibe esta notificación es que el menor lo ha desactivado y puede ahora desinstalar.\nSe puede volver a activar desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de "Configuración" -> "Permisos".</string>
 </resources>

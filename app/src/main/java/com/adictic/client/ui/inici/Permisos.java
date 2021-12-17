@@ -297,6 +297,7 @@ public class Permisos extends AppCompatActivity {
             notif.read = false;
             notif.title = context.getString(R.string.notif_admin_permission_disabled_title);
             notif.message = context.getString(R.string.notif_admin_permission_disabled_body);
+            notif.notifCode = Constants.NOTIF_SETTINGS_DISABLE_ADMIN;
 
             Funcions.sendNotifToParent(context, notif);
         }

@@ -16,6 +16,11 @@ public class Constants {
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
+    public static final String NOTIF_SETTINGS_INSTALL_APPS = "notif_installApps";
+    public static final String NOTIF_SETTINGS_UNINSTALL_APPS = "notif_uninstallApps";
+    public static final String NOTIF_SETTINGS_ACCESSIBILITY_ERROR = "notif_accessibilityError";
+    public static final String NOTIF_SETTINGS_DISABLE_ADMIN = "notif_disableAdmin";
+
     public static final String FILE_LIMITED_APPS = "limited_apps";
     public static final String FILE_BLOCKED_APPS = "blocked_apps";
     public static final String FILE_EVENT_BLOCK = "event_block";
