@@ -103,6 +103,7 @@
     <string name="app_usage_month">Uso mensual de aplicaciones</string>
     <string name="block_apps">Bloqueo de aplicaciones</string>
     <string name="daily_limit_device">Límite diario del dispositivo</string>
+    <string name="new_daily_limit_device">Se ha establecido un nuevo límite diario.</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contenido informativo</string>
@@ -531,13 +532,25 @@
     <string name="daily_limit_pass">Se ha superado el límite diario de uso.</string>
     <string name="sleep_time">Hora de ir a dormir!\nBuenas noches!</string>
 
+    <!-- NOTIFICACIONS -->
     <string name="android_notif_settings">Ir a las opciones de notificaciones de Android</string>
     <string name="notif_settings_title">Recibir las notificaciones de:</string>
 
+    <string name="notif_chat">Mensajes de chat con un profesional.</string>
+
+    <!-- notif tutor -->
     <string name="notif_install_apps">El menor instala una aplicación.</string>
     <string name="notif_uninstall_apps">El menor desinstala una aplicación.</string>
     <string name="notif_accessibility_error">El servicio de accesibilidad se ha desconectado.</string>
     <string name="notif_accessibility_error_info">Android puede pausar o desactivar el servicio de Accesibilidad a su conveniencia. Esta notificación avisa cuando el servicio no funciona. Si esto ocurre, hace falta ir al dispositivo del menor y reactivarlo (a veces detenerlo y volver a encenderlo).\nSe puede hacer desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de Configuración → Permisos.</string>
     <string name="notif_admin_error">El menor ha desactivado el servicio de administrador.</string>
     <string name="notif_admin_error_info">La única forma de desinstalar la aplicación de AdicTIC es desactivando antes el permiso de Administrador. Si se recibe esta notificación es que el menor lo ha desactivado y puede ahora desinstalar.\nSe puede volver a activar desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de "Configuración" -> "Permisos".</string>
+
+    <!-- notif fill -->
+    <string name="notif_daily_limit">Se ha establecido un nuevo límite diario de uso del dispositivo.</string>
+    <string name="notif_block_device">Se ha bloqueado/desbloqueado el dispositivo.</string>
+    <string name="notif_freeuse">Se ha activado/desactivado el tiempo libre.</string>
+    <string name="notif_block_app">Se ha actualizado la lista de aplicaciones bloqueadas.</string>
+    <string name="notif_horaris">Se han actualizado los horarios nocturnos del dispositivo.</string>
+    <string name="notif_events">Se han actualizado los momentos libres de tecnologías.</string>
 </resources>

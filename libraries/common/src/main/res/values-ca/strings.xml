@@ -510,4 +510,12 @@
     <string name="notif_admin_error">El menor ha desactivat el servei d\'administrador.</string>
     <string name="notif_accessibility_error_info">Android pot pausar o desactivar el servei d\'Accessibilitat quan li convingui. Aquesta notificació avisa quan aquest servei deixa de funcionar. Si passa això, faltaria anar al dispostiu del menor i reactivar-lo (a vegades cal parar-lo i tornar a engegar).\nEs pot fer des de les opcions del dispositiu mateix o des d\'AdicTIC a l\'apartat \"Configuració\" → \"Permisos\".</string>
     <string name="notif_admin_error_info">L\'única forma de desinstal·lar l\'aplicació d\'AdicTIC és desactivant abans el permís d\'Administrador. Si rep aquesta notificació vol dir que el menor l\'ha desactivat i pot desinstal·lar AdicTIC.\nEs pot reactivar des de les opcions del dispositiu mateix o des d\'AdicTIC a l\'apartat \"Configuració\" → \"Permisos\".</string>
+    <string name="notif_chat">Missatges de xat amb un professional.</string>
+    <string name="notif_daily_limit">S\'ha establert un nou límit diari d\'ús del dispositiu.</string>
+    <string name="notif_block_device">S\'ha bloquejat/desbloquejat el dispositiu.</string>
+    <string name="notif_block_app">S\'ha actualitzat el llistat d\'aplicacions bloquejades.</string>
+    <string name="notif_horaris">S\'han actualitzat els horaris nocturns del dispositiu.</string>
+    <string name="notif_events">S\'han actualitzat els moments lliures de tecnologies.</string>
+    <string name="notif_freeuse">S\'ha activat/desactivat el temps lliure.</string>
+    <string name="new_daily_limit_device">S\'ha establert un nou límit diari.</string>
 </resources>
