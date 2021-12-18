@@ -12,15 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.preference.Preference;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,14 +31,36 @@ import java.util.HashMap;
 import java.util.List;
 
 public class NotificationSettings extends AppCompatActivity {
-    private HashMap<String, String> stringMapParent;
-    private HashMap<String, String> initializeStringMapParent() {
+    private HashMap<String, String> initializeStringMapTutor() {
         HashMap<String, String> map = new HashMap<>();
 
         map.put(getString(R.string.notif_install_apps), Constants.NOTIF_SETTINGS_INSTALL_APPS);
         map.put(getString(R.string.notif_uninstall_apps), Constants.NOTIF_SETTINGS_UNINSTALL_APPS);
         map.put(getString(R.string.notif_accessibility_error), Constants.NOTIF_SETTINGS_ACCESSIBILITY_ERROR);
         map.put(getString(R.string.notif_admin_error), Constants.NOTIF_SETTINGS_DISABLE_ADMIN);
+        map.put(getString(R.string.notif_chat), Constants.NOTIF_SETTINGS_CHAT);
+
+        return map;
+    }
+
+    private HashMap<String, String> initializeStringMapChild() {
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put(getString(R.string.notif_daily_limit), Constants.NOTIF_SETTINGS_DAILY_LIMIT);
+        map.put(getString(R.string.notif_block_device), Constants.NOTIF_SETTINGS_BLOCK_DEVICE);
+        map.put(getString(R.string.notif_freeuse), Constants.NOTIF_SETTINGS_FREE_USE);
+        map.put(getString(R.string.notif_block_app), Constants.NOTIF_SETTINGS_BLOCK_APP);
+        map.put(getString(R.string.notif_horaris), Constants.NOTIF_SETTINGS_HORARIS);
+        map.put(getString(R.string.notif_events), Constants.NOTIF_SETTINGS_EVENTS);
+        map.put(getString(R.string.notif_chat), Constants.NOTIF_SETTINGS_CHAT);
+
+        return map;
+    }
+
+    private HashMap<String, String> initializeStringMapAdmin() {
+        HashMap<String, String> map = new HashMap<>();
+
+        map.put(getString(R.string.notif_chat), Constants.NOTIF_SETTINGS_CHAT);
 
         return map;
     }
@@ -62,19 +81,17 @@ public class NotificationSettings extends AppCompatActivity {
 
         setAndroidButton();
 
-        stringMapParent = initializeStringMapParent();
-
         // Notificacions d'admin
         if(admin)
-            notif_adapter = null;
+            notif_adapter = new Notif_Adapter(NotificationSettings.this, initializeStringMapAdmin());
 
         // Notificacions tutor
         else if(tutor)
-            notif_adapter = new Notif_Adapter(NotificationSettings.this, stringMapParent);
+            notif_adapter = new Notif_Adapter(NotificationSettings.this, initializeStringMapTutor());
 
         // Notificacions fill
         else
-            notif_adapter = null;
+            notif_adapter = new Notif_Adapter(NotificationSettings.this, initializeStringMapChild());
 
         RV_notifList.setAdapter(notif_adapter);
     }
