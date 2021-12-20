@@ -214,7 +214,7 @@
         app:layout_constraintBottom_toTopOf="@+id/RG_Tipus"
         app:layout_constraintEnd_toStartOf="@+id/GD_login_right"
         app:layout_constraintStart_toStartOf="@+id/CL_login_password"
-        app:layout_constraintTop_toBottomOf="@+id/TV_loginTV" />
+        app:layout_constraintTop_toBottomOf="@+id/TV_login_forgot_pass" />
 
 
 
@@ -233,7 +233,7 @@
         app:layout_constraintGuide_percent="0.86" />
 
     <TextView
-        android:id="@+id/TV_loginTV"
+        android:id="@+id/TV_login_forgot_pass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
