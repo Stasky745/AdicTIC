@@ -105,7 +105,9 @@ public class ProfileFragment extends Fragment{
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 try {
-                    assert result.getData() != null;
+                    if (result.getData() == null)
+                        return;
+
                     final Uri imageUri = result.getData().getData();
                     final InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
