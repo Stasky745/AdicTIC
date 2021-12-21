@@ -553,4 +553,8 @@
     <string name="notif_block_app">Se ha actualizado la lista de aplicaciones bloqueadas.</string>
     <string name="notif_horaris">Se han actualizado los horarios nocturnos del dispositivo.</string>
     <string name="notif_events">Se han actualizado los momentos libres de tecnologías.</string>
+
+    <string name="error_emailNotFound">Este correo no existe en el servidor</string>
+    <string name="recover_password">Recuperar contraseña</string>
+    <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
 </resources>

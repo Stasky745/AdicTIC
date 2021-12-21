@@ -518,4 +518,8 @@
     <string name="notif_events">S\'han actualitzat els moments lliures de tecnologies.</string>
     <string name="notif_freeuse">S\'ha activat/desactivat el temps lliure.</string>
     <string name="new_daily_limit_device">S\'ha establert un nou límit diari.</string>
+
+    <string name="error_emailNotFound">El correu no existeix en el servidor</string>
+    <string name="recover_password">Recuperar contrasenya</string>
+    <string name="enter_email_account">Entra el correu electrònic que es va fer servir al registrar-se:</string>
 </resources>
