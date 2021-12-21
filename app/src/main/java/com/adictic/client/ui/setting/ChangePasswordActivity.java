@@ -1,5 +1,6 @@
 package com.adictic.client.ui.setting;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -11,8 +12,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.R;
+import com.adictic.client.ui.inici.NomFill;
+import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.ChangePassword;
@@ -37,22 +41,24 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.changePassword));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         api = ((AdicticApp) this.getApplication()).getAPI();
 
+        Bundle extras = getIntent().getExtras();
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
 
         Button b_accept = findViewById(R.id.BT_popCP_accept);
         Button b_cancel = findViewById(R.id.BT_popCP_cancel);
 
+        EditText pOld = findViewById(R.id.ET_popCP_actualPass);
+        EditText p1 = findViewById(R.id.ET_popCP_newPass);
+        EditText p2 = findViewById(R.id.ET_popCP_newPass2);
+
+        ConstraintLayout cOld = findViewById(R.id.CL_popCP_actualPass);
+
+        TextView err_pOld = findViewById(R.id.TV_popCP_error_actualPass);
+        TextView err_p2 = findViewById(R.id.TV_popCP_error_newPass2);
+
         b_accept.setOnClickListener(view -> {
-            EditText pOld = ChangePasswordActivity.this.findViewById(R.id.ET_popCP_actualPass);
-            EditText p1 = ChangePasswordActivity.this.findViewById(R.id.ET_popCP_newPass);
-            EditText p2 = ChangePasswordActivity.this.findViewById(R.id.ET_popCP_newPass2);
-
-            TextView err_pOld = ChangePasswordActivity.this.findViewById(R.id.TV_popCP_error_actualPass);
-            TextView err_p2 = ChangePasswordActivity.this.findViewById(R.id.TV_popCP_error_newPass2);
-
             err_pOld.setVisibility(View.GONE);
 
             if(!p1.getText().toString().equals(p2.getText().toString())){
@@ -72,8 +78,17 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChangePasswordActivity.this);
                             assert sharedPreferences != null;
                             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,changePassword.newPassword).apply();
-                            Toast toast = Toast.makeText(ChangePasswordActivity.this, getString(R.string.successful_entry), Toast.LENGTH_LONG);
-                            toast.show();
+                            Toast.makeText(ChangePasswordActivity.this, getString(R.string.successful_entry), Toast.LENGTH_LONG).show();
+                            if(extras!=null && extras.get("temporalAccess")!=null) {
+                                Intent i;
+                                if (extras.getInt("tutor") == 0) {
+                                    i = new Intent(ChangePasswordActivity.this, NomFill.class);
+                                    i.putExtras(extras);
+                                } else {
+                                    i = new Intent(ChangePasswordActivity.this, NavActivity.class);
+                                }
+                                startActivity(i);
+                            }
                             finish();
                         } else {
                             try {
@@ -102,7 +117,14 @@ public class ChangePasswordActivity extends AppCompatActivity {
             }
         });
 
-        b_cancel.setOnClickListener(view -> finish());
+        if(extras!=null && extras.get("temporalAccess")!=null) {
+            pOld.setText(extras.getString("temporalAccess"));
+            cOld.setVisibility(View.GONE);
+            b_cancel.setVisibility(View.GONE);
+        } else {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            b_cancel.setOnClickListener(view -> finish());
+        }
     }
 
     @Override
