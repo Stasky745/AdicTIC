@@ -522,4 +522,5 @@
     <string name="error_emailNotFound">El correu no existeix en el servidor</string>
     <string name="recover_password">Recuperar contrasenya</string>
     <string name="enter_email_account">Entra el correu electrònic que es va fer servir al registrar-se:</string>
+    <string name="recover_password_success">Se li ha enviat una nova contrasenya temporal al seu correu electrònic. Aquesta contrasenya funcionarà durant els pròxims 10 minuts. Quan la utilitzi se li demanarà que entri una nova contrasenya que substituïrà l\'anterior.</string>
 </resources>

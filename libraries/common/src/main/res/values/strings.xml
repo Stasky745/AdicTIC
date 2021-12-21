@@ -556,5 +556,6 @@
 
     <string name="error_emailNotFound">Este correo no existe en el servidor</string>
     <string name="recover_password">Recuperar contraseña</string>
+    <string name="recover_password_success">Se le ha mandado una nueva contraseña temporal en su email. Esta contraseña funcionará durante 10 minutos, y en cuanto la use se le pedirá que la cambie.</string>
     <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
 </resources>
