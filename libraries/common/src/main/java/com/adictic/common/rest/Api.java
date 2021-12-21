@@ -21,6 +21,7 @@ import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.entity.Oficina;
+import com.adictic.common.entity.RecoverPassword;
 import com.adictic.common.entity.Report;
 import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
@@ -227,4 +228,7 @@ public interface Api {
 
     @POST("/report")
     Call<String> sendReport(@Body Report report);
+
+    @POST("/recoverPassword")
+    Call<String> sendPetitionToRecoverPassword(@Body RecoverPassword recoverPassword);
 }

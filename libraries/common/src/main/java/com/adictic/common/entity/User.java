@@ -11,6 +11,7 @@ public class User implements Parcelable {
     public Integer tutor;
     public List<FillNom> llista;
     public String name; //S'ha de treure despres de canviar lo de ChatInfo
+    public boolean temporalPass;
 
     protected User(Parcel in) {
         id = in.readLong();
