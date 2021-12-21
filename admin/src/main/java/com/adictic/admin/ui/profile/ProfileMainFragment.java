@@ -73,8 +73,8 @@ public class ProfileMainFragment extends Fragment {
     }
 
     private void showProfileInfo(AdminProfile profile){
-        ViewPager2 viewPager = (ViewPager2) root.findViewById(R.id.ViewPager);
-        TabLayout tabLayout = (TabLayout) root.findViewById(R.id.TabLayout);
+        ViewPager2 viewPager = (ViewPager2) root.findViewById(R.id.VP_home_parent_pager);
+        TabLayout tabLayout = (TabLayout) root.findViewById(R.id.TL_home_parent_tabs);
 
         TabProfileAdapter adapter = new TabProfileAdapter(getContext(),ProfileMainFragment.this, profile);
 

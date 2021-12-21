@@ -2,7 +2,6 @@ package com.adictic.admin.ui.Usuari;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,8 +30,8 @@ public class MainUserActivity extends MainActivityAbstractClass {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_parent_fragment);
 
-        ViewPager2 viewPager = findViewById(R.id.ViewPager);
-        TabLayout tabLayout = findViewById(R.id.TabLayout);
+        ViewPager2 viewPager = findViewById(R.id.VP_home_parent_pager);
+        TabLayout tabLayout = findViewById(R.id.TL_home_parent_tabs);
 
         AdminApi mTodoService = ((AdminApp) getApplicationContext()).getAPI();
 

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -38,12 +37,14 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.common.util.MyNotificationManager;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -51,8 +52,6 @@ import retrofit2.Response;
 public class BlockDeviceActivity extends AppCompatActivity {
 
     public static BlockDeviceActivity instance;
-    private int retryCountAccessDisp;
-    private final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
     private long idChild;
     private SharedPreferences sharedPreferences;
@@ -81,7 +80,9 @@ public class BlockDeviceActivity extends AppCompatActivity {
         if(idChild == -1)
             finish();
 
-        setText();
+        String message = getIntent().getStringExtra("message");
+
+        setText(message);
         setEmergencyCallButton();
         setAlertParentsButton();
         setUnlockButton();
@@ -156,7 +157,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
             alertDialog.dismiss();
 
             // Actualitzem les dades del servei d'accessibilitat
-            if(Funcions.accessibilityServiceOn()) {
+            if(Funcions.accessibilityServiceOn(getApplicationContext())) {
                 AccessibilityScreenService.instance.setBlockDevice(false);
                 AccessibilityScreenService.instance.setFreeUse(true);
                 AccessibilityScreenService.instance.updateDeviceBlock();
@@ -186,7 +187,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(Funcions.accessibilityServiceOn()) {
+        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
             if (!AccessibilityScreenService.instance.isDeviceBlocked())
                 finish();
         }
@@ -310,7 +311,6 @@ public class BlockDeviceActivity extends AppCompatActivity {
     }
 
     private void postIntentAccesDisp() {
-        retryCountAccessDisp = 0;
         long now = DateTime.now().getMillis();
 
         Call<String> call = mTodoService.postIntentAccesDisp(idChild, now);
@@ -327,28 +327,36 @@ public class BlockDeviceActivity extends AppCompatActivity {
         });
     }
 
-    private void setText() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(BlockDeviceActivity.this);
-        assert sharedPreferences != null;
+    private void setText(String message) {
+        // Si no hi ha missatge posem el text per defecte
+        if(message == null || message.equals(""))
+            message = getString(R.string.locked_device);
+        // Si hi ha un event actiu busquem el nom i hora
+        else if(message.equals("activeEvent")){
+            // Posem el text per defecte en cas que no vagi bé
+            message = getString(R.string.locked_device);
 
-        TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);
-        TV_block_device_title.setText(getString(R.string.locked_device));
+            // Agafem la llista d'events actius
+            List<EventBlock> list = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK, false);
+            if(list != null && !list.isEmpty()) {
+//                List<EventBlock> list2 = list.stream()
+//                        .filter(Funcions::eventBlockIsActive)
+//                        .collect(Collectors.toList());
 
-        if(sharedPreferences.getInt(Constants.SHARED_PREFS_ACTIVE_EVENTS, 0) > 0){
-            List<EventBlock> eventsList = Funcions.readFromFile(BlockDeviceActivity.this, Constants.FILE_EVENT_BLOCK, false);
-            assert eventsList != null;
+                // Agafem l'event actiu que acabi més tard
+                EventBlock event = list.stream()
+                        .filter(Funcions::eventBlockIsActive)
+                        .collect(Collectors.toList())
+                        .stream()
+                        .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
+                        .orElse(null);
 
-            EventBlock activeEvent = eventsList.stream()
-                    .filter(Funcions::eventBlockIsActive)
-                    .findFirst()
-                    .orElse(null);
-
-            if(activeEvent != null){
-                String title = activeEvent.name + "\n";
-                title += Funcions.millisOfDay2String(activeEvent.startEvent) + " - " + Funcions.millisOfDay2String(activeEvent.endEvent);
-                TV_block_device_title.setText(title);
+                if(event != null)
+                    message = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
             }
         }
 
+        TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);
+        TV_block_device_title.setText(message);
     }
 }

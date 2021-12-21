@@ -20,6 +20,11 @@
         app:title="@string/setting_notifications" />
 
     <Preference
+        app:key="setting_notification_history"
+        app:icon="@drawable/ic_baseline_history_24"
+        app:title="@string/setting_notification_history" />
+
+    <Preference
         app:key="setting_report_suggestion"
         app:icon="@drawable/ic_baseline_add_task_24"
         app:title="@string/report_suggestion" />

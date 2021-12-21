@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/VP_home_parent_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <TextView
+        android:id="@+id/TV_notif_empty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp"
+        android:text="@string/notif_empty"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="24sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TL_home_parent_tabs"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/TL_home_parent_tabs"
+        android:id="@+id/TL_notif_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tabGravity="fill"
-        app:tabMode="fixed"/>
+        app:tabMode="fixed" />
 
-    <TextView
-        android:id="@+id/TV_noFills"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:visibility="gone"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/VP_notif_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/TL_notif_tabs">
+
+    </androidx.viewpager2.widget.ViewPager2>
 </androidx.constraintlayout.widget.ConstraintLayout>

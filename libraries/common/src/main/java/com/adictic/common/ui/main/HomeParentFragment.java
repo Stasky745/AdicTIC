@@ -91,8 +91,8 @@ public class HomeParentFragment extends Fragment {
 
     private void setupTabLayout(ArrayList<FillNom> fills){
         if(adapter == null) {
-            ViewPager2 viewPager = root.findViewById(R.id.ViewPager);
-            TabLayout tabLayout = root.findViewById(R.id.TabLayout);
+            ViewPager2 viewPager = root.findViewById(R.id.VP_home_parent_pager);
+            TabLayout tabLayout = root.findViewById(R.id.TL_home_parent_tabs);
             adapter = new TabFillsAdapter(HomeParentFragment.this, getContext(), fills);
             viewPager.setAdapter(adapter);
             new TabLayoutMediator(tabLayout, viewPager,

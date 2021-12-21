@@ -16,6 +16,26 @@ public class Constants {
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
+    /** NOTIFICACIONS **/
+
+    public static final String NOTIF_SETTINGS_CHAT = "notif_chat";
+
+    // Notificacions dispositiu tutor
+    public static final String NOTIF_SETTINGS_INSTALL_APPS = "notif_installApps";
+    public static final String NOTIF_SETTINGS_UNINSTALL_APPS = "notif_uninstallApps";
+    public static final String NOTIF_SETTINGS_ACCESSIBILITY_ERROR = "notif_accessibilityError";
+    public static final String NOTIF_SETTINGS_DISABLE_ADMIN = "notif_disableAdmin";
+
+    // Notificacions dispostiu fill
+    public static final String NOTIF_SETTINGS_DAILY_LIMIT = "notif_dailyLimit";
+    public static final String NOTIF_SETTINGS_BLOCK_DEVICE = "notif_blockDevice";
+    public static final String NOTIF_SETTINGS_FREE_USE = "notif_freeUse";
+    public static final String NOTIF_SETTINGS_BLOCK_APP = "notif_blockApp";
+    public static final String NOTIF_SETTINGS_HORARIS = "notif_horaris";
+    public static final String NOTIF_SETTINGS_EVENTS = "notif_events";
+
+    /** FITXERS **/
+
     public static final String FILE_LIMITED_APPS = "limited_apps";
     public static final String FILE_BLOCKED_APPS = "blocked_apps";
     public static final String FILE_EVENT_BLOCK = "event_block";
@@ -41,6 +61,8 @@ public class Constants {
     public static final String SHARED_PREFS_LIVEAPP = "liveApp";
     public static final String SHARED_PREFS_LAST_TOTAL_USAGE = "lastTotalUsage";
     public static final String SHARED_PREFS_DAILY_USAGE_LIMIT = "dailyUsageLimit";
+
+    public static final String SHARED_PREFS_NOTIFS = "notificationList";
 
     public static final String SHARED_PREFS_PATCH_NOTES = "patch_notes";
 

@@ -27,7 +27,13 @@ public class AdicticApp extends App {
     private ClientNotificationManager notificationManager;
 
     public static String[] newFeatures = {
-            "Benvinguts a AdicTIC! El dispositiu adult no ensenyarà dades fins que el dispositiu fill tingui l'aplicació instal·lada, amb els permisos activats i hagi pogut agafar dades. Això pot trigar un minut un cop després d'instal·lar-ho (probablement molt menys). Per mirar si ja hi ha noves dades podeu prémer el botó 'inici' a la barra de baix. Un cop es vegi la gràfica d'ús del dia o dins l'apartat d'Informe Mensual hi hagi gràfiques amb dades ja estarà tot llest per utilitzar l'aplicació! Moltes gràcies per utilitzar AdicTIC!"
+            "Historial de notificacions a l'apartat d'opcions",
+            "El tutor rep notificació que s'ha desactivat el permís d'administrador quan això passa",
+            "El tutor rep notificació quan s'ha desconnectat el servei d'accessibilitat",
+            "Ara es pot desbloquejar el dispositiu des del dispositiu fill amb la contrasenya",
+            "Entrar al dispositiu tutor amb contrasenya o emprempta (des d'opcions)",
+            "Text de la pantalla de bloqueig canvia depenent de la raó de bloqueig",
+            "Nova pantalla de notificacions a l'apartat de configuració"
     };
 
     public static String[] fixes = {

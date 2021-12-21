@@ -103,6 +103,7 @@
     <string name="app_usage_month">Uso mensual de aplicaciones</string>
     <string name="block_apps">Bloqueo de aplicaciones</string>
     <string name="daily_limit_device">Límite diario del dispositivo</string>
+    <string name="new_daily_limit_device">Se ha establecido un nuevo límite diario.</string>
     <string name="home_second">Home Second</string>
 
     <string name="advice_infoContent">Contenido informativo</string>
@@ -451,6 +452,7 @@
     <string name="title_message">Tienes un nuevo mensaje!</string>
 
     <string name="setting_notifications">Notificaciones</string>
+    <string name="setting_notification_history">Historial de notificaciones</string>
 
     <string name="channel_title_notif_block">Notificaciones de bloqueos</string>
     <string name="channel_desc_notif_block">Las notificaciones de cuando el dispositivo es bloqueado o alguna aplicación es bloqueada</string>
@@ -517,7 +519,43 @@
     <string name="unlock_freeuse_text">"Esta función pondrá el dispositivo en el estado de \"Tiempo Libre de Uso\". Para volver a tener las funciones de bloqueo activas se deberá desactivar la función desde el dispositivo tutor.\n\nEscribe la contraseña de tu cuenta para desbloquear el dispositivo:"</string>
     <string name="unlock_app">"Esta función desbloqueará esta aplicación. Para volver a bloquearla, se deberá usar la funcionalidad disponible en la aplicación tutor.\n\nEscribe la contraseña de tu cuenta para desbloquear el dispositivo:"</string>
 
+    <string name="notif_empty">No se han recibido notificaciones.</string>
+
+    <string name="critical">Crítico</string>
+    <string name="undo">Deshacer</string>
+    <string name="notif_accessibility_error_title">Error del servicio de accesibilidad</string>
+    <string name="notif_accessibility_error_body">El servicio parece apagado. Haría falta volver activarlo.</string>
+
+    <string name="notif_admin_permission_disabled_title">El permiso de administrador se ha desactivado.</string>
+    <string name="notif_admin_permission_disabled_body">Sin el permiso es posible desinstalar la aplicación del dispositivo del menor y afectar negativamente a muchas otras funcionalidades. Por favor, reactivar el permiso lo antes posible.</string>
+
+    <string name="daily_limit_pass">Se ha superado el límite diario de uso.</string>
+    <string name="sleep_time">Hora de ir a dormir!\nBuenas noches!</string>
+
+    <!-- NOTIFICACIONS -->
+    <string name="android_notif_settings">Ir a las opciones de notificaciones de Android</string>
+    <string name="notif_settings_title">Recibir las notificaciones de:</string>
+
+    <string name="notif_chat">Mensajes de chat con un profesional.</string>
+
+    <!-- notif tutor -->
+    <string name="notif_install_apps">El menor instala una aplicación.</string>
+    <string name="notif_uninstall_apps">El menor desinstala una aplicación.</string>
+    <string name="notif_accessibility_error">El servicio de accesibilidad se ha desconectado.</string>
+    <string name="notif_accessibility_error_info">Android puede pausar o desactivar el servicio de Accesibilidad a su conveniencia. Esta notificación avisa cuando el servicio no funciona. Si esto ocurre, hace falta ir al dispositivo del menor y reactivarlo (a veces detenerlo y volver a encenderlo).\nSe puede hacer desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de Configuración → Permisos.</string>
+    <string name="notif_admin_error">El menor ha desactivado el servicio de administrador.</string>
+    <string name="notif_admin_error_info">La única forma de desinstalar la aplicación de AdicTIC es desactivando antes el permiso de Administrador. Si se recibe esta notificación es que el menor lo ha desactivado y puede ahora desinstalar.\nSe puede volver a activar desde las opciones del mismo dispositivo o desde la aplicación de AdicTIC en el apartado de "Configuración" -> "Permisos".</string>
+
+    <!-- notif fill -->
+    <string name="notif_daily_limit">Se ha establecido un nuevo límite diario de uso del dispositivo.</string>
+    <string name="notif_block_device">Se ha bloqueado/desbloqueado el dispositivo.</string>
+    <string name="notif_freeuse">Se ha activado/desactivado el tiempo libre.</string>
+    <string name="notif_block_app">Se ha actualizado la lista de aplicaciones bloqueadas.</string>
+    <string name="notif_horaris">Se han actualizado los horarios nocturnos del dispositivo.</string>
+    <string name="notif_events">Se han actualizado los momentos libres de tecnologías.</string>
+
     <string name="error_emailNotFound">Este correo no existe en el servidor</string>
     <string name="recover_password">Recuperar contraseña</string>
+    <string name="recover_password_success">Se le ha mandado una nueva contraseña temporal en su email. Esta contraseña funcionará durante 10 minutos, y en cuanto la use se le pedirá que la cambie.</string>
     <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
 </resources>
