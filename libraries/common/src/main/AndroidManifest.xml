@@ -18,5 +18,6 @@
         <activity android:name=".ui.events.EventsActivity" />
         <activity android:name=".ui.BlockAppsActivity" />
         <activity android:name=".ui.ReportActivity" />
+        <activity android:name=".ui.NotificationSettings" />
     </application>
 </manifest>

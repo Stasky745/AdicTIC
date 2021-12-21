@@ -92,6 +92,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             finish();
                         } else {
                             try {
+                                assert response.errorBody() != null;
                                 JSONObject obj = new JSONObject(response.errorBody().string());
                                 if (obj.getString("message").trim().equals("OldPass does not match")) {
                                     err_pOld.setVisibility(View.VISIBLE);

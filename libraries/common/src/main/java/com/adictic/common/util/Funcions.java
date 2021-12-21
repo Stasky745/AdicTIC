@@ -64,6 +64,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +75,11 @@ import retrofit2.Response;
 
 public class Funcions {
     private final static String TAG = "Funcions";
+
+    public static String millis2dateTime(long millis){
+            DateTime date = new DateTime(millis);
+            return date.toString("dd/MM/yyyy - HH:mm", Locale.getDefault());
+    }
 
     public static String formatHora(int hora, int min){
         String res = "";

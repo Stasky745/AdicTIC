@@ -49,6 +49,7 @@ import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
+import com.adictic.client.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.ui.BlockAppActivity;
@@ -58,6 +59,7 @@ import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
 import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
+import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedLimitedLists;
@@ -249,7 +251,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
-        if(!Funcions.accessibilityServiceOn()) {
+        if(!Funcions.accessibilityServiceOn(ctx)) {
             return;
         }
 
@@ -323,12 +325,12 @@ public class Funcions extends com.adictic.common.util.Funcions {
             else if(endTimeDelay > 0){
                 setUpEventWorker(ctx, endTimeDelay, false);
 
-                if(Funcions.accessibilityServiceOn())
+                if(Funcions.accessibilityServiceOn(ctx))
                     AccessibilityScreenService.instance.setActiveEvents(1);
             }
         }
 
-        if(Funcions.accessibilityServiceOn())
+        if(Funcions.accessibilityServiceOn(ctx))
             AccessibilityScreenService.instance.updateDeviceBlock();
     }
 
@@ -373,7 +375,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
 
-        if(!Funcions.accessibilityServiceOn())
+        if(!Funcions.accessibilityServiceOn(ctx))
             return;
 
         AccessibilityScreenService.instance.setHorarisActius(false);
@@ -860,13 +862,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
         return null;
     }
 
-    public static void showBlockDeviceScreen(Context mCtx){
-        Log.d(TAG,"Creant Intent cap a BlockAppActivity");
-        Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
-        lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
-        mCtx.startActivity(lockIntent);
-    }
-
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
         // Si és MIUI
         try {
@@ -911,7 +906,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     private static void updateDB_BlockedApps(Context ctx, BlockedLimitedLists body) {
-        if(!Funcions.accessibilityServiceOn())
+        if(!Funcions.accessibilityServiceOn(ctx))
             return;
 
         List<BlockedApp> appsLimitades = new ArrayList<>();
@@ -953,14 +948,72 @@ public class Funcions extends com.adictic.common.util.Funcions {
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }
 
-    public static boolean accessibilityServiceOn(){
+    public static boolean accessibilityServiceOn(Context mCtx){
         boolean res = AccessibilityScreenService.instance != null;
 
         if(!res){
-            //TODO: Crida al servidor per avisar pare
+            NotificationInformation notif = new NotificationInformation();
+            notif.title = mCtx.getString(R.string.notif_accessibility_error_title);
+            notif.message = mCtx.getString(R.string.notif_accessibility_error_body);
+            notif.important = true;
+            notif.dateMillis = System.currentTimeMillis();
+            notif.read = false;
+            notif.notifCode = Constants.NOTIF_SETTINGS_ACCESSIBILITY_ERROR;
+
+            sendNotifToParent(mCtx, notif);
         }
 
         return res;
+    }
+
+    public static void sendNotifToParent(Context mCtx, NotificationInformation notif) {
+        AdicticApi api = ((AdicticApp) mCtx.getApplicationContext()).getAPI();
+
+        SharedPreferences sharedPreferences = getEncryptedSharedPreferences(mCtx);
+        assert sharedPreferences != null;
+
+        long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
+
+        Call<String> call = api.sendNotification(idChild, notif);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                startNotificationWorker(mCtx, notif, idChild);
+            }
+        });
+    }
+
+    private static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
+        Data data = new Data.Builder()
+                .putString("title", notif.title)
+                .putString("body", notif.message)
+                .putBoolean("important", notif.important)
+                .putLong("dateMillis", notif.dateMillis)
+                .putLong("idChild", idChild)
+                .putString("notifCode", notif.notifCode)
+                .build();
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        WorkRequest myWork =
+                new OneTimeWorkRequest.Builder(NotifWorker.class)
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                                BackoffPolicy.LINEAR,
+                                5,
+                                TimeUnit.MINUTES)
+                        .setInputData(data)
+                        .build();
+
+        WorkManager.getInstance(mCtx)
+                .enqueue(myWork);
     }
 
     public static Map<String, Long> getTodayAppUsage(Context mContext) {
@@ -971,5 +1024,60 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         return listUsages.stream()
                 .collect(Collectors.toMap(appUsage -> appUsage.app.pkgName,appUsage -> appUsage.totalTime));
+    }
+
+    public static void addNotificationToList(Context context, NotificationInformation notificationInformation) {
+        final int MAX_NOTIF_SIZE = 25;
+
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type) != null ? gson.fromJson(json, type) : new ArrayList<>();
+
+        // Si la llista té 15 elements
+        if(notifList.size() == MAX_NOTIF_SIZE){
+            NotificationInformation oldNotif = notifList.stream()
+                    .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+            notifList.remove(oldNotif);
+        }
+        else if(notifList.size() > MAX_NOTIF_SIZE){
+            for(int i = 0; i < notifList.size() - (MAX_NOTIF_SIZE-1); i++){
+                NotificationInformation oldNotif = notifList.stream()
+                        .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+                notifList.remove(oldNotif);
+            }
+        }
+
+        notifList.add(notificationInformation);
+
+        String newJson = gson.toJson(notifList);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
+    }
+
+    public static ArrayList<NotificationInformation> getNotificationList(Context context){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        return gson.fromJson(json, type);
+    }
+
+    public static void setNotificationList(Context context, List<NotificationInformation> list){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        Gson gson = new Gson();
+
+        String newJson = gson.toJson(list);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
     }
 }

@@ -2,6 +2,7 @@ package com.adictic.client.ui.inici;
 
 import static com.adictic.client.ui.inici.Register.isValidEmail;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -150,9 +151,9 @@ public class Login extends AppCompatActivity {
 
             AlertDialog alertDialog = passwordRecoverDialog.create();
 
-            EditText recover_email = (EditText) dialogView.findViewById(R.id.ET_recover_email);
+            EditText recover_email = dialogView.findViewById(R.id.ET_recover_email);
             TextView format_invalid = dialogView.findViewById(R.id.TV_recover_format_invalid);
-            Button accept = (Button) dialogView.findViewById(R.id.BT_recover_accept);
+            Button accept = dialogView.findViewById(R.id.BT_recover_accept);
             accept.setOnClickListener(view -> {
                 String mail = recover_email.getText().toString().trim();
                 if (isValidEmail(mail)){
@@ -164,6 +165,11 @@ public class Login extends AppCompatActivity {
                             super.onResponse(call, response);
                             if(response.isSuccessful()){
                                 alertDialog.dismiss();
+                                new AlertDialog.Builder(Login.this)
+                                        .setTitle(getString(R.string.recover_password))
+                                        .setMessage(getString(R.string.recover_password_success))
+                                        .setNeutralButton(getString(R.string.accept), (dialog, which) -> dialog.dismiss())
+                                        .show();
                             } else if(response.errorBody()!=null) {
                                 try {
                                     JSONObject obj = new JSONObject(response.errorBody().string());

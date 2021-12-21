@@ -17,7 +17,7 @@ public class HorarisWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        if(!Funcions.accessibilityServiceOn()) {
+        if(!Funcions.accessibilityServiceOn(getApplicationContext())) {
             return Result.failure();
         }
 

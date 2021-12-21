@@ -1,5 +1,6 @@
 package com.adictic.client.rest;
 
+import com.adictic.client.entity.NotificationInformation;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
@@ -189,4 +190,7 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
 
     @POST("/users/checkPassword")
     Call<String> checkPassword(@Body UserLogin login);
+
+    @POST("users/notification/{idChild}")
+    Call<String> sendNotification(@Path("idChild") Long idChild, @Body NotificationInformation notificationInformation);
 }
