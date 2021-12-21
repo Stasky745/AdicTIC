@@ -1,10 +1,13 @@
 package com.adictic.client.ui.inici;
 
+import static com.adictic.client.ui.inici.Register.isValidEmail;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -14,13 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.main.NavActivity;
+import com.adictic.client.ui.setting.ChangePasswordActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.entity.RecoverPassword;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
@@ -127,8 +133,76 @@ public class Login extends AppCompatActivity {
 
         // This is the listener that will be used when the user presses the "Register" button
         b_reg.setOnClickListener(v -> Login.this.startActivity(new Intent(Login.this, Register.class)));
+
+        setRecoverPasswordButton();
     }
 
+    private void setRecoverPasswordButton() {
+        findViewById(R.id.TV_login_forgot_pass).setOnClickListener(v -> {
+            final AlertDialog.Builder passwordRecoverDialog = new AlertDialog.Builder(this);
+            LayoutInflater inflater = Login.this.getLayoutInflater();
+
+            passwordRecoverDialog.setTitle(getString(R.string.recover_password));
+            passwordRecoverDialog.setMessage(getString(R.string.enter_email_account));
+
+            View dialogView= inflater.inflate(R.layout.recover_dialog, null);
+            passwordRecoverDialog.setView(dialogView);
+
+            AlertDialog alertDialog = passwordRecoverDialog.create();
+
+            EditText recover_email = (EditText) dialogView.findViewById(R.id.ET_recover_email);
+            TextView format_invalid = dialogView.findViewById(R.id.TV_recover_format_invalid);
+            Button accept = (Button) dialogView.findViewById(R.id.BT_recover_accept);
+            accept.setOnClickListener(view -> {
+                String mail = recover_email.getText().toString().trim();
+                if (isValidEmail(mail)){
+                    RecoverPassword recoverPassword = new RecoverPassword();
+                    recoverPassword.email = mail;
+                    mTodoService.sendPetitionToRecoverPassword(recoverPassword).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                            super.onResponse(call, response);
+                            if(response.isSuccessful()){
+                                alertDialog.dismiss();
+                            } else if(response.errorBody()!=null) {
+                                try {
+                                    JSONObject obj = new JSONObject(response.errorBody().string());
+                                    if(obj.getString("message").equals("This email doesn't exist in the database")) {
+                                        format_invalid.setText(getString(R.string.error_emailNotFound));
+                                        format_invalid.setVisibility(View.VISIBLE);
+                                    } else {
+                                        Toast.makeText(Login.this, "Unknown error", Toast.LENGTH_SHORT).show();
+                                        alertDialog.dismiss();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(Login.this, "Unknown error", Toast.LENGTH_SHORT).show();
+                                alertDialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                            super.onFailure(call, t);
+                        }
+                    });
+                } else {
+                    format_invalid.setText(getString(R.string.error_noValidEmail));
+                    format_invalid.setVisibility(View.VISIBLE);
+                }
+
+            });
+
+            Button cancel = (Button) dialogView.findViewById(R.id.BT_recover_cancel);
+            cancel.setOnClickListener(view -> {
+                alertDialog.dismiss();
+            });
+
+            alertDialog.show();
+        });
+    }
 
 
     // This method is called when the "Login" button is pressed in the Login fragment
@@ -159,21 +233,27 @@ public class Login extends AppCompatActivity {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_ISTUTOR, false).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDTUTOR, usuari.id).apply();
                     }
-
+                    Intent i;
+                    Bundle extras = new Bundle();
                     if (usuari.tutor == 0) {
-                        Bundle extras = new Bundle();
 
                         extras.putParcelable("user", usuari);
                         extras.putString("token", token);
                         extras.putLong("id", usuari.id);
+                        extras.putInt("tutor", 0);
 
-                        Intent i = new Intent(Login.this, NomFill.class);
+                        i = new Intent(Login.this, NomFill.class);
                         i.putExtras(extras);
-
-                        Login.this.startActivity(i);
                     } else {
-                        Login.this.startActivity(new Intent(Login.this, NavActivity.class));
+                        extras.putInt("tutor", 1);
+                        i = new Intent(Login.this, NavActivity.class);
                     }
+                    if(usuari.temporalPass){
+                        i = new Intent(Login.this, ChangePasswordActivity.class);
+                        extras.putString("temporalAccess", password);
+                        i.putExtras(extras);
+                    }
+                    Login.this.startActivity(i);
                     Login.this.finish();
                 } else {
                     TextView usernameInvalid = Login.this.findViewById(R.id.TV_login_usernameInvalid);

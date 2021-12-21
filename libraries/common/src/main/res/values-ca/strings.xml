@@ -491,4 +491,8 @@
 
     <string name="unlock_freeuse_text">"Aquesta funció posarà el dispositiu en l'estat de \"Temps Lliure d'Ús\". Per tornar a activar les funcions de bloqueig en aquest dispositiu s'haurà de desactivar la funció des del dispositiu tutor.\n\nPer desbloquejar el dispositiu, entreu la vostra contrasenya del compte:"</string>
     <string name="unlock_app">"Aquesta funció desbloquejarà aquesta aplicació. Per tornar a bloquejar-la, s'haurà d'utilitzar la funcionalitat de l'aplicació tutor.\n\nPer desbloquejar el dispositiu, entreu la vostra contrasenya del compte:"</string>
+
+    <string name="error_emailNotFound">El correu no existeix en el servidor</string>
+    <string name="recover_password">Recuperar contrasenya</string>
+    <string name="enter_email_account">Entra el correu electrònic que es va fer servir al registrar-se:</string>
 </resources>
