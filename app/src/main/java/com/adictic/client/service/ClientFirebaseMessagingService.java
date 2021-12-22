@@ -465,6 +465,11 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                     break;
+                case "newPassword":
+                    String newPass = messageMap.get("newPass");
+                    if(newPass!=null && !newPass.trim().isEmpty())
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, newPass).apply();
+                    break;
                 default:
                     Log.e(TAG,"Clau 'action' no reconeguda: "+action);
                     break;

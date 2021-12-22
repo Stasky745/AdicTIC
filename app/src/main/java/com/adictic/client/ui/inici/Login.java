@@ -228,7 +228,8 @@ public class Login extends AppCompatActivity {
                     assert usuari != null;
 
                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,ul.username).apply();
-                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,ul.password).apply();
+                    if(!usuari.temporalPass) //Only save password if is not temporal. Avoid overwriting old good password.
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, ul.password).apply();
                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN,ul.token).apply();
 
                     if (usuari.tutor == 1) {
