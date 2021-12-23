@@ -26,7 +26,6 @@ import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.IntentsAccesApp;
-import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
@@ -138,8 +137,7 @@ public class BlockAppActivity extends AppCompatActivity {
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                boolean valid = Funcions.isPasswordCorrect(BlockAppActivity.this, pwd);
-                unlockApp(valid, sharedPreferences, pwd, pkgName, api, TV_pwd_error);
+                Funcions.isPasswordCorrect(BlockAppActivity.this, pwd, valid -> unlockApp(valid, sharedPreferences, pwd, pkgName, api, TV_pwd_error));
             });
         });
     }
