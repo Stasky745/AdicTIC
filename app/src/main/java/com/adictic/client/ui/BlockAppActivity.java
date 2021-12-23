@@ -26,7 +26,6 @@ import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.IntentsAccesApp;
-import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
@@ -133,38 +132,12 @@ public class BlockAppActivity extends AppCompatActivity {
 
                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
                 assert sharedPreferences != null;
-                AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+                AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
 
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                UserLogin userLogin = new UserLogin();
-                userLogin.password = pwd;
-                userLogin.username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME, "");
-                userLogin.token = "";
-                userLogin.tutor = -1;
-
-                Call<String> call = mTodoService.checkPassword(userLogin);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        super.onResponse(call, response);
-                        if(response.isSuccessful() && response.body() != null){
-                            boolean valid = response.body().equals("ok");
-                            if(valid)
-                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, pwd).apply();
-
-                            unlockApp(valid, sharedPreferences, pwd, pkgName, mTodoService, TV_pwd_error);
-                        }
-                        else
-                            unlockApp(false, sharedPreferences, pwd, pkgName, mTodoService, TV_pwd_error);
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        unlockApp(false, sharedPreferences, pwd, pkgName, mTodoService, TV_pwd_error);
-                    }
-                });
+                Funcions.isPasswordCorrect(BlockAppActivity.this, pwd, valid -> unlockApp(valid, sharedPreferences, pwd, pkgName, api, TV_pwd_error));
             });
         });
     }
