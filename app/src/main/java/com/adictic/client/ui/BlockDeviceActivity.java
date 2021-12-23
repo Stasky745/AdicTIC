@@ -33,7 +33,6 @@ import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.EventBlock;
-import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
@@ -117,8 +116,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                boolean valid = Funcions.isPasswordCorrect(BlockDeviceActivity.this, pwd);
-                unlockDevice(valid, pwd, TV_pwd_error);
+                Funcions.isPasswordCorrect(BlockDeviceActivity.this, pwd, valid -> unlockDevice(valid, pwd, TV_pwd_error));
             });
         });
     }

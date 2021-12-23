@@ -1,10 +1,18 @@
 package com.adictic.client.ui.setting;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.graphics.text.LineBreaker;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -91,10 +99,52 @@ public class FuncionsSettings {
     public static void settings_permission(PreferenceFragmentCompat context) {
         Preference change_perm = context.findPreference("setting_permission");
 
+        Activity ctx = context.requireActivity();
+
         assert change_perm != null;
         change_perm.setOnPreferenceClickListener(preference -> {
-            Intent intent = new Intent(context.requireActivity(), Permisos.class);
-            context.startActivity(intent);
+            android.app.AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
+            final View dialogLayout = ctx.getLayoutInflater().inflate(R.layout.desbloqueig_dialog, null);
+            builder.setView(dialogLayout);
+            builder.setNegativeButton(ctx.getString(R.string.cancel), (dialog, which) -> dialog.cancel());
+
+            // Posem el text adequat al dialog
+            TextView TV_unlock_title = dialogLayout.findViewById(R.id.TV_unlock_title);
+            TV_unlock_title.setText(ctx.getString(R.string.permisos));
+
+            TextView TV_unlock_text = dialogLayout.findViewById(R.id.TV_unlock_text);
+            TV_unlock_text.setText(ctx.getString(R.string.password));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                TV_unlock_text.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
+            }
+
+            TextView TV_pwd_error = dialogLayout.findViewById(R.id.TV_pwd_error);
+            TV_pwd_error.setVisibility(View.INVISIBLE);
+
+            AlertDialog alertDialog = builder.show();
+
+            Button BT_unlock = dialogLayout.findViewById(R.id.BT_dialog_unlock);
+            BT_unlock.setOnClickListener(v1 -> {
+                TV_pwd_error.setVisibility(View.INVISIBLE);
+
+                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx.getApplicationContext());
+                assert sharedPreferences != null;
+
+                EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
+                String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
+
+                Funcions.isPasswordCorrect(ctx, pwd, valid -> {
+                    if(valid){
+                        Intent intent = new Intent(ctx, Permisos.class);
+                        intent.putExtra("settings", true);
+                        ctx.startActivity(intent);
+                        alertDialog.dismiss();
+                    }
+                    else
+                        TV_pwd_error.setVisibility(View.VISIBLE);
+                });
+            });
             return true;
         });
     }
