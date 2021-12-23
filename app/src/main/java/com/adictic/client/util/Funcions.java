@@ -53,7 +53,6 @@ import com.adictic.client.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.ui.BlockAppActivity;
-import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
@@ -61,6 +60,7 @@ import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
+import com.adictic.common.callbacks.BooleanCallback;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
@@ -69,6 +69,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -105,6 +106,37 @@ import retrofit2.Response;
 
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
+
+    // Contrasenya ha d'estar encriptada amb SHA256
+    public static void isPasswordCorrect(Context ctx, String pwd, BooleanCallback callback){
+        AdicticApi api = ((AdicticApp) (ctx.getApplicationContext())).getAPI();
+
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
+
+        UserLogin userLogin = new UserLogin();
+        userLogin.password = pwd;
+        userLogin.username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME, "");
+        userLogin.token = "";
+        userLogin.tutor = -1;
+
+        Call<String> call = api.checkPassword(userLogin);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful() && response.body() != null && response.body().equals("ok"))
+                    callback.onDataGot(true);
+                else
+                    callback.onDataGot(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                callback.onDataGot(false);
+            }
+        });
+    }
 
     public static void addOverlayView(Context ctx, boolean blockApp) {
 
@@ -988,7 +1020,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         });
     }
 
-    private static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
+    public static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
         Data data = new Data.Builder()
                 .putString("title", notif.title)
                 .putString("body", notif.message)
