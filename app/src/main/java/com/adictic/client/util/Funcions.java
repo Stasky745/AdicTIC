@@ -19,6 +19,7 @@ import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,6 +29,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -69,9 +71,11 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
+import com.adictic.common.util.Crypt;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -105,6 +109,52 @@ import retrofit2.Response;
 
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
+
+    // Contrasenya ha d'estar encriptada amb SHA256
+    public static boolean isPasswordCorrect(Context ctx, String pwd){
+        final Boolean[] validPwd = {null};
+
+        AdicticApi api = ((AdicticApp) (ctx.getApplicationContext())).getAPI();
+
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
+
+        UserLogin userLogin = new UserLogin();
+        userLogin.password = pwd;
+        userLogin.username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME, "");
+        userLogin.token = "";
+        userLogin.tutor = -1;
+
+        Call<String> call = api.checkPassword(userLogin);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful() && response.body() != null){
+                    boolean valid = response.body().equals("ok");
+                    if(valid) {
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, pwd).apply();
+                        validPwd[0] = true;
+                    }
+                }
+                else
+                    validPwd[0] = false;
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                validPwd[0] = false;
+            }
+        });
+
+        int i = 0;
+        while(validPwd[0] == null && i < 10){
+            SystemClock.sleep(1000);
+            i++;
+        }
+
+        return validPwd[0] != null && validPwd[0];
+    }
 
     public static void addOverlayView(Context ctx, boolean blockApp) {
 
