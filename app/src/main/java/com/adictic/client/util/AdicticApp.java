@@ -33,7 +33,8 @@ public class AdicticApp extends App {
             "Ara es pot desbloquejar el dispositiu des del dispositiu fill amb la contrasenya",
             "Entrar al dispositiu tutor amb contrasenya o emprempta (des d'opcions)",
             "Text de la pantalla de bloqueig canvia depenent de la raó de bloqueig",
-            "Nova pantalla de notificacions a l'apartat de configuració"
+            "Nova pantalla de notificacions a l'apartat de configuració",
+            "Edició de nom i data naixement del fill"
     };
 
     public static String[] fixes = {
