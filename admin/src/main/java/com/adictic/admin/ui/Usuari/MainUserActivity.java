@@ -7,13 +7,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.ui.main.TabFillsAdapter;
 import com.adictic.common.util.Callback;
-import com.adictic.admin.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

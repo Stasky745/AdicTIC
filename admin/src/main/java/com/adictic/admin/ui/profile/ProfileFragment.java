@@ -1,7 +1,6 @@
 package com.adictic.admin.ui.profile;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,19 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
@@ -43,7 +39,6 @@ import com.adictic.common.entity.WebLink;
 import com.adictic.common.ui.AdminProfileActivity;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
@@ -82,6 +77,7 @@ public class ProfileFragment extends Fragment{
     private TextInputEditText TIET_profileName;
     private TextInputEditText TIET_professio;
     private TextInputEditText TIET_desc;
+    private TextView TV_profile_no_links;
 
     private ImageView IV_profilePic;
 
@@ -105,7 +101,7 @@ public class ProfileFragment extends Fragment{
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 try {
-                    assert result.getData() != null;
+                    if(result.getData()==null) return;
                     final Uri imageUri = result.getData().getData();
                     final InputStream imageStream = requireActivity().getContentResolver().openInputStream(imageUri);
                     final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
@@ -137,6 +133,7 @@ public class ProfileFragment extends Fragment{
         TIET_professio = root.findViewById(R.id.TIET_professio);
         TIET_desc = root.findViewById(R.id.TIET_desc);
         IV_profilePic = root.findViewById(R.id.IV_profilePic);
+        TV_profile_no_links = root.findViewById(R.id.TV_profile_no_links);
 
         setViews();
         agafarFoto(root);
@@ -194,6 +191,12 @@ public class ProfileFragment extends Fragment{
                     webLink.name = bundle.getString("name");
                     webLink.url = bundle.getString("url");
                     webList.add(webLink);
+                    ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.CL_profile_parent_2);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.BT_profileAccept,ConstraintSet.TOP, R.id.RV_profileLinks,ConstraintSet.BOTTOM,24);
+                    constraintSet.applyTo(constraintLayout);
+                    TV_profile_no_links.setVisibility(View.GONE);
                     RVadapter.notifyDataSetChanged();
                 }
 
@@ -244,6 +247,7 @@ public class ProfileFragment extends Fragment{
     }
 
     private void postImage(){
+        if(IV_profilePic.getDrawable()==null) return;
         Bitmap bitmap = getBitmapFromDrawable(IV_profilePic.getDrawable());
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -395,6 +399,14 @@ public class ProfileFragment extends Fragment{
                     .setPositiveButton(R.string.accept, (dialog, which) -> {
                         // Continue with delete operation
                         webList.remove(position);
+                        if(webList.isEmpty()) {
+                            ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.CL_profile_parent_2);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.BT_profileAccept,ConstraintSet.TOP, R.id.TV_profile_no_links,ConstraintSet.BOTTOM,24);
+                            constraintSet.applyTo(constraintLayout);
+                            TV_profile_no_links.setVisibility(View.VISIBLE);
+                        }
                         notifyDataSetChanged();
                     })
 

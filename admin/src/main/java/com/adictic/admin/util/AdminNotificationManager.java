@@ -10,9 +10,9 @@ import android.content.Intent;
 
 import androidx.core.app.NotificationCompat;
 
-import com.adictic.common.util.Constants;
 import com.adictic.admin.MainActivity;
 import com.adictic.admin.R;
+import com.adictic.common.util.Constants;
 import com.adictic.common.util.MyNotificationManager;
 
 import java.util.Random;

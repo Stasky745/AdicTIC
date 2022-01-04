@@ -2,7 +2,6 @@ package com.adictic.client.ui.inici;
 
 import static com.adictic.client.ui.inici.Register.isValidEmail;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -24,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.main.NavActivity;
-import com.adictic.client.ui.setting.ChangePasswordActivity;
+import com.adictic.client.ui.setting.TemporalPasswordChangeActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.RecoverPassword;
@@ -256,7 +255,7 @@ public class Login extends AppCompatActivity {
                         i = new Intent(Login.this, NavActivity.class);
                     }
                     if(usuari.temporalPass){
-                        i = new Intent(Login.this, ChangePasswordActivity.class);
+                        i = new Intent(Login.this, TemporalPasswordChangeActivity.class);
                         extras.putString("temporalAccess", password);
                         i.putExtras(extras);
                     }

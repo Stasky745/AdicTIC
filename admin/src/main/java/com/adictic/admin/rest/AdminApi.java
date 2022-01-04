@@ -2,10 +2,11 @@ package com.adictic.admin.rest;
 
 import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.entity.ChatsMain;
+import com.adictic.admin.entity.LoginUser;
+import com.adictic.admin.entity.NewAdmin;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.Oficina;
-import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.rest.Api;
@@ -25,13 +26,10 @@ import retrofit2.http.Path;
 
 public interface AdminApi extends Api {
     @POST("/users/loginAdmin")
-    Call<User> login(@Body UserLogin login);
+    Call<LoginUser> loginAdmin(@Body UserLogin login);
 
     @POST("/users/token/{idChild}")
     Call<String> updateToken(@Path("idChild") Long idChild, @Body String token);
-
-    @POST("/users/logout")
-    Call<String> logout(@Body String token);
 
     @GET("/admins/{id}/profile")
     Call<AdminProfile> getProfile(@Path("id") Long id);
@@ -81,4 +79,7 @@ public interface AdminApi extends Api {
 
     @GET("/message/videochat/{otherUserId}/{childId}")
     Call<String> callOtherUser(@Path("otherUserId") Long otherUserId, @Path("childId") Long childId);
+
+    @PUT("/admins/profile")
+    Call<String> createNewAdmin(@Body NewAdmin newAdmin);
 }

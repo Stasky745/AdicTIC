@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.R;
+import com.adictic.admin.entity.ChatInfo;
 
 import org.joda.time.DateTime;
 

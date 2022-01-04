@@ -18,7 +18,6 @@ import com.adictic.admin.util.Funcions;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
 import com.adictic.common.util.Constants;
-import com.adictic.admin.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements ISubmitWeblink {
