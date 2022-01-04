@@ -560,4 +560,7 @@
     <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
     <string name="crear_admin">Crear administrador</string>
     <string name="no_links">No hay ningún enlace</string>
+
+    <!-- -->
+    <string name="edit_child">Editar datos del menor</string>
 </resources>

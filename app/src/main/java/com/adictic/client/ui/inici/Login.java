@@ -140,7 +140,7 @@ public class Login extends AppCompatActivity {
     private void setRecoverPasswordButton() {
         findViewById(R.id.TV_login_forgot_pass).setOnClickListener(v -> {
             final AlertDialog.Builder passwordRecoverDialog = new AlertDialog.Builder(this);
-            LayoutInflater inflater = Login.this.getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(Login.this);
 
             passwordRecoverDialog.setTitle(getString(R.string.recover_password));
             passwordRecoverDialog.setMessage(getString(R.string.enter_email_account));
