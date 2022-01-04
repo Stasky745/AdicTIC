@@ -1,4 +1,4 @@
-package com.adictic.client.entity;
+package com.adictic.common.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

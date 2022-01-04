@@ -16,13 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.ui.OficinesActivity;
 import com.adictic.common.util.Callback;
-import com.adictic.admin.R;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.jetbrains.annotations.NotNull;
@@ -115,29 +115,25 @@ public class OfficeFragment extends Fragment {
                 if(oficina == null) {
                     asignarValorsOficinaNova(novaOficina);
 
-                    if(oficina.hiHaCanvis(novaOficina)) {
-                        Call<Long> call = mService.crearOficina(novaOficina);
-                        call.enqueue(new Callback<Long>() {
-                            @Override
-                            public void onResponse(@NotNull Call<Long> call, @NotNull Response<Long> response) {
-                    super.onResponse(call, response);
-                                if (response.isSuccessful()) {
-                                    Toast.makeText(getContext(), "L'oficina s'ha actualitzat correctament.", Toast.LENGTH_SHORT).show();
+                    Call<Long> call = mService.crearOficina(novaOficina);
+                    call.enqueue(new Callback<Long>() {
+                        @Override
+                        public void onResponse(@NotNull Call<Long> call, @NotNull Response<Long> response) {
+                            super.onResponse(call, response);
+                            if (response.isSuccessful()) {
+                                Toast.makeText(getContext(), "L'oficina s'ha actualitzat correctament.", Toast.LENGTH_SHORT).show();
 
-                                    oficina = new Oficina(response.body(), novaOficina);
-                                    previewOffice();
-                                } else
-                                    Toast.makeText(getContext(), "No s'ha pogut connectar bé amb el servidor.", Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onFailure(@NotNull Call<Long> call, @NotNull Throwable t) {
+                                oficina = new Oficina(response.body(), novaOficina);
+                                previewOffice();
+                            } else
                                 Toast.makeText(getContext(), "No s'ha pogut connectar bé amb el servidor.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    else
-                        previewOffice();
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<Long> call, @NotNull Throwable t) {
+                            Toast.makeText(getContext(), "No s'ha pogut connectar bé amb el servidor.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 // Si existeix l'editem
                 else {
@@ -148,7 +144,7 @@ public class OfficeFragment extends Fragment {
                         call.enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
-                    super.onResponse(call, response);
+                                super.onResponse(call, response);
                                 if (response.isSuccessful()) {
                                     Toast.makeText(getContext(), "L'oficina s'ha actualitzat correctament.", Toast.LENGTH_SHORT).show();
                                     oficina = novaOficina;

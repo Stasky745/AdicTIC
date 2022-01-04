@@ -1,4 +1,4 @@
-package com.adictic.client.ui.setting;
+package com.adictic.common.ui.settings;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,6 +6,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.Objects;
 
@@ -19,25 +20,25 @@ public class SettingsActivity extends AppCompatActivity {
         String fragmentType = getIntent().getStringExtra("fragment");
         Objects.requireNonNull(getSupportActionBar()).setTitle(getIntent().getStringExtra("title"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if(fragmentType==null) finish();
-        switch(fragmentType){
-            case "security":
+        if(fragmentType!=null) {
+            try {
+                Class<? extends PreferenceFragmentCompat> c = (Class<? extends PreferenceFragmentCompat>) Class.forName(fragmentType);
+                PreferenceFragmentCompat fragmentCompat = c.newInstance();
                 getSupportFragmentManager().beginTransaction()
-                        .add(android.R.id.content, new SecuritySettings())
+                        .add(android.R.id.content, fragmentCompat)
                         .commit();
-                break;
-            default:
-                Log.e(TAG, "Unknown fragment type: "+fragmentType);
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                e.printStackTrace();
                 finish();
-        }
+            }
+        } else finish();
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
