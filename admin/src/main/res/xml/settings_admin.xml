@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="preferenceAdmin">
+
+    <ListPreference
+        app:entries="@array/languages"
+        app:entryValues="@array/language_alias"
+        app:key="setting_change_language"
+        app:icon="@drawable/ic_baseline_language_24"
+        app:title="@string/change_language" />
+
+    <Preference
+        app:key="setting_security"
+        app:icon="@drawable/ic_baseline_security_24"
+        app:title="@string/security" />
+
+    <Preference
+        app:key="setting_notifications"
+        app:icon="@drawable/ic_baseline_notifications_24"
+        app:title="@string/setting_notifications" />
+
+    <Preference
+        app:key="setting_notification_history"
+        app:icon="@drawable/ic_baseline_history_24"
+        app:title="@string/setting_notification_history" />
+
+    <Preference
+        app:key="setting_android"
+        app:icon="@drawable/ic_baseline_android_24"
+        app:title="@string/settings_android" />
+
+    <Preference
+        app:key="setting_tancar_sessio"
+        app:icon="@drawable/ic_baseline_close_24"
+        app:title="@string/tancar_sessio" />
+
+    <PreferenceCategory
+        app:key="ppsuperAdmin"
+        app:title="Superadmin">
+
+        <Preference
+            app:key="setting_crear_admins"
+            app:icon="@drawable/ic_baseline_admin_panel_settings_24"
+            app:title="@string/crear_admin" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

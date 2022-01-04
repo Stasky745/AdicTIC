@@ -1,4 +1,4 @@
-package com.adictic.client.ui.setting.notifications;
+package com.adictic.common.ui.settings.notifications;
 
 import android.content.Context;
 
@@ -8,8 +8,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.adictic.client.R;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.R;
+import com.adictic.common.entity.NotificationInformation;
 
 import org.jetbrains.annotations.NotNull;
 

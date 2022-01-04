@@ -1,4 +1,4 @@
-package com.adictic.client.ui.setting;
+package com.adictic.common.ui.settings;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,11 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.adictic.client.R;
-import com.adictic.client.ui.inici.NomFill;
-import com.adictic.client.ui.main.NavActivity;
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
+import com.adictic.common.util.App;
+import com.adictic.common.util.Funcions;
 import com.adictic.common.entity.ChangePassword;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
@@ -41,9 +39,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.changePassword));
-        api = ((AdicticApp) this.getApplication()).getAPI();
+        api = ((App) this.getApplication()).getAPI();
 
-        Bundle extras = getIntent().getExtras();
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
 
         Button b_accept = findViewById(R.id.BT_popCP_accept);
@@ -52,8 +49,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         EditText pOld = findViewById(R.id.ET_popCP_actualPass);
         EditText p1 = findViewById(R.id.ET_popCP_newPass);
         EditText p2 = findViewById(R.id.ET_popCP_newPass2);
-
-        ConstraintLayout cOld = findViewById(R.id.CL_popCP_actualPass);
 
         TextView err_pOld = findViewById(R.id.TV_popCP_error_actualPass);
         TextView err_p2 = findViewById(R.id.TV_popCP_error_newPass2);
@@ -79,16 +74,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                             assert sharedPreferences != null;
                             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,changePassword.newPassword).apply();
                             Toast.makeText(ChangePasswordActivity.this, getString(R.string.successful_entry), Toast.LENGTH_LONG).show();
-                            if(extras!=null && extras.get("temporalAccess")!=null) {
-                                Intent i;
-                                if (extras.getInt("tutor") == 0) {
-                                    i = new Intent(ChangePasswordActivity.this, NomFill.class);
-                                    i.putExtras(extras);
-                                } else {
-                                    i = new Intent(ChangePasswordActivity.this, NavActivity.class);
-                                }
-                                startActivity(i);
-                            }
                             finish();
                         } else {
                             try {
@@ -116,15 +101,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 api.changePassword(changePassword);
             }
         });
-
-        if(extras!=null && extras.get("temporalAccess")!=null) {
-            pOld.setText(extras.getString("temporalAccess"));
-            cOld.setVisibility(View.GONE);
-            b_cancel.setVisibility(View.GONE);
-        } else {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            b_cancel.setOnClickListener(view -> finish());
-        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        b_cancel.setOnClickListener(view -> finish());
     }
 
     @Override

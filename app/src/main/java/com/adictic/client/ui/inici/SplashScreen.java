@@ -27,7 +27,7 @@ import com.adictic.client.BuildConfig;
 import com.adictic.client.R;
 import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.BiometricAuthUtil;
+import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.util.LocaleHelper;
 import com.adictic.common.entity.User;

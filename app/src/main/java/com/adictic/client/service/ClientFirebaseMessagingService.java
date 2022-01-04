@@ -16,7 +16,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.common.R;
 import com.adictic.client.entity.BlockedApp;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;

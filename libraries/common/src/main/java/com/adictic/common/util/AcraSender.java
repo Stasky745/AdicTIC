@@ -3,6 +3,7 @@ package com.adictic.common.util;
 import android.content.Context;
 import android.util.Log;
 
+import com.adictic.common.BuildConfig;
 import com.adictic.common.rest.Api;
 import com.google.auto.service.AutoService;
 
@@ -23,6 +24,7 @@ public class AcraSender implements ReportSender {
 
     @Override
     public void send(@NotNull Context context, @NotNull CrashReportData errorContent) throws ReportSenderException {
+        if(BuildConfig.DEBUG) return; //No enviar crash si estamos en modo Debug.
         try {
             Api api = ((App) context.getApplicationContext()).getAPI();
             Call<String> callSendCrash = api.sendCrashACRA(errorContent.getString(ReportField.PACKAGE_NAME), errorContent.getString(ReportField.APP_VERSION_NAME), errorContent.getString(ReportField.STACK_TRACE));

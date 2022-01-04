@@ -1,4 +1,4 @@
-package com.adictic.client.ui.setting.notifications;
+package com.adictic.common.ui.settings.notifications;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.adictic.client.R;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.R;
+import com.adictic.common.entity.NotificationInformation;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;

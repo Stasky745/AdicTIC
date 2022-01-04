@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.adictic.admin.BuildConfig;
+import com.adictic.admin.R;
 import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.ui.Usuari.MainUserActivity;
@@ -34,7 +35,6 @@ import com.adictic.common.entity.UserMessage;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.jitsi.activities.OutgoingInvitationActivity;
-import com.adictic.admin.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.joda.time.DateTime;

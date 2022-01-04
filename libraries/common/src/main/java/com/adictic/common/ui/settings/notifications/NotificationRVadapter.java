@@ -1,4 +1,4 @@
-package com.adictic.client.ui.setting.notifications;
+package com.adictic.common.ui.settings.notifications;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,15 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.adictic.client.R;
-import com.adictic.client.entity.NotificationInformation;
-import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
+import com.adictic.common.entity.NotificationInformation;
+import com.adictic.common.util.Funcions;
 
-import org.mapsforge.core.graphics.Color;
-
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVadapter.notifViewHolder> {
     private final Context mContext;

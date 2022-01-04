@@ -19,5 +19,8 @@
         <activity android:name=".ui.BlockAppsActivity" />
         <activity android:name=".ui.ReportActivity" />
         <activity android:name=".ui.NotificationSettings" />
+        <activity android:name=".ui.settings.notifications.NotificationActivity" />
+        <activity android:name=".ui.settings.SettingsActivity" />
+        <activity android:name=".ui.settings.ChangePasswordActivity"/>
     </application>
 </manifest>

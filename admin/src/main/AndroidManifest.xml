@@ -34,10 +34,11 @@
         <activity android:name="com.adictic.admin.ui.Login" />
         <activity android:name="com.adictic.admin.MainActivity"
             android:windowSoftInputMode="adjustPan"/>
-        <activity android:name="com.adictic.common.ui.AdminProfileActivity" />
         <activity android:name="com.adictic.admin.ui.Xats.XatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
         <activity android:name="com.adictic.admin.ui.Usuari.MainUserActivity" />
+        <activity android:name="com.adictic.admin.ui.settings.AdminCreatorActivity" />
+        <activity android:name="com.adictic.admin.ui.settings.OfficeCreatorActivity" />
 
         <service android:name="com.adictic.admin.util.AdminFirebaseMessagingService"
             android:exported="false">

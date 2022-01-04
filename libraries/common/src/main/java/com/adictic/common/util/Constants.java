@@ -43,6 +43,7 @@ public class Constants {
     public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
     public static final String SHARED_PREFS_ID_ADMIN = "adminId";
+    public static final String SHARED_PREFS_IS_SUPERADMIN = "isSuperAdmin";
     public static final String SHARED_PREFS_USERNAME = "username";
     public static final String SHARED_PREFS_PASSWORD = "password";
     public static final String SHARED_PREFS_TOKEN = "firebaseToken";
