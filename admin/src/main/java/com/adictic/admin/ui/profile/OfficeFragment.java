@@ -139,7 +139,7 @@ public class OfficeFragment extends Fragment {
                 else {
                     asignarValorsOficina(novaOficina);
 
-                    if(oficina.hiHaCanvis(novaOficina)) {
+                    if(novaOficina.hiHaCanvis(oficina)) {
                         Call<String> call = mService.actualitzarOficina(novaOficina);
                         call.enqueue(new Callback<String>() {
                             @Override
