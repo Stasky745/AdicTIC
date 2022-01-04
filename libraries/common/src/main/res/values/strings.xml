@@ -558,4 +558,6 @@
     <string name="recover_password">Recuperar contraseña</string>
     <string name="recover_password_success">Se le ha mandado una nueva contraseña temporal en su email. Esta contraseña funcionará durante 10 minutos, y en cuanto la use se le pedirá que la cambie.</string>
     <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
+    <string name="crear_admin">Crear administrador</string>
+    <string name="no_links">No hay ningún enlace</string>
 </resources>

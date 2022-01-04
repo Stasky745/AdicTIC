@@ -85,4 +85,17 @@ public class AdminProfile implements Parcelable {
             return new AdminProfile[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "AdminProfile{" +
+                "idUser=" + idUser +
+                ", idAdmin=" + idAdmin +
+                ", name='" + name + '\'' +
+                ", professio='" + professio + '\'' +
+                ", description='" + description + '\'' +
+                ", webLinks=" + webLinks.toString() +
+                ", oficina=" + oficina +
+                '}';
+    }
 }

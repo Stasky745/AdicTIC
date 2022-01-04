@@ -13,20 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.adictic.admin.BuildConfig;
+import com.adictic.admin.MainActivity;
+import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
 import com.adictic.common.entity.User;
+import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.admin.MainActivity;
-import com.adictic.admin.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
@@ -78,9 +80,7 @@ public class SplashScreen extends AppCompatActivity {
                             super.onResponse(call, response);
                             if (response.isSuccessful() && response.body() != null) {
                                 User adminCheckWithToken = response.body();
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN, adminCheckWithToken.adminId).apply();
-                                SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                                checkBiometricAuth(adminCheckWithToken);
                             } else {
                                 SplashScreen.this.startActivity(new Intent(SplashScreen.this, Login.class));
                             }
@@ -192,6 +192,48 @@ public class SplashScreen extends AppCompatActivity {
         intent.setData (FileProvider.getUriForFile(SplashScreen.this, BuildConfig.APPLICATION_ID + ".provider", file));
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         SplashScreen.this.startActivityForResult(intent,1034);
+    }
+
+    private void checkBiometricAuth(User adminCheckWithToken){
+        if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, false)){
+            BiometricPrompt.AuthenticationCallback autCallback = new BiometricPrompt.AuthenticationCallback() {
+                @Override
+                public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                    super.onAuthenticationError(errorCode, errString);
+                    Toast.makeText(SplashScreen.this, errString, Toast.LENGTH_LONG).show();
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+                    Intent intent = new Intent(SplashScreen.this, Login.class);
+                    intent.putExtra("fromBiometric", true);
+                    SplashScreen.this.startActivity(intent);
+                }
+
+                @Override
+                public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                    super.onAuthenticationSucceeded(result);
+                    goToMainActivity(adminCheckWithToken);
+                }
+
+                @Override
+                public void onAuthenticationFailed() {
+                    super.onAuthenticationFailed();
+                    Log.e(TAG, "Authentication failed");
+                    finish();
+                }
+            };
+            try {
+                BiometricAuthUtil.startAuthentication(SplashScreen.this, autCallback);
+            } catch (UnsupportedOperationException ex){
+                //This shouldn't happen. Disable the setting?
+                goToMainActivity(adminCheckWithToken);
+            }
+        } else goToMainActivity(adminCheckWithToken);
+    }
+
+    private void goToMainActivity(User adminCheckWithToken){
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
+        sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN, adminCheckWithToken.adminId).apply();
+        SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));
     }
 
     @Override

@@ -1,7 +1,6 @@
-plugins {
-    id 'com.android.application'
-    id 'com.google.gms.google-services'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def keystorePropertiesFile = file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -91,7 +90,7 @@ def getCustomVersionCode() {
 
 dependencies {
     //Modules
-    implementation project(path: ':libraries:jitsiVideocall')
-    implementation project(path: ':libraries:persistentcookie')
     implementation project(path: ':libraries:common')
+    implementation project(path: ':libraries:persistentcookie')
+    implementation project(path: ':libraries:jitsiVideocall')
 }

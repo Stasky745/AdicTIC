@@ -1,8 +1,6 @@
 package com.adictic.admin.ui.profile;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.adictic.common.entity.WebLink;
 import com.adictic.admin.R;
+import com.adictic.common.entity.WebLink;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;

@@ -18,6 +18,7 @@
         app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/CL_profile_parent_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -127,7 +128,7 @@
                 android:text="@string/accept"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/RV_profileLinks" />
+                app:layout_constraintTop_toBottomOf="@+id/TV_profile_no_links" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/RV_profileLinks"
@@ -138,6 +139,18 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginRight="32dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/BT_addLink" />
+
+            <TextView
+                android:id="@+id/TV_profile_no_links"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/no_links"
+                android:textSize="24sp"
+                android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/BT_addLink" />

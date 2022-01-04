@@ -28,7 +28,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.R;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;

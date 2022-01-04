@@ -16,14 +16,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.adictic.admin.R;
 import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.rest.AdminApi;
+import com.adictic.admin.ui.Xats.XatActivity;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.util.Callback;
-import com.adictic.admin.R;
-import com.adictic.admin.ui.Xats.XatActivity;
 
 import org.jetbrains.annotations.NotNull;
 

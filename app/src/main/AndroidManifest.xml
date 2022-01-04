@@ -86,25 +86,17 @@
         <service android:name="com.adictic.client.service.ForegroundService" android:foregroundServiceType="location" android:stopWithTask="false" />
 
         <!-- DEVICE ADMIN POLICIES -->
-        <activity android:name="com.adictic.common.ui.HorarisActivity" />
-        <activity android:name="com.adictic.common.ui.BlockAppsActivity" />
-        <activity android:name="com.adictic.common.ui.informe.InformeActivity" />
         <activity android:name="com.adictic.client.ui.support.PreguntesFrequents" />
         <activity android:name="com.adictic.client.ui.support.InformationActivity" />
-        <activity android:name="com.adictic.common.ui.events.EventsActivity" />
-        <activity android:name="com.adictic.common.ui.OficinesActivity" />
-        <activity android:name="com.adictic.common.ui.GeoLocActivity" />
         <activity android:name="com.adictic.client.ui.chat.ClosedChatActivity"
             android:theme="@style/AppTheme.NoActionBarBlue"/>
-        <activity android:name="com.adictic.client.ui.setting.ChangePasswordActivity" />
+        <activity android:name="com.adictic.client.ui.setting.TemporalPasswordChangeActivity" />
         <activity android:name="com.adictic.client.ui.inici.Permisos" />
         <activity android:name="com.adictic.client.ui.inici.AppLock" />
         <activity android:name="com.adictic.client.ui.BlockDeviceActivity"
             android:noHistory="true"
             android:launchMode="singleInstance" />
         <activity android:name="com.adictic.client.ui.inici.PermisosMIUI" />
-        <activity android:name="com.adictic.client.ui.setting.SettingsActivity" />
-        <activity android:name=".ui.setting.notifications.NotificationActivity" />
 
         <receiver android:name="com.adictic.client.receiver.checkInstalledApps"
             android:exported="true">
