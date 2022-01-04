@@ -1,5 +1,6 @@
 package com.adictic.common.ui.main;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,12 +17,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -392,6 +396,79 @@ public class MainParentFragment extends Fragment {
             ImageView IV_openLimit = root.findViewById(R.id.IV_openLimitsApps);
             IV_openLimit.setImageResource(R.drawable.ic_arrow_close);
         }
+
+        // Botó per editar nom i data de naixement del fill actual
+        ConstraintLayout CL_editChild = root.findViewById(R.id.CL_editChild);
+        if(isTutor) {
+            CL_editChild.setVisibility(View.VISIBLE);
+            CL_editChild.setOnClickListener(v -> {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
+                LayoutInflater inflater = this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.edit_child_dialog, null);
+                dialog.setView(dialogView);
+                dialog.setTitle(getString(R.string.edit_child));
+
+                EditText ET_childName = dialogView.findViewById(R.id.ET_childName);
+                assert ET_childName != null;
+                ET_childName.setText(fill.deviceName);
+
+                Button BT_editBday = dialogView.findViewById(R.id.BT_editBday);
+                assert BT_editBday != null;
+                BT_editBday.setText(fill.birthday);
+                BT_editBday.setOnClickListener(v1 -> {
+                    String[] bday = BT_editBday.getText().toString().split("/");
+                    int day = Integer.parseInt(bday[2]);
+                    int month = Integer.parseInt(bday[1])-1;
+                    int year = Integer.parseInt(bday[0]);
+
+                    DatePickerDialog datePicker = new DatePickerDialog(requireActivity(), R.style.datePicker, (view, year1, month1, dayOfMonth) -> {
+                        String date = year1+"/"+(month1+1)+"/"+dayOfMonth ;
+                        BT_editBday.setText(date);
+                    }, year, month, day);
+                    datePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+                    datePicker.show();
+                });
+
+                final AlertDialog alertDialog = dialog.show();
+
+                dialogView.findViewById(R.id.BT_cancelEdit).setOnClickListener(v12 -> alertDialog.dismiss());
+                dialogView.findViewById(R.id.BT_acceptEdit).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(ET_childName.getText().toString().equals(""))
+                            Toast.makeText(requireActivity(), getString(R.string.error_noDeviceName), Toast.LENGTH_LONG).show();
+                        else{
+                            FillNom nouFill = new FillNom();
+                            nouFill.birthday = BT_editBday.getText().toString();
+                            nouFill.dailyLimit = fill.dailyLimit;
+                            nouFill.blocked = fill.blocked;
+                            nouFill.freeuse = fill.freeuse;
+                            nouFill.deviceName = ET_childName.getText().toString();
+                            nouFill.idChild = fill.idChild;
+
+                            Call<String> call = mTodoService.editChild(fill.idChild, nouFill);
+                            call.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                                    super.onResponse(call, response);
+                                    if(response.isSuccessful() && response.body() != null){
+                                        fill = nouFill;
+                                        alertDialog.dismiss();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                    super.onFailure(call, t);
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        }
+        else
+            CL_editChild.setVisibility(View.GONE);
     }
 
     private void enviarTempsLimit(Button BT_dailyLimit, int hourOfDay, int minute) {
