@@ -159,21 +159,21 @@ public class Oficina implements Parcelable {
         if(o instanceof Oficina){
             Oficina oficina = (Oficina) o;
 
-            if (!name.equals(oficina.name))
+            if (name != null && !name.equals(oficina.name))
                 return true;
-            if (!latitude.equals(oficina.latitude))
+            if (latitude != null && !latitude.equals(oficina.latitude))
                 return true;
-            if (!longitude.equals(oficina.longitude))
+            if (longitude != null && !longitude.equals(oficina.longitude))
                 return true;
-            if (!address.equals(oficina.address))
+            if (address != null && !address.equals(oficina.address))
                 return true;
-            if (!ciutat.equals(oficina.ciutat))
+            if (ciutat != null && !ciutat.equals(oficina.ciutat))
                 return true;
-            if (!description.equals(oficina.description))
+            if (description != null && !description.equals(oficina.description))
                 return true;
-            if (!telf.equals(oficina.telf))
+            if (telf != null && !telf.equals(oficina.telf))
                 return true;
-            return !website.equals(oficina.website);
+            return website != null && !website.equals(oficina.website);
         }
         else return null;
     }

@@ -415,7 +415,8 @@ public class OficinesActivity extends AppCompatActivity {
             TextView TV_oficinaCiutat = row.findViewById(R.id.TV_oficinaCiutat);
 
             TV_nomOficina.setText(oficina.name);
-            String ciutat = "(" + oficina.ciutat.toUpperCase() + ")";
+            String nomCiutat = oficina.ciutat != null ? oficina.ciutat : "";
+            String ciutat = "(" + nomCiutat.toUpperCase() + ")";
             TV_oficinaCiutat.setText(ciutat);
 
             return row;
@@ -455,7 +456,8 @@ public class OficinesActivity extends AppCompatActivity {
                 TV_descOficina.setJustificationMode(LineBreaker.JUSTIFICATION_MODE_INTER_WORD);
             }
 
-            String address = oficina.address + ". " + oficina.ciutat.toUpperCase();
+            String nomCiutat = oficina.ciutat != null ? oficina.ciutat : "";
+            String address = oficina.address + ". " + nomCiutat.toUpperCase();
             TV_addressOficina.setText(address);
             TV_addressOficina.setOnLongClickListener(v -> {
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
