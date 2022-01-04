@@ -23,8 +23,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -151,6 +149,9 @@ public class ProfileFragment extends Fragment{
         descOriginal = adminProfile.description;
         profOriginal = adminProfile.professio;
         webListOriginal = new ArrayList<>(webList);
+
+        if(!adminProfile.webLinks.isEmpty())
+            TV_profile_no_links.setVisibility(View.GONE);
     }
 
     private boolean hiHaCanvis(){
@@ -191,11 +192,6 @@ public class ProfileFragment extends Fragment{
                     webLink.name = bundle.getString("name");
                     webLink.url = bundle.getString("url");
                     webList.add(webLink);
-                    ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.CL_profile_parent_2);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-                    constraintSet.connect(R.id.BT_profileAccept,ConstraintSet.TOP, R.id.RV_profileLinks,ConstraintSet.BOTTOM,24);
-                    constraintSet.applyTo(constraintLayout);
                     TV_profile_no_links.setVisibility(View.GONE);
                     RVadapter.notifyDataSetChanged();
                 }
@@ -399,14 +395,8 @@ public class ProfileFragment extends Fragment{
                     .setPositiveButton(R.string.accept, (dialog, which) -> {
                         // Continue with delete operation
                         webList.remove(position);
-                        if(webList.isEmpty()) {
-                            ConstraintLayout constraintLayout = requireActivity().findViewById(R.id.CL_profile_parent_2);
-                            ConstraintSet constraintSet = new ConstraintSet();
-                            constraintSet.clone(constraintLayout);
-                            constraintSet.connect(R.id.BT_profileAccept,ConstraintSet.TOP, R.id.TV_profile_no_links,ConstraintSet.BOTTOM,24);
-                            constraintSet.applyTo(constraintLayout);
+                        if(webList.isEmpty())
                             TV_profile_no_links.setVisibility(View.VISIBLE);
-                        }
                         notifyDataSetChanged();
                     })
 
