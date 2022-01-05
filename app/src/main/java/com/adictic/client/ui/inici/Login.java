@@ -156,12 +156,12 @@ public class Login extends AppCompatActivity {
             accept.setOnClickListener(view -> {
                 String mail = recover_email.getText().toString().trim();
                 if (isValidEmail(mail)){
+                    accept.setClickable(false);
                     RecoverPassword recoverPassword = new RecoverPassword();
                     recoverPassword.email = mail;
                     mTodoService.sendPetitionToRecoverPassword(recoverPassword).enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            super.onResponse(call, response);
                             if(response.isSuccessful()){
                                 alertDialog.dismiss();
                                 new AlertDialog.Builder(Login.this)
@@ -186,11 +186,15 @@ public class Login extends AppCompatActivity {
                                 Toast.makeText(Login.this, "Unknown error", Toast.LENGTH_SHORT).show();
                                 alertDialog.dismiss();
                             }
+
+                            accept.setClickable(true);
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                             super.onFailure(call, t);
+
+                            accept.setClickable(true);
                         }
                     });
                 } else {
