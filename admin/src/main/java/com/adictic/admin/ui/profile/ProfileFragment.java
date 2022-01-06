@@ -143,7 +143,7 @@ public class ProfileFragment extends Fragment{
         TIET_profileName.setText(adminProfile.name);
         TIET_professio.setText(adminProfile.professio);
         TIET_desc.setText(adminProfile.description);
-        webList = new ArrayList<>(adminProfile.webLinks);
+        webList = adminProfile.webLinks == null ? new ArrayList<>() : new ArrayList<>(adminProfile.webLinks);
 
         nomOriginal = adminProfile.name;
         descOriginal = adminProfile.description;
