@@ -12,10 +12,15 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.room.Room;
 import androidx.work.WorkManager;
 
+import com.adictic.common.database.AppDatabase;
+import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.R;
-import com.adictic.client.entity.BlockedApp;
+import com.adictic.common.entity.BlockedApp;
+import com.adictic.common.entity.AppUsage;
+import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
@@ -35,7 +40,6 @@ import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,42 +75,26 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         if(!Funcions.accessibilityServiceOn(getApplicationContext()))
             return;
 
-        List<BlockedApp> limitedAppsList = new ArrayList<>();
-        List<String> permanentBlockedApps = new ArrayList<>();
-        map.remove("blockApp");
-        for (Map.Entry<String, String> entry : map.entrySet()) {
+        List<BlockedApp> blockedApps = new ArrayList<>();
+        for(Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 String pkgName = entry.getKey();
                 int totalTime = Integer.parseInt(entry.getValue());
-                if (totalTime == 0)
-                    permanentBlockedApps.add(pkgName);
-                else {
-                    BlockedApp blockedApp = new BlockedApp();
-                    blockedApp.pkgName = pkgName;
-                    blockedApp.timeLimit = totalTime;
-                    limitedAppsList.add(blockedApp);
-                }
+
+                BlockedApp blockedApp = new BlockedApp();
+                blockedApp.pkgName = pkgName;
+                blockedApp.timeLimit = totalTime;
+                blockedApps.add(blockedApp);
             }
             catch (NumberFormatException e){
                 e.printStackTrace();
             }
         }
 
-        AccessibilityScreenService.instance.setBlockedApps(permanentBlockedApps);
-        AccessibilityScreenService.instance.setAppsLimitades(limitedAppsList);
+        Funcions.updateBlockedAppDB(ClientFirebaseMessagingService.this, blockedApps);
 
-        // Actualitzem mapa Accessibility amb dades noves
-        AccessibilityScreenService.instance.setTempsApps(Funcions.getTodayAppUsage(this));
-        Map<String, Long> tempsApps = AccessibilityScreenService.instance.getTempsApps();
-        if(tempsApps == null)
-            tempsApps = new HashMap<>();
-        for(BlockedApp limitedApp : limitedAppsList) {
-            if(limitedApp.pkgName == null)
-                continue;
-            long tempsUsat = tempsApps.getOrDefault(limitedApp.pkgName, 0L);
-            if (tempsUsat > limitedApp.timeLimit)
-                AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
-        }
+        // Actualitzem la bdd de l'ús del dia actual a room i aprofitem per enviar al servidor si fa molt que no es fa
+        Funcions.sendAppUsage(ClientFirebaseMessagingService.this);
 
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }

@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.text.HtmlCompat;
+import androidx.room.Room;
 import androidx.security.crypto.EncryptedFile;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -42,10 +43,13 @@ import androidx.work.WorkManager;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.R;
+import com.adictic.common.database.AppDatabase;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.AppUsage;
+import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.GeneralUsage;
+import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.entity.MonthEntity;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.YearEntity;
@@ -408,13 +412,14 @@ public class Funcions {
     }
 
     /**
-     * pre: si fTime = -1, agafa valors del dia actual inacabat
+     * pre: agafa informació dels últims nDies (0 si dia actual)
      * post: retorna la llista amb els mesos ja adaptats pel servidor (+1)
      **/
     public static List<GeneralUsage> getGeneralUsages(Context mContext, int nDies) {
         List<GeneralUsage> gul = new ArrayList<>();
 
         nDies = Math.min(nDies, 6);
+        nDies = Math.max(nDies, 0);
 
         long timer = System.currentTimeMillis();
 
@@ -435,6 +440,19 @@ public class Funcions {
             List<AppUsage> appUsages = pair.first;
             int timesUnlocked = pair.second;
 
+            // Actualitzem la bdd de room si és del mateix dia
+            if(i == 0) {
+                List<LocalAppUsage> localAppUsageList = new ArrayList<>();
+                for(AppUsage au : appUsages){
+                    LocalAppUsage localAppUsage = new LocalAppUsage();
+                    localAppUsage.pkgName = au.app.pkgName;
+                    localAppUsage.totalTime = au.totalTime;
+                    localAppUsageList.add(localAppUsage);
+                }
+
+                updateLocalAppUsageDB(mContext, localAppUsageList);
+            }
+
             GeneralUsage gu = new GeneralUsage();
             gu.day = initialDate.getDayOfMonth();
             gu.month = initialDate.getMonthOfYear();
@@ -453,6 +471,58 @@ public class Funcions {
         System.out.println("TIME: " + (System.currentTimeMillis() - timer));
 
         return gul;
+    }
+
+    public static void updateBlockedAppAndLocalAppUsageDB(Context mContext, List<BlockedApp> blockedApps, List<LocalAppUsage> localAppUsageList){
+        AppDatabase appDatabase = Room.databaseBuilder(mContext,
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        appDatabase.blockedAppDao()
+                .update(blockedApps);
+
+        appDatabase.localAppUsageDao()
+                .update(localAppUsageList);
+
+        appDatabase.close();
+    }
+
+    public static List<String> getPermanentBlockedAppsRoom(Context mContext) {
+        AppDatabase appDatabase = Room.databaseBuilder(mContext,
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        List<String> res = appDatabase.blockedAppDao().getPermanentBlockedApps();
+
+        appDatabase.close();
+
+        return res;
+    }
+
+    public static void updateBlockedAppDB(Context mContext, List<BlockedApp> list){
+        AppDatabase appDatabase = Room.databaseBuilder(mContext,
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        appDatabase.blockedAppDao()
+                .update(list);
+
+        appDatabase.close();
+    }
+
+    public static void updateLocalAppUsageDB(Context mContext, List<LocalAppUsage> list){
+        AppDatabase appDatabase = Room.databaseBuilder(mContext,
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        appDatabase.localAppUsageDao()
+                .update(list);
+
+        appDatabase.close();
     }
 
     public static Pair<List<AppUsage>,Integer> getAppUsages(Context mContext, long initialTime, long finalTime) {

@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
+import androidx.room.Room;
 import androidx.security.crypto.EncryptedFile;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
@@ -48,7 +49,9 @@ import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
-import com.adictic.client.entity.BlockedApp;
+import com.adictic.common.database.AppDatabase;
+import com.adictic.common.entity.BlockedApp;
+import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
@@ -92,7 +95,6 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -450,6 +452,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
     }
 
     //POST usage information to server
+
+    /**
+     * post: Actualitza la bdd de room de l'ús d'apps del dia actual i envia al servidor si fa molt que s'ha fet
+     */
     public static void sendAppUsage(Context ctx){
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(ctx);
         assert sharedPreferences != null;
@@ -458,9 +464,11 @@ public class Funcions extends com.adictic.common.util.Funcions {
         // Agafem quants dies fa que no s'agafen dades (màxim 6)
         long lastMillisAppUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
 
-        // Si hem enviat dades fa menys de 1 minuts, no tornem a enviar
-        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60)
+        // Si hem enviat dades fa menys de 1 minuts, no tornem a enviar, actualitzem bdd del dia d'avui
+        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60) {
+            Funcions.getGeneralUsages(ctx, 0);
             return;
+        }
 
         int daysToFetch;
         if(lastMillisAppUsage == 0)
@@ -473,6 +481,15 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         // Agafem les dades
         List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, daysToFetch);
+
+        List<LocalAppUsage> localAppUsageList = new ArrayList<>();
+        for(AppUsage au : gul.get(0).usage){
+            LocalAppUsage localAppUsage = new LocalAppUsage();
+            localAppUsage.pkgName = au.app.pkgName;
+            localAppUsage.totalTime = au.totalTime;
+            localAppUsageList.add(localAppUsage);
+        }
+        Funcions.updateLocalAppUsageDB(ctx, localAppUsageList);
 
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)
@@ -941,41 +958,37 @@ public class Funcions extends com.adictic.common.util.Funcions {
         if(!Funcions.accessibilityServiceOn(ctx))
             return;
 
-        List<BlockedApp> appsLimitades = new ArrayList<>();
-        List<String> blockedApps = new ArrayList<>();
-
-        if(body.limitApps == null)
-            body.limitApps = new ArrayList<>();
-
-        for(LimitedApps limitedApp : body.limitApps){
-            if(limitedApp.time > 0) {
-                BlockedApp blockedApp = new BlockedApp();
-                blockedApp.pkgName = limitedApp.name;
-                blockedApp.timeLimit = limitedApp.time;
-                appsLimitades.add(blockedApp);
-            }
-            else
-                blockedApps.add(limitedApp.name);
+        List<BlockedApp> blockedApps = new ArrayList<>();
+        for(String blockedApp : body.blockedApps) {
+            BlockedApp app = new BlockedApp();
+            app.pkgName = blockedApp;
+            app.timeLimit = 0L;
+            blockedApps.add(app);
+        }
+        for(LimitedApps limitedApps : body.limitApps){
+            BlockedApp app = new BlockedApp();
+            app.pkgName = limitedApps.name;
+            app.timeLimit = limitedApps.time;
+            blockedApps.add(app);
         }
 
-        AccessibilityScreenService.instance.setBlockedApps(blockedApps);
-        AccessibilityScreenService.instance.setAppsLimitades(appsLimitades);
+        AppDatabase appDatabase = Room.databaseBuilder(ctx,
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
 
-//        Funcions.write2File(ctx, Constants.FILE_LIMITED_APPS, appsLimitades);
-//        Funcions.write2File(ctx, Constants.FILE_BLOCKED_APPS, blockedApps);
+        appDatabase.blockedAppDao().update(blockedApps);
+        List<GeneralUsage> listGeneralUsage = Funcions.getGeneralUsages(ctx, 0);
 
-        // Actualitzem mapa Accessibility amb dades noves
-        AccessibilityScreenService.instance.setTempsApps(Funcions.getTodayAppUsage(ctx));
-        Map<String, Long> map = AccessibilityScreenService.instance.getTempsApps();
-        if(map == null)
-            map = new HashMap<>();
-        for(BlockedApp limitedApp : appsLimitades) {
-            if(limitedApp.pkgName == null)
-                continue;
-            long tempsUsat = map.getOrDefault(limitedApp.pkgName, 0L);
-            if (tempsUsat > limitedApp.timeLimit)
-                AccessibilityScreenService.instance.addBlockedApp(limitedApp.pkgName);
+        List<LocalAppUsage> localAppUsageList = new ArrayList<>();
+        for(AppUsage au : listGeneralUsage.get(0).usage){
+            LocalAppUsage localAppUsage = new LocalAppUsage();
+            localAppUsage.pkgName = au.app.pkgName;
+            localAppUsage.totalTime = au.totalTime;
+            localAppUsageList.add(localAppUsage);
         }
+
+        appDatabase.localAppUsageDao().update(localAppUsageList);
 
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }

@@ -16,6 +16,9 @@ public class Constants {
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
+    /** ROOM DB **/
+    public static final String ROOM_APP_DATABASE = "room_appDB";
+
     /** NOTIFICACIONS **/
 
     public static final String NOTIF_SETTINGS_CHAT = "notif_chat";
