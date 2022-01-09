@@ -80,6 +80,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -454,9 +455,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
     //POST usage information to server
 
     /**
-     * post: Actualitza la bdd de room de l'ús d'apps del dia actual i envia al servidor si fa molt que s'ha fet
+     * Actualitza la bdd de room de l'ús d'apps del dia actual i envia al servidor si fa molt que s'ha fet. Retorna el general usage del dia actual
      */
-    public static void sendAppUsage(Context ctx){
+    public static GeneralUsage sendAppUsage(Context ctx){
         SharedPreferences sharedPreferences = getEncryptedSharedPreferences(ctx);
         assert sharedPreferences != null;
         AdicticApi api = ((AdicticApp) ctx.getApplicationContext()).getAPI();
@@ -465,10 +466,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
         long lastMillisAppUsage = sharedPreferences.getLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, 0);
 
         // Si hem enviat dades fa menys de 1 minuts, no tornem a enviar, actualitzem bdd del dia d'avui
-        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60) {
-            Funcions.getGeneralUsages(ctx, 0);
-            return;
-        }
+        if(System.currentTimeMillis() - lastMillisAppUsage < 1000*60)
+            return Funcions.getGeneralUsages(ctx, 0).get(0);
 
         int daysToFetch;
         if(lastMillisAppUsage == 0)
@@ -517,6 +516,15 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 super.onFailure(call, t);
             }
         });
+
+        return gul.stream()
+                .filter(generalUsage ->
+                                generalUsage.day.equals(DateTime.now().getDayOfMonth()) &&
+                                generalUsage.month.equals(DateTime.now().getMonthOfYear()) &&
+                                generalUsage.year.equals(DateTime.now().getYear())
+                        )
+                .findFirst()
+                .orElse(gul.get(0));
     }
 
     public static boolean sameDay(long millisDay1, long millisDay2){

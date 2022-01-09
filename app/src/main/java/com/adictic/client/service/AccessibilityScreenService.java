@@ -29,15 +29,15 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.adictic.client.R;
-import com.adictic.common.dao.BlockedAppDao;
-import com.adictic.common.database.AppDatabase;
-import com.adictic.common.entity.BlockedApp;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.workers.BlockDeviceWorker;
 import com.adictic.client.workers.BlockSingleAppWorker;
+import com.adictic.common.dao.BlockedAppDao;
+import com.adictic.common.database.AppDatabase;
+import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -65,39 +65,20 @@ public class AccessibilityScreenService extends AccessibilityService {
     private ScreenLockReceiver screenLockReceiver = null;
 
     private static final String TAG = AccessibilityScreenService.class.getSimpleName();
-    private final List<String> blackListLiveApp = new ArrayList<>(Arrays.asList(
-            "com.google.android.apps.nexuslauncher",
-            "com.android.systemui",
-            "com.miui.aod"
-    ));
     private SharedPreferences sharedPreferences;
 
     private List<BlockedApp> appsLimitades = new ArrayList<>();
-    public void setAppsLimitades(List<BlockedApp> list) { appsLimitades = list; }
-    public void putAppLimitada(BlockedApp blockedApp) { appsLimitades.add(blockedApp); }
-    public void removeAppLimitada(String pkgName){
-        appsLimitades.removeAll(appsLimitades.stream()
-                .filter(blockedApp -> blockedApp.pkgName.equals(pkgName))
-                .collect(Collectors.toList()));
-    }
 
     private final Map<String, Long> tempsApps = new HashMap<>();
 
     private long startAppTime = 0;
-    private int ultimCopAcceditApp = 0;
 
     private List<String> blockedApps = new ArrayList<>();
     public void addBlockedApp(String app) {
         blockedApps.add(app);
-        changedBlockedApps = true;
-    }
-    public void setBlockedApps(List<String> list) {
-        blockedApps = list;
-        changedBlockedApps = true;
     }
     public void removeBlockedApp(String pkgName){
         blockedApps.remove(pkgName);
-        changedBlockedApps = true;
     }
 
     public boolean isCurrentAppBlocked() {
@@ -124,14 +105,10 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private String lastAppName = "";
     private String lastPackage = "";
-    public String getLastPackage() { return lastPackage; }
 
-    private String lastClassName = "";
     private String currentPackage = "";
     private String currentAppName = "";
     private String currentClassName = "";
-    public String getCurrentPackage() { return currentPackage; }
-    public String getCurrentAppName() { return currentAppName; }
 
     // PkgName/Classname que no són bloquejats
     private final List<String> allowedApps = new ArrayList<>(Arrays.asList(
@@ -154,13 +131,9 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private boolean freeUse = false;
     public void setFreeUse(boolean bool) { freeUse = bool; }
-    public boolean getFreeUse() { return  freeUse; }
 
     private boolean blockDevice = false;
     public void setBlockDevice(boolean bool) { blockDevice = bool; }
-
-    private boolean changedBlockedApps = false;
-    public void setChangedBlockedApps(boolean bool) { changedBlockedApps = bool; }
 
     private int activeEvents = 0;
     public void setActiveEvents(int i) { activeEvents = i; }
@@ -171,11 +144,9 @@ public class AccessibilityScreenService extends AccessibilityService {
     public void setHorarisActius(boolean b) { horarisActius = b; }
 
     private int dailyLimitDevice = 0;
-    private int dayUsage = 0;
+    private long dayUsage = 0;
     private boolean excessUsageDevice = false;
     public void setExcessUsageDevice(boolean b) { excessUsageDevice = b; }
-    private long unlockedDeviceTime = -1;
-
     private long lastTimeChecked = 0;
 
     @Override
@@ -199,7 +170,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 if(dayUsage > dailyLimitDevice)
                     excessUsageDevice = true;
             }
-            unlockedDeviceTime = System.currentTimeMillis();
+
             lastTimeChecked = System.currentTimeMillis();
 
             lastAppName = "";
@@ -384,7 +355,6 @@ public class AccessibilityScreenService extends AccessibilityService {
             // --- TRACTAR APP ACTUAL ---
             lastPackage = currentPackage;
             lastAppName = currentAppName;
-            lastClassName = currentClassName;
         }
     }
 
@@ -401,18 +371,6 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             // No hem excedit el temps d'ús
             excessUsageDevice = false;
-
-            // Últim cop que hem obert el dispositiu avui
-            unlockedDeviceTime = now;
-
-            // Les apps limitades les treiem de bloquejades
-            if(appsLimitades != null && !appsLimitades.isEmpty() && blockedApps != null) {
-                blockedApps.removeAll(
-                        appsLimitades.stream()
-                                .map(blockedApp -> blockedApp.pkgName)
-                                .collect(Collectors.toList())
-                );
-            }
 
             // Comencem a comptar app limitada ara
             startAppTime = System.currentTimeMillis();
@@ -580,30 +538,30 @@ public class AccessibilityScreenService extends AccessibilityService {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(ACTION_SCREEN_OFF) && !wasLocked){
+                // Indicar que el mòbil està bloquejat
                 wasLocked = true;
-                AccessibilityScreenService.instance.dayUsage += Math.abs(AccessibilityScreenService.instance.unlockedDeviceTime - System.currentTimeMillis());
 
+                // Cancelem el worker si existeix
                 AccessibilityScreenService.instance.cancelarWorkerBlockDevice();
 
-                if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
-                    int timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
-                    AccessibilityScreenService.instance.excessUsageDevice = timeUntilLimit < 0;
-                }
+                // Enviar dades d'ús i actualitzar bdd de room d'apps
+                AccessibilityScreenService.instance.dayUsage = Funcions.sendAppUsage(context).totalTime;
+
+                if(AccessibilityScreenService.instance.dailyLimitDevice > 0)
+                    AccessibilityScreenService.instance.excessUsageDevice = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage < 0;
                 else
                     AccessibilityScreenService.instance.excessUsageDevice = false;
 
-                Funcions.sendAppUsage(context);
                 enviarLastApp();
             }
             else if(intent.getAction().equals(ACTION_USER_PRESENT) && !instance.isDeviceBlocked()) {
                 wasLocked = false;
-                AccessibilityScreenService.instance.unlockedDeviceTime = System.currentTimeMillis();
 
                 sumarDesbloqueig(context);
 
                 // Mirem si hi ha límit establert
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
-                    int timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
+                    long timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
                     AccessibilityScreenService.instance.excessUsageDevice = timeUntilLimit < 0;
                     if(AccessibilityScreenService.instance.excessUsageDevice)
                         AccessibilityScreenService.instance.updateDeviceBlock();

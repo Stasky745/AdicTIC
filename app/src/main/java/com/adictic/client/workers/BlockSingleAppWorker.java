@@ -31,7 +31,6 @@ public class BlockSingleAppWorker extends Worker {
 
         if(Funcions.accessibilityServiceOn(getApplicationContext())){
             AccessibilityScreenService.instance.addBlockedApp(pkgName);
-            AccessibilityScreenService.instance.removeAppLimitada(pkgName);
             AccessibilityScreenService.instance.updateDeviceBlock();
         }
 

@@ -153,7 +153,6 @@ public class BlockAppActivity extends AppCompatActivity {
 
             // Actualitzem les dades del servei d'accessibilitat
             if(Funcions.accessibilityServiceOn(getApplicationContext())) {
-                AccessibilityScreenService.instance.removeAppLimitada(pkgName);
                 AccessibilityScreenService.instance.removeBlockedApp(pkgName);
                 AccessibilityScreenService.instance.isCurrentAppBlocked();
             }
