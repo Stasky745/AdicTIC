@@ -20,7 +20,9 @@ public abstract class LocalEventBlockDao {
     @Query("DELETE FROM LocalEventBlock")
     public abstract void deleteAll();
 
-    @Query("SELECT * FROM LocalEventBlock WHERE :dia = ANY(days)")
+    //@Query("SELECT * FROM LocalEventBlock WHERE :dia = ANY(days)")
+    //@Query("SELECT * FROM LocalEventBlock WHERE days LIKE '%:dia%'")
+    @Query("SELECT * FROM LocalEventBlock WHERE days LIKE :dia")
     public abstract LocalEventBlock findByDay(int dia);
 
     @Transaction
