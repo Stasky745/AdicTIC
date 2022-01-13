@@ -4,12 +4,20 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity
 public class HorarisNit implements Parcelable {
+    @PrimaryKey
     public Integer dia;
 
     // Joda-time getMillisOfDay()
+    @ColumnInfo(name = "dormir")
     public Integer dormir;
+
+    @ColumnInfo(name = "despertar")
     public Integer despertar;
 
     public HorarisNit() { }

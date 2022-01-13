@@ -50,6 +50,7 @@ import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
 import com.adictic.common.database.AppDatabase;
+import com.adictic.common.database.HorarisDatabase;
 import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.entity.NotificationInformation;
@@ -381,31 +382,45 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<HorarisAPI>() {
             @Override
             public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                if (response.isSuccessful()) {
+                HorarisDatabase horarisDatabase = Room.databaseBuilder(ctx,
+                        HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
+                        .enableMultiInstanceInvalidation()
+                        .build();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    // Actualitzem BDD
+                    List<HorarisNit> horarisList = new ArrayList<>(response.body().horarisNit);
+
+                    horarisDatabase.horarisNitDao().update(horarisList);
+
                     startHorarisEventsManagerWorker(ctx);
 
-                    HorarisAPI horarisAPI = response.body() != null ? response.body() : new HorarisAPI();
-                    horarisAPI.horarisNit = horarisAPI.horarisNit != null ? new ArrayList<>(horarisAPI.horarisNit) : new ArrayList<>();
-                    horarisAPI.tipus = horarisAPI.tipus != null ? horarisAPI.tipus : 1;
-
-                    write2File(ctx, Constants.FILE_HORARIS_NIT, new ArrayList<>(horarisAPI.horarisNit));
-                    setHoraris(ctx, new ArrayList<>(horarisAPI.horarisNit));
+                    setHoraris(ctx, horarisList);
                 }
                 else {
-                    ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false)));
+                    List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
                     setHoraris(ctx, horarisNit);
                 }
+
+                horarisDatabase.close();
             }
 
             @Override
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(ctx, Constants.FILE_HORARIS_NIT, false)));
+                HorarisDatabase horarisDatabase = Room.databaseBuilder(ctx,
+                        HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
+                        .enableMultiInstanceInvalidation()
+                        .build();
+
+                List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
                 setHoraris(ctx, horarisNit);
+
+                horarisDatabase.close();
             }
         });
     }
 
-    public static void setHoraris(Context ctx, ArrayList<HorarisNit> horarisNit){
+    public static void setHoraris(Context ctx, List<HorarisNit> horarisNit){
         // Aturem tots els workers d'Horaris que estiguin configurats
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_HORARIS_BLOCK);
@@ -415,25 +430,19 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         AccessibilityScreenService.instance.setHorarisActius(false);
 
-        List<HorarisNit> horaris = new ArrayList<>(horarisNit);
+        HorarisDatabase horarisDatabase = Room.databaseBuilder(ctx,
+                HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
 
-        if(horaris.isEmpty()) {
+        HorarisNit horariAvui = horarisDatabase.horarisNitDao().findByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+
+        if(horariAvui == null){
             AccessibilityScreenService.instance.updateDeviceBlock();
             return;
         }
 
         int now = DateTime.now().getMillisOfDay();
-        int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-
-        HorarisNit horariAvui = horaris.stream()
-                .filter(horarisNit2 -> diaSetmana == horarisNit2.dia)
-                .findFirst()
-                .orElse(null);
-
-        if(horariAvui == null) {
-            AccessibilityScreenService.instance.updateDeviceBlock();
-            return;
-        }
 
         int wakeTimeDelay = horariAvui.despertar - now;
         int sleepTimeDelay = horariAvui.dormir - now;
