@@ -19,7 +19,6 @@ import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class HorarisEventsWorkerManager extends Worker {
     private final static String TAG = "HorarisEventsWorkerManager";

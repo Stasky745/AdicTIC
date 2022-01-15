@@ -114,10 +114,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 super.onResponse(call, response);
-                if(response.isSuccessful() && response.body() != null && response.body().equals("ok"))
-                    callback.onDataGot(true);
-                else
-                    callback.onDataGot(false);
+                callback.onDataGot(response.isSuccessful() && response.body() != null && response.body().equals("ok"));
             }
 
             @Override
