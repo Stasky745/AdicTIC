@@ -4,22 +4,33 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Entity
 public class EventBlock implements Comparator<Object>, Parcelable {
+    @PrimaryKey
     public long id;
 
+    @ColumnInfo(name = "name")
     public String name;
 
     // Joda-time getMillisOfDay()
+    @ColumnInfo(name = "startEvent")
     public int startEvent;
+    @ColumnInfo(name = "endEvent")
     public int endEvent;
 
+    @Ignore
     public boolean activeNow;
 
+    @ColumnInfo(name = "days")
     public List<Integer> days;
 
     public EventBlock(EventBlock other){
