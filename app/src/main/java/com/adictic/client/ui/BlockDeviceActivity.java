@@ -26,12 +26,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.room.Room;
 
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.database.EventDatabase;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -40,6 +42,8 @@ import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -311,8 +315,15 @@ public class BlockDeviceActivity extends AppCompatActivity {
             message = getString(R.string.locked_device);
 
             // Agafem la llista d'events actius
-            List<EventBlock> list = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK, false);
-            if(list != null && !list.isEmpty()) {
+            EventDatabase eventDatabase = Room.databaseBuilder(BlockDeviceActivity.this,
+                    EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                    .enableMultiInstanceInvalidation()
+                    .build();
+
+            List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+            eventDatabase.close();
+
+            if(!list.isEmpty()) {
 //                List<EventBlock> list2 = list.stream()
 //                        .filter(Funcions::eventBlockIsActive)
 //                        .collect(Collectors.toList());

@@ -4,10 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.room.Room;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.client.util.Funcions;
+import com.adictic.common.database.EventDatabase;
+import com.adictic.common.database.HorarisDatabase;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.util.Constants;
@@ -44,11 +47,27 @@ public class HorarisEventsWorkerManager extends Worker {
         }
 
         // Agafem i apliquem horaris
-        ArrayList<HorarisNit> horarisNit = new ArrayList<>(Objects.requireNonNull(Funcions.readFromFile(getApplicationContext(), Constants.FILE_HORARIS_NIT, false)));
+        HorarisDatabase horarisDatabase = Room.databaseBuilder(getApplicationContext(),
+                HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
+
+        horarisDatabase.close();
+
         Funcions.setHoraris(getApplicationContext(), horarisNit);
 
         // Agafem i apliquem Events
-        List<EventBlock> eventList = Funcions.readFromFile(getApplicationContext(), Constants.FILE_EVENT_BLOCK, false);
+        EventDatabase eventDatabase = Room.databaseBuilder(getApplicationContext(),
+                EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        List<EventBlock> eventList = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
+
+        eventDatabase.close();
+
         Funcions.setEvents(getApplicationContext(), eventList);
 
         return Result.success();

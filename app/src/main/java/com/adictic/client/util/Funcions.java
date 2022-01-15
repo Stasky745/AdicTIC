@@ -36,7 +36,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.room.Room;
-import androidx.security.crypto.EncryptedFile;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -61,6 +60,7 @@ import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.common.callbacks.BooleanCallback;
 import com.adictic.common.database.AppDatabase;
+import com.adictic.common.database.EventDatabase;
 import com.adictic.common.database.HorarisDatabase;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedApp;
@@ -77,30 +77,16 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -218,8 +204,14 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 blockDeviceTitle.setText(ctx.getString(R.string.locked_device));
 
                 if (!blockedDevice){
-                    List<EventBlock> eventsList = readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
-                    assert eventsList != null;
+                    EventDatabase eventDatabase = Room.databaseBuilder(ctx,
+                            EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                            .enableMultiInstanceInvalidation()
+                            .build();
+
+                    List<EventBlock> eventsList = new ArrayList<>(eventDatabase.eventBlockDao().getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+                    eventDatabase.close();
+
                     EventBlock eventBlock = eventsList.stream()
                             .filter(com.adictic.common.util.Funcions::eventBlockIsActive)
                             .findFirst()
@@ -257,25 +249,40 @@ public class Funcions extends com.adictic.common.util.Funcions {
         call.enqueue(new Callback<EventsAPI>() {
             @Override
             public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
-                if (response.isSuccessful()) {
+                EventDatabase eventDatabase = Room.databaseBuilder(ctx,
+                        EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                        .enableMultiInstanceInvalidation()
+                        .build();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    List<EventBlock> eventBlocks = new ArrayList<>(response.body().events);
+
+                    eventDatabase.eventBlockDao().update(eventBlocks);
+
+                    eventDatabase.close();
+
                     startHorarisEventsManagerWorker(ctx);
 
-                    EventsAPI eventsAPI = response.body() != null ? response.body() : new EventsAPI();
-
-                    eventsAPI.events = eventsAPI.events != null ? eventsAPI.events : new ArrayList<>();
-
-                    write2File(ctx, Constants.FILE_EVENT_BLOCK, eventsAPI.events);
-                    setEvents(ctx, new ArrayList<>(eventsAPI.events));
+                    setEvents(ctx, eventBlocks);
                 }
                 else {
-                    List<EventBlock> list = Funcions.readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
+                    List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
+                    eventDatabase.close();
+
                     setEvents(ctx, list);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
-                List<EventBlock> list = Funcions.readFromFile(ctx, Constants.FILE_EVENT_BLOCK, false);
+                EventDatabase eventDatabase = Room.databaseBuilder(ctx,
+                        EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                        .enableMultiInstanceInvalidation()
+                        .build();
+
+                List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
+                eventDatabase.close();
+
                 setEvents(ctx, list);
             }
         });
@@ -286,9 +293,8 @@ public class Funcions extends com.adictic.common.util.Funcions {
         WorkManager.getInstance(ctx)
                 .cancelAllWorkByTag(Constants.WORKER_TAG_EVENT_BLOCK);
 
-        if(!Funcions.accessibilityServiceOn(ctx)) {
+        if(!Funcions.accessibilityServiceOn(ctx))
             return;
-        }
 
         AccessibilityScreenService.instance.setActiveEvents(0);
 
@@ -369,6 +375,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                     List<HorarisNit> horarisList = new ArrayList<>(response.body().horarisNit);
 
                     horarisDatabase.horarisNitDao().update(horarisList);
+                    horarisDatabase.close();
 
                     startHorarisEventsManagerWorker(ctx);
 
@@ -376,10 +383,10 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 }
                 else {
                     List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
+                    horarisDatabase.close();
+
                     setHoraris(ctx, horarisNit);
                 }
-
-                horarisDatabase.close();
             }
 
             @Override
@@ -390,9 +397,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
                         .build();
 
                 List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
-                setHoraris(ctx, horarisNit);
-
                 horarisDatabase.close();
+
+                setHoraris(ctx, horarisNit);
             }
         });
     }
@@ -683,6 +690,11 @@ public class Funcions extends com.adictic.common.util.Funcions {
         long startOfDay = DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillisOfDay() + 500;
         long delay = startOfDay - DateTime.now().getMillis();
 
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiresDeviceIdle(true)
+                .build();
+
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(HorarisEventsWorkerManager.class, 24, TimeUnit.HOURS)
                         .setInitialDelay(delay,TimeUnit.MILLISECONDS)
@@ -691,6 +703,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                                 30,
                                 TimeUnit.SECONDS
                         )
+                        .setConstraints(constraints)
                         .addTag(Constants.WORKER_TAG_HORARIS_EVENTS_MANAGER)
                         .build();
 
@@ -750,114 +763,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
     // **************** END WORKERS ****************
 
 
-
-    private static EncryptedFile getEncryptedFile(Context mCtx, String fileName, boolean write){
-        File file = new File(mCtx.getFilesDir(),fileName);
-
-        try {
-            boolean wasSuccessful = true;
-            if(write && file.exists())
-                wasSuccessful = file.delete();
-
-            if(!wasSuccessful) {
-                String TAG = "Funcions (getEncryptedFile)";
-                Log.i(TAG, "No s'ha pogut esborrar el fitxer: " + fileName);
-                return null;
-            }
-
-            return new EncryptedFile.Builder(
-                    mCtx,
-                    file,
-                    Objects.requireNonNull(getMasterKey(mCtx)),
-                    EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
-            ).build();
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static <T> void write2File(Context mCtx, String filename, List<T> list){
-        // Mirem a quin fitxer escriure
-        Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, true).apply();
-
-        EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, true);
-        if(encryptedFile == null) return;
-
-        if(list != null && !list.isEmpty()){
-            Set<T> setList = new HashSet<>(list);
-
-            // Agafem el JSON de la llista i inicialitzem EncryptedFile
-            String json = new Gson().toJson(setList);
-
-            // Escrivim al fitxer
-            try {
-                FileOutputStream fileOutputStream = encryptedFile.openFileOutput();
-                fileOutputStream.write(json.getBytes());
-                fileOutputStream.flush();
-                fileOutputStream.close();
-
-
-            } catch (GeneralSecurityException | IOException e) {
-                e.printStackTrace();
-
-            }
-        }
-        else{
-            File file = new File(mCtx.getFilesDir(), filename);
-            if(file.exists()){
-                if(file.delete())
-                    Log.d(TAG, "write2File: fitxer \"" + filename + "\" s'ha esborrat correctament");
-                else
-                    Log.d(TAG, "write2File: fitxer \"" + filename + "\" no s'ha pogut esborrar");
-            }
-        }
-
-    }
-
-    public static <T> List<T> readFromFile(Context mCtx, String filename, boolean storeChanges){
-        if(fileEmpty(mCtx,filename)) {
-            if(storeChanges)
-                Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, false).apply();
-            return new ArrayList<>();
-        }
-
-        EncryptedFile encryptedFile = getEncryptedFile(mCtx, filename, false);
-        assert encryptedFile != null;
-
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            FileInputStream fileInputStream = encryptedFile.openFileInput();
-
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-
-            String line = reader.readLine();
-            while(line != null){
-                stringBuilder.append(line).append('\n');
-                line = reader.readLine();
-            }
-
-            Gson gson = new Gson();
-            Type listType = getListType(filename);
-            ArrayList<T> res = gson.fromJson(stringBuilder.toString(),listType);
-            reader.close();
-            inputStreamReader.close();
-            fileInputStream.close();
-
-            if(storeChanges)
-                Objects.requireNonNull(getEncryptedSharedPreferences(mCtx)).edit().putBoolean(filename, false).apply();
-
-            return res;
-
-        } catch (GeneralSecurityException | IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static boolean isXiaomi(){
         return Build.MANUFACTURER.equalsIgnoreCase("xiaomi");
     }
@@ -874,35 +779,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public static boolean fileEmpty(Context mCtx, String fileName){
-        File file = new File(mCtx.getFilesDir(),fileName);
-
-        // Si el fitxer no existeix el tractem com si fos buit.
-        if(!file.exists())
-            return true;
-
-        // Retornem si el fitxer està buit
-        return file.length() == 0;
-    }
-
-    private static Type getListType(String filename) {
-        switch (filename) {
-            case Constants.FILE_LIMITED_APPS:
-                return new TypeToken<ArrayList<BlockedApp>>() {
-                }.getType();
-            case Constants.FILE_EVENT_BLOCK:
-                return new TypeToken<ArrayList<EventBlock>>() {
-                }.getType();
-            case Constants.FILE_HORARIS_NIT:
-                return new TypeToken<ArrayList<HorarisNit>>() {
-                }.getType();
-            case Constants.FILE_CURRENT_BLOCKED_APPS:
-                return new TypeToken<ArrayList<String>>() {
-                }.getType();
-        }
-        return null;
     }
 
     public static void showBlockAppScreen(Context ctx, String pkgName, String appName) {
