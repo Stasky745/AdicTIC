@@ -393,22 +393,7 @@ public class Funcions {
             return false;
 
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        switch (dayOfWeek){
-            case 1:
-                return eventBlock.sunday;
-            case 2:
-                return eventBlock.monday;
-            case 3:
-                return eventBlock.tuesday;
-            case 4:
-                return eventBlock.wednesday;
-            case 5:
-                return eventBlock.thursday;
-            case 6:
-                return eventBlock.friday;
-            default:
-                return eventBlock.saturday;
-        }
+        return eventBlock.days.contains(dayOfWeek);
     }
 
     /**
