@@ -12,20 +12,15 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.room.Room;
 import androidx.work.WorkManager;
 
-import com.adictic.common.database.AppDatabase;
-import com.adictic.common.entity.LocalAppUsage;
-import com.adictic.common.R;
-import com.adictic.common.entity.BlockedApp;
-import com.adictic.common.entity.AppUsage;
-import com.adictic.common.entity.GeneralUsage;
-import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.common.R;
+import com.adictic.common.entity.BlockedApp;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.ui.BlockAppsActivity;

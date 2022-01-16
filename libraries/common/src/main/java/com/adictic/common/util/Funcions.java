@@ -11,7 +11,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -50,7 +49,6 @@ import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.GeneralUsage;
-import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.entity.MonthEntity;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.YearEntity;
@@ -426,20 +424,6 @@ public class Funcions {
             List<AppUsage> appUsages = pair.first;
             int timesUnlocked = pair.second;
 
-            // Actualitzem la bdd de room si és del mateix dia
-            if(i == 0) {
-                List<LocalAppUsage> localAppUsageList = new ArrayList<>();
-                for(AppUsage au : appUsages){
-                    LocalAppUsage localAppUsage = new LocalAppUsage();
-                    localAppUsage.pkgName = au.app.pkgName;
-                    localAppUsage.totalTime = au.totalTime;
-                    localAppUsageList.add(localAppUsage);
-                }
-
-                AsyncTask.execute(() -> updateLocalAppUsageDB(mContext, localAppUsageList));
-
-            }
-
             GeneralUsage gu = new GeneralUsage();
             gu.day = initialDate.getDayOfMonth();
             gu.month = initialDate.getMonthOfYear();
@@ -460,34 +444,6 @@ public class Funcions {
         return gul;
     }
 
-    public static void updateBlockedAppAndLocalAppUsageDB(Context mContext, List<BlockedApp> blockedApps, List<LocalAppUsage> localAppUsageList){
-        AppDatabase appDatabase = Room.databaseBuilder(mContext,
-                AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
-
-        appDatabase.blockedAppDao()
-                .update(blockedApps);
-
-        appDatabase.localAppUsageDao()
-                .update(localAppUsageList);
-
-        appDatabase.close();
-    }
-
-    public static List<String> getPermanentBlockedAppsRoom(Context mContext) {
-        AppDatabase appDatabase = Room.databaseBuilder(mContext,
-                AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
-
-        List<String> res = appDatabase.blockedAppDao().getPermanentBlockedApps();
-
-        appDatabase.close();
-
-        return res;
-    }
-
     public static void updateBlockedAppDB(Context mContext, List<BlockedApp> list){
         AppDatabase appDatabase = Room.databaseBuilder(mContext,
                 AppDatabase.class, Constants.ROOM_APP_DATABASE)
@@ -495,18 +451,6 @@ public class Funcions {
                 .build();
 
         appDatabase.blockedAppDao()
-                .update(list);
-
-        appDatabase.close();
-    }
-
-    public static void updateLocalAppUsageDB(Context mContext, List<LocalAppUsage> list){
-        AppDatabase appDatabase = Room.databaseBuilder(mContext,
-                AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
-
-        appDatabase.localAppUsageDao()
                 .update(list);
 
         appDatabase.close();

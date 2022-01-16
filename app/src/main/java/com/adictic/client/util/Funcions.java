@@ -18,7 +18,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -72,7 +71,6 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
-import com.adictic.common.entity.LocalAppUsage;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
@@ -86,6 +84,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -472,15 +471,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
         // Agafem les dades
         List<GeneralUsage> gul = Funcions.getGeneralUsages(ctx, daysToFetch);
 
-        List<LocalAppUsage> localAppUsageList = new ArrayList<>();
-        for(AppUsage au : gul.get(0).usage){
-            LocalAppUsage localAppUsage = new LocalAppUsage();
-            localAppUsage.pkgName = au.app.pkgName;
-            localAppUsage.totalTime = au.totalTime;
-            localAppUsageList.add(localAppUsage);
-        }
-        AsyncTask.execute(() -> updateLocalAppUsageDB(ctx, localAppUsageList));
-
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)
                 .sum();
@@ -846,19 +836,32 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 .build();
 
         appDatabase.blockedAppDao().update(blockedApps);
-        List<GeneralUsage> listGeneralUsage = Funcions.getGeneralUsages(ctx, 0);
+        GeneralUsage generalUsage = Funcions.getGeneralUsages(ctx, 0).get(0);
 
-        List<LocalAppUsage> localAppUsageList = new ArrayList<>();
-        for(AppUsage au : listGeneralUsage.get(0).usage){
-            LocalAppUsage localAppUsage = new LocalAppUsage();
-            localAppUsage.pkgName = au.app.pkgName;
-            localAppUsage.totalTime = au.totalTime;
-            localAppUsageList.add(localAppUsage);
+        List<BlockedApp> listBlockedApps = new ArrayList<>(appDatabase.blockedAppDao().getAll());
+        appDatabase.close();
+
+        Map<String, Long> mapUsage = getTimeLeftMapAccessibilityService(listBlockedApps, generalUsage);
+
+        AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+        AccessibilityScreenService.instance.isCurrentAppBlocked();
+    }
+
+    public static Map<String, Long> getTimeLeftMapAccessibilityService(List<BlockedApp> listBlockedApps, GeneralUsage generalUsage) {
+        Map<String, Long> mapUsage = new HashMap<>();
+        for(BlockedApp blockedApp : listBlockedApps){
+            AppUsage app= generalUsage.usage.stream()
+                    .filter(appUsage -> appUsage.app.pkgName.equals(blockedApp.pkgName))
+                    .findFirst().orElse(null);
+            if(app == null)
+                continue;
+
+            long timeUsed = app.totalTime;
+
+            mapUsage.put(blockedApp.pkgName, blockedApp.timeLimit - timeUsed);
         }
 
-        appDatabase.localAppUsageDao().update(localAppUsageList);
-
-        AccessibilityScreenService.instance.isCurrentAppBlocked();
+        return mapUsage;
     }
 
     public static boolean accessibilityServiceOn(Context mCtx){

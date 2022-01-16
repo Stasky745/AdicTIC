@@ -35,9 +35,9 @@ import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.workers.BlockDeviceWorker;
 import com.adictic.client.workers.BlockSingleAppWorker;
-import com.adictic.common.dao.BlockedAppDao;
 import com.adictic.common.database.AppDatabase;
 import com.adictic.common.entity.BlockedApp;
+import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.LiveApp;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -67,40 +66,46 @@ public class AccessibilityScreenService extends AccessibilityService {
     private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private SharedPreferences sharedPreferences;
 
-    private List<BlockedApp> appsLimitades = new ArrayList<>();
-
     private final Map<String, Long> tempsApps = new HashMap<>();
+
+    private Map<String, Long> timeLeftMap = new HashMap<>();
+
+    public void setTimeLeftMap(Map<String, Long> map) { timeLeftMap = map; }
 
     private long startAppTime = 0;
 
-    private List<String> blockedApps = new ArrayList<>();
-    public void addBlockedApp(String app) {
-        blockedApps.add(app);
-    }
+    public void addBlockedApp(String app) { timeLeftMap.put(app, -1L); }
     public void removeBlockedApp(String pkgName){
-        blockedApps.remove(pkgName);
-    }
-
-    public boolean isCurrentAppBlocked() {
-        AppDatabase appDatabase = Room.databaseBuilder(AccessibilityScreenService.this,
+        AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, Constants.ROOM_APP_DATABASE)
                 .enableMultiInstanceInvalidation()
                 .build();
 
-        BlockedAppDao blockedAppDao = appDatabase.blockedAppDao();
+        appDatabase.blockedAppDao().deleteByName(pkgName);
+        appDatabase.close();
+
+        timeLeftMap.remove(pkgName);
+    }
+
+    public boolean isCurrentAppBlocked() {
         // Si estem a la pantalla de bloqueig d'apps
-        if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity") || blockedAppDao.isAppBlocked(currentPackage) == null){
+        if(currentPackage == null)
+            return false;
+
+        boolean isCurrentAppBlocked = timeLeftMap.get(currentPackage) != null && timeLeftMap.get(currentPackage) <= 0;
+        if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity") || !isCurrentAppBlocked){
             // Si l'últim package no esta bloquejat, acabem l'activitat
-            if(blockedAppDao.isAppBlocked(lastPackage) == null)
+            if(lastPackage == null)
+                return false;
+
+            boolean isLastAppBlocked = timeLeftMap.get(currentPackage) != null && timeLeftMap.get(lastPackage) <= 0;
+            if(!isLastAppBlocked)
                 LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_APP_BLOCK_SCREEN));
 
-            appDatabase.close();
             return false;
         }
-        else {
-            appDatabase.close();
-            return currentPackage != null && blockedAppDao.isAppBlocked(currentPackage) != null;
-        }
+        else
+            return currentPackage != null;
     }
 
     private String lastAppName = "";
@@ -210,7 +215,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         Intent lockIntent = new Intent(mCtx, BlockDeviceActivity.class);
         lockIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_REORDER_TO_FRONT);
 
-        String message = "";
+        String message;
 
         if(excessUsageDevice)
             message = mCtx.getString(R.string.daily_limit_pass);
@@ -366,7 +371,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             // Ús del dispositiu a 0
             dayUsage = 0;
 
-            blockedApps = Funcions.getPermanentBlockedAppsRoom(AccessibilityScreenService.this);
+            initializeTimeLeftMap();
             tempsApps.clear();
 
             // No hem excedit el temps d'ús
@@ -376,23 +381,32 @@ public class AccessibilityScreenService extends AccessibilityService {
             startAppTime = System.currentTimeMillis();
 
             // Si l'app actual està limitada comencem el worker
-            BlockedApp blockedApp = appsLimitades.stream()
-                    .filter(blockedApp1 -> blockedApp1.pkgName.equals(currentPackage))
-                    .findFirst()
-                    .orElse(null);
+            Long delay = timeLeftMap.get(currentPackage);
 
-            if(blockedApp == null)
+            if(delay == null || isCurrentAppBlocked())
                 return;
 
-            Long appTimeUsed = tempsApps.getOrDefault(currentPackage, 0L);
-
-            long delay = appTimeUsed != null ? blockedApp.timeLimit - appTimeUsed : blockedApp.timeLimit;
-
-            // Engegar worker amb delay blockedApp.timeBlocked - appTimeUsed
             programarWorkerBloqueigApp(currentPackage, delay);
         }
 
         lastTimeChecked = now;
+    }
+
+    private void initializeTimeLeftMap() {
+        Map<String, Long> res = new HashMap<>();
+
+        AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                .enableMultiInstanceInvalidation()
+                .build();
+
+        List<BlockedApp> blockedAppList = appDatabase.blockedAppDao().getAll();
+
+        for(BlockedApp blockedApp : blockedAppList) {
+            res.put(blockedApp.pkgName, blockedApp.timeLimit);
+        }
+
+        timeLeftMap = res;
     }
 
     @Override
@@ -432,19 +446,11 @@ public class AccessibilityScreenService extends AccessibilityService {
         tempsApps.put(lastPackage, tempsUsLastApp);
 
         // Si l'app actual està limitada comencem el worker
-        BlockedApp blockedApp = appsLimitades.stream()
-                .filter(blockedApp1 -> blockedApp1.pkgName.equals(currentPkg))
-                .findFirst()
-                .orElse(null);
+        Long delay = timeLeftMap.get(currentPackage);
 
-        if(blockedApp == null)
+        if(delay == null || isCurrentAppBlocked())
             return;
 
-        Long appTimeUsed = tempsApps.getOrDefault(currentPkg, 0L);
-
-        long delay = appTimeUsed != null ? blockedApp.timeLimit - appTimeUsed : blockedApp.timeLimit;
-
-        // Engegar worker amb delay blockedApp.timeBlocked - appTimeUsed
         programarWorkerBloqueigApp(currentPkg, delay);
     }
 
@@ -537,15 +543,19 @@ public class AccessibilityScreenService extends AccessibilityService {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Es bloqueja el mòbil
             if(intent.getAction().equals(ACTION_SCREEN_OFF) && !wasLocked){
                 // Indicar que el mòbil està bloquejat
                 wasLocked = true;
 
                 // Cancelem el worker si existeix
                 AccessibilityScreenService.instance.cancelarWorkerBlockDevice();
+                AccessibilityScreenService.instance.cancelarWorkerBloqueigApp();
 
-                // Enviar dades d'ús i actualitzar bdd de room d'apps
-                AccessibilityScreenService.instance.dayUsage = Funcions.sendAppUsage(context).totalTime;
+                // Enviar dades d'ús
+                GeneralUsage todayGeneralUsage = Funcions.sendAppUsage(context);
+                AccessibilityScreenService.instance.dayUsage = todayGeneralUsage.totalTime;
+                updateTimeLeftMap(context, todayGeneralUsage);
 
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0)
                     AccessibilityScreenService.instance.excessUsageDevice = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage < 0;
@@ -554,6 +564,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
                 enviarLastApp();
             }
+            // Es desbloqueja el mòbil
             else if(intent.getAction().equals(ACTION_USER_PRESENT) && !instance.isDeviceBlocked()) {
                 wasLocked = false;
 
@@ -561,6 +572,10 @@ public class AccessibilityScreenService extends AccessibilityService {
 
                 // Mirem si hi ha límit establert
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
+                    //Es un nou dia
+                    if(System.currentTimeMillis() - DateTime.now().getMillisOfDay() > AccessibilityScreenService.instance.lastTimeChecked)
+                        AccessibilityScreenService.instance.updateDayVariables();
+
                     long timeUntilLimit = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage;
                     AccessibilityScreenService.instance.excessUsageDevice = timeUntilLimit < 0;
                     if(AccessibilityScreenService.instance.excessUsageDevice)
@@ -571,6 +586,19 @@ public class AccessibilityScreenService extends AccessibilityService {
                 else
                     AccessibilityScreenService.instance.excessUsageDevice = false;
             }
+        }
+
+        private void updateTimeLeftMap(Context ctx, GeneralUsage todayGeneralUsage) {
+            AppDatabase appDatabase = Room.databaseBuilder(ctx,
+                    AppDatabase.class, Constants.ROOM_APP_DATABASE)
+                    .enableMultiInstanceInvalidation()
+                    .build();
+
+            List<BlockedApp> listBlockedApps = new ArrayList<>(appDatabase.blockedAppDao().getAll());
+            appDatabase.close();
+
+            Map<String, Long> mapUsage = Funcions.getTimeLeftMapAccessibilityService(listBlockedApps, todayGeneralUsage);
+            AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
         }
 
         private void sumarDesbloqueig(Context context){
