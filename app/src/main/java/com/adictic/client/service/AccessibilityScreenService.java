@@ -92,13 +92,13 @@ public class AccessibilityScreenService extends AccessibilityService {
         if(currentPackage == null)
             return false;
 
-        boolean isCurrentAppBlocked = timeLeftMap.get(currentPackage) != null && timeLeftMap.get(currentPackage) <= 0;
+        boolean isCurrentAppBlocked = timeLeftMap.getOrDefault(currentPackage, 1L) <= 0;
         if(Objects.equals(currentClassName, "com.adictic.client.ui.BlockAppActivity") || !isCurrentAppBlocked){
             // Si l'últim package no esta bloquejat, acabem l'activitat
             if(lastPackage == null)
                 return false;
 
-            boolean isLastAppBlocked = timeLeftMap.get(currentPackage) != null && timeLeftMap.get(lastPackage) <= 0;
+            boolean isLastAppBlocked = timeLeftMap.getOrDefault(lastPackage, 1L) <= 0;
             if(!isLastAppBlocked)
                 LocalBroadcastManager.getInstance(AccessibilityScreenService.this).sendBroadcast(new Intent(Constants.NO_APP_BLOCK_SCREEN));
 
