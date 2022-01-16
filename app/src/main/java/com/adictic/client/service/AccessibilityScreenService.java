@@ -66,8 +66,6 @@ public class AccessibilityScreenService extends AccessibilityService {
     private static final String TAG = AccessibilityScreenService.class.getSimpleName();
     private SharedPreferences sharedPreferences;
 
-    private final Map<String, Long> tempsApps = new HashMap<>();
-
     private Map<String, Long> timeLeftMap = new HashMap<>();
 
     public void setTimeLeftMap(Map<String, Long> map) { timeLeftMap = map; }
@@ -372,7 +370,6 @@ public class AccessibilityScreenService extends AccessibilityService {
             dayUsage = 0;
 
             initializeTimeLeftMap();
-            tempsApps.clear();
 
             // No hem excedit el temps d'ús
             excessUsageDevice = false;
@@ -440,10 +437,8 @@ public class AccessibilityScreenService extends AccessibilityService {
         cancelarWorkerBloqueigApp();
 
         Long tempsUsLastApp = System.currentTimeMillis() - startAppTime;
-
-        tempsUsLastApp += tempsApps.getOrDefault(lastPackage, 0L);
-
-        tempsApps.put(lastPackage, tempsUsLastApp);
+        if(timeLeftMap.containsKey(lastPackage))
+            timeLeftMap.put(lastPackage, timeLeftMap.getOrDefault(lastPackage, 0L) - tempsUsLastApp);
 
         // Si l'app actual està limitada comencem el worker
         Long delay = timeLeftMap.get(currentPackage);
