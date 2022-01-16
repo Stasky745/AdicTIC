@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -478,7 +479,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
             localAppUsage.totalTime = au.totalTime;
             localAppUsageList.add(localAppUsage);
         }
-        Funcions.updateLocalAppUsageDB(ctx, localAppUsageList);
+        AsyncTask.execute(() -> updateLocalAppUsageDB(ctx, localAppUsageList));
 
         long totalTime = gul.stream()
                 .mapToLong(generalUsage -> generalUsage.totalTime)

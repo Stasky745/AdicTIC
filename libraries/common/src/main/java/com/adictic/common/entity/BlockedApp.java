@@ -1,5 +1,6 @@
 package com.adictic.common.entity;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -8,6 +9,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class BlockedApp {
     @PrimaryKey
+    @NonNull
     public String pkgName;
 
     // -1 si bloqueig permanent

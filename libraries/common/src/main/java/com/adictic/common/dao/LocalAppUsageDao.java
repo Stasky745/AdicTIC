@@ -1,5 +1,6 @@
 package com.adictic.common.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -25,7 +26,7 @@ public abstract class LocalAppUsageDao {
     public abstract void deleteAll();
 
     @Query("SELECT * FROM LocalAppUsage WHERE pkgName LIKE :pkgName")
-    public abstract LocalAppUsage findByName(String pkgName);
+    public abstract LiveData<LocalAppUsage> findByName(String pkgName);
 
     @Transaction
     public void update(List<LocalAppUsage> list) {

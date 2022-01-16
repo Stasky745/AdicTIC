@@ -27,13 +27,13 @@ public abstract class BlockedAppDao {
     @Query("SELECT * FROM BlockedApp WHERE pkgName LIKE :pkgName")
     public abstract BlockedApp findByName(String pkgName);
 
-    @Query("SELECT pkgName FROM BlockedApp JOIN LocalAppUsage ON pkgName = LocalAppUsage.pkgName WHERE timeLimit <= 0 OR timeLimit <= LocalAppUsage.totalTime")
+    @Query("SELECT BlockedApp.pkgName FROM BlockedApp JOIN LocalAppUsage ON BlockedApp.pkgName = LocalAppUsage.pkgName WHERE BlockedApp.timeLimit <= 0 OR BlockedApp.timeLimit <= LocalAppUsage.totalTime")
     public abstract List<String> getAllBlockedApps();
 
-    @Query("SELECT * FROM BlockedApp JOIN LocalAppUsage ON pkgName = LocalAppUsage.pkgName WHERE pkgName LIKE :pkgName AND (timeLimit <= 0 OR timeLimit <= LocalAppUsage.totalTime)")
+    @Query("SELECT BlockedApp.* FROM BlockedApp JOIN LocalAppUsage ON BlockedApp.pkgName = LocalAppUsage.pkgName WHERE BlockedApp.pkgName LIKE :pkgName AND (BlockedApp.timeLimit <= 0 OR BlockedApp.timeLimit <= LocalAppUsage.totalTime)")
     public abstract BlockedApp isAppBlocked(String pkgName);
 
-    @Query("SELECT pkgName FROM BlockedApp JOIN LocalAppUsage ON pkgName = LocalAppUsage.pkgName WHERE timeLimit <= 0 OR timeLimit <= LocalAppUsage.totalTime")
+    @Query("SELECT BlockedApp.pkgName FROM BlockedApp JOIN LocalAppUsage ON BlockedApp.pkgName = LocalAppUsage.pkgName WHERE BlockedApp.timeLimit <= 0 OR BlockedApp.timeLimit <= LocalAppUsage.totalTime")
     public abstract List<String> getPermanentBlockedApps();
 
     @Transaction

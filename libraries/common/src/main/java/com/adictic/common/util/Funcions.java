@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
@@ -435,7 +436,8 @@ public class Funcions {
                     localAppUsageList.add(localAppUsage);
                 }
 
-                updateLocalAppUsageDB(mContext, localAppUsageList);
+                AsyncTask.execute(() -> updateLocalAppUsageDB(mContext, localAppUsageList));
+
             }
 
             GeneralUsage gu = new GeneralUsage();

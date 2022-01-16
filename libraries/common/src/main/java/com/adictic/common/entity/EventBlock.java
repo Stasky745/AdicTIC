@@ -8,6 +8,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,11 +28,8 @@ public class EventBlock implements Comparator<Object>, Parcelable {
     @ColumnInfo(name = "endEvent")
     public int endEvent;
 
-    @Ignore
-    public boolean activeNow;
-
     @ColumnInfo(name = "days")
-    public List<Integer> days;
+    public ArrayList<Integer> days;
 
     public EventBlock(EventBlock other){
         this.id = other.id;
@@ -39,8 +37,6 @@ public class EventBlock implements Comparator<Object>, Parcelable {
 
         this.startEvent = other.startEvent;
         this.endEvent = other.endEvent;
-
-        this.activeNow = other.activeNow;
 
         this.days = other.days;
     }
@@ -50,7 +46,6 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         name = in.readString();
         startEvent = in.readInt();
         endEvent = in.readInt();
-        activeNow = in.readByte() != 0;
         in.readList(days, Integer.class.getClassLoader());
     }
 
@@ -87,7 +82,6 @@ public class EventBlock implements Comparator<Object>, Parcelable {
 
     public boolean exactSame(EventBlock object){
         return this.id == object.id &&
-                this.activeNow == object.activeNow &&
                 this.name.equals(object.name) &&
                 this.startEvent == object.startEvent &&
                 this.endEvent == object.endEvent &&
@@ -113,7 +107,6 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         parcel.writeString(name);
         parcel.writeInt(startEvent);
         parcel.writeInt(endEvent);
-        parcel.writeByte((byte) (activeNow ? 1 : 0));
         parcel.writeList(days);
     }
 }
