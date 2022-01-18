@@ -20,7 +20,7 @@ public abstract class EventBlockDao {
     @Query("DELETE FROM EventBlock")
     public abstract void deleteAll();
 
-    @Query("SELECT * FROM EventBlock WHERE days LIKE :dia")
+    @Query("SELECT * FROM EventBlock WHERE days LIKE '%' || :dia || '%'")
     public abstract List<EventBlock> getEventsByDay(int dia);
 
     @Transaction

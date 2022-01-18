@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
@@ -185,7 +186,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
             config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
             config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
-            setServiceInfo(config);
+            this.setServiceInfo(config);
         }
     }
 
@@ -410,6 +411,8 @@ public class AccessibilityScreenService extends AccessibilityService {
     public void onInterrupt() {
         if(screenLockReceiver != null)
             AccessibilityScreenService.this.unregisterReceiver(screenLockReceiver);
+
+        AccessibilityScreenService.instance = null;
     }
 
     private boolean isActivity(AccessibilityEvent event) {

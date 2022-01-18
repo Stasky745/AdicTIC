@@ -78,8 +78,8 @@
 
     <string name="current_names">Los nombres asignados actualmente hasta ahora son:</string>
     <string name="new_name_entry">Entra el nombre del usuario de este dispositivo. Para sustituir uno anterior, entra el mismo nombre.</string>
-    <string name="accessibility_service_name" translatable="false">\"Adictic Accessibility Service\"</string>
-    <string name="accessibility_service_description">\"Este servicio es utiliza para bloquear aplicaciones\"</string>
+    <string name="accessibility_service_name">Servicio de Accesibilidad de AdicTIC</string>
+    <string name="accessibility_service_description">Este servicio se utiliza para leer el estado actual del dispositivo y bloquear aplicaciones</string>
     <string name="nomfill_enter">Entrar</string>
 
     <string name="emptyList">No hay información</string>

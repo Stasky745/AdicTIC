@@ -10,7 +10,7 @@ import com.adictic.common.entity.BlockedApp;
         entities = {
                 BlockedApp.class
         },
-        version = 2
+        version = 1
 )
 public abstract class AppDatabase extends RoomDatabase {
     public abstract BlockedAppDao blockedAppDao();

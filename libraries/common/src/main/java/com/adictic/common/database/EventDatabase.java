@@ -12,7 +12,7 @@ import com.adictic.common.util.Converters;
         entities = {
                 EventBlock.class
         },
-        version = 2
+        version = 1
 )
 @TypeConverters({Converters.class})
 public abstract class EventDatabase extends RoomDatabase {

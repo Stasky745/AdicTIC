@@ -36,6 +36,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.Data;
@@ -249,38 +251,45 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 EventDatabase eventDatabase = Room.databaseBuilder(ctx,
                         EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
                         .enableMultiInstanceInvalidation()
+                        .addMigrations()
                         .build();
 
                 if (response.isSuccessful() && response.body() != null) {
-                    List<EventBlock> eventBlocks = new ArrayList<>(response.body().events);
+                    new Thread(() -> {
+                        List<EventBlock> eventBlocks = new ArrayList<>(response.body().events);
 
-                    eventDatabase.eventBlockDao().update(eventBlocks);
+                        eventDatabase.eventBlockDao().update(eventBlocks);
 
-                    eventDatabase.close();
+                        eventDatabase.close();
 
-                    startHorarisEventsManagerWorker(ctx);
+                        startHorarisEventsManagerWorker(ctx);
 
-                    setEvents(ctx, eventBlocks);
+                        setEvents(ctx, eventBlocks);
+                    }).start();
                 }
                 else {
-                    List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
-                    eventDatabase.close();
+                    new Thread(() -> {
+                        List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
+                        eventDatabase.close();
 
-                    setEvents(ctx, list);
+                        setEvents(ctx, list);
+                    }).start();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
-                EventDatabase eventDatabase = Room.databaseBuilder(ctx,
-                        EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
-                        .enableMultiInstanceInvalidation()
-                        .build();
+                new Thread(() -> {
+                    EventDatabase eventDatabase = Room.databaseBuilder(ctx,
+                            EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                            .enableMultiInstanceInvalidation()
+                            .build();
 
-                List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
-                eventDatabase.close();
+                    List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
+                    eventDatabase.close();
 
-                setEvents(ctx, list);
+                    setEvents(ctx, list);
+                }).start();
             }
         });
     }
@@ -369,34 +378,40 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
                 if (response.isSuccessful() && response.body() != null) {
                     // Actualitzem BDD
-                    List<HorarisNit> horarisList = new ArrayList<>(response.body().horarisNit);
+                    new Thread(() -> {
+                        List<HorarisNit> horarisList = new ArrayList<>(response.body().horarisNit);
 
-                    horarisDatabase.horarisNitDao().update(horarisList);
-                    horarisDatabase.close();
+                        horarisDatabase.horarisNitDao().update(horarisList);
+                        horarisDatabase.close();
 
-                    startHorarisEventsManagerWorker(ctx);
+                        startHorarisEventsManagerWorker(ctx);
 
-                    setHoraris(ctx, horarisList);
+                        setHoraris(ctx, horarisList);
+                    }).start();
                 }
                 else {
-                    List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
-                    horarisDatabase.close();
+                    new Thread(() -> {
+                        List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
+                        horarisDatabase.close();
 
-                    setHoraris(ctx, horarisNit);
+                        setHoraris(ctx, horarisNit);
+                    }).start();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                HorarisDatabase horarisDatabase = Room.databaseBuilder(ctx,
-                        HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
-                        .enableMultiInstanceInvalidation()
-                        .build();
+                new Thread(() -> {
+                    HorarisDatabase horarisDatabase = Room.databaseBuilder(ctx,
+                            HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
+                            .enableMultiInstanceInvalidation()
+                            .build();
 
-                List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
-                horarisDatabase.close();
+                    List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
+                    horarisDatabase.close();
 
-                setHoraris(ctx, horarisNit);
+                    setHoraris(ctx, horarisNit);
+                }).start();
             }
         });
     }
@@ -678,11 +693,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
         long startOfDay = DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillisOfDay() + 500;
         long delay = startOfDay - DateTime.now().getMillis();
 
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresDeviceIdle(true)
-                .build();
-
         PeriodicWorkRequest myWork =
                 new PeriodicWorkRequest.Builder(HorarisEventsWorkerManager.class, 24, TimeUnit.HOURS)
                         .setInitialDelay(delay,TimeUnit.MILLISECONDS)
@@ -691,7 +701,6 @@ public class Funcions extends com.adictic.common.util.Funcions {
                                 30,
                                 TimeUnit.SECONDS
                         )
-                        .setConstraints(constraints)
                         .addTag(Constants.WORKER_TAG_HORARIS_EVENTS_MANAGER)
                         .build();
 
@@ -800,7 +809,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
                 public void onResponse(@NonNull Call<BlockedLimitedLists> call, @NonNull Response<BlockedLimitedLists> response) {
                     super.onResponse(call, response);
                     if (response.isSuccessful() && response.body() != null) {
-                        updateDB_BlockedApps(mCtx, response.body());
+                        new Thread(() -> updateDB_BlockedApps(mCtx, response.body())).start();
                     }
                 }
 
@@ -817,13 +826,16 @@ public class Funcions extends com.adictic.common.util.Funcions {
             return;
 
         List<BlockedApp> blockedApps = new ArrayList<>();
-        for(String blockedApp : body.blockedApps) {
+        List<String> BlockedAppsList = body.blockedApps != null ? body.blockedApps : new ArrayList<>();
+        for(String blockedApp : BlockedAppsList) {
             BlockedApp app = new BlockedApp();
             app.pkgName = blockedApp;
             app.timeLimit = 0L;
             blockedApps.add(app);
         }
-        for(LimitedApps limitedApps : body.limitApps){
+
+        List<LimitedApps> listLimitedApps = body.limitApps != null ? body.limitApps : new ArrayList<>();
+        for(LimitedApps limitedApps : listLimitedApps){
             BlockedApp app = new BlockedApp();
             app.pkgName = limitedApps.name;
             app.timeLimit = limitedApps.time;
@@ -833,6 +845,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         AppDatabase appDatabase = Room.databaseBuilder(ctx,
                 AppDatabase.class, Constants.ROOM_APP_DATABASE)
                 .enableMultiInstanceInvalidation()
+                .fallbackToDestructiveMigration()
                 .build();
 
         appDatabase.blockedAppDao().update(blockedApps);

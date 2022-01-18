@@ -59,10 +59,20 @@ public class BlockDeviceActivity extends AppCompatActivity {
     private long idChild;
     private SharedPreferences sharedPreferences;
     private AlertDialog alertDialog = null;
+    private final String CHANGE_TITLE_RECEIVER = "change_title_receiver";
 
     private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             finish();
+        }
+    };
+
+    private final BroadcastReceiver changeTitleReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);
+            TV_block_device_title.setText(message);
         }
     };
 
@@ -75,6 +85,9 @@ public class BlockDeviceActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
                 new IntentFilter(Constants.NO_DEVICE_BLOCK_SCREEN));
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(changeTitleReceiver,
+                new IntentFilter(CHANGE_TITLE_RECEIVER));
 
         sharedPreferences = Funcions.getEncryptedSharedPreferences(BlockDeviceActivity.this);
         assert sharedPreferences != null;
@@ -91,6 +104,8 @@ public class BlockDeviceActivity extends AppCompatActivity {
         setUnlockButton();
         postIntentAccesDisp();
     }
+
+
 
     private void setUnlockButton() {
         Button BT_desbloquejar = findViewById(R.id.BT_desbloqueig);
@@ -314,31 +329,33 @@ public class BlockDeviceActivity extends AppCompatActivity {
             // Posem el text per defecte en cas que no vagi bé
             message = getString(R.string.locked_device);
 
-            // Agafem la llista d'events actius
-            EventDatabase eventDatabase = Room.databaseBuilder(BlockDeviceActivity.this,
-                    EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
-                    .enableMultiInstanceInvalidation()
-                    .build();
+            new Thread(() -> {
+                // Agafem la llista d'events actius
+                EventDatabase eventDatabase = Room.databaseBuilder(BlockDeviceActivity.this,
+                        EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
+                        .enableMultiInstanceInvalidation()
+                        .build();
 
-            List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
-            eventDatabase.close();
+                List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
+                eventDatabase.close();
 
-            if(!list.isEmpty()) {
-//                List<EventBlock> list2 = list.stream()
-//                        .filter(Funcions::eventBlockIsActive)
-//                        .collect(Collectors.toList());
+                if(!list.isEmpty()) {
+                    // Agafem l'event actiu que acabi més tard
+                    EventBlock event = list.stream()
+                            .filter(Funcions::eventBlockIsActive)
+                            .collect(Collectors.toList())
+                            .stream()
+                            .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
+                            .orElse(null);
 
-                // Agafem l'event actiu que acabi més tard
-                EventBlock event = list.stream()
-                        .filter(Funcions::eventBlockIsActive)
-                        .collect(Collectors.toList())
-                        .stream()
-                        .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
-                        .orElse(null);
-
-                if(event != null)
-                    message = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
-            }
+                    if(event != null) {
+                        String msg = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
+                        Intent intent = new Intent(CHANGE_TITLE_RECEIVER);
+                        intent.putExtra("message", msg);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    }
+                }
+            }).start();
         }
 
         TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);

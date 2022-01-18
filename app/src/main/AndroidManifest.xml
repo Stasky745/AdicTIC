@@ -72,8 +72,8 @@
         </service>
         <service
             android:name="com.adictic.client.service.AccessibilityScreenService"
-            android:label="@string/accessibility_service_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:label="@string/adictic"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

@@ -563,6 +563,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
     private void sendIcon(List<String> list) {
         for (String s : list) {
+            if(s.equals("action") || s.equals("logID"))
+                continue;
             try {
                 PackageManager mPm = getApplicationContext().getPackageManager();
                 Drawable icon = mPm.getApplicationIcon(s);
