@@ -22,6 +22,7 @@ import com.adictic.client.ui.inici.Login;
 import com.adictic.client.ui.inici.Permisos;
 import com.adictic.client.ui.inici.SplashScreen;
 import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.ui.ReportActivity;
 import com.adictic.common.util.Callback;
@@ -32,10 +33,17 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class FuncionsAppSettings extends FuncionsSettings {
+
+    @Inject
+    static AdicticRepository repository;
 
     public static void settings_report_suggestion(PreferenceFragmentCompat context) {
         Preference report_suggestion = context.findPreference("setting_report_suggestion");
@@ -93,13 +101,13 @@ public class FuncionsAppSettings extends FuncionsSettings {
             BT_unlock.setOnClickListener(v1 -> {
                 TV_pwd_error.setVisibility(View.INVISIBLE);
 
-                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx.getApplicationContext());
+                SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                 assert sharedPreferences != null;
 
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                Funcions.isPasswordCorrect(ctx, pwd, valid -> {
+                repository.isPasswordCorrect(pwd, valid -> {
                     if(valid){
                         Intent intent = new Intent(ctx, Permisos.class);
                         intent.putExtra("settings", true);
@@ -127,7 +135,7 @@ public class FuncionsAppSettings extends FuncionsSettings {
 
     public static void settings_change_language(PreferenceFragmentCompat context) {
         ListPreference language_preference = context.findPreference("setting_change_language");
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         String selectedLanguage = sharedPreferences.getString("language", Locale.getDefault().getLanguage());
 
@@ -149,7 +157,7 @@ public class FuncionsAppSettings extends FuncionsSettings {
 
     public static void settings_tancar_sessio(PreferenceFragmentCompat context) {
         Preference tancarSessio = context.findPreference("setting_tancar_sessio");
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         AdicticApi mTodoService = ((AdicticApp) context.requireActivity().getApplication()).getAPI();
 

@@ -46,6 +46,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -69,11 +70,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class MainParentFragment extends Fragment {
     private final static String ARG_FILL = "arg_fill";
+
+    @Inject
+    Repository repository;
 
     private final static String TAG = "MainParentFragment";
 
@@ -106,7 +114,7 @@ public class MainParentFragment extends Fragment {
                     TextView currentApp = root.findViewById(R.id.TV_CurrentApp);
                     try {
                         IV_liveIcon.setVisibility(View.VISIBLE);
-                        Funcions.setIconDrawable(requireContext(), pkgName, IV_liveIcon);
+                        repository.setIconDrawable(pkgName, IV_liveIcon);
                         String appName = intent.getStringExtra("appName");
                         currentApp.setText(appName);
                     } catch (IllegalStateException e) {
@@ -138,8 +146,8 @@ public class MainParentFragment extends Fragment {
 
         getBundle();
 
-        mTodoService = ((App) requireActivity().getApplicationContext()).getAPI();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        mTodoService = repository.getApi();
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         isTutor = sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false);
@@ -185,13 +193,13 @@ public class MainParentFragment extends Fragment {
             if(isTutor)
                 getUsageFromServer();
             else
-                makeGraph(Funcions.getGeneralUsages(getActivity(), 0));
+                makeGraph(repository.getGeneralUsages(0));
         }
     }
 
     private void setLiveApp() {
         if(isTutor) {
-            Funcions.askChildForLiveApp(requireContext(), idChildSelected, true);
+            repository.askChildForLiveApp(idChildSelected, true);
             setLastLiveApp();
         }
         else{
@@ -222,7 +230,7 @@ public class MainParentFragment extends Fragment {
         if(liveApp.pkgName != null && !liveApp.pkgName.equals("-1")) {
             try {
                 IV_liveIcon.setVisibility(View.VISIBLE);
-                Funcions.setIconDrawable(requireContext(), liveApp.pkgName, IV_liveIcon);
+                repository.setIconDrawable(liveApp.pkgName, IV_liveIcon);
             } catch (IllegalStateException ex) {
                 ex.printStackTrace();
                 return;
@@ -750,7 +758,7 @@ public class MainParentFragment extends Fragment {
                     Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                     TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
                     TV_timesUnlocked.setVisibility(View.VISIBLE);
-                    Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+                    Spanned text = repository.getSpannedText(getString(R.string.cops_desbloquejat, 0));
                     TV_timesUnlocked.setText(text);
                 }
             }
@@ -761,7 +769,7 @@ public class MainParentFragment extends Fragment {
                 Toast.makeText(requireActivity().getApplicationContext(), getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
                 TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
                 TV_timesUnlocked.setVisibility(View.VISIBLE);
-                Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+                Spanned text = repository.getSpannedText(getString(R.string.cops_desbloquejat, 0));
                 TV_timesUnlocked.setText(text);
             }
         });
@@ -778,7 +786,7 @@ public class MainParentFragment extends Fragment {
 
             TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
             TV_timesUnlocked.setVisibility(View.VISIBLE);
-            Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, 0));
+            Spanned text = repository.getSpannedText(getString(R.string.cops_desbloquejat, 0));
             TV_timesUnlocked.setText(text);
         } else {
             root.findViewById(R.id.Ch_Pie).setVisibility(View.VISIBLE);
@@ -790,7 +798,7 @@ public class MainParentFragment extends Fragment {
             if (timesUnlocked != -1) {
                 TextView TV_timesUnlocked = root.findViewById(R.id.TV_timesUnlocked);
                 TV_timesUnlocked.setVisibility(View.VISIBLE);
-                Spanned text = Funcions.getSpannedText(requireContext(), getString(R.string.cops_desbloquejat, timesUnlocked));
+                Spanned text = repository.getSpannedText(getString(R.string.cops_desbloquejat, timesUnlocked));
                 TV_timesUnlocked.setText(text);
             }
 
@@ -945,7 +953,7 @@ public class MainParentFragment extends Fragment {
     @Override
     protected void finalize() throws Throwable {
         if (isTutor)
-            Funcions.askChildForLiveApp(requireContext(), idChildSelected, false);
+            repository.askChildForLiveApp(idChildSelected, false);
         super.finalize();
     }
 }

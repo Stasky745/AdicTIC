@@ -13,15 +13,24 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.adictic.common.R;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NotificationActivity extends AppCompatActivity {
     private TabLayout TL_notif_tabs;
     private ViewPager2 VP_notif_content;
+
+    @Inject
+    Repository repository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,7 +43,7 @@ public class NotificationActivity extends AppCompatActivity {
         VP_notif_content = findViewById(R.id.VP_notif_content);
         TextView TV_notif_empty = findViewById(R.id.TV_notif_empty);
 
-        ArrayList<NotificationInformation> notifList = Funcions.getNotificationList(NotificationActivity.this);
+        ArrayList<NotificationInformation> notifList = repository.getNotificationList();
 
         if(notifList == null || notifList.isEmpty()){
             TL_notif_tabs.setVisibility(View.GONE);

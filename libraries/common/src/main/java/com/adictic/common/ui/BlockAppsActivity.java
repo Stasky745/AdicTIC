@@ -38,6 +38,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,11 +46,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class BlockAppsActivity extends AppCompatActivity {
     private Api mTodoService;
+
+    @Inject
+    Repository repository;
+
     private SharedPreferences sharedPreferences;
 
     private Long idChild;
@@ -72,7 +81,7 @@ public class BlockAppsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.block_app_layout);
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.block_apps));
@@ -86,7 +95,7 @@ public class BlockAppsActivity extends AppCompatActivity {
         else
             idChild = getIntent().getLongExtra("idChild", -1);
 
-        mTodoService = ((App) this.getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         selectedApps = new ArrayList<>();
         RV_appList = findViewById(R.id.RV_Apps);
@@ -297,7 +306,7 @@ public class BlockAppsActivity extends AppCompatActivity {
 
             holder.pkgName = blockedApp.pkgName;
 
-            Funcions.setIconDrawable(mContext, blockedApp.pkgName, holder.IV_appIcon);
+            repository.setIconDrawable(blockedApp.pkgName, holder.IV_appIcon);
 
             holder.TV_appName.setText(blockedApp.appName);
 

@@ -43,6 +43,7 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.adictic.common.util.RVSpaceDecoration;
+import com.adictic.common.util.hilt.Repository;
 
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -54,12 +55,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class InformeDetallatFragment extends Fragment {
     private final int RV_APPS_EVENTS_HEIGHT = 1300;
     private final int RV_HORARIS_HEIGHT = 1000;
+
+    @Inject
+    Repository repository;
 
     private static final String ARG_TOTALUSAGETIME = "totalUsageTime";
     private static final String ARG_EDAT = "edat";
@@ -99,7 +107,7 @@ public class InformeDetallatFragment extends Fragment {
 
         getBundle();
 
-        api = ((App) requireContext().getApplicationContext()).getAPI();
+        api = repository.getApi();
 
         setIntro(root);
         setLimitsMarcats(root);
@@ -123,14 +131,14 @@ public class InformeDetallatFragment extends Fragment {
                 ss.append(new SpannableString(getString(R.string.recomanacio_abus)));
 
                 // Click per límits
-                ClickableSpan clickableSpanLimits = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), EventsActivity.class));
+                ClickableSpan clickableSpanLimits = repository.getClickableSpan(new Intent(requireContext(), EventsActivity.class));
                 int initialIndex = getString(R.string.recomanacio_abus).indexOf(getString(R.string.recomanacio_abus_limits_aux));
                 int finalIndex = initialIndex + getString(R.string.recomanacio_abus_limits_aux).length();
                 ss.setSpan(clickableSpanLimits, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 // Click per contacte
                 if(requireContext().getPackageName().equals("com.adictic.client")) {
-                    ClickableSpan clickableSpanContacte = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), ChatActivity.class));
+                    ClickableSpan clickableSpanContacte = repository.getClickableSpan(new Intent(requireContext(), ChatActivity.class));
                     initialIndex = getString(R.string.recomanacio_abus).indexOf(getString(R.string.recomanacio_abus_contacte_aux));
                     finalIndex = initialIndex + getString(R.string.recomanacio_abus_contacte_aux).length();
                     ss.setSpan(clickableSpanContacte, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -141,7 +149,7 @@ public class InformeDetallatFragment extends Fragment {
                 ss.append(new SpannableString(getString(R.string.recomanacio_alarma)));
 
                 // Click per límits
-                ClickableSpan clickableSpanLimits = Funcions.getClickableSpan(requireContext(), new Intent(requireContext(), EventsActivity.class));
+                ClickableSpan clickableSpanLimits = repository.getClickableSpan(new Intent(requireContext(), EventsActivity.class));
                 int initialIndex = getString(R.string.recomanacio_alarma).indexOf(getString(R.string.recomanacio_alarma_aux));
                 int finalIndex = initialIndex + getString(R.string.recomanacio_alarma_aux).length();
                 ss.setSpan(clickableSpanLimits, initialIndex, finalIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

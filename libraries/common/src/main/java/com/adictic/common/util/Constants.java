@@ -43,6 +43,7 @@ public class Constants {
     }
 
     /** ROOM DB **/
+    public static final String ROOM_ADICTIC_DATABASE = "room_adicticDB";
     public static final String ROOM_APP_DATABASE = "room_appDB";
     public static final String ROOM_HORARIS_DATABASE = "room_horarisDB";
     public static final String ROOM_EVENT_DATABASE = "room_eventDB";

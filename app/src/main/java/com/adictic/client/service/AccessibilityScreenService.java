@@ -17,13 +17,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.room.Room;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -34,9 +32,9 @@ import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.client.workers.BlockDeviceWorker;
 import com.adictic.client.workers.BlockSingleAppWorker;
-import com.adictic.common.database.AppDatabase;
 import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.LiveApp;
@@ -55,12 +53,19 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class AccessibilityScreenService extends AccessibilityService {
 
     public static AccessibilityScreenService instance;
+
+    @Inject
+    AdicticRepository repository;
 
     private ScreenLockReceiver screenLockReceiver = null;
 
@@ -75,14 +80,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     public void addBlockedApp(String app) { timeLeftMap.put(app, -1L); }
     public void removeBlockedApp(String pkgName){
-        AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
-
-        appDatabase.blockedAppDao().deleteByName(pkgName);
-        appDatabase.close();
-
+        repository.deleteAppByName(pkgName);
         timeLeftMap.remove(pkgName);
     }
 
@@ -158,7 +156,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         super.onServiceConnected();
         instance = this;
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false)) {
@@ -169,7 +167,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             fetchDades();
 
             excessUsageDevice = false;
-            dayUsage = Math.toIntExact(Funcions.getGeneralUsages(AccessibilityScreenService.this, 0).get(0).totalTime);
+            dayUsage = Math.toIntExact(repository.getGeneralUsages(0).get(0).totalTime);
             if(dailyLimitDevice > 0) {
                 if(dayUsage > dailyLimitDevice)
                     excessUsageDevice = true;
@@ -248,7 +246,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
     private void fetchDades() {
         // Enviem dades i actualitzem bdd room
-        Funcions.sendAppUsage(AccessibilityScreenService.this);
+        repository.sendAppUsage();
 
         liveApp = sharedPreferences.getBoolean(Constants.SHARED_PREFS_LIVEAPP, false);
         freeUse = sharedPreferences.getBoolean(Constants.SHARED_PREFS_FREEUSE, false);
@@ -258,10 +256,10 @@ public class AccessibilityScreenService extends AccessibilityService {
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
             AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
-            Funcions.fetchAppBlockFromServer(AccessibilityScreenService.this);
+            repository.fetchAppBlockFromServer();
 
-            Funcions.checkEvents(AccessibilityScreenService.this);
-            Funcions.checkHoraris(AccessibilityScreenService.this);
+            repository.checkEvents();
+            repository.checkHoraris();
 
             Call<Boolean> call = mTodoService.getBlockStatus(idChild);
             call.enqueue(new Callback<Boolean>() {
@@ -271,7 +269,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                     if(response.isSuccessful() && response.body() != null){
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,response.body()).apply();
                         blockDevice = response.body();
-                        if(Funcions.accessibilityServiceOn(AccessibilityScreenService.this))
+                        if(repository.accessibilityServiceOn())
                             AccessibilityScreenService.instance.updateDeviceBlock();
                     }
                 }
@@ -393,12 +391,7 @@ public class AccessibilityScreenService extends AccessibilityService {
     private void initializeTimeLeftMap() {
         Map<String, Long> res = new HashMap<>();
 
-        AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
-
-        List<BlockedApp> blockedAppList = appDatabase.blockedAppDao().getAll();
+        List<BlockedApp> blockedAppList = repository.getAllApps();
 
         for(BlockedApp blockedApp : blockedAppList) {
             res.put(blockedApp.pkgName, blockedApp.timeLimit);
@@ -512,7 +505,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         liveApp.time = DateTime.now().getMillis();
 
         if(sharedPreferences == null)
-            sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.this);
+            sharedPreferences = repository.getEncryptedSharedPreferences();
 
         Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
@@ -539,6 +532,9 @@ public class AccessibilityScreenService extends AccessibilityService {
     public static class ScreenLockReceiver extends BroadcastReceiver {
         private boolean wasLocked = false;
 
+        @Inject
+        AdicticRepository repository;
+
         @Override
         public void onReceive(Context context, Intent intent) {
             // Es bloqueja el mòbil
@@ -551,9 +547,9 @@ public class AccessibilityScreenService extends AccessibilityService {
                 AccessibilityScreenService.instance.cancelarWorkerBloqueigApp();
 
                 // Enviar dades d'ús
-                GeneralUsage todayGeneralUsage = Funcions.sendAppUsage(context);
+                GeneralUsage todayGeneralUsage = repository.sendAppUsage();
                 AccessibilityScreenService.instance.dayUsage = todayGeneralUsage.totalTime;
-                updateTimeLeftMap(context, todayGeneralUsage);
+                updateTimeLeftMap(todayGeneralUsage);
 
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0)
                     AccessibilityScreenService.instance.excessUsageDevice = AccessibilityScreenService.instance.dailyLimitDevice - AccessibilityScreenService.instance.dayUsage < 0;
@@ -586,21 +582,15 @@ public class AccessibilityScreenService extends AccessibilityService {
             }
         }
 
-        private void updateTimeLeftMap(Context ctx, GeneralUsage todayGeneralUsage) {
-            AppDatabase appDatabase = Room.databaseBuilder(ctx,
-                    AppDatabase.class, Constants.ROOM_APP_DATABASE)
-                    .enableMultiInstanceInvalidation()
-                    .build();
+        private void updateTimeLeftMap(GeneralUsage todayGeneralUsage) {
+            List<BlockedApp> listBlockedApps = repository.getAllApps();
 
-            List<BlockedApp> listBlockedApps = new ArrayList<>(appDatabase.blockedAppDao().getAll());
-            appDatabase.close();
-
-            Map<String, Long> mapUsage = Funcions.getTimeLeftMapAccessibilityService(listBlockedApps, todayGeneralUsage);
+            Map<String, Long> mapUsage = repository.getTimeLeftMapAccessibilityService(listBlockedApps, todayGeneralUsage);
             AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
         }
 
         private void sumarDesbloqueig(Context context){
-            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.instance);
+            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
             assert sharedPreferences != null;
 
             long date = new Date().getTime();
@@ -620,10 +610,10 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
 
         private void enviarLastApp() {
-            if(!Funcions.accessibilityServiceOn(instance.getApplicationContext()))
+            if(!repository.accessibilityServiceOn())
                 return;
 
-            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(AccessibilityScreenService.instance);
+            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
             assert sharedPreferences != null;
 
             LiveApp liveApp = new LiveApp();
@@ -634,12 +624,12 @@ public class AccessibilityScreenService extends AccessibilityService {
             // També actualitzem les dades d'ús al servidor
             try {
                 if(WorkManager.getInstance(instance.getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_APP_USAGE).get().isEmpty())
-                    Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+                    repository.startAppUsageWorker24h();
                 else
-                    Funcions.sendAppUsage(instance.getApplicationContext());
+                    repository.sendAppUsage();
 
             } catch (ExecutionException | InterruptedException e) {
-                Funcions.startAppUsageWorker24h(instance.getApplicationContext());
+                repository.startAppUsageWorker24h();
             }
 
             Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);

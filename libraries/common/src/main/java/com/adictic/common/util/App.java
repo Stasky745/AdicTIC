@@ -35,6 +35,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import dagger.hilt.android.HiltAndroidApp;
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -42,6 +43,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+@HiltAndroidApp
 public class App extends Application {
 
     private Api api;

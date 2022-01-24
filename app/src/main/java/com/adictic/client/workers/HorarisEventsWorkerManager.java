@@ -4,24 +4,29 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.room.Room;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.client.util.Funcions;
-import com.adictic.common.database.EventDatabase;
-import com.adictic.common.database.HorarisDatabase;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.HorarisNit;
-import com.adictic.common.util.Constants;
+import com.adictic.common.util.hilt.Repository;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class HorarisEventsWorkerManager extends Worker {
     private final static String TAG = "HorarisEventsWorkerManager";
+
+    @Inject
+    AdicticRepository repository;
 
     public HorarisEventsWorkerManager(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -32,7 +37,7 @@ public class HorarisEventsWorkerManager extends Worker {
     public Result doWork() {
         Log.d(TAG,"Worker començat");
 
-        if(!Funcions.accessibilityServiceOn(getApplicationContext()))
+        if(!repository.accessibilityServiceOn())
             return Result.failure();
 
         long millisAra = DateTime.now().getMillis();
@@ -46,28 +51,14 @@ public class HorarisEventsWorkerManager extends Worker {
         }
 
         // Agafem i apliquem horaris
-        HorarisDatabase horarisDatabase = Room.databaseBuilder(getApplicationContext(),
-                HorarisDatabase.class, Constants.ROOM_HORARIS_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
+        List<HorarisNit> horarisNit = repository.getAllHoraris();
 
-        List<HorarisNit> horarisNit = new ArrayList<>(horarisDatabase.horarisNitDao().getAll());
-
-        horarisDatabase.close();
-
-        Funcions.setHoraris(getApplicationContext(), horarisNit);
+        repository.setHoraris(horarisNit);
 
         // Agafem i apliquem Events
-        EventDatabase eventDatabase = Room.databaseBuilder(getApplicationContext(),
-                EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
-                .enableMultiInstanceInvalidation()
-                .build();
+        List<EventBlock> eventList = repository.getAllEvents();
 
-        List<EventBlock> eventList = new ArrayList<>(eventDatabase.eventBlockDao().getAll());
-
-        eventDatabase.close();
-
-        Funcions.setEvents(getApplicationContext(), eventList);
+        repository.setEvents(eventList);
 
         return Result.success();
     }

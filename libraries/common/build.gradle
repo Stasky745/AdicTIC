@@ -1,5 +1,8 @@
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -100,9 +103,15 @@ dependencies {
     implementation project(path: ':libraries:persistentcookie')
 
     //Room
-    def room_version = "2.4.0"
+    def room_version = "2.4.1"
 
-    implementation "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    //Hilt
+    def hilt_version = "2.38.1"
+
+    api "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
 }

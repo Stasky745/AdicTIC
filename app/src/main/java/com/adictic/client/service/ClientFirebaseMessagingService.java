@@ -18,6 +18,7 @@ import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.R;
 import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.NotificationInformation;
@@ -40,13 +41,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ClientFirebaseMessagingService extends FirebaseMessagingService {
+
+    @Inject
+    AdicticRepository repository;
 
     private final String TAG = "Firebase: ";
     private AdicticApi mTodoService;
@@ -63,11 +71,11 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        Funcions.runUpdateTokenWorker(getApplicationContext());
+        repository.runUpdateTokenWorker();
     }
 
     public void updateBlockedAppsList(Map<String, String> map) {
-        if(!Funcions.accessibilityServiceOn(getApplicationContext()))
+        if(!repository.accessibilityServiceOn())
             return;
 
         List<BlockedApp> blockedApps = new ArrayList<>();
@@ -86,10 +94,10 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             }
         }
 
-        Funcions.updateBlockedAppDB(ClientFirebaseMessagingService.this, blockedApps);
+        repository.updateApps(blockedApps);
 
         // Actualitzem la bdd de l'ús del dia actual a room i aprofitem per enviar al servidor si fa molt que no es fa
-        Funcions.sendAppUsage(ClientFirebaseMessagingService.this);
+        repository.sendAppUsage();
 
         AccessibilityScreenService.instance.isCurrentAppBlocked();
     }
@@ -100,8 +108,8 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        mTodoService = repository.getApi();
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         Map<String, String> messageMap = remoteMessage.getData();
@@ -143,7 +151,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         notifID = MyNotificationManager.NOTIF_ID_DAILY_LIMIT;
                         int dailyLimit = Integer.parseInt(Objects.requireNonNull(messageMap.get("dailyLimit")));
                         sharedPreferences.edit().putInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, dailyLimit).apply();
-                        if (Funcions.accessibilityServiceOn(getApplicationContext()))
+                        if (repository.accessibilityServiceOn())
                             AccessibilityScreenService.instance.setLimitDevice(dailyLimit);
 
                         title = getString(R.string.new_daily_limit_device);
@@ -151,15 +159,12 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     else
                         showNotif = false;
                     break;
-                case "geolocActive":
-                    //Funcions.runGeoLocWorker(ClientFirebaseMessagingService.this);
-                    break;
                 case "blockDevice":
                     if (Objects.equals(messageMap.get("blockDevice"), "1")) {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BLOCKEDDEVICE,true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_BLOCKEDDEVICE_START, DateTime.now().getMillis()).apply();
 
-                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+                        if(repository.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setBlockDevice(true);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
@@ -173,7 +178,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         }
                     }
                     else {
-                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+                        if(repository.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setBlockDevice(false);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
@@ -195,7 +200,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, true).apply();
                         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_FREEUSE_START, System.currentTimeMillis()).apply();
 
-                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+                        if(repository.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setFreeUse(true);
                             AccessibilityScreenService.instance.updateDeviceBlock();
 
@@ -207,7 +212,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     } else {
                         sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_FREEUSE, false).apply();
 
-                        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+                        if(repository.accessibilityServiceOn()) {
                             AccessibilityScreenService.instance.setFreeUse(false);
                             AccessibilityScreenService.instance.updateDeviceBlock();
                         }
@@ -237,7 +242,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     String s = messageMap.get("liveApp");
                     boolean active = Boolean.parseBoolean(messageMap.get("bool"));
 
-                    if(Funcions.accessibilityServiceOn(getApplicationContext()))
+                    if(repository.accessibilityServiceOn())
                         AccessibilityScreenService.instance.setLiveApp(active);
 
                     sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_LIVEAPP,active).apply();
@@ -245,24 +250,24 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     if(active) {
                         //Si el dispositiu no està bloquejat enviem el nou liveapp
                         KeyguardManager myKM = (KeyguardManager) getApplicationContext().getSystemService(KEYGUARD_SERVICE);
-                        if (!myKM.isDeviceLocked() && Funcions.accessibilityServiceOn(getApplicationContext()))
+                        if (!myKM.isDeviceLocked() && repository.accessibilityServiceOn())
                             AccessibilityScreenService.instance.enviarLiveApp();
 
                         // També actualitzem les dades d'ús al servidor
                         try {
                             if(WorkManager.getInstance(getApplicationContext()).getWorkInfosByTag(Constants.WORKER_TAG_APP_USAGE).get().isEmpty())
-                                Funcions.startAppUsageWorker24h(getApplicationContext());
+                                repository.startAppUsageWorker24h();
                             else
-                                Funcions.sendAppUsage(getApplicationContext());
+                                repository.sendAppUsage();
 
                         } catch (ExecutionException | InterruptedException e) {
-                            Funcions.startAppUsageWorker24h(getApplicationContext());
+                            repository.startAppUsageWorker24h();
                         }
 
                         long now = System.currentTimeMillis();
                         long timeout = 1000*60*3;
                         if(updateGeoloc == -1 || now - updateGeoloc > timeout) {
-                            Funcions.runGeoLocWorkerOnce(getApplicationContext());
+                            repository.runGeoLocWorkerOnce();
                             updateGeoloc = now;
                         }
                     }
@@ -275,7 +280,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     sendIcon(list);
                     break;
                 case "horaris":
-                    Funcions.checkHoraris(getApplicationContext());
+                    repository.checkHoraris();
 
                     if(!(showNotif = showNotification(sharedPreferences,Constants.NOTIF_SETTINGS_HORARIS)))
                         break;
@@ -285,7 +290,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                     notifID = MyNotificationManager.NOTIF_ID_HORARIS;
                     break;
                 case "events":
-                    Funcions.checkEvents(getApplicationContext());
+                    repository.checkEvents();
 
                     if(!(showNotif = showNotification(sharedPreferences,Constants.NOTIF_SETTINGS_EVENTS)))
                         break;
@@ -320,7 +325,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         notificationInformation.message = body;
                         notificationInformation.childName = childNameInsApp;
 
-                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        repository.addNotificationToList(notificationInformation);
                     }
                     else
                         showNotif = false;
@@ -339,7 +344,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         notificationInformation.message = body;
                         notificationInformation.childName = childNameUninsApp;
 
-                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        repository.addNotificationToList(notificationInformation);
                     }
                     else
                         showNotif = false;
@@ -370,7 +375,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                         notificationInformation.important = Boolean.parseBoolean(messageMap.get("important"));
                         notificationInformation.dateMillis = messageMap.get("dateMillis") != null ? Long.parseLong(Objects.requireNonNull(messageMap.get("dateMillis"))) : notificationInformation.dateMillis;
 
-                        Funcions.addNotificationToList(ClientFirebaseMessagingService.this, notificationInformation);
+                        repository.addNotificationToList(notificationInformation);
                     }
                     else
                         showNotif = false;

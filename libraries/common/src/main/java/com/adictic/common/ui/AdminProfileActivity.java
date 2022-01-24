@@ -22,11 +22,20 @@ import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AdminProfileActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private AdminProfile adminProfile;
 
@@ -85,9 +94,10 @@ public class AdminProfileActivity extends AppCompatActivity {
         ImageView IV_profilePic = findViewById(R.id.IV_profilePic);
         long idAdmin;
         if(adminProfile == null || adminProfile.idAdmin == null)
-            idAdmin = Objects.requireNonNull(Funcions.getEncryptedSharedPreferences(this)).getLong(Constants.SHARED_PREFS_ID_ADMIN,-1);
-        else idAdmin = adminProfile.idAdmin;
-        Funcions.setAdminPhoto(AdminProfileActivity.this, idAdmin, IV_profilePic);
+            idAdmin = Objects.requireNonNull(repository.getEncryptedSharedPreferences()).getLong(Constants.SHARED_PREFS_ID_ADMIN,-1);
+        else
+            idAdmin = adminProfile.idAdmin;
+        repository.setAdminPhoto(idAdmin, IV_profilePic);
     }
 
     public class RV_Adapter extends RecyclerView.Adapter<RV_Adapter.MyViewHolder> {

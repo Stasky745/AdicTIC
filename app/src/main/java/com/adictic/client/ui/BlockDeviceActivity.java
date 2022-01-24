@@ -26,14 +26,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.room.Room;
 
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.client.util.Funcions;
-import com.adictic.common.database.EventDatabase;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -42,17 +41,23 @@ import com.adictic.jitsi.activities.OutgoingInvitationActivity;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class BlockDeviceActivity extends AppCompatActivity {
+
+    @Inject
+    AdicticRepository repository;
 
     public static BlockDeviceActivity instance;
     private AdicticApi mTodoService;
@@ -89,7 +94,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(changeTitleReceiver,
                 new IntentFilter(CHANGE_TITLE_RECEIVER));
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(BlockDeviceActivity.this);
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
@@ -135,7 +140,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                Funcions.isPasswordCorrect(BlockDeviceActivity.this, pwd, valid -> unlockDevice(valid, pwd, TV_pwd_error));
+                repository.isPasswordCorrect(pwd, valid -> unlockDevice(valid, pwd, TV_pwd_error));
             });
         });
     }
@@ -329,33 +334,25 @@ public class BlockDeviceActivity extends AppCompatActivity {
             // Posem el text per defecte en cas que no vagi bé
             message = getString(R.string.locked_device);
 
-            new Thread(() -> {
-                // Agafem la llista d'events actius
-                EventDatabase eventDatabase = Room.databaseBuilder(BlockDeviceActivity.this,
-                        EventDatabase.class, Constants.ROOM_EVENT_DATABASE)
-                        .enableMultiInstanceInvalidation()
-                        .build();
+            // Agafem la llista d'events actius
+            List<EventBlock> list = repository.getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
 
-                List<EventBlock> list = new ArrayList<>(eventDatabase.eventBlockDao().getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)));
-                eventDatabase.close();
+            if(!list.isEmpty()) {
+                // Agafem l'event actiu que acabi més tard
+                EventBlock event = list.stream()
+                        .filter(Funcions::eventBlockIsActive)
+                        .collect(Collectors.toList())
+                        .stream()
+                        .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
+                        .orElse(null);
 
-                if(!list.isEmpty()) {
-                    // Agafem l'event actiu que acabi més tard
-                    EventBlock event = list.stream()
-                            .filter(Funcions::eventBlockIsActive)
-                            .collect(Collectors.toList())
-                            .stream()
-                            .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
-                            .orElse(null);
-
-                    if(event != null) {
-                        String msg = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
-                        Intent intent = new Intent(CHANGE_TITLE_RECEIVER);
-                        intent.putExtra("message", msg);
-                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                    }
+                if(event != null) {
+                    String msg = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
+                    Intent intent = new Intent(CHANGE_TITLE_RECEIVER);
+                    intent.putExtra("message", msg);
+                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 }
-            }).start();
+            }
         }
 
         TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);

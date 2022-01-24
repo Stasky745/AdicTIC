@@ -15,14 +15,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder> {
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMMM yyyy");
+
+    @Inject
+    Repository repository;
 
     private final LayoutInflater mInflater;
     private final ArrayList<CanvisAppBlock> appsList;
@@ -55,7 +64,7 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
         appName = canvisAppBlock.app.appName;
 
         holder.TV_app_title.setText(appName);
-        Funcions.setIconDrawable(mContext, pkgName, holder.IV_app_logo);
+        repository.setIconDrawable(pkgName, holder.IV_app_logo);
 
         if(canvisAppBlock.actiu)
             holder.TV_app_actiu.setVisibility(View.VISIBLE);

@@ -24,6 +24,7 @@ import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.IntentsAccesApp;
 import com.adictic.common.util.Callback;
@@ -35,12 +36,18 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class BlockAppActivity extends AppCompatActivity {
-    private int retryCountAccessApp;
-    private final int TOTAL_RETRIES = 6;
+
+    @Inject
+    AdicticRepository repository;
+
     private AlertDialog alertDialog = null;
 
     private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
@@ -130,14 +137,14 @@ public class BlockAppActivity extends AppCompatActivity {
             BT_unlock.setOnClickListener(v1 -> {
                 TV_pwd_error.setVisibility(View.INVISIBLE);
 
-                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+                SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                 assert sharedPreferences != null;
                 AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
 
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
 
-                Funcions.isPasswordCorrect(BlockAppActivity.this, pwd, valid -> unlockApp(valid, sharedPreferences, pwd, pkgName, api, TV_pwd_error));
+                repository.isPasswordCorrect(pwd, valid -> unlockApp(valid, sharedPreferences, pwd, pkgName, api, TV_pwd_error));
             });
         });
     }
@@ -181,19 +188,18 @@ public class BlockAppActivity extends AppCompatActivity {
         ImageView IV_blocked_app_logo = findViewById(R.id.IV_blocked_app_logo);
         TextView TV_blocked_app_name = findViewById(R.id.TV_blocked_app_name);
 
-        Funcions.setIconDrawable(this, pkgName, IV_blocked_app_logo);
+        repository.setIconDrawable(pkgName, IV_blocked_app_logo);
         TV_blocked_app_name.setText(appName);
     }
 
     private void postIntentAccesApp(String pkgName, String appName) {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(BlockAppActivity.this);
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1);
         if(idChild == -1)
             return;
 
-        retryCountAccessApp = 0;
         long now = DateTime.now().getMillis();
 
         AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();

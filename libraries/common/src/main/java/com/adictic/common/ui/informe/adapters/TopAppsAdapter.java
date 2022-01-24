@@ -13,14 +13,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsViewHolder> {
     private final LayoutInflater mInflater;
     private final ArrayList<AppUsage> appUsages;
     private final Context mContext;
+
+    @Inject
+    Repository repository;
 
     public TopAppsAdapter(Context context, List<AppUsage> list){
         mContext = context;
@@ -42,7 +51,7 @@ public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsV
 
         holder.TV_topAppTitle.setText(appUsage.app.appName);
         holder.TV_topApptime.setText(Funcions.millis2horaString(mContext, appUsage.totalTime));
-        Funcions.setIconDrawable(mContext, appUsage.app.pkgName, holder.IV_topAppLogo);
+        repository.setIconDrawable(appUsage.app.pkgName, holder.IV_topAppLogo);
     }
 
     @Override

@@ -14,12 +14,20 @@ import androidx.navigation.ui.NavigationUI;
 import com.adictic.client.BuildConfig;
 import com.adictic.client.R;
 import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NavActivity extends MainActivityAbstractClass {
+
+    @Inject
+    AdicticRepository repository;
 
     private SharedPreferences sharedPreferences;
 
@@ -27,11 +35,11 @@ public class NavActivity extends MainActivityAbstractClass {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nav);
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(NavActivity.this);
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
-            Funcions.startServiceWorker(NavActivity.this);
+            repository.startServiceWorker();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

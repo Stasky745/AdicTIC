@@ -33,6 +33,7 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
 import com.adictic.common.util.RVSpaceDecoration;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
@@ -49,6 +50,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -435,7 +439,11 @@ public class DayUsageActivity extends AppCompatActivity {
         }
     }
 
+    @AndroidEntryPoint
     class UsageStatsAdapter extends RecyclerView.Adapter<UsageStatsAdapter.MyViewHolder> {
+        @Inject
+        Repository repository;
+
         private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
         private final TimesUsedComparator mTimesUsedComparator = new TimesUsedComparator();
         private final UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
@@ -467,7 +475,7 @@ public class DayUsageActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             AppUsage pkgStats = mPackageStats.get(position);
             if (pkgStats != null) {
-                Funcions.setIconDrawable(mContext, pkgStats.app.pkgName, holder.icon);
+                repository.setIconDrawable(pkgStats.app.pkgName, holder.icon);
                 String label = pkgStats.app.appName;
                 holder.pkgName.setText(label);
 

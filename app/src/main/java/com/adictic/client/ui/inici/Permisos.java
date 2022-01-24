@@ -28,6 +28,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.R;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
@@ -37,10 +38,22 @@ import org.joda.time.DateTime;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class Permisos extends AppCompatActivity {
-    private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
-    private final String TAG = "Permisos";
+    private boolean accessibilityPerm;
+    private boolean usagePerm;
+    private boolean adminPerm;
+    private boolean overlayPerm;
+    private boolean locationPerm;
+    private boolean batteryPerm;
     private boolean veDeSettings = false;
+
+    @Inject
+    AdicticRepository repository;
 
     ActivityResultLauncher<Intent> activityResult = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
@@ -82,14 +95,14 @@ public class Permisos extends AppCompatActivity {
 
     private void acabarActivitat(){
         if(usagePerm) {
-            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(Permisos.this);
+            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
             assert  sharedPreferences != null;
 
             long sixDaysAgo = DateTime.now().minusDays(6).getMillis();
 
             sharedPreferences.edit().putLong(Constants.SHARED_PREFS_LAST_DAY_SENT_DATA, sixDaysAgo).apply();
 
-            Funcions.startAppUsageWorker24h(Permisos.this);
+            repository.startAppUsageWorker24h();
         }
 
         if(veDeSettings)
@@ -124,13 +137,13 @@ public class Permisos extends AppCompatActivity {
 
         if (!autoStartAvailable) {
             CL_auto_start.setVisibility(View.GONE);
-            autostartPerm = true;
         }
         else {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(Permisos.this)
                     .setTitle(getString(R.string.auto_start))
                     .setMessage(getString(R.string.auto_start_info))
-                    .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> autostartPerm = AutoStartPermissionHelper.Companion.getInstance().getAutoStartPermission(this,true, false))
+                    .setPositiveButton(getString(R.string.configurar), (dialogInterface, i) -> {
+                    })
                     .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dialogInterface.dismiss());
 
             CL_auto_start.setOnClickListener(view -> alertDialog.show());
@@ -290,7 +303,11 @@ public class Permisos extends AppCompatActivity {
         SW_accessibility_status.setOnClickListener(view -> alertDialog.show());
     }
 
+    @AndroidEntryPoint
     public static class MyDevicePolicyReceiver extends DeviceAdminReceiver {
+        @Inject
+        AdicticRepository repository;
+
         @Override
         public void onDisabled(Context context, Intent intent) {
             Toast.makeText(context, "AdicTIC's Device Admin Disabled",
@@ -304,7 +321,7 @@ public class Permisos extends AppCompatActivity {
             notif.message = context.getString(R.string.notif_admin_permission_disabled_body);
             notif.notifCode = Constants.NOTIF_SETTINGS_DISABLE_ADMIN;
 
-            Funcions.sendNotifToParent(context, notif);
+            repository.sendNotifToParent(notif);
         }
 
         @Override

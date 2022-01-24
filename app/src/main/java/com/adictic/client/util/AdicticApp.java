@@ -12,8 +12,13 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Global;
+import com.adictic.common.util.hilt.Repository;
 import com.google.gson.Gson;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.HiltAndroidApp;
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -21,6 +26,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Route;
 
+@HiltAndroidApp
 public class AdicticApp extends App {
 
     private AdicticApi adicticApi;
@@ -56,7 +62,12 @@ public class AdicticApp extends App {
 
     public ClientNotificationManager getNotificationManager() { return notificationManager; }
 
+    @AndroidEntryPoint
     private class AdicticAuthenticator implements Authenticator {
+
+        @Inject
+        Repository repository;
+
         @Nullable
         @Override
         public Request authenticate(@Nullable Route route, @NonNull Response response) {
@@ -64,7 +75,7 @@ public class AdicticApp extends App {
                 return null; // If we've failed 3 times, give up.
             }
 
-            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
             if (sharedPreferences == null)
                 return null;
