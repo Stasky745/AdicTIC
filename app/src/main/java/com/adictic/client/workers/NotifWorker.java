@@ -7,6 +7,7 @@ import androidx.work.Data;
 import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
@@ -14,10 +15,18 @@ import com.adictic.common.util.Callback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class NotifWorker extends ListenableWorker {
+
+    @Inject
+    AdicticRepository repository;
+
     public NotifWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -40,7 +49,7 @@ public class NotifWorker extends ListenableWorker {
 
         Long idChild = data.getLong("idChild", -1);
 
-        AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
+        AdicticApi api = repository.getApi();
 
         Call<String> call = api.sendNotification(idChild, notif);
         call.enqueue(new Callback<String>() {

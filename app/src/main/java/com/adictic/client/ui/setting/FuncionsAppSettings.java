@@ -127,7 +127,7 @@ public class FuncionsAppSettings extends FuncionsSettings {
 
         assert pujar_informe != null;
         pujar_informe.setOnPreferenceClickListener(preference -> {
-            Funcions.sendAppUsage(context.requireContext());
+            repository.sendAppUsage();
             return true;
         });
 
@@ -159,7 +159,7 @@ public class FuncionsAppSettings extends FuncionsSettings {
         Preference tancarSessio = context.findPreference("setting_tancar_sessio");
         SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
-        AdicticApi mTodoService = ((AdicticApp) context.requireActivity().getApplication()).getAPI();
+        AdicticApi mTodoService = repository.getApi();
 
         assert tancarSessio != null;
         tancarSessio.setOnPreferenceClickListener(preference -> {

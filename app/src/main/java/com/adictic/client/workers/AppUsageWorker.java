@@ -17,6 +17,7 @@ import androidx.work.WorkerParameters;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -26,10 +27,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class AppUsageWorker extends Worker {
+
+    @Inject
+    AdicticRepository repository;
+
     private static final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
@@ -46,15 +55,15 @@ public class AppUsageWorker extends Worker {
     public Result doWork() {
         String TAG = "AppUsageWorker";
 
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        mTodoService = repository.getApi();
 
         Log.d(TAG, "Starting Worker");
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences =repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         checkInstalledApps();
 
-        Funcions.sendAppUsage(getApplicationContext());
+        repository.sendAppUsage();
 
         return Result.success();
     }

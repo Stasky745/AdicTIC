@@ -106,7 +106,7 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        ClientNotificationManager clientNotificationManager = ((AdicticApp) getApplicationContext()).getNotificationManager();
+        ClientNotificationManager clientNotificationManager = repository.getNotificationManager();
         Log.d(TAG, "From: " + remoteMessage.getFrom());
         mTodoService = repository.getApi();
         SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();

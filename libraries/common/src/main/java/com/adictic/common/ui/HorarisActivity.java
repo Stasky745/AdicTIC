@@ -27,6 +27,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
@@ -36,10 +37,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class HorarisActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private final int TIPUS_HORARIS_DIARIS = 1;
     private final int TIPUS_HORARIS_SETMANA = 2;
@@ -76,8 +84,8 @@ public class HorarisActivity extends AppCompatActivity {
         setContentView(R.layout.horaris_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.descans_nocturn));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mTodoService = ((App) getApplication()).getAPI();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        mTodoService = repository.getApi();
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
         canvis = 0;
 

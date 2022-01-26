@@ -14,6 +14,8 @@ import com.adictic.admin.ui.Login;
 import com.adictic.admin.ui.SplashScreen;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminEntryPoint;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.ui.settings.FuncionsSettings;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -22,14 +24,18 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Locale;
 
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class FuncionsAdminSettings extends FuncionsSettings {
 
     public static void settings_change_language(PreferenceFragmentCompat context) {
+        AdminEntryPoint mEntryPoint = EntryPoints.get(context.requireContext(), AdminEntryPoint.class);
+        AdminRepository repository = mEntryPoint.getRepository();
+
         ListPreference language_preference = context.findPreference("setting_change_language");
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         String selectedLanguage = sharedPreferences.getString("language", Locale.getDefault().getLanguage());
 
@@ -50,10 +56,13 @@ public class FuncionsAdminSettings extends FuncionsSettings {
     }
 
     public static void settings_tancar_sessio(PreferenceFragmentCompat context) {
+        AdminEntryPoint mEntryPoint = EntryPoints.get(context.requireContext(), AdminEntryPoint.class);
+        AdminRepository repository = mEntryPoint.getRepository();
+
         Preference tancarSessio = context.findPreference("setting_tancar_sessio");
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
-        AdminApi mTodoService = ((AdminApp) context.requireActivity().getApplication()).getAPI();
+        AdminApi mTodoService = repository.getApi();
 
         assert tancarSessio != null;
         tancarSessio.setOnPreferenceClickListener(preference -> {

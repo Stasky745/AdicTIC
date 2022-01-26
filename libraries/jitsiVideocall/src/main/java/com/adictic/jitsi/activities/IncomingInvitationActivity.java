@@ -22,16 +22,24 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
+import com.adictic.common.util.hilt.Repository;
 import com.adictic.jitsi.R;
 import com.adictic.jitsi.utilities.Constants;
 import com.adictic.jitsi.utilities.JitsiFuncions;
 
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class IncomingInvitationActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private String name;
     private Long id;
@@ -63,7 +71,7 @@ public class IncomingInvitationActivity extends AppCompatActivity {
 
         textUserName.setText(name);
 
-        api = ((App) getApplication()).getAPI();
+        api = repository.getApi();
 
         ImageView imageAcceptInvitation = findViewById(R.id.imageAcceptInvitation);
         imageAcceptInvitation.setOnClickListener(view -> sendInvitationResponse(Constants.REMOTE_MSG_INVITATION_ACCEPTED));

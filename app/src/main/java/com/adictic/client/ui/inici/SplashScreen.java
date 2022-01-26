@@ -35,12 +35,19 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
+import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.Repository;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
+import dagger.hilt.EntryPoints;
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
@@ -48,6 +55,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class SplashScreen extends AppCompatActivity {
+
+    Repository repository;
 
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
@@ -58,7 +67,7 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        api = ((AdicticApp) this.getApplication()).getAPI();
+        api = repository.getApi();
         //checkForUpdates(); //TODO: Desactivat de moment
         startApp();
     }
@@ -164,7 +173,12 @@ public class SplashScreen extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(newBase);
+        if(repository == null) {
+            HiltEntryPoint mEntryPoint = EntryPoints.get(newBase.getApplicationContext(), HiltEntryPoint.class);
+            repository = mEntryPoint.getRepository();
+        }
+
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         String selectedTheme = sharedPreferences != null ? sharedPreferences.getString("theme", "follow_system") : "follow_system";
         switch(selectedTheme){
             case "no":
@@ -179,8 +193,10 @@ public class SplashScreen extends AppCompatActivity {
                 break;
         }
         String lang = sharedPreferences != null ? sharedPreferences.getString("language", "none") : "none";
-        if (lang.equals("none")) super.attachBaseContext(newBase);
-        else super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
+        if (lang.equals("none"))
+            super.attachBaseContext(newBase);
+        else
+            super.attachBaseContext(LocaleHelper.setLocale(newBase, lang));
     }
 
     private void checkForUpdates() {

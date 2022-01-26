@@ -16,6 +16,7 @@ import com.adictic.admin.entity.LoginUser;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -24,11 +25,18 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class Login extends AppCompatActivity {
     private final String TAG = "Login";
+
+    @Inject
+    AdminRepository repository;
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -48,7 +56,7 @@ public class Login extends AppCompatActivity {
                     // Get new Instance ID token
                     String token = task.getResult();
 
-                    AdminApi adminApi = ((AdminApp) getApplicationContext()).getAPI();
+                    AdminApi adminApi = repository.getApi();
 
                     EditText ET_username = findViewById(R.id.login_username);
                     EditText ET_password = findViewById(R.id.login_password);
@@ -64,7 +72,7 @@ public class Login extends AppCompatActivity {
                         public void onResponse(@NotNull Call<LoginUser> call, @NotNull Response<LoginUser> response) {
                             if(response.isSuccessful() && response.body() != null){
                                 LoginUser adminLogin = response.body();
-                                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+                                SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                                 assert sharedPreferences != null;
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putLong(Constants.SHARED_PREFS_IDUSER,adminLogin.id);

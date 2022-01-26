@@ -13,18 +13,30 @@ import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.Repository;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class UpdateTokenWorker extends ListenableWorker {
+
+    Repository repository;
+
     private final static String TAG = "UpdateTokenWorker";
     private String token;
     public UpdateTokenWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(context, HiltEntryPoint.class);
+        repository = mEntryPoint.getRepository();
     }
 
     @NonNull
@@ -46,7 +58,7 @@ public class UpdateTokenWorker extends ListenableWorker {
         if(future.isDone())
             return future;
 
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         if(sharedPreferences.getString(Constants.SHARED_PREFS_TOKEN, "").equals(token))
             future.set(Result.success());
@@ -58,7 +70,7 @@ public class UpdateTokenWorker extends ListenableWorker {
         if(future.isDone())
             return future;
 
-        Api mTodoService = ((App) getApplicationContext()).getAPI();
+        Api mTodoService = repository.getApi();
         Call<String> call = mTodoService.updateToken(idUser, token);
         call.enqueue(new Callback<String>() {
             @Override

@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.ui.main.MainActivityAbstractClass;
 import com.adictic.common.ui.main.TabFillsAdapter;
@@ -20,10 +21,17 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class MainUserActivity extends MainActivityAbstractClass {
+
+    @Inject
+    AdminRepository repository;
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -33,7 +41,7 @@ public class MainUserActivity extends MainActivityAbstractClass {
         ViewPager2 viewPager = findViewById(R.id.VP_home_parent_pager);
         TabLayout tabLayout = findViewById(R.id.TL_home_parent_tabs);
 
-        AdminApi mTodoService = ((AdminApp) getApplicationContext()).getAPI();
+        AdminApi mTodoService = repository.getApi();
 
         long idTutor = getIntent().getLongExtra("idTutor", -1);
         long idChild = getIntent().getLongExtra("idChild", -1);

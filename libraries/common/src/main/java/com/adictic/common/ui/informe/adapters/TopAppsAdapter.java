@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.util.ArrayList;
@@ -21,14 +22,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 
-@AndroidEntryPoint
 public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsViewHolder> {
     private final LayoutInflater mInflater;
     private final ArrayList<AppUsage> appUsages;
     private final Context mContext;
 
-    @Inject
     Repository repository;
 
     public TopAppsAdapter(Context context, List<AppUsage> list){
@@ -41,6 +41,9 @@ public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsV
     @Override
     public TopAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.informe_top_apps_item, parent, false);
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
+        repository = mEntryPoint.getRepository();
 
         return new TopAppsViewHolder(view);
     }

@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.util.ArrayList;
@@ -32,7 +33,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class NotificationSettings extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
+
     private HashMap<String, String> initializeStringMapTutor() {
         HashMap<String, String> map = new HashMap<>();
 
@@ -74,7 +84,7 @@ public class NotificationSettings extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.setting_notifications));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(this);
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         boolean admin = sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN, -1L) > 0;
@@ -142,7 +152,7 @@ public class NotificationSettings extends AppCompatActivity {
             notifMap = list;
             mInflater = LayoutInflater.from(mContext);
             stringList = new ArrayList<>(list.keySet());
-            sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+            sharedPreferences = repository.getEncryptedSharedPreferences();
             assert sharedPreferences != null;
         }
 

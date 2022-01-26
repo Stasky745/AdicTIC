@@ -24,6 +24,7 @@ import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.User;
 import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Callback;
@@ -35,17 +36,24 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class SplashScreen extends AppCompatActivity {
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
     private String token = "";
     private AdminApi adminApi;
+
+    @Inject
+    AdminRepository repository;
 
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
@@ -53,9 +61,9 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screen);
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
-        adminApi = ((AdminApp) this.getApplication()).getAPI();
+        adminApi = repository.getApi();
         checkForUpdates();
     }
 

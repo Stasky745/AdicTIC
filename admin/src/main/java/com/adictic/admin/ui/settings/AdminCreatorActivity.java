@@ -37,6 +37,7 @@ import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.ui.profile.SubmitWeblinkFragment;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.entity.WebLink;
@@ -52,10 +53,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class AdminCreatorActivity extends AppCompatActivity {
+
+    @Inject
+    AdminRepository repository;
 
     private TextInputEditText TIET_profileName;
     private TextInputEditText TIET_professio;
@@ -90,8 +98,8 @@ public class AdminCreatorActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Funcions.closeKeyboard(findViewById(R.id.CL_create_admin_parent), this);
 
-        mService = ((AdminApp) getApplication()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        mService = repository.getApi();
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         IV_profilePic = findViewById(R.id.IV_create_profilePic);
         TIET_profileName = findViewById(R.id.TIET_create_profileName);

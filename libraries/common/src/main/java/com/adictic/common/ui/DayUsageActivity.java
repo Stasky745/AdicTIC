@@ -32,6 +32,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.util.RVSpaceDecoration;
 import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -52,11 +53,19 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import dagger.hilt.EntryPoint;
+import dagger.hilt.EntryPoints;
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class DayUsageActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
+
     // Constants defining order for display order
     private static final int _DISPLAY_ORDER_USAGE_TIME = 0;
     private static final int _DISPLAY_ORDER_LAST_TIME_USED = 1;
@@ -127,7 +136,7 @@ public class DayUsageActivity extends AppCompatActivity {
         setContentView(R.layout.usage_stats_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_usage));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mTodoService = ((App) getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         listView = findViewById(R.id.pkg_list);
 
@@ -439,9 +448,7 @@ public class DayUsageActivity extends AppCompatActivity {
         }
     }
 
-    @AndroidEntryPoint
     class UsageStatsAdapter extends RecyclerView.Adapter<UsageStatsAdapter.MyViewHolder> {
-        @Inject
         Repository repository;
 
         private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
@@ -467,6 +474,9 @@ public class DayUsageActivity extends AppCompatActivity {
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = mInflater.inflate(R.layout.usage_stats_item, parent,false);
+
+            HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
+            repository = mEntryPoint.getRepository();
 
             return new MyViewHolder(view);
         }

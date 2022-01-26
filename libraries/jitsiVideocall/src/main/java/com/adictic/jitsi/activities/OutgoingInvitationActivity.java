@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
+import com.adictic.common.util.hilt.Repository;
 import com.adictic.jitsi.R;
 import com.adictic.jitsi.models.JitsiUser;
 import com.adictic.jitsi.utilities.Constants;
@@ -23,10 +24,17 @@ import com.adictic.jitsi.utilities.JitsiFuncions;
 
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class OutgoingInvitationActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private final String TAG = "OutgoingInvitationActivity";
 
@@ -66,7 +74,7 @@ public class OutgoingInvitationActivity extends AppCompatActivity {
         ImageView imageStopInvitation = findViewById(R.id.imageStopInvitation);
         imageStopInvitation.setOnClickListener(view -> cancelInvitation());
 
-        api = ((App) getApplication()).getAPI();
+        api = repository.getApi();
     }
 
     private void cancelInvitation() {

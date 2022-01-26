@@ -36,6 +36,7 @@ import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -52,12 +53,20 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
 //https://github.com/android/location-samples/blob/432d3b72b8c058f220416958b444274ddd186abd/LocationUpdatesForegroundService/app/src/main/java/com/google/android/gms/location/sample/locationupdatesforegroundservice/LocationUpdatesService.java
 //https://robertohuertas.com/2019/06/29/android_foreground_services/
+@AndroidEntryPoint
 public class ForegroundService extends Service {
+
+    @Inject
+    AdicticRepository repository;
+
     public static boolean actiu = false;
     PowerManager.WakeLock wakeLock = null;
     private final String CHANNEL_ID = "ForegroundServiceChannel";
@@ -85,7 +94,7 @@ public class ForegroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ForegroundService.this);
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))
@@ -215,8 +224,8 @@ public class ForegroundService extends Service {
     }
 
     private void sendLocation(){
-        AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        AdicticApi api = repository.getApi();
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
         GeoFill fill = new GeoFill();
         fill.longitud = mLocation.getLongitude();

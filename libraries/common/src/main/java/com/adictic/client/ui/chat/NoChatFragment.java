@@ -21,6 +21,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
@@ -32,10 +33,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class NoChatFragment extends Fragment {
+
+    @Inject
+    Repository repository;
+
     private HashMap<Long,Localitzacio> localitzacioMap;
     private Api mTodoService;
     private TextInputEditText TIET_dubteTitol, TIET_dubteDesc;
@@ -52,7 +61,7 @@ public class NoChatFragment extends Fragment {
         // Inflate the layout for this fragment
 
         View root = inflater.inflate(R.layout.fragment_chat_no, container, false);
-        mTodoService = ((App) requireActivity().getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         Funcions.closeKeyboard(root.findViewById(R.id.mainLayout),getActivity());
 
@@ -90,7 +99,7 @@ public class NoChatFragment extends Fragment {
                 for (Integer idInt : CG_localitats.getCheckedChipIds())
                     newDubte.localitzacio.add(localitzacioMap.get((long)idInt));
 
-                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
+                SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                 assert sharedPreferences != null;
                 long idChild;
                 if(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
@@ -126,7 +135,7 @@ public class NoChatFragment extends Fragment {
     }
 
     private void getInfo() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireActivity());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         long idChild = -1L;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))

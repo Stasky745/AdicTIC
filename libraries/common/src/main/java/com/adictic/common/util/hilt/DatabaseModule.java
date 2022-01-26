@@ -1,6 +1,7 @@
 package com.adictic.common.util.hilt;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.room.Room;
 
@@ -25,7 +26,7 @@ public class DatabaseModule {
 
     @Provides
     @Singleton
-    public static AdicticDB provideAdicticDB(@ApplicationContext Application application) {
+    public static AdicticDB provideAdicticDB(@ApplicationContext Context application) {
         return Room.databaseBuilder(
                 application,
                 AdicticDB.class,

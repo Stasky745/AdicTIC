@@ -34,6 +34,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -43,10 +44,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ChatFragment extends Fragment {
+
+    @Inject
+    Repository repository;
 
     public static Long adminUserId;
     private RecyclerView mMessageRecycler;
@@ -85,7 +93,7 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.chat_layout, container, false);
         Activity activity = getActivity();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(activity);
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         assert getArguments() != null;
         access = getArguments().getBoolean("access");
@@ -95,7 +103,7 @@ public class ChatFragment extends Fragment {
         adminUserId = chatInfo.admin.idUser;
 
         assert activity != null;
-        mTodoService = ((App) activity.getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         // Agafem la nostra id
         assert sharedPreferences != null;

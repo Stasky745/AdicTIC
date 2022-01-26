@@ -106,7 +106,8 @@ dependencies {
     def room_version = "2.4.1"
 
     api "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    api "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     //Hilt
     def hilt_version = "2.38.1"

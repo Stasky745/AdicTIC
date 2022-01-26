@@ -16,13 +16,21 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ChatActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     TabLayout _tabChat;
     ViewPager2 _vpChats;
@@ -34,12 +42,12 @@ public class ChatActivity extends AppCompatActivity {
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
 
-        Api mTodoService = ((App) getApplicationContext()).getAPI();
+        Api mTodoService = repository.getApi();
 
         _vpChats = findViewById(R.id.VP_chats);
         _tabChat = findViewById(R.id.TABL_chats);
 
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ChatActivity.this);
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         long idChild = -1L;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false))

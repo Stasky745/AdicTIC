@@ -19,8 +19,12 @@ import com.adictic.common.ui.settings.notifications.NotificationActivity;
 import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.Repository;
 
 import java.util.Objects;
+
+import dagger.hilt.EntryPoints;
 
 public class FuncionsSettings {
 
@@ -61,8 +65,12 @@ public class FuncionsSettings {
     }
 
     public static void settings_change_theme(PreferenceFragmentCompat context) {
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(context.requireContext(), HiltEntryPoint.class);
+        Repository repository = mEntryPoint.getRepository();
+
         ListPreference theme_preference = context.findPreference("setting_change_theme");
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         String selectedTheme = sharedPreferences.getString("theme", "follow_system");
 
@@ -114,9 +122,12 @@ public class FuncionsSettings {
     }
 
     public static void setting_require_biometric(PreferenceFragmentCompat context) {
+        HiltEntryPoint mEntryPoint = EntryPoints.get(context.requireContext(), HiltEntryPoint.class);
+        Repository repository = mEntryPoint.getRepository();
+
         SwitchPreference setting_require_biometric = context.findPreference("setting_require_biometric");
         assert setting_require_biometric != null;
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(context.requireContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         int bioType = BiometricAuthUtil.isAuthenticationSupported(context.requireContext());

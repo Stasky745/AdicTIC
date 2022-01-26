@@ -31,6 +31,7 @@ import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.ui.Usuari.MainUserActivity;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.UserMessage;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -40,14 +41,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.mapsforge.map.android.graphics.AndroidResourceBitmap;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class XatActivity extends AppCompatActivity {
     public static ChatInfo userProfile;
     private RecyclerView mMessageRecycler;
@@ -57,6 +63,9 @@ public class XatActivity extends AppCompatActivity {
     private TextView TV_profileName;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final String TAG = "ChatActivity";
+
+    @Inject
+    AdminRepository repository;
 
     private final BroadcastReceiver messageReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -100,7 +109,7 @@ public class XatActivity extends AppCompatActivity {
         }
         active = getIntent().getBooleanExtra("active",true);
 
-        mService = ((AdminApp) getApplication()).getAPI();
+        mService = repository.getApi();
 
         setViews();
         setRecyclerView();
@@ -131,7 +140,7 @@ public class XatActivity extends AppCompatActivity {
         sendButton.setOnClickListener(v -> {
             EditText chatbox = findViewById(R.id.edittext_chatbox);
             if (!chatbox.getText().toString().isEmpty()) {
-                SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+                SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
                 UserMessage um = new UserMessage();
                 um.createdAt = new Date();
@@ -305,7 +314,7 @@ public class XatActivity extends AppCompatActivity {
     }
 
     public void getMessages() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences!=null;
         long childId = userProfile.childId != null ? userProfile.childId : -1;
         long userId = userProfile.userId;
@@ -349,7 +358,7 @@ public class XatActivity extends AppCompatActivity {
         // Determines the appropriate ViewType according to the sender of the message.
         @Override
         public int getItemViewType(int position) {
-            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
             UserMessage message = mMessageList.get(position);
 

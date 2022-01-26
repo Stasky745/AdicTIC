@@ -26,6 +26,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -34,10 +35,18 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ClosedChatActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
+
     AdminProfile adminProfile;
     private SharedPreferences sharedPreferences;
     Api mTodoService;
@@ -49,8 +58,8 @@ public class ClosedChatActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_layout);
-        mTodoService = ((App) getApplicationContext()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        mTodoService = repository.getApi();
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         // Agafem la nostra id

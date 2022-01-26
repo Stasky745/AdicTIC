@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.rest.Api;
+import com.adictic.common.util.hilt.Repository;
 import com.google.auto.service.AutoService;
 
 import org.acra.ReportField;
@@ -15,6 +16,7 @@ import org.acra.sender.ReportSenderException;
 import org.acra.sender.ReportSenderFactory;
 import org.jetbrains.annotations.NotNull;
 
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -26,7 +28,10 @@ public class AcraSender implements ReportSender {
     public void send(@NotNull Context context, @NotNull CrashReportData errorContent) throws ReportSenderException {
         if(BuildConfig.DEBUG) return; //No enviar crash si estamos en modo Debug.
         try {
-            Api api = ((App) context.getApplicationContext()).getAPI();
+            HiltEntryPoint mEntryPoint = EntryPoints.get(context, HiltEntryPoint.class);
+            Repository repository = mEntryPoint.getRepository();
+
+            Api api = repository.getApi();
             Call<String> callSendCrash = api.sendCrashACRA(errorContent.getString(ReportField.PACKAGE_NAME), errorContent.getString(ReportField.APP_VERSION_NAME), errorContent.getString(ReportField.STACK_TRACE));
             callSendCrash.enqueue(new Callback<String>() {
                 @Override

@@ -26,6 +26,7 @@ import com.adictic.client.ui.main.NavActivity;
 import com.adictic.client.ui.setting.TemporalPasswordChangeActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.RecoverPassword;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
@@ -36,12 +37,20 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONObject;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
 // This is the Login fragment where the user enters the username and password and
 // then a RESTResponder_RF is called to check the authentication
+@AndroidEntryPoint
 public class Login extends AppCompatActivity {
+
+    @Inject
+    AdicticRepository repository;
+
     private static Login login;
     private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
@@ -56,11 +65,11 @@ public class Login extends AppCompatActivity {
         login = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(Login.this);
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         final EditText u = Login.this.findViewById(R.id.login_username);
         final EditText p = Login.this.findViewById(R.id.login_password);

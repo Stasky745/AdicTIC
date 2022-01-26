@@ -20,6 +20,7 @@ import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.Oficina;
 import com.adictic.common.ui.OficinesActivity;
 import com.adictic.common.util.Callback;
@@ -29,11 +30,18 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class OfficeFragment extends Fragment {
     private static final String OFFICE_ARG = "office_arg";
+
+    @Inject
+    AdminRepository repository;
 
     private AdminApi mService;
     private View root;
@@ -65,7 +73,7 @@ public class OfficeFragment extends Fragment {
         root = inflater.inflate(R.layout.oficina_layout, container, false);
         Funcions.closeKeyboard(root.findViewById(R.id.main_parent), requireActivity());
 
-        mService = ((AdminApp) requireActivity().getApplicationContext()).getAPI();
+        mService = repository.getApi();
 
         setViews();
 

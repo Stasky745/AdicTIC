@@ -16,16 +16,25 @@ import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ProfileMainFragment extends Fragment {
+
+    @Inject
+    AdminRepository repository;
+
     private AdminApi mService;
     private SharedPreferences sharedPreferences;
     private MainActivity parentActivity = null;
@@ -35,7 +44,7 @@ public class ProfileMainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         parentActivity = (MainActivity) getActivity();
         root = inflater.inflate(R.layout.profile_main_activity, container, false);
         return root;
@@ -44,7 +53,7 @@ public class ProfileMainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //super.onViewCreated(view, savedInstanceState);
-        mService = ((AdminApp) requireActivity().getApplication()).getAPI();
+        mService = repository.getApi();
         root = view;
         getInfoFromServer();
     }

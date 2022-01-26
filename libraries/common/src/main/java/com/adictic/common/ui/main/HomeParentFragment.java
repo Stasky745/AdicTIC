@@ -17,16 +17,25 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class HomeParentFragment extends Fragment {
+
+    @Inject
+    Repository repository;
+
     private MainActivityAbstractClass parentActivity;
     private View root;
     private TabFillsAdapter adapter;
@@ -41,12 +50,12 @@ public class HomeParentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getActivity());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         parentActivity = (MainActivityAbstractClass) requireActivity();
 
-        Api mTodoService = ((App) requireActivity().getApplicationContext()).getAPI();
+        Api mTodoService = repository.getApi();
 
         long idTutor;
         Call<Collection<FillNom>> call;

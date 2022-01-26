@@ -15,12 +15,21 @@ import androidx.navigation.ui.NavigationUI;
 import com.adictic.admin.ui.profile.ISubmitWeblink;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
 import com.adictic.common.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity implements ISubmitWeblink {
+
+    @Inject
+    AdminRepository repository;
 
     public AdminProfile yourAdminProfile = null;
 
@@ -42,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements ISubmitWeblink {
     }
 
     private void openPatchNotes() {
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(MainActivity.this);
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
 
         assert sharedPreferences != null;
         if(!BuildConfig.VERSION_NAME.equals(sharedPreferences.getString(Constants.SHARED_PREFS_PATCH_NOTES,""))){

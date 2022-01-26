@@ -8,8 +8,12 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import com.adictic.admin.R;
+import com.adictic.admin.util.hilt.AdminEntryPoint;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+
+import dagger.hilt.EntryPoints;
 
 public class MainAdminSettings extends PreferenceFragmentCompat {
 
@@ -19,7 +23,10 @@ public class MainAdminSettings extends PreferenceFragmentCompat {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_admin, rootKey);
 
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(requireContext());
+        AdminEntryPoint mEntryPoint = EntryPoints.get(requireContext(), AdminEntryPoint.class);
+        AdminRepository repository = mEntryPoint.getRepository();
+
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
         if(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_IS_SUPERADMIN, false)) {
             PreferenceScreen preferenceScreen = findPreference("preferenceAdmin");

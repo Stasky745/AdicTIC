@@ -37,6 +37,7 @@ import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.FillNom;
 import com.adictic.common.entity.NouFillLogin;
 import com.adictic.common.entity.User;
@@ -48,10 +49,17 @@ import com.adictic.common.util.Crypt;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class NomFill extends AppCompatActivity {
+    @Inject
+    AdicticRepository repository;
+
     private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
 
@@ -73,9 +81,9 @@ public class NomFill extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nom_fill);
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
-        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         BT_birthday = findViewById(R.id.BT_birthday);
 
@@ -189,9 +197,9 @@ public class NomFill extends AppCompatActivity {
         }
 
         // Posem estil a les frases que cal
-        TV_permis2.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_2)));
-        TV_permis3.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_3)));
-        TV_permis5.setText(Funcions.getSpannedText(getApplicationContext(), getString(R.string.permis_5)));
+        TV_permis2.setText(repository.getSpannedText(getString(R.string.permis_2)));
+        TV_permis3.setText(repository.getSpannedText(getString(R.string.permis_3)));
+        TV_permis5.setText(repository.getSpannedText(getString(R.string.permis_5)));
 
         // Fem llistes amb punts
         CharSequence text = "";

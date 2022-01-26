@@ -41,6 +41,7 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
@@ -57,6 +58,9 @@ import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -65,7 +69,12 @@ import retrofit2.Response;
  * https://developer.android.com/training/location/retrieve-current.html
  **/
 
+@AndroidEntryPoint
 public class OficinesActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
+
     private static final String TAG = OficinesActivity.class.getSimpleName();
     private final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MyLocationListener locationListener;
@@ -126,7 +135,7 @@ public class OficinesActivity extends AppCompatActivity {
         map = findViewById(R.id.MV_map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
-        Api mTodoService = ((App) getApplication()).getAPI();
+        Api mTodoService = repository.getApi();
 
         // Actualitzem la llista d'oficines
         Call<List<Oficina>> call = mTodoService.getActiveOficines();

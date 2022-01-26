@@ -31,7 +31,7 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public static SharedPreferences provideSharedPreferences(@ApplicationContext Application application){
+    public static SharedPreferences provideSharedPreferences(@ApplicationContext Context application){
         MasterKey masterKey = null;
         try {
             KeyGenParameterSpec spec = new KeyGenParameterSpec.Builder(
@@ -68,5 +68,5 @@ public class AppModule {
 
     @Provides
     @Singleton
-    public static Application provideApplication(@ApplicationContext Application context) { return context; }
+    public static Context provideApplication(@ApplicationContext Context context) { return context; }
 }

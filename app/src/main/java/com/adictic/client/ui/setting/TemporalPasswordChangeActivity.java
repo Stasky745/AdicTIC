@@ -24,15 +24,23 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
+import com.adictic.common.util.hilt.Repository;
 
 import org.json.JSONObject;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class TemporalPasswordChangeActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     Api api;
 
@@ -41,7 +49,7 @@ public class TemporalPasswordChangeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_change_password);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(com.adictic.common.R.string.changePassword));
-        api = ((AdicticApp) this.getApplication()).getAPI();
+        api = repository.getApi();
 
         Bundle extras = getIntent().getExtras();
         Funcions.closeKeyboard(findViewById(R.id.popCP_constraint), this);
@@ -75,7 +83,7 @@ public class TemporalPasswordChangeActivity extends AppCompatActivity {
                     public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                         super.onResponse(call, response);
                         if(response.isSuccessful()){
-                            SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(TemporalPasswordChangeActivity.this);
+                            SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                             assert sharedPreferences != null;
                             sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,changePassword.newPassword).apply();
                             Toast.makeText(TemporalPasswordChangeActivity.this, getString(R.string.successful_entry), Toast.LENGTH_LONG).show();

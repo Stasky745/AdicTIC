@@ -139,7 +139,7 @@ public class BlockAppActivity extends AppCompatActivity {
 
                 SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
                 assert sharedPreferences != null;
-                AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
+                AdicticApi api = repository.getApi();
 
                 EditText ET_unlock_pwd = dialogLayout.findViewById(R.id.ET_unlock_pwd);
                 String pwd = Crypt.getSHA256(ET_unlock_pwd.getText().toString());
@@ -159,7 +159,7 @@ public class BlockAppActivity extends AppCompatActivity {
             alertDialog.dismiss();
 
             // Actualitzem les dades del servei d'accessibilitat
-            if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+            if(repository.accessibilityServiceOn()) {
                 AccessibilityScreenService.instance.removeBlockedApp(pkgName);
                 AccessibilityScreenService.instance.isCurrentAppBlocked();
             }
@@ -202,7 +202,7 @@ public class BlockAppActivity extends AppCompatActivity {
 
         long now = DateTime.now().getMillis();
 
-        AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        AdicticApi mTodoService = repository.getApi();
 
         IntentsAccesApp intentsAccesApp = new IntentsAccesApp();
         intentsAccesApp.pkgName = pkgName;

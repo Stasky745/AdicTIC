@@ -84,7 +84,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        mTodoService = repository.getApi();
         instance = this;
         setContentView(R.layout.block_device_layout);
 
@@ -155,7 +155,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
             alertDialog.dismiss();
 
             // Actualitzem les dades del servei d'accessibilitat
-            if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+            if(repository.accessibilityServiceOn()) {
                 AccessibilityScreenService.instance.setBlockDevice(false);
                 AccessibilityScreenService.instance.setFreeUse(true);
                 AccessibilityScreenService.instance.updateDeviceBlock();
@@ -185,7 +185,7 @@ public class BlockDeviceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(Funcions.accessibilityServiceOn(getApplicationContext())) {
+        if(repository.accessibilityServiceOn()) {
             if (!AccessibilityScreenService.instance.isDeviceBlocked())
                 finish();
         }

@@ -21,6 +21,8 @@ import com.adictic.admin.entity.ChatInfo;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.ui.Xats.XatActivity;
 import com.adictic.admin.util.AdminApp;
+import com.adictic.admin.util.hilt.AdminEntryPoint;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.Dubte;
 import com.adictic.common.entity.Localitzacio;
 import com.adictic.common.util.Callback;
@@ -35,10 +37,17 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ConsultesFragment extends Fragment {
+    @Inject
+    AdminRepository repository;
 
     private final String TAG = "ConsultesFragment";
 
@@ -58,7 +67,7 @@ public class ConsultesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.consultes_layout, container, false);
-        adminApi = ((AdminApp) requireActivity().getApplication()).getAPI();
+        adminApi = repository.getApi();
         
         return root;
     }
@@ -172,6 +181,8 @@ public class ConsultesFragment extends Fragment {
         Context mContext;
         LayoutInflater mInflater;
 
+        AdminRepository repository;
+
         RV_Adapter(Context context, ArrayList<Dubte> list) {
             mContext = context;
             dubteArrayList = list;
@@ -184,6 +195,8 @@ public class ConsultesFragment extends Fragment {
             // infalte the item Layout
             View v = mInflater.inflate(R.layout.dubte_rv_item, parent, false);
 
+            AdminEntryPoint mEntryPoint = EntryPoints.get(mContext, AdminEntryPoint.class);
+            repository = mEntryPoint.getRepository();
 
             // set the view's size, margins, paddings and layout parameters
             return new MyViewHolder(v);
@@ -208,7 +221,7 @@ public class ConsultesFragment extends Fragment {
                         .setTitle(dubteItem.titol)
                         .setMessage(dubteItem.descripcio.concat("\n").concat(finalLocalitzacions))
                         .setPositiveButton("Acceptar Consulta", (dialogInterface, i) -> {
-                            AdminApi adminApi = ((AdminApp) mContext.getApplicationContext()).getAPI();
+                            AdminApi adminApi = repository.getApi();
                             Call<ChatInfo> call = adminApi.getUserChatInfo(dubteItem.id);
                             call.enqueue(new Callback<ChatInfo>() {
                                 @Override

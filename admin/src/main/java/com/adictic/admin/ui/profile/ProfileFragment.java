@@ -32,6 +32,7 @@ import com.adictic.admin.R;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.entity.AdminProfile;
 import com.adictic.common.entity.WebLink;
 import com.adictic.common.ui.AdminProfileActivity;
@@ -48,14 +49,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ProfileFragment extends Fragment{
     private static final String PROFILE_ARGS = "profile_args";
+
+    @Inject
+    AdminRepository repository;
 
     private static final int AFEGIR_WEBLINK = 1;
     private static final int EDIT_WEBLINK = 2;
@@ -121,9 +129,9 @@ public class ProfileFragment extends Fragment{
         if(getArguments() != null)
             adminProfile = getArguments().getParcelable(PROFILE_ARGS);
 
-        mService = ((AdminApp) requireActivity().getApplication()).getAPI();
+        mService = repository.getApi();
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         webList = new ArrayList<>();
 
@@ -163,7 +171,7 @@ public class ProfileFragment extends Fragment{
     }
 
     private void agafarFoto(View root) {
-        Funcions.setAdminPhoto(getContext(), sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN,-1), IV_profilePic);
+        repository.setAdminPhoto(sharedPreferences.getLong(Constants.SHARED_PREFS_ID_ADMIN,-1), IV_profilePic);
         setButtons(root);
         setRecyclerView(root);
     }

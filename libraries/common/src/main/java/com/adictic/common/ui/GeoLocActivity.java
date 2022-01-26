@@ -27,6 +27,7 @@ import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -40,10 +41,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class GeoLocActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
+
     private ArrayList<Marker> markers = new ArrayList<>();
     private Api mTodoService;
     private SharedPreferences sharedPreferences;
@@ -91,7 +100,7 @@ public class GeoLocActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(messageReceiver,
                 new IntentFilter("actualitzarLoc"));
@@ -120,7 +129,7 @@ public class GeoLocActivity extends AppCompatActivity {
         map = findViewById(R.id.MV_map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
-        mTodoService = ((App) getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         demanarLocFills();
     }

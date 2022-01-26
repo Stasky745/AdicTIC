@@ -14,12 +14,17 @@ import androidx.annotation.NonNull;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticEntryPoint;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 
+import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
+
 
 public class checkInstalledApps extends BroadcastReceiver {
     private final String TAG = "checkInstalledApps (BroadcastReceiver)";
@@ -27,8 +32,11 @@ public class checkInstalledApps extends BroadcastReceiver {
     private SharedPreferences sharedPreferences;
     @Override
     public void onReceive(Context context, Intent intent) {
-        mTodoService = ((AdicticApp) context.getApplicationContext()).getAPI();
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(context);
+        AdicticEntryPoint mEntryPoint = EntryPoints.get(context, AdicticEntryPoint.class);
+        AdicticRepository repository = mEntryPoint.getRepository();
+
+        mTodoService = repository.getApi();
+        sharedPreferences = repository.getEncryptedSharedPreferences();
         String pkgName = intent.getData().getEncodedSchemeSpecificPart();
         if(intent.getComponent() != null && intent.getComponent().getPackageName().equals(context.getPackageName())) {
             if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {

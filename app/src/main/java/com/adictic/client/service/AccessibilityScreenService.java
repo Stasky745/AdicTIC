@@ -254,7 +254,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         dailyLimitDevice = sharedPreferences.getInt(Constants.SHARED_PREFS_DAILY_USAGE_LIMIT, 0);
 
         if(sharedPreferences.contains(Constants.SHARED_PREFS_IDUSER)) {
-            AdicticApi mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+            AdicticApi mTodoService = repository.getApi();
             long idChild = sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1);
             repository.fetchAppBlockFromServer();
 
@@ -507,7 +507,7 @@ public class AccessibilityScreenService extends AccessibilityService {
         if(sharedPreferences == null)
             sharedPreferences = repository.getEncryptedSharedPreferences();
 
-        Call<String> call = ((AdicticApp) getApplication()).getAPI().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
+        Call<String> call = repository.getApi().sendTutorLiveApp(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -595,7 +595,7 @@ public class AccessibilityScreenService extends AccessibilityService {
 
             long date = new Date().getTime();
 
-            Call<String> call = ((AdicticApp) context.getApplicationContext()).getAPI().addTimeUnlocked(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), date);
+            Call<String> call = repository.getApi().addTimeUnlocked(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), date);
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
@@ -632,7 +632,7 @@ public class AccessibilityScreenService extends AccessibilityService {
                 repository.startAppUsageWorker24h();
             }
 
-            Call<String> call = ((AdicticApp) AccessibilityScreenService.instance.getApplicationContext()).getAPI().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
+            Call<String> call = repository.getApi().postLastAppUsed(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1), liveApp);
             call.enqueue(new Callback<String>(){
                 @Override
                 public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {

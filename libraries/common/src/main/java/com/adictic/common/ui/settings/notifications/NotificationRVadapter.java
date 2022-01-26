@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.util.List;
@@ -23,14 +24,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.EntryPoints;
 
-@AndroidEntryPoint
 public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVadapter.notifViewHolder> {
     private final Context mContext;
     private final List<NotificationInformation> notifList;
     private final LayoutInflater mInflater;
 
-    @Inject
     Repository repository;
 
     NotificationRVadapter(Context context,List<NotificationInformation> list) {
@@ -43,6 +43,10 @@ public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVad
     @Override
     public notifViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = mInflater.inflate(R.layout.notif_list_item, parent, false);
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
+        repository = mEntryPoint.getRepository();
+
         return new notifViewHolder(v);
     }
 

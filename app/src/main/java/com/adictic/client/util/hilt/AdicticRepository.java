@@ -23,6 +23,7 @@ import androidx.work.WorkRequest;
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
+import com.adictic.client.service.ClientNotificationManager;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.workers.AppUsageWorker;
@@ -81,10 +82,12 @@ public class AdicticRepository extends Repository {
     private final Application application;
     private final WorkManager workManager;
     private final UsageStatsManager usageStatsManager;
+    private final ClientNotificationManager clientNotificationManager;
 
-    public AdicticRepository(Application application, WorkManager workManager, UsageStatsManager usageStatsManager, AdicticApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
+    public AdicticRepository(Application application, ClientNotificationManager clientNotificationManager, WorkManager workManager, UsageStatsManager usageStatsManager, AdicticApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
         super(application, api, blockedAppDao, eventBlockDao, horarisNitDao, glideRequestManager, sharedPreferences);
         this.application = application;
+        this.clientNotificationManager = clientNotificationManager;
         this.workManager = workManager;
         this.usageStatsManager = usageStatsManager;
         this.api = api;
@@ -96,6 +99,8 @@ public class AdicticRepository extends Repository {
     }
 
     //region TOOLS
+
+    public ClientNotificationManager getNotificationManager() { return clientNotificationManager; }
 
     // Contrasenya ha d'estar encriptada amb SHA256
     public void isPasswordCorrect(String pwd, BooleanCallback callback){

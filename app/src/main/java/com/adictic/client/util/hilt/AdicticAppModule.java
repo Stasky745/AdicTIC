@@ -6,6 +6,7 @@ import android.content.Context;
 
 import androidx.work.WorkManager;
 
+import com.adictic.client.service.ClientNotificationManager;
 import com.adictic.common.util.App;
 
 import javax.inject.Singleton;
@@ -22,13 +23,19 @@ public class AdicticAppModule {
 
     @Provides
     @Singleton
-    public static WorkManager provideWorkManager(@ApplicationContext Application application) {
+    public static WorkManager provideWorkManager(@ApplicationContext Context application) {
         return WorkManager.getInstance(application);
     }
 
     @Provides
     @Singleton
-    public static UsageStatsManager provideUsageStatsManager(@ApplicationContext Application application) {
+    public static UsageStatsManager provideUsageStatsManager(@ApplicationContext Context application) {
         return (UsageStatsManager) application.getSystemService(Context.USAGE_STATS_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    public static ClientNotificationManager provideNotificationManager(@ApplicationContext Context application) {
+        return new ClientNotificationManager(application);
     }
 }

@@ -18,6 +18,7 @@ import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.UserRegister;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Crypt;
@@ -26,10 +27,17 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class Register extends AppCompatActivity {
+
+    @Inject
+    AdicticRepository repository;
 
     private AdicticApi mTodoService;
 
@@ -45,7 +53,7 @@ public class Register extends AppCompatActivity {
 
         Funcions.closeKeyboard(findViewById(R.id.main_parent), this);
 
-        mTodoService = ((AdicticApp) this.getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         Button b_reg = Register.this.findViewById(R.id.register_button);
         // This is the listener that will be used when the user presses the "Register" button

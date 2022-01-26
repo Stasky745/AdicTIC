@@ -22,6 +22,7 @@ import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.tabs.TabLayout;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
@@ -36,10 +37,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class InformeActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private long idChild;
     private int age;
@@ -69,7 +77,7 @@ public class InformeActivity extends AppCompatActivity {
         setContentView(R.layout.informe_tabs);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.informe));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mTodoService = ((App) getApplication()).getAPI();
+        mTodoService = repository.getApi();
 
         idChild = getIntent().getLongExtra("idChild", -1);
 
@@ -83,9 +91,9 @@ public class InformeActivity extends AppCompatActivity {
 
             AlertDialog dialog = new AlertDialog.Builder(InformeActivity.this).create();
             if(percentage < 100)
-                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_bo, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
+                dialog.setMessage(repository.getSpannedText(getString(R.string.percentage_info_bo, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
             else
-                dialog.setMessage(Funcions.getSpannedText(getApplicationContext(), getString(R.string.percentage_info_dolent, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
+                dialog.setMessage(repository.getSpannedText(getString(R.string.percentage_info_dolent, deviceTime, Constants.AGE_TIMES_STRING[age], decimalFormat.format(percentage))));
             dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), (dialog1, which) -> dialog1.dismiss());
             dialog.show();
         });

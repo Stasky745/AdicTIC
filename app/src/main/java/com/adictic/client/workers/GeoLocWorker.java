@@ -19,6 +19,7 @@ import androidx.work.WorkerParameters;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.callbacks.BooleanCallback;
 import com.adictic.common.entity.GeoFill;
 import com.adictic.common.util.Callback;
@@ -34,10 +35,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class GeoLocWorker extends ListenableWorker {
+
+    @Inject
+    AdicticRepository repository;
 
     private static final String TAG = GeoLocWorker.class.getSimpleName();
     private final Context mContext;
@@ -59,7 +67,7 @@ public class GeoLocWorker extends ListenableWorker {
         SettableFuture<Result> future = SettableFuture.create();
 
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-        sharedPreferences = Funcions.getEncryptedSharedPreferences(mContext);
+        sharedPreferences = repository.getEncryptedSharedPreferences();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
 
@@ -69,7 +77,7 @@ public class GeoLocWorker extends ListenableWorker {
             return future;
         }
 
-        mTodoService = ((AdicticApp) getApplicationContext()).getAPI();
+        mTodoService = repository.getApi();
 
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             future.set(Result.failure());

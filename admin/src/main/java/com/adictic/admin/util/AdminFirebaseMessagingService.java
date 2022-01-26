@@ -9,6 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.admin.R;
 import com.adictic.admin.ui.Xats.XatActivity;
+import com.adictic.admin.util.hilt.AdminRepository;
 import com.adictic.common.util.Constants;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -17,7 +18,15 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AdminFirebaseMessagingService extends FirebaseMessagingService {
+
+    @Inject
+    AdminRepository repository;
 
     private final String TAG = "Firebase: ";
 
@@ -29,7 +38,7 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
 
-        Funcions.runUpdateTokenWorker(getApplicationContext());
+        repository.runUpdateTokenWorker();
 
     }
     @Override
@@ -37,7 +46,7 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "Missatge nou amb data: " + remoteMessage.getData());
-        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
         assert sharedPreferences != null;
 
         Map<String, String> messageMap = remoteMessage.getData();

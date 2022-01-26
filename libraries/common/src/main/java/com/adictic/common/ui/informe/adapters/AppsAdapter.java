@@ -15,22 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.util.Funcions;
+import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
+import dagger.hilt.EntryPoints;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
-@AndroidEntryPoint
 public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder> {
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd MMMM yyyy");
 
-    @Inject
     Repository repository;
 
     private final LayoutInflater mInflater;
@@ -49,6 +46,9 @@ public class AppsAdapter extends RecyclerView.Adapter<AppsAdapter.AppsViewHolder
     @Override
     public AppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.informe_apps_item, parent, false);
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
+        repository = mEntryPoint.getRepository();
 
         return new AppsViewHolder(view);
     }

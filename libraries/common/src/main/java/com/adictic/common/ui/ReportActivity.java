@@ -16,13 +16,21 @@ import com.adictic.common.entity.Report;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
+import com.adictic.common.util.hilt.Repository;
 
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import retrofit2.Call;
 import retrofit2.Response;
 
+@AndroidEntryPoint
 public class ReportActivity extends AppCompatActivity {
+
+    @Inject
+    Repository repository;
 
     private Boolean isTypeBug;
 
@@ -53,7 +61,7 @@ public class ReportActivity extends AppCompatActivity {
     }
 
     private void sendReport() {
-        Api api = ((App)getApplication()).getAPI();
+        Api api = repository.getApi();
         String text = editText.getText().toString().trim();
         if(text.length()>0) {
             Report report = new Report();
