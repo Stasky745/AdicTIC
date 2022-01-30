@@ -28,11 +28,10 @@ import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
-import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.RVSpaceDecoration;
 import com.adictic.common.util.hilt.Repository;
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -53,10 +52,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import dagger.hilt.EntryPoint;
 import dagger.hilt.EntryPoints;
 import dagger.hilt.android.AndroidEntryPoint;
-import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 

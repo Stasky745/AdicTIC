@@ -2,15 +2,12 @@ package com.adictic.common.util.hilt;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.AdicticAuthenticator;
 import com.adictic.common.util.AdminAuthenticator;
-import com.adictic.common.util.Constants;
 import com.adictic.common.util.Global;
-import com.adictic.common.util.HiltEntryPoint;
 import com.franmontiel.persistentcookiejar.ClearableCookieJar;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -20,7 +17,6 @@ import com.google.gson.GsonBuilder;
 
 import java.security.cert.CertificateException;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -30,7 +26,6 @@ import javax.net.ssl.X509TrustManager;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
-import dagger.hilt.android.EntryPointAccessors;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import okhttp3.Authenticator;

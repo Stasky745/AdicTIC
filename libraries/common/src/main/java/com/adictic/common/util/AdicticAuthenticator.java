@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.entity.UserLogin;
-import com.adictic.common.util.hilt.Repository;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.google.gson.Gson;
 
 import dagger.hilt.android.EntryPointAccessors;

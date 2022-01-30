@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.rest.Api;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 import com.google.auto.service.AutoService;
 

@@ -1,7 +1,6 @@
 package com.adictic.common.ui.settings.notifications;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -16,14 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.EntryPoints;
 
 public class NotificationRVadapter extends RecyclerView.Adapter<NotificationRVadapter.notifViewHolder> {

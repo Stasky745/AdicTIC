@@ -1,4 +1,4 @@
-package com.adictic.common.util;
+package com.adictic.common.util.hilt;
 
 import android.content.SharedPreferences;
 

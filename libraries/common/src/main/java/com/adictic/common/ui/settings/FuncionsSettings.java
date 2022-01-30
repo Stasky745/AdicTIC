@@ -18,8 +18,7 @@ import com.adictic.common.ui.NotificationSettings;
 import com.adictic.common.ui.settings.notifications.NotificationActivity;
 import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Constants;
-import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.util.Objects;

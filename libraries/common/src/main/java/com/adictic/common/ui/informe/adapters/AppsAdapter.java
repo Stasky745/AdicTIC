@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisAppBlock;
 import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.text.SimpleDateFormat;

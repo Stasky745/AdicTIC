@@ -8,20 +8,15 @@ import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
 import com.adictic.common.rest.Api;
-import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;

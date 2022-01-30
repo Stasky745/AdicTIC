@@ -61,7 +61,6 @@ import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Global;
-import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.workers.UpdateTokenWorker;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -81,7 +80,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 

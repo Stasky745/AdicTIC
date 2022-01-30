@@ -9,14 +9,10 @@ import androidx.preference.PreferenceScreen;
 
 import com.adictic.client.BuildConfig;
 import com.adictic.client.R;
-import com.adictic.client.util.Funcions;
 import com.adictic.client.util.hilt.AdicticEntryPoint;
 import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.util.Constants;
-import com.adictic.common.util.HiltEntryPoint;
-import com.adictic.common.util.hilt.Repository;
 
-import dagger.hilt.EntryPoints;
 import dagger.hilt.android.EntryPointAccessors;
 
 public class MainSettings extends PreferenceFragmentCompat {

@@ -13,16 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.util.Funcions;
-import com.adictic.common.util.HiltEntryPoint;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
-import dagger.hilt.EntryPoints;
 import dagger.hilt.android.EntryPointAccessors;
 
 public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsViewHolder> {

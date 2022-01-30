@@ -8,13 +8,11 @@ import androidx.annotation.Nullable;
 
 import com.adictic.common.BuildConfig;
 import com.adictic.common.entity.UserLogin;
+import com.adictic.common.util.hilt.HiltEntryPoint;
 import com.adictic.common.util.hilt.Repository;
 import com.google.gson.Gson;
 
-import javax.inject.Inject;
-
 import dagger.hilt.EntryPoints;
-import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
 import okhttp3.Request;
