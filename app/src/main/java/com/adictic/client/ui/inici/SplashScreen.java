@@ -174,7 +174,9 @@ public class SplashScreen extends AppCompatActivity {
         }
 
         sharedPreferences = repository.getEncryptedSharedPreferences();
-        String selectedTheme = sharedPreferences != null ? sharedPreferences.getString("theme", "follow_system") : "follow_system";
+        assert  sharedPreferences != null;
+
+        String selectedTheme = sharedPreferences.getString("theme", "follow_system");
         switch(selectedTheme){
             case "no":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);

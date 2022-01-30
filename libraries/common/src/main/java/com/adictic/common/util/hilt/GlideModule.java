@@ -20,6 +20,6 @@ public class GlideModule {
     @Provides
     @Singleton
     public static RequestManager provideGlideRequestManager(@ApplicationContext Context context) {
-        return Glide.with(context);
+        return Glide.with(context.getApplicationContext());
     }
 }

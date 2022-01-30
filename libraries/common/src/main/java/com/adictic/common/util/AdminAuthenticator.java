@@ -1,21 +1,19 @@
-package com.adictic.admin.util;
+package com.adictic.common.util;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.adictic.admin.BuildConfig;
-import com.adictic.admin.util.hilt.AdminRepository;
+import com.adictic.common.BuildConfig;
 import com.adictic.common.entity.UserLogin;
-import com.adictic.common.util.Constants;
-import com.adictic.common.util.Global;
+import com.adictic.common.util.hilt.Repository;
 import com.google.gson.Gson;
-
-import java.io.IOException;
 
 import javax.inject.Inject;
 
+import dagger.hilt.EntryPoints;
 import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
@@ -24,11 +22,16 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.Route;
 
-@AndroidEntryPoint
 public class AdminAuthenticator implements Authenticator {
 
-    @Inject
-    AdminRepository repository;
+    Repository repository;
+
+    public AdminAuthenticator(Context context) {
+        super();
+
+        HiltEntryPoint mEntryPoint = EntryPoints.get(context, HiltEntryPoint.class);
+        repository = mEntryPoint.getRepository();
+    }
 
     @Nullable
     @Override

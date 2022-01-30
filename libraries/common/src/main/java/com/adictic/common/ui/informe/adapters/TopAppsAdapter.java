@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.EntryPoints;
+import dagger.hilt.android.EntryPointAccessors;
 
 public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsViewHolder> {
     private final LayoutInflater mInflater;
@@ -42,7 +43,7 @@ public class TopAppsAdapter extends RecyclerView.Adapter<TopAppsAdapter.TopAppsV
     public TopAppsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.informe_top_apps_item, parent, false);
 
-        HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
+        HiltEntryPoint mEntryPoint = EntryPointAccessors.fromApplication(mContext.getApplicationContext(), HiltEntryPoint.class);
         repository = mEntryPoint.getRepository();
 
         return new TopAppsViewHolder(view);

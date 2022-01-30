@@ -11,10 +11,7 @@ import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.hilt.Repository;
 import com.google.gson.Gson;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
-import dagger.hilt.EntryPoints;
+import dagger.hilt.android.EntryPointAccessors;
 import okhttp3.Authenticator;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -23,14 +20,12 @@ import okhttp3.Response;
 import okhttp3.Route;
 
 public class AdicticAuthenticator implements Authenticator {
-    Repository repository;
+    private final Context mContext;
 
-    public AdicticAuthenticator(Context context) {
-        super();
-
-        HiltEntryPoint mEntryPoint = EntryPoints.get(context, HiltEntryPoint.class);
-        repository = mEntryPoint.getRepository();
+    public AdicticAuthenticator(Context mContext) {
+        this.mContext = mContext;
     }
+
 
     @Nullable
     @Override
@@ -39,7 +34,7 @@ public class AdicticAuthenticator implements Authenticator {
             return null; // If we've failed 3 times, give up.
         }
 
-        SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
+        SharedPreferences sharedPreferences = EntryPointAccessors.fromApplication(mContext.getApplicationContext(), HiltEntryPoint.class).getSharedPrefs();
 
         if (sharedPreferences == null)
             return null;

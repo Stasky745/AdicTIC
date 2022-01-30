@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
+
     public static final long HOUR_IN_MILLIS = 3600000;
     public static final int TOTAL_MILLIS_IN_DAY = 86400000;
 
@@ -65,14 +66,6 @@ public class Constants {
     public static final String NOTIF_SETTINGS_BLOCK_APP = "notif_blockApp";
     public static final String NOTIF_SETTINGS_HORARIS = "notif_horaris";
     public static final String NOTIF_SETTINGS_EVENTS = "notif_events";
-
-    /** FITXERS **/
-
-    public static final String FILE_LIMITED_APPS = "limited_apps";
-    public static final String FILE_BLOCKED_APPS = "blocked_apps";
-    public static final String FILE_EVENT_BLOCK = "event_block";
-    public static final String FILE_HORARIS_NIT = "horaris_nit";
-    public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
     public static final String SHARED_PREFS_ID_ADMIN = "adminId";
     public static final String SHARED_PREFS_IS_SUPERADMIN = "isSuperAdmin";

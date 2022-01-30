@@ -5,13 +5,20 @@ import android.content.Context;
 
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.common.BuildConfig;
+import com.adictic.common.rest.Api;
 import com.adictic.common.util.AdicticAuthenticator;
 import com.adictic.common.util.Global;
+import com.adictic.common.util.hilt.NetworkModule;
+import com.franmontiel.persistentcookiejar.ClearableCookieJar;
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.security.cert.CertificateException;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -31,7 +38,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 @InstallIn(SingletonComponent.class)
-public class AdicticNetworkModule {
+public class AdicticNetworkModule extends NetworkModule {
 
     @Provides
     @Singleton
@@ -45,7 +52,7 @@ public class AdicticNetworkModule {
         if(BuildConfig.DEBUG) URL = Global.BASE_URL_DEBUG;
 
         Retrofit retrofit = new Retrofit.Builder()
-                .client(getOkHttpClient(new AdicticAuthenticator(context)))
+                .client(getOkHttpClient(context, new AdicticAuthenticator(context)))
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
@@ -53,9 +60,9 @@ public class AdicticNetworkModule {
         return retrofit.create(AdicticApi.class);
     }
 
-    protected static OkHttpClient getOkHttpClient(Authenticator authenticator) {
+    protected static OkHttpClient getOkHttpClient(Context context, Authenticator authenticator) {
 
-        OkHttpClient.Builder builder = createOkHttpClientBuilder(authenticator);
+        OkHttpClient.Builder builder = createOkHttpClientBuilder(context, authenticator);
         String currentURL = BuildConfig.DEBUG ? Global.BASE_URL_DEBUG : Global.BASE_URL_RELEASE;
         if(currentURL.contains("192.168"))
             builder = addUnsafeOkHttpClient(builder);
@@ -63,7 +70,7 @@ public class AdicticNetworkModule {
         return builder.build();
     }
 
-    private static OkHttpClient.Builder createOkHttpClientBuilder(Authenticator authenticator){
+    private static OkHttpClient.Builder createOkHttpClientBuilder(Context context, Authenticator authenticator){
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
         if(BuildConfig.DEBUG) {
@@ -73,15 +80,12 @@ public class AdicticNetworkModule {
             httpClient.addInterceptor(interceptor);
         }
 
-        return httpClient
-                .authenticator(authenticator);
+        ClearableCookieJar cookieJar =
+                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(context.getApplicationContext()));
 
-//        ClearableCookieJar cookieJar =
-//                new PersistentCookieJar(new SetCookieCache(), new SharedPrefsCookiePersistor(this));
-//
-//        return httpClient
-//                .cookieJar(cookieJar)
-//                .authenticator(authenticator);
+        return httpClient
+                .cookieJar(cookieJar)
+                .authenticator(authenticator);
     }
 
     private static OkHttpClient.Builder addUnsafeOkHttpClient(OkHttpClient.Builder builder){

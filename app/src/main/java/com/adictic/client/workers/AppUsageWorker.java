@@ -38,10 +38,8 @@ public class AppUsageWorker extends Worker {
 
     AdicticRepository repository;
 
-    private static final int TOTAL_RETRIES = 5;
     private AdicticApi mTodoService;
     private SharedPreferences sharedPreferences;
-    private int retryCountLastApp = 0;
 
     public AppUsageWorker(
             @NonNull Context context,

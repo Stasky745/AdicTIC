@@ -1,5 +1,7 @@
 package com.adictic.common.util;
 
+import android.content.SharedPreferences;
+
 import com.adictic.common.util.hilt.Repository;
 
 import dagger.hilt.EntryPoint;
@@ -10,4 +12,5 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public interface HiltEntryPoint {
     Repository getRepository();
+    SharedPreferences getSharedPrefs();
 }

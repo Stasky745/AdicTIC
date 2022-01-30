@@ -13,8 +13,6 @@ import org.acra.config.CoreConfigurationBuilder;
 import org.acra.config.LimiterConfigurationBuilder;
 import org.acra.data.StringFormat;
 
-import dagger.hilt.android.HiltAndroidApp;
-
 public class App extends Application {
 
     private static Resources res;

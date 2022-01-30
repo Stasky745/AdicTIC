@@ -12,19 +12,25 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.BulletSpan;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.biometric.BiometricManager;
 import androidx.core.text.HtmlCompat;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -45,12 +51,18 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.rest.Api;
+import com.adictic.common.ui.NotificationSettings;
+import com.adictic.common.ui.settings.ChangePasswordActivity;
+import com.adictic.common.ui.settings.SecuritySettings;
+import com.adictic.common.ui.settings.SettingsActivity;
+import com.adictic.common.ui.settings.notifications.NotificationActivity;
 import com.adictic.common.util.App;
+import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Global;
+import com.adictic.common.util.HiltEntryPoint;
 import com.adictic.common.workers.UpdateTokenWorker;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.common.reflect.TypeToken;
@@ -69,8 +81,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
-import dagger.hilt.processor.internal.definecomponent.codegen._dagger_hilt_components_SingletonComponent;
+import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -515,4 +526,125 @@ public class Repository {
     }
 
     //endregion
+
+    //region SETTINGS
+
+    public void settings_android(PreferenceFragmentCompat context) {
+        Preference setting_android = context.findPreference("setting_android");
+        ApplicationInfo appInfo = context.requireContext().getApplicationContext().getApplicationInfo();
+
+        assert setting_android != null;
+        setting_android.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            Uri uri = Uri.fromParts("package", appInfo.packageName, null);
+            intent.setData(uri);
+            context.startActivity(intent);
+            return true;
+        });
+    }
+
+    public void settings_change_notifications(PreferenceFragmentCompat context) {
+        Preference change_notif = context.findPreference("setting_notifications");
+        assert change_notif != null;
+
+        change_notif.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(context.requireContext(), NotificationSettings.class);
+            context.startActivity(intent);
+            return true;
+        });
+    }
+
+    public void settings_notification_history(PreferenceFragmentCompat context) {
+        Preference setting_notification_history = context.findPreference("setting_notification_history");
+        assert setting_notification_history != null;
+
+        setting_notification_history.setOnPreferenceClickListener(preference -> {
+            context.requireActivity().startActivity(new Intent(context.getActivity(), NotificationActivity.class));
+            return true;
+        });
+    }
+
+    public void settings_change_theme(PreferenceFragmentCompat context) {
+        ListPreference theme_preference = context.findPreference("setting_change_theme");
+        assert sharedPreferences != null;
+        String selectedTheme = sharedPreferences.getString("theme", "follow_system");
+
+        assert theme_preference != null;
+        theme_preference.setValue(selectedTheme);
+        theme_preference.setSummary(theme_preference.getEntry());
+
+        theme_preference.setOnPreferenceChangeListener((preference, newValue) -> {
+            sharedPreferences.edit().putString("theme", (String) newValue).apply();
+            switch((String) newValue){
+                case "no":
+                    theme_preference.setSummary(context.getString(R.string.theme_light));
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    break;
+                case "yes":
+                    theme_preference.setSummary(context.getString(R.string.theme_dark));
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    break;
+                default:
+                    theme_preference.setSummary(context.getString(R.string.theme_default));
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                    break;
+            }
+            return true;
+        });
+    }
+
+    public void settings_security(PreferenceFragmentCompat context) {
+        Preference setting_security = context.findPreference("setting_security");
+        assert setting_security != null;
+
+        setting_security.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(context.getActivity(), SettingsActivity.class);
+            intent.putExtra("fragment", SecuritySettings.class.getCanonicalName());
+            intent.putExtra("title", context.getString(R.string.security));
+            context.requireActivity().startActivity(intent);
+            return true;
+        });
+    }
+
+    public void settings_change_password(PreferenceFragmentCompat context) {
+        Preference change_password = context.findPreference("setting_change_password");
+
+        assert change_password != null;
+        change_password.setOnPreferenceClickListener(preference -> {
+            context.requireActivity().startActivity(new Intent(context.getActivity(), ChangePasswordActivity.class));
+            return true;
+        });
+    }
+
+    public void setting_require_biometric(PreferenceFragmentCompat context) {
+        SwitchPreference setting_require_biometric = context.findPreference("setting_require_biometric");
+        assert setting_require_biometric != null;
+        assert sharedPreferences != null;
+
+        int bioType = BiometricAuthUtil.isAuthenticationSupported(context.requireContext());
+        if (bioType != BiometricManager.BIOMETRIC_SUCCESS && !(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && bioType == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED)){
+            Objects.requireNonNull(setting_require_biometric.getParent()).removePreference(setting_require_biometric);
+        }
+
+        setting_require_biometric.setChecked(sharedPreferences.getBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, false));
+
+        setting_require_biometric.setOnPreferenceChangeListener((preference, newValue) -> {
+            if(newValue.toString().equals("true")){
+                int bioType2 = BiometricAuthUtil.isAuthenticationSupported(context.requireContext());
+                if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R && bioType2 == BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED){
+                    BiometricAuthUtil.createBiometricCredentials(context);
+                    return false;
+                } else if (bioType2 == BiometricManager.BIOMETRIC_SUCCESS){
+                    sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, true).apply();
+                } else
+                    return false;
+            } else if(newValue.toString().equals("false")){
+                sharedPreferences.edit().putBoolean(Constants.SHARED_PREFS_BIOMETRIC_AUTH, false).apply();
+            }
+            return true;
+        });
+    }
+
+    //
 }
