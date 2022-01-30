@@ -461,6 +461,7 @@ public class Repository {
         return new ClickableSpan() {
             @Override
             public void onClick(@NonNull View view) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 application.startActivity(intent);
             }
 

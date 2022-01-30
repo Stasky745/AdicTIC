@@ -191,7 +191,7 @@ public class DayUsageActivity extends AppCompatActivity {
                     if(response.body().isEmpty()) {
                         Button BT_pickDates = findViewById(R.id.BT_pickDates);
                         BT_pickDates.setOnClickListener(view -> {
-                            new AlertDialog.Builder(getApplicationContext())
+                            new AlertDialog.Builder(DayUsageActivity.this)
                                     .setTitle(getString(R.string.error_dadesBuides))
                                     .setMessage(getString(R.string.error_dadesBuides_body))
                                     .setNeutralButton(getString(R.string.accept), (dialogInterface, i) -> dialogInterface.dismiss())
@@ -396,6 +396,15 @@ public class DayUsageActivity extends AppCompatActivity {
                         monthList.addAll(Objects.requireNonNull(daysMap.get(yearList.get(0))).keySet());
                         monthList.sort(Collections.reverseOrder());
 
+                        initialYear = finalYear = yearList.get(0);
+                        initialMonth = finalMonth = monthList.get(0);
+                        initialDay = finalDay = Objects.requireNonNull(Objects.requireNonNull(daysMap.get(initialYear)).get(initialMonth)).get(0);
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.set(finalYear, finalMonth, finalDay);
+                        String text = formatterDate.format(calendar.getTimeInMillis());
+                        TV_dates.setText(text);
+
                         getStats();
                     }
                 } else {
@@ -446,8 +455,6 @@ public class DayUsageActivity extends AppCompatActivity {
     }
 
     class UsageStatsAdapter extends RecyclerView.Adapter<UsageStatsAdapter.MyViewHolder> {
-        Repository repository;
-
         private final LastTimeUsedComparator mLastTimeUsedComparator = new LastTimeUsedComparator();
         private final TimesUsedComparator mTimesUsedComparator = new TimesUsedComparator();
         private final UsageTimeComparator mUsageTimeComparator = new UsageTimeComparator();
@@ -471,9 +478,6 @@ public class DayUsageActivity extends AppCompatActivity {
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = mInflater.inflate(R.layout.usage_stats_item, parent,false);
-
-            HiltEntryPoint mEntryPoint = EntryPoints.get(mContext, HiltEntryPoint.class);
-            repository = mEntryPoint.getRepository();
 
             return new MyViewHolder(view);
         }
