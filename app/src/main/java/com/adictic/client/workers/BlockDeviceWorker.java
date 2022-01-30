@@ -14,15 +14,15 @@ import com.adictic.common.util.hilt.Repository;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.EntryPointAccessors;
 
-@AndroidEntryPoint
 public class BlockDeviceWorker extends Worker {
 
-    @Inject
     AdicticRepository repository;
 
     public BlockDeviceWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        repository = EntryPointAccessors.fromApplication(getApplicationContext(), AdicticRepository.class);
     }
 
     @NonNull

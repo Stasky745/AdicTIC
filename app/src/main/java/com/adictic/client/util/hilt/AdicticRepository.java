@@ -65,17 +65,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class AdicticRepository extends Repository {
-    private final BlockedAppDao blockedAppDao;
-    private final EventBlockDao eventBlockDao;
-    private final HorarisNitDao horarisNitDao;
 
     private final AdicticApi api;
-
-    private final RequestManager glideRequestManager;
 
     private final SharedPreferences sharedPreferences;
 
@@ -84,6 +81,7 @@ public class AdicticRepository extends Repository {
     private final UsageStatsManager usageStatsManager;
     private final ClientNotificationManager clientNotificationManager;
 
+    @Inject
     public AdicticRepository(Application application, ClientNotificationManager clientNotificationManager, WorkManager workManager, UsageStatsManager usageStatsManager, AdicticApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
         super(application, api, blockedAppDao, eventBlockDao, horarisNitDao, glideRequestManager, sharedPreferences);
         this.application = application;
@@ -91,10 +89,6 @@ public class AdicticRepository extends Repository {
         this.workManager = workManager;
         this.usageStatsManager = usageStatsManager;
         this.api = api;
-        this.blockedAppDao = blockedAppDao;
-        this.eventBlockDao = eventBlockDao;
-        this.horarisNitDao = horarisNitDao;
-        this.glideRequestManager = glideRequestManager;
         this.sharedPreferences = sharedPreferences;
     }
 

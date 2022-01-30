@@ -12,15 +12,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.adictic.client.rest.AdicticApi;
-import com.adictic.client.util.AdicticApp;
-import com.adictic.client.util.Funcions;
 import com.adictic.client.util.hilt.AdicticEntryPoint;
 import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 
-import dagger.hilt.android.AndroidEntryPoint;
 import dagger.hilt.EntryPoints;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -33,7 +30,7 @@ public class checkInstalledApps extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AdicticEntryPoint mEntryPoint = EntryPoints.get(context, AdicticEntryPoint.class);
-        AdicticRepository repository = mEntryPoint.getRepository();
+        AdicticRepository repository = mEntryPoint.getAdicticRepository();
 
         mTodoService = repository.getApi();
         sharedPreferences = repository.getEncryptedSharedPreferences();

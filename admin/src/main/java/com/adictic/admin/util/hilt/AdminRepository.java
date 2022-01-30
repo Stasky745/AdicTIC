@@ -16,10 +16,13 @@ import com.adictic.common.util.hilt.Repository;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import javax.inject.Inject;
+
 public class AdminRepository extends Repository {
     private final RequestManager glideRequestManager;
     private final AdminApi api;
 
+    @Inject
     public AdminRepository(Application application, AdminApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
         super(application, api, blockedAppDao, eventBlockDao, horarisNitDao, glideRequestManager, sharedPreferences);
 

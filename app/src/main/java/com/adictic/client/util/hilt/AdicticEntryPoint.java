@@ -7,5 +7,5 @@ import dagger.hilt.components.SingletonComponent;
 @EntryPoint
 @InstallIn(SingletonComponent.class)
 public interface AdicticEntryPoint {
-    AdicticRepository getRepository();
+    AdicticRepository getAdicticRepository();
 }

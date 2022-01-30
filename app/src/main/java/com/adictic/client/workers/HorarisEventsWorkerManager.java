@@ -7,29 +7,25 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.adictic.client.util.Funcions;
+import com.adictic.client.util.hilt.AdicticEntryPoint;
 import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.HorarisNit;
-import com.adictic.common.util.hilt.Repository;
 
 import org.joda.time.DateTime;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import dagger.hilt.EntryPoints;
 
-import dagger.hilt.android.AndroidEntryPoint;
-
-@AndroidEntryPoint
 public class HorarisEventsWorkerManager extends Worker {
     private final static String TAG = "HorarisEventsWorkerManager";
 
-    @Inject
     AdicticRepository repository;
 
     public HorarisEventsWorkerManager(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        repository = EntryPoints.get(getApplicationContext(), AdicticEntryPoint.class).getAdicticRepository();
     }
 
     @NonNull

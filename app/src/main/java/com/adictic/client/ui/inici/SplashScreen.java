@@ -25,29 +25,24 @@ import androidx.core.content.FileProvider;
 
 import com.adictic.client.BuildConfig;
 import com.adictic.client.R;
+import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.main.NavActivity;
-import com.adictic.client.util.AdicticApp;
+import com.adictic.client.util.hilt.AdicticEntryPoint;
+import com.adictic.client.util.hilt.AdicticRepository;
 import com.adictic.common.util.BiometricAuthUtil;
 import com.adictic.client.util.Funcions;
 import com.adictic.client.util.LocaleHelper;
 import com.adictic.common.entity.User;
-import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.common.util.HiltEntryPoint;
-import com.adictic.common.util.hilt.Repository;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Arrays;
 
-import javax.inject.Inject;
-
-import dagger.hilt.EntryPoints;
-import dagger.hilt.android.AndroidEntryPoint;
-import dagger.hilt.EntryPoints;
+import dagger.hilt.android.EntryPointAccessors;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
@@ -56,12 +51,12 @@ import retrofit2.Response;
 
 public class SplashScreen extends AppCompatActivity {
 
-    Repository repository;
+    AdicticRepository repository;
 
     private final static String TAG = "SplashScreen";
     private SharedPreferences sharedPreferences;
     private String token = "";
-    private Api api;
+    private AdicticApi api;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,8 +169,8 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         if(repository == null) {
-            HiltEntryPoint mEntryPoint = EntryPoints.get(newBase.getApplicationContext(), HiltEntryPoint.class);
-            repository = mEntryPoint.getRepository();
+            AdicticEntryPoint mEntryPoint = EntryPointAccessors.fromApplication(newBase.getApplicationContext(), AdicticEntryPoint.class);
+            repository = mEntryPoint.getAdicticRepository();
         }
 
         sharedPreferences = repository.getEncryptedSharedPreferences();

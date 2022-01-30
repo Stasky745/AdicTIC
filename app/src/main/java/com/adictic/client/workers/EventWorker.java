@@ -13,15 +13,15 @@ import com.adictic.client.util.hilt.AdicticRepository;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.EntryPointAccessors;
 
-@AndroidEntryPoint
 public class EventWorker extends Worker {
 
-    @Inject
     AdicticRepository repository;
 
     public EventWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        repository = EntryPointAccessors.fromApplication(getApplicationContext(), AdicticRepository.class);
     }
 
     @NonNull

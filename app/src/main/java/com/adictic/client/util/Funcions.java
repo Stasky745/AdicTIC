@@ -1,104 +1,31 @@
 package com.adictic.client.util;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT;
-
 import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
-import android.graphics.PixelFormat;
-import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
-import androidx.work.BackoffPolicy;
-import androidx.work.Constraints;
-import androidx.work.Data;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
-import com.adictic.client.R;
-import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
-import com.adictic.client.ui.BlockAppActivity;
-import com.adictic.client.workers.AppUsageWorker;
-import com.adictic.client.workers.EventWorker;
-import com.adictic.client.workers.GeoLocWorker;
-import com.adictic.client.workers.HorarisEventsWorkerManager;
-import com.adictic.client.workers.HorarisWorker;
-import com.adictic.client.workers.NotifWorker;
-import com.adictic.client.workers.ServiceWorker;
-import com.adictic.common.callbacks.BooleanCallback;
-import com.adictic.common.entity.AppUsage;
-import com.adictic.common.entity.BlockedApp;
-import com.adictic.common.entity.BlockedLimitedLists;
-import com.adictic.common.entity.EventBlock;
-import com.adictic.common.entity.EventsAPI;
-import com.adictic.common.entity.GeneralUsage;
-import com.adictic.common.entity.HorarisAPI;
-import com.adictic.common.entity.HorarisNit;
-import com.adictic.common.entity.LimitedApps;
-import com.adictic.common.entity.NotificationInformation;
-import com.adictic.common.entity.UserLogin;
-import com.adictic.common.rest.Api;
-import com.adictic.common.util.Callback;
-import com.adictic.common.util.Constants;
-import com.adictic.common.util.hilt.Repository;
 
 import org.joda.time.DateTime;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
-import retrofit2.Call;
-import retrofit2.Response;
-
-@AndroidEntryPoint
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
-
-    @Inject
-    static Repository repository;
 
 //    public static void addOverlayView(Context ctx, boolean blockApp) {
 //

@@ -18,17 +18,17 @@ import com.google.common.util.concurrent.SettableFuture;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.EntryPointAccessors;
 import retrofit2.Call;
 import retrofit2.Response;
 
-@AndroidEntryPoint
 public class NotifWorker extends ListenableWorker {
 
-    @Inject
     AdicticRepository repository;
 
     public NotifWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        repository = EntryPointAccessors.fromApplication(getApplicationContext(), AdicticRepository.class);
     }
 
     @NonNull

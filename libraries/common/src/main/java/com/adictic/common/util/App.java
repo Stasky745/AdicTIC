@@ -15,7 +15,6 @@ import org.acra.data.StringFormat;
 
 import dagger.hilt.android.HiltAndroidApp;
 
-@HiltAndroidApp
 public class App extends Application {
 
     private static Resources res;

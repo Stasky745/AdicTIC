@@ -38,13 +38,12 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import dagger.hilt.android.EntryPointAccessors;
 import retrofit2.Call;
 import retrofit2.Response;
 
-@AndroidEntryPoint
 public class GeoLocWorker extends ListenableWorker {
 
-    @Inject
     AdicticRepository repository;
 
     private static final String TAG = GeoLocWorker.class.getSimpleName();
@@ -59,6 +58,7 @@ public class GeoLocWorker extends ListenableWorker {
         super(context, workerParams);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         mContext = context;
+        repository = EntryPointAccessors.fromApplication(getApplicationContext(), AdicticRepository.class);
     }
 
     @NonNull
