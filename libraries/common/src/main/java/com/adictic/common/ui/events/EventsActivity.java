@@ -195,13 +195,8 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
                     holder.TV_eventName.setText(event.name);
                     StringBuilder eventDaysString = new StringBuilder();
 
-                    if(event.monday) eventDaysString.append(getString(R.string.monday)).append(" ");
-                    if(event.tuesday) eventDaysString.append(getString(R.string.tuesday)).append(" ");
-                    if(event.wednesday) eventDaysString.append(getString(R.string.wednesday)).append(" ");
-                    if(event.thursday) eventDaysString.append(getString(R.string.thursday)).append(" ");
-                    if(event.friday) eventDaysString.append(getString(R.string.friday)).append(" ");
-                    if(event.saturday) eventDaysString.append(getString(R.string.saturday)).append(" ");
-                    if(event.sunday) eventDaysString.append(getString(R.string.sunday)).append(" ");
+                    for(Integer day : event.days)
+                        eventDaysString.append(Constants.DAYS_NAME.get(day)).append(" ");
 
                     holder.TV_eventDays.setText(eventDaysString.toString());
                     String eventTimesString = Funcions.millisOfDay2String(event.startEvent)

@@ -294,31 +294,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-        List<EventBlock> eventsTodayList = new ArrayList<>();
-
-        switch (diaSetmana) {
-            case 1:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.sunday).collect(Collectors.toList());
-                break;
-            case 2:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.monday).collect(Collectors.toList());
-                break;
-            case 3:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.tuesday).collect(Collectors.toList());
-                break;
-            case 4:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.wednesday).collect(Collectors.toList());
-                break;
-            case 5:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.thursday).collect(Collectors.toList());
-                break;
-            case 6:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.friday).collect(Collectors.toList());
-                break;
-            case 7:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.saturday).collect(Collectors.toList());
-                break;
-        }
+        List<EventBlock> eventsTodayList = events.stream()
+                .filter(eventBlock -> eventBlock.days.contains(diaSetmana))
+                .collect(Collectors.toList());
 
         setEventWorkerByDay(ctx, eventsTodayList);
     }
