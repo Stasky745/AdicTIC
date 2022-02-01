@@ -5,7 +5,9 @@ import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class EventBlock implements Comparator<Object>, Parcelable {
     public long id;
@@ -16,15 +18,7 @@ public class EventBlock implements Comparator<Object>, Parcelable {
     public int startEvent;
     public int endEvent;
 
-    public boolean activeNow;
-
-    public boolean monday;
-    public boolean tuesday;
-    public boolean wednesday;
-    public boolean thursday;
-    public boolean friday;
-    public boolean saturday;
-    public boolean sunday;
+    public List<Integer> days;
 
     public EventBlock(EventBlock other){
         this.id = other.id;
@@ -33,15 +27,7 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         this.startEvent = other.startEvent;
         this.endEvent = other.endEvent;
 
-        this.activeNow = other.activeNow;
-
-        this.monday = other.monday;
-        this.tuesday = other.tuesday;
-        this.wednesday = other.wednesday;
-        this.thursday = other.thursday;
-        this.friday = other.friday;
-        this.saturday = other.saturday;
-        this.sunday = other.sunday;
+        this.days = other.days;
     }
 
     protected EventBlock(Parcel in) {
@@ -49,14 +35,7 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         name = in.readString();
         startEvent = in.readInt();
         endEvent = in.readInt();
-        activeNow = in.readByte() != 0;
-        monday = in.readByte() != 0;
-        tuesday = in.readByte() != 0;
-        wednesday = in.readByte() != 0;
-        thursday = in.readByte() != 0;
-        friday = in.readByte() != 0;
-        saturday = in.readByte() != 0;
-        sunday = in.readByte() != 0;
+        in.readList(days, Integer.class.getClassLoader());
     }
 
     public static final Creator<EventBlock> CREATOR = new Creator<EventBlock>() {
@@ -92,17 +71,10 @@ public class EventBlock implements Comparator<Object>, Parcelable {
 
     public boolean exactSame(EventBlock object){
         return this.id == object.id &&
-                this.monday == object.monday &&
-                this.tuesday == object.tuesday &&
-                this.wednesday == object.wednesday &&
-                this.thursday == object.thursday &&
-                this.friday == object.friday &&
-                this.saturday == object.saturday &&
-                this.sunday == object.sunday &&
-                this.activeNow == object.activeNow &&
                 this.name.equals(object.name) &&
                 this.startEvent == object.startEvent &&
-                this.endEvent == object.endEvent;
+                this.endEvent == object.endEvent &&
+                this.days.equals(object.days);
     }
 
     public EventBlock(){
@@ -110,14 +82,7 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         name = "";
         startEvent = 0;
         endEvent = 0;
-
-        monday = false;
-        tuesday = false;
-        wednesday = false;
-        thursday = false;
-        friday = false;
-        saturday = false;
-        sunday = false;
+        days = new ArrayList<>();
     }
 
     @Override
@@ -131,13 +96,6 @@ public class EventBlock implements Comparator<Object>, Parcelable {
         parcel.writeString(name);
         parcel.writeInt(startEvent);
         parcel.writeInt(endEvent);
-        parcel.writeByte((byte) (activeNow ? 1 : 0));
-        parcel.writeByte((byte) (monday ? 1 : 0));
-        parcel.writeByte((byte) (tuesday ? 1 : 0));
-        parcel.writeByte((byte) (wednesday ? 1 : 0));
-        parcel.writeByte((byte) (thursday ? 1 : 0));
-        parcel.writeByte((byte) (friday ? 1 : 0));
-        parcel.writeByte((byte) (saturday ? 1 : 0));
-        parcel.writeByte((byte) (sunday ? 1 : 0));
+        parcel.writeList(days);
     }
 }
