@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.EventsAPI;
+import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.rest.Api;
-import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;
@@ -33,6 +33,10 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -41,6 +45,8 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
 
     @Inject
     Repository repository;
+
+    private Disposable disposable;
 
     private Api mTodoService;
     private SharedPreferences sharedPreferences;
@@ -70,7 +76,7 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         canvis = 0;
 
         setLayouts();
-        getHoraris();
+        getEvents();
         assert sharedPreferences != null;
         if (sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR,false))
             setButtons();
@@ -92,29 +98,30 @@ public class EventsActivity extends AppCompatActivity implements IEventDialog {
         }
     }
 
-    private void getHoraris() {
-        Call<EventsAPI> call = mTodoService.getEvents(idChild);
+    private void getEvents() {
+        mTodoService.getEvents(idChild)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<EventsAPI>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        if(disposable != null)
+                            disposable = d;
+                    }
 
-        call.enqueue(new Callback<EventsAPI>() {
-            @Override
-            public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
-                    super.onResponse(call, response);
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        events = response.body();
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull EventsAPI eventsAPI) {
+                        events = eventsAPI != null ? eventsAPI : new EventsAPI();
                         RVadapter = new RV_Adapter(EventsActivity.this, events.events);
 
                         RV_eventList.setAdapter(RVadapter);
                     }
-                }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
 
-            }
-        });
+                    }
+                });
     }
 
     private void setButtons() {

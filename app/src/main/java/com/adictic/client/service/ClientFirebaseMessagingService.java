@@ -44,6 +44,10 @@ import java.util.concurrent.ExecutionException;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableCompletableObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -63,6 +67,20 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
 
     private int retryCount = 0;
     private static final int TOTAL_RETRIES = 10;
+
+    private CompositeDisposable disposable;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        disposable = new CompositeDisposable();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
+    }
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -94,12 +112,25 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
             }
         }
 
-        repository.updateApps(blockedApps);
+        Disposable dispUpdateApps = repository.updateApps(blockedApps)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableCompletableObserver() {
+            @Override
+            public void onComplete() {
+                AccessibilityScreenService.instance.isCurrentAppBlocked();
+            }
+
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                e.printStackTrace();
+                AccessibilityScreenService.instance.isCurrentAppBlocked();
+            }
+        });
+
+        disposable.add(dispUpdateApps);
 
         // Actualitzem la bdd de l'ús del dia actual a room i aprofitem per enviar al servidor si fa molt que no es fa
         repository.sendAppUsage();
-
-        AccessibilityScreenService.instance.isCurrentAppBlocked();
     }
 
     @Override

@@ -123,16 +123,22 @@ dependencies {
     implementation project(path: ':libraries:jitsiVideocall')
 
     //Room
-    def room_version = "2.4.0"
+    def room_version = "2.4.1"
 
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
+    api "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava3:$room_version"
 
     //Hilt
     def hilt_version = "2.38.1"
 
     api "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
+    //RxJava
+    implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
 }
 
 task downloadDrivers(type: Copy) {

@@ -17,15 +17,27 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import dagger.hilt.EntryPoints;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableSingleObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class HorarisEventsWorkerManager extends Worker {
     private final static String TAG = "HorarisEventsWorkerManager";
 
     AdicticRepository repository;
 
+    private CompositeDisposable disposable;
+
     public HorarisEventsWorkerManager(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         repository = EntryPoints.get(getApplicationContext(), AdicticEntryPoint.class).getAdicticRepository();
+    }
+
+    @Override
+    public void onStopped() {
+        super.onStopped();
+        disposable.dispose();
     }
 
     @NonNull
@@ -47,14 +59,38 @@ public class HorarisEventsWorkerManager extends Worker {
         }
 
         // Agafem i apliquem horaris
-        List<HorarisNit> horarisNit = repository.getAllHoraris();
+        Disposable disposableHoraris = repository.getAllHoraris()
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableSingleObserver<List<HorarisNit>>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<HorarisNit> horarisNits) {
+                        repository.setHoraris(horarisNits);
+                    }
 
-        repository.setHoraris(horarisNit);
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        disposable.add(disposableHoraris);
 
         // Agafem i apliquem Events
-        List<EventBlock> eventList = repository.getAllEvents();
+        Disposable disposableEvents = repository.getAllEvents()
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new DisposableSingleObserver<List<EventBlock>>() {
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<EventBlock> eventBlocks) {
+                        repository.setEvents(eventBlocks);
+                    }
 
-        repository.setEvents(eventList);
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        disposable.add(disposableEvents);
 
         return Result.success();
     }

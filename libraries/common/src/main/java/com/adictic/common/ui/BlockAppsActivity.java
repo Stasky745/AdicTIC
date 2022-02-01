@@ -34,7 +34,6 @@ import com.adictic.common.R;
 import com.adictic.common.entity.BlockAppEntity;
 import com.adictic.common.entity.BlockList;
 import com.adictic.common.rest.Api;
-import com.adictic.common.util.App;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Funcions;

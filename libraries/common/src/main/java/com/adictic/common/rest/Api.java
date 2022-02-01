@@ -33,6 +33,7 @@ import com.adictic.common.entity.YearEntity;
 import java.util.Collection;
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -91,10 +92,10 @@ public interface Api {
     Call<List<YearEntity>> getDaysWithData(@Path("id") Long childId);
 
     @GET("/usage/{id}/horaris")
-    Call<HorarisAPI> getHoraris(@Path("id") Long childId);
+    Single<HorarisAPI> getHoraris(@Path("id") Long childId);
 
     @GET("/usage/{id}/events")
-    Call<EventsAPI> getEvents(@Path("id") Long childId);
+    Single<EventsAPI> getEvents(@Path("id") Long childId);
 
     @GET("/usage/{id}/horarisEvents")
     Call<HorarisEvents> getHorarisEvents(@Path("id") Long childId);

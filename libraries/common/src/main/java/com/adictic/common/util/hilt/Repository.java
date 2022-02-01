@@ -80,14 +80,15 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableCompletableObserver;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class Repository {
-    private final BlockedAppDao blockedAppDao;
-    private final EventBlockDao eventBlockDao;
-    private final HorarisNitDao horarisNitDao;
-
     private final Api api;
 
     private final RequestManager glideRequestManager;
@@ -97,12 +98,9 @@ public class Repository {
     private final Application application;
 
     @Inject
-    public Repository(Application application, Api api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
+    public Repository(Application application, Api api, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
         this.application = application;
         this.api = api;
-        this.blockedAppDao = blockedAppDao;
-        this.eventBlockDao = eventBlockDao;
-        this.horarisNitDao = horarisNitDao;
         this.glideRequestManager = glideRequestManager;
         this.sharedPreferences = sharedPreferences;
     }
@@ -111,54 +109,6 @@ public class Repository {
 
     public SharedPreferences getEncryptedSharedPreferences() { return sharedPreferences; }
 
-    //endregion
-
-    //region ROOM
-    //region AppsDB
-    public void updateApps(List<BlockedApp> list) {
-        blockedAppDao.update(list);
-    }
-
-    public void deleteAppByName(String pkgName) {
-        blockedAppDao.deleteByName(pkgName);
-    }
-
-    public List<BlockedApp> getAllApps() {
-        return blockedAppDao.getAll();
-    }
-    //endregion
-
-    //region EventsDB
-
-    public void updateEvents(List<EventBlock> list) {
-        eventBlockDao.update(list);
-    }
-
-    public List<EventBlock> getEventsByDay(int day) {
-        return eventBlockDao.getEventsByDay(day);
-    }
-
-    public List<EventBlock> getAllEvents() {
-        return eventBlockDao.getAll();
-    }
-
-    //endregion
-
-    //region HorarisDB
-
-    public void updateHoraris(List<HorarisNit> list) {
-        horarisNitDao.update(list);
-    }
-
-    public HorarisNit getHorariByDay(int day) {
-        return horarisNitDao.findByDay(day);
-    }
-
-    public List<HorarisNit> getAllHoraris() {
-        return horarisNitDao.getAll();
-    }
-
-    //endregion
     //endregion
 
     //region API

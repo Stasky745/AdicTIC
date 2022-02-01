@@ -23,8 +23,8 @@ public class AdminRepository extends Repository {
     private final AdminApi api;
 
     @Inject
-    public AdminRepository(Application application, AdminApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
-        super(application, api, blockedAppDao, eventBlockDao, horarisNitDao, glideRequestManager, sharedPreferences);
+    public AdminRepository(Application application, AdminApi api, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
+        super(application, api, glideRequestManager, sharedPreferences);
 
         this.glideRequestManager = glideRequestManager;
         this.api = api;

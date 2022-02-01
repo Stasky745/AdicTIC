@@ -1,15 +1,13 @@
-package com.adictic.common.util.hilt;
+package com.adictic.client.util.hilt;
 
-import android.app.Application;
 import android.content.Context;
 
 import androidx.room.Room;
 
-import com.adictic.common.dao.BlockedAppDao;
-import com.adictic.common.dao.EventBlockDao;
-import com.adictic.common.dao.HorarisNitDao;
-import com.adictic.common.database.AdicticDB;
-import com.adictic.common.util.App;
+import com.adictic.client.dao.BlockedAppDao;
+import com.adictic.client.dao.EventBlockDao;
+import com.adictic.client.dao.HorarisNitDao;
+import com.adictic.client.database.AdicticDB;
 import com.adictic.common.util.Constants;
 
 import javax.inject.Singleton;

@@ -50,6 +50,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableSingleObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -65,6 +69,8 @@ public class BlockDeviceActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private AlertDialog alertDialog = null;
     private final String CHANGE_TITLE_RECEIVER = "change_title_receiver";
+
+    private CompositeDisposable disposable;
 
     private final BroadcastReceiver finishActivityReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -82,10 +88,19 @@ public class BlockDeviceActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
+    }
+
+    @Override
     protected void onCreate(@Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mTodoService = repository.getApi();
         instance = this;
+
+        disposable = new CompositeDisposable();
+
         setContentView(R.layout.block_device_layout);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(finishActivityReceiver,
@@ -335,24 +350,36 @@ public class BlockDeviceActivity extends AppCompatActivity {
             message = getString(R.string.locked_device);
 
             // Agafem la llista d'events actius
-            List<EventBlock> list = repository.getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+            Disposable getEventsByDayDisposable = repository.getEventsByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+                    .subscribeOn(Schedulers.io())
+                    .subscribeWith(new DisposableSingleObserver<List<EventBlock>>() {
+                        @Override
+                        public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<EventBlock> eventBlocks) {
+                            if (!eventBlocks.isEmpty()) {
+                                // Agafem l'event actiu que acabi més tard
+                                EventBlock event = eventBlocks.stream()
+                                        .filter(Funcions::eventBlockIsActive)
+                                        .collect(Collectors.toList())
+                                        .stream()
+                                        .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
+                                        .orElse(null);
 
-            if(!list.isEmpty()) {
-                // Agafem l'event actiu que acabi més tard
-                EventBlock event = list.stream()
-                        .filter(Funcions::eventBlockIsActive)
-                        .collect(Collectors.toList())
-                        .stream()
-                        .max(Comparator.comparing(eventBlock -> eventBlock.endEvent))
-                        .orElse(null);
+                                if (event != null) {
+                                    String msg = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
+                                    Intent intent = new Intent(CHANGE_TITLE_RECEIVER);
+                                    intent.putExtra("message", msg);
+                                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                                }
+                            }
+                        }
 
-                if(event != null) {
-                    String msg = event.name + "\n" + new DateTime().withMillisOfDay(event.startEvent).toString("HH:ss", Locale.getDefault()) + " - " + new DateTime().withMillisOfDay(event.endEvent).toString("HH:ss", Locale.getDefault());
-                    Intent intent = new Intent(CHANGE_TITLE_RECEIVER);
-                    intent.putExtra("message", msg);
-                    LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                }
-            }
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+            disposable.add(getEventsByDayDisposable);
         }
 
         TextView TV_block_device_title = findViewById(R.id.TV_block_device_title);

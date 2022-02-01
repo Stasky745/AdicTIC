@@ -36,10 +36,17 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Observable;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -48,6 +55,8 @@ public class HorarisActivity extends AppCompatActivity {
 
     @Inject
     Repository repository;
+
+    private Disposable disposable;
 
     private final int TIPUS_HORARIS_DIARIS = 1;
     private final int TIPUS_HORARIS_SETMANA = 2;
@@ -107,6 +116,15 @@ public class HorarisActivity extends AppCompatActivity {
         }
 
         getHoraris();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(disposable != null) {
+            disposable.dispose();
+            disposable = null;
+        }
     }
 
     private void setViewsTutor(boolean b) {
@@ -187,27 +205,31 @@ public class HorarisActivity extends AppCompatActivity {
     }
 
     private void getHoraris() {
-        Call<HorarisAPI> call = mTodoService.getHoraris(idChild);
-
-        call.enqueue(new Callback<HorarisAPI>() {
-            @Override
-            public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                    super.onResponse(call, response);
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        horarisNits = response.body();
-                        setTexts(horarisNits.tipus);
+        mTodoService.getHoraris(idChild)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<HorarisAPI>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        if(disposable != null)
+                            disposable = d;
                     }
-                } else
-                    Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                    super.onFailure(call, t);
-                Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull HorarisAPI horarisAPI) {
+                        if(horarisAPI != null) {
+                            horarisNits = horarisAPI;
+                            setTexts(horarisAPI.tipus);
+                        }
+                        else
+                            Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        Toast.makeText(HorarisActivity.this, getString(R.string.error_noData), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

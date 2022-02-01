@@ -32,6 +32,7 @@ import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
@@ -62,6 +63,7 @@ public class NetworkModule {
                 .client(getOkHttpClient(context, new AdicticAuthenticator(context)))
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(Api.class);
     }
@@ -85,6 +87,7 @@ public class NetworkModule {
                 .client(getOkHttpClient(context, new AdminAuthenticator(context)))
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(Api.class);
     }

@@ -56,6 +56,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.observers.DisposableSingleObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -391,13 +395,23 @@ public class AccessibilityScreenService extends AccessibilityService {
     private void initializeTimeLeftMap() {
         Map<String, Long> res = new HashMap<>();
 
-        List<BlockedApp> blockedAppList = repository.getAllApps();
+        Disposable disposable = repository.getAllApps().subscribeWith(new DisposableSingleObserver<List<BlockedApp>>() {
+            @Override
+            public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<BlockedApp> blockedApps) {
+                for(BlockedApp blockedApp : blockedApps) {
+                    res.put(blockedApp.pkgName, blockedApp.timeLimit);
+                }
 
-        for(BlockedApp blockedApp : blockedAppList) {
-            res.put(blockedApp.pkgName, blockedApp.timeLimit);
-        }
+                timeLeftMap = res;
+            }
 
-        timeLeftMap = res;
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                e.printStackTrace();
+            }
+        });
+
+        disposable.dispose();
     }
 
     @Override
@@ -562,7 +576,7 @@ public class AccessibilityScreenService extends AccessibilityService {
             else if(intent.getAction().equals(ACTION_USER_PRESENT) && !instance.isDeviceBlocked()) {
                 wasLocked = false;
 
-                sumarDesbloqueig(context);
+                sumarDesbloqueig();
 
                 // Mirem si hi ha límit establert
                 if(AccessibilityScreenService.instance.dailyLimitDevice > 0){
@@ -583,13 +597,25 @@ public class AccessibilityScreenService extends AccessibilityService {
         }
 
         private void updateTimeLeftMap(GeneralUsage todayGeneralUsage) {
-            List<BlockedApp> listBlockedApps = repository.getAllApps();
+            Disposable disposable = repository.getAllApps().subscribeWith(new DisposableSingleObserver<List<BlockedApp>>() {
+                @Override
+                public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<BlockedApp> blockedApps) {
+                    Map<String, Long> mapUsage = repository.getTimeLeftMapAccessibilityService(blockedApps, todayGeneralUsage);
+                    AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+                }
 
-            Map<String, Long> mapUsage = repository.getTimeLeftMapAccessibilityService(listBlockedApps, todayGeneralUsage);
-            AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+                @Override
+                public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                    e.printStackTrace();
+                    Map<String, Long> mapUsage = repository.getTimeLeftMapAccessibilityService(new ArrayList<>(), todayGeneralUsage);
+                    AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+                }
+            });
+
+            disposable.dispose();
         }
 
-        private void sumarDesbloqueig(Context context){
+        private void sumarDesbloqueig(){
             SharedPreferences sharedPreferences = repository.getEncryptedSharedPreferences();
             assert sharedPreferences != null;
 

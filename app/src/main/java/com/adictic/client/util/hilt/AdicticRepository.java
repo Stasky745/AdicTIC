@@ -33,6 +33,9 @@ import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
+import com.adictic.client.dao.BlockedAppDao;
+import com.adictic.client.dao.EventBlockDao;
+import com.adictic.client.dao.HorarisNitDao;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.service.ClientNotificationManager;
@@ -49,9 +52,6 @@ import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
 import com.adictic.common.callbacks.BooleanCallback;
-import com.adictic.common.dao.BlockedAppDao;
-import com.adictic.common.dao.EventBlockDao;
-import com.adictic.common.dao.HorarisNitDao;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedApp;
 import com.adictic.common.entity.BlockedLimitedLists;
@@ -88,12 +88,27 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.hilt.android.EntryPointAccessors;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.observers.DisposableCompletableObserver;
+import io.reactivex.rxjava3.observers.DisposableSingleObserver;
+import io.reactivex.rxjava3.observers.SafeObserver;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class AdicticRepository extends Repository {
 
     private final AdicticApi api;
+
+    private final BlockedAppDao blockedAppDao;
+    private final EventBlockDao eventBlockDao;
+    private final HorarisNitDao horarisNitDao;
 
     private final SharedPreferences sharedPreferences;
 
@@ -104,13 +119,16 @@ public class AdicticRepository extends Repository {
 
     @Inject
     public AdicticRepository(Application application, ClientNotificationManager clientNotificationManager, WorkManager workManager, UsageStatsManager usageStatsManager, AdicticApi api, BlockedAppDao blockedAppDao, EventBlockDao eventBlockDao, HorarisNitDao horarisNitDao, RequestManager glideRequestManager, SharedPreferences sharedPreferences) {
-        super(application, api, blockedAppDao, eventBlockDao, horarisNitDao, glideRequestManager, sharedPreferences);
+        super(application, api, glideRequestManager, sharedPreferences);
         this.application = application;
         this.clientNotificationManager = clientNotificationManager;
         this.workManager = workManager;
         this.usageStatsManager = usageStatsManager;
         this.api = api;
         this.sharedPreferences = sharedPreferences;
+        this.blockedAppDao = blockedAppDao;
+        this.eventBlockDao = eventBlockDao;
+        this.horarisNitDao = horarisNitDao;
     }
 
     //region TOOLS
@@ -163,6 +181,67 @@ public class AdicticRepository extends Repository {
 
     //endregion
 
+    //region ROOM
+    //region AppsDB
+    public Completable updateApps(List<BlockedApp> list) {
+        return blockedAppDao.update(list);
+    }
+
+    public void deleteAppByName(String pkgName) {
+        Disposable disposable = blockedAppDao.deleteByName(pkgName).subscribeWith(new DisposableCompletableObserver() {
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                e.printStackTrace();
+            }
+        });
+
+        disposable.dispose();
+    }
+
+    public Single<List<BlockedApp>> getAllApps() {
+        return blockedAppDao.getAll();
+    }
+    //endregion
+
+    //region EventsDB
+
+    public Completable updateEvents(List<EventBlock> list) {
+        return eventBlockDao.update(list);
+    }
+
+    public Single<List<EventBlock>> getEventsByDay(int day) {
+        return eventBlockDao.getEventsByDay(day);
+    }
+
+    public Single<List<EventBlock>> getAllEvents() {
+        return eventBlockDao.getAll();
+    }
+
+    //endregion
+
+    //region HorarisDB
+
+    public void updateHoraris(List<HorarisNit> list) {
+
+        horarisNitDao.update(list);
+    }
+
+    public Single<HorarisNit> getHorariByDay(int day) {
+        return horarisNitDao.findByDay(day);
+    }
+
+    public Single<List<HorarisNit>> getAllHoraris() {
+        return horarisNitDao.getAll();
+    }
+
+    //endregion
+    //endregion
+
     //region API
 
     public AdicticApi getApi() {
@@ -172,35 +251,18 @@ public class AdicticRepository extends Repository {
 
     //region Events
 
-    public void checkEvents() {
+    public Completable checkEvents() {
         // Agafem els horaris de la nit i Events
-        Call<EventsAPI> call = api.getEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
-        call.enqueue(new Callback<EventsAPI>() {
-            @Override
-            public void onResponse(@NonNull Call<EventsAPI> call, @NonNull Response<EventsAPI> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<EventBlock> eventBlocks = new ArrayList<>(response.body().events);
+        return api.getEvents(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1))
+                .subscribeOn(Schedulers.io())
+                .toObservable()
+                .switchMapCompletable(eventsAPI -> {
+                    List<EventBlock> eventBlocks = eventsAPI != null && eventsAPI.events != null
+                            ? new ArrayList<>(eventsAPI.events)
+                            : new ArrayList<>();
 
-                    updateEvents(eventBlocks);
-
-                    startHorarisEventsManagerWorker();
-
-                    setEvents(eventBlocks);
-                }
-                else {
-                    List<EventBlock> list = getAllEvents();
-
-                    setEvents(list);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<EventsAPI> call, @NonNull Throwable t) {
-                List<EventBlock> list = getAllEvents();
-
-                setEvents(list);
-            }
-        });
+                    return updateEvents(eventBlocks);
+                });
     }
 
     public void setEvents(List<EventBlock> events) {
@@ -229,36 +291,22 @@ public class AdicticRepository extends Repository {
 
     //region Horaris
 
-    public void checkHoraris() {
+    public Completable checkHoraris() {
         // Agafem els horaris de la nit i Events
-        Call<HorarisAPI> call = api.getHoraris(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER,-1));
-        call.enqueue(new Callback<HorarisAPI>() {
-            @Override
-            public void onResponse(@NonNull Call<HorarisAPI> call, @NonNull Response<HorarisAPI> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Actualitzem BDD
-                    List<HorarisNit> horarisList = response.body().horarisNit == null ? new ArrayList<>() : new ArrayList<>(response.body().horarisNit);
+        return api.getHoraris(sharedPreferences.getLong(Constants.SHARED_PREFS_IDUSER, -1))
+                .subscribeOn(Schedulers.io())
+                .toObservable()
+                .switchMapCompletable(horarisAPI -> {
+                    List<HorarisNit> horarisList =
+                            horarisAPI != null && horarisAPI.horarisNit != null
+                                    ? new ArrayList<>(horarisAPI.horarisNit)
+                                    : new ArrayList<>();
 
                     updateHoraris(horarisList);
-
                     startHorarisEventsManagerWorker();
-
                     setHoraris(horarisList);
-                }
-                else {
-                    List<HorarisNit> horarisNit = getAllHoraris();
-
-                    setHoraris(horarisNit);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<HorarisAPI> call, @NonNull Throwable t) {
-                List<HorarisNit> horarisNit = getAllHoraris();
-
-                setHoraris(horarisNit);
-            }
-        });
+                    return Completable.complete();
+                });
     }
 
     public void setHoraris(List<HorarisNit> horarisNit){
@@ -271,7 +319,10 @@ public class AdicticRepository extends Repository {
 
         AccessibilityScreenService.instance.setHorarisActius(false);
 
-        HorarisNit horariAvui = getHorariByDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+        HorarisNit horariAvui = horarisNit.stream()
+                .filter(horarisNit1 -> horarisNit1.dia.equals(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)))
+                .findFirst()
+                .orElse(null);
 
         if(horariAvui == null){
             AccessibilityScreenService.instance.updateDeviceBlock();
@@ -418,12 +469,25 @@ public class AdicticRepository extends Repository {
         updateApps(blockedApps);
         GeneralUsage generalUsage = getGeneralUsages(0).get(0);
 
-        List<BlockedApp> listBlockedApps = getAllApps();
+        Disposable disposable = getAllApps().subscribeWith(new DisposableSingleObserver<List<BlockedApp>>() {
+            @Override
+            public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull List<BlockedApp> blockedApps) {
+                Map<String, Long> mapUsage = getTimeLeftMapAccessibilityService(blockedApps, generalUsage);
 
-        Map<String, Long> mapUsage = getTimeLeftMapAccessibilityService(listBlockedApps, generalUsage);
+                AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+                AccessibilityScreenService.instance.isCurrentAppBlocked();
+            }
 
-        AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
-        AccessibilityScreenService.instance.isCurrentAppBlocked();
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                Map<String, Long> mapUsage = getTimeLeftMapAccessibilityService(new ArrayList<>(), generalUsage);
+
+                AccessibilityScreenService.instance.setTimeLeftMap(mapUsage);
+                AccessibilityScreenService.instance.isCurrentAppBlocked();
+            }
+        });
+
+        disposable.dispose();
     }
 
     public Map<String, Long> getTimeLeftMapAccessibilityService(List<BlockedApp> listBlockedApps, GeneralUsage generalUsage) {
