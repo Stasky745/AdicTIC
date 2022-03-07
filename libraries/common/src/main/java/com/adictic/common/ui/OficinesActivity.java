@@ -129,7 +129,7 @@ public class OficinesActivity extends AppCompatActivity {
         Api mTodoService = ((App) getApplication()).getAPI();
 
         // Actualitzem la llista d'oficines
-        Call<List<Oficina>> call = mTodoService.getOficines();
+        Call<List<Oficina>> call = mTodoService.getActiveOficines();
         call.enqueue(new Callback<List<Oficina>>() {
             @Override
             public void onResponse(@NonNull Call<List<Oficina>> call, @NonNull Response<List<Oficina>> response) {

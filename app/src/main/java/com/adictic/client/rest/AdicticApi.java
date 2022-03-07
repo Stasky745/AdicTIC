@@ -122,9 +122,6 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
     @GET("/usage/{idChild}/timesTried")
     Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
 
-    @GET("/offices")
-    Call<List<Oficina>> getOficines();
-
     @GET("/users/geoloc")
     Call<List<GeoFill>> getGeoLoc();
 

@@ -120,6 +120,9 @@ public interface Api {
     @GET("/offices")
     Call<List<Oficina>> getOficines();
 
+    @GET("/offices/active")
+    Call<List<Oficina>> getActiveOficines();
+
     @GET("/users/geoloc")
     Call<List<GeoFill>> getGeoLoc();
 
