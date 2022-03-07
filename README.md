@@ -34,6 +34,8 @@ Busquem millorar el funcionament intern utilitzant diverses noves tecnologies:
 - **[Hilt](https://developer.android.com/training/dependency-injection/hilt-android)** - injecció de dependències amb Hilt
 - **RxJava** - conjuntament amb `Room`, `Hilt` i `Retrofit2`
 
+-------------------------------
+
 # AdicTIC - English
 
 An parental control application with psychological support to help addictions developed for Android.
