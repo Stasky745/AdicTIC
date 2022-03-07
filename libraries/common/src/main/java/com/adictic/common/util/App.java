@@ -92,11 +92,6 @@ public class App extends Application {
     protected OkHttpClient getOkHttpClient(Authenticator authenticator) {
 
         OkHttpClient.Builder builder = createOkHttpClientBuilder(authenticator);
-        String currentURL = BuildConfig.DEBUG ? Global.BASE_URL_DEBUG : Global.BASE_URL_RELEASE;
-        if(currentURL.contains("adicticapp.***REMOVED***:8443")){
-            builder = addCertOkHttpClient(builder, "ca_bundle.crt");
-        }
-
         return builder.build();
     }
 
