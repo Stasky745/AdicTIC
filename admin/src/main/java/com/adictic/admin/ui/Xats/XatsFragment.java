@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.adictic.admin.R;
 import com.adictic.admin.entity.ChatsMain;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.common.util.Callback;
-import com.adictic.admin.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 

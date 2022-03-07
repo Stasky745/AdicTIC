@@ -47,16 +47,20 @@ import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.EventBlock;
 import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.MonthEntity;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.YearEntity;
 import com.adictic.common.rest.Api;
 import com.adictic.common.workers.UpdateTokenWorker;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -385,22 +389,7 @@ public class Funcions {
             return false;
 
         int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-        switch (dayOfWeek){
-            case 1:
-                return eventBlock.sunday;
-            case 2:
-                return eventBlock.monday;
-            case 3:
-                return eventBlock.tuesday;
-            case 4:
-                return eventBlock.wednesday;
-            case 5:
-                return eventBlock.thursday;
-            case 6:
-                return eventBlock.friday;
-            default:
-                return eventBlock.saturday;
-        }
+        return eventBlock.days.contains(dayOfWeek);
     }
 
     /**
@@ -653,5 +642,60 @@ public class Funcions {
                 ds.setUnderlineText(false);
             }
         };
+    }
+
+    public static void addNotificationToList(Context context, NotificationInformation notificationInformation) {
+        final int MAX_NOTIF_SIZE = 25;
+
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type) != null ? gson.fromJson(json, type) : new ArrayList<>();
+
+        // Si la llista té 15 elements
+        if(notifList.size() == MAX_NOTIF_SIZE){
+            NotificationInformation oldNotif = notifList.stream()
+                    .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+            notifList.remove(oldNotif);
+        }
+        else if(notifList.size() > MAX_NOTIF_SIZE){
+            for(int i = 0; i < notifList.size() - (MAX_NOTIF_SIZE-1); i++){
+                NotificationInformation oldNotif = notifList.stream()
+                        .min(Comparator.comparing(v -> v.dateMillis)).get();
+
+                notifList.remove(oldNotif);
+            }
+        }
+
+        notifList.add(notificationInformation);
+
+        String newJson = gson.toJson(notifList);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
+    }
+
+    public static ArrayList<NotificationInformation> getNotificationList(Context context){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
+        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
+
+        Gson gson = new Gson();
+        return gson.fromJson(json, type);
+    }
+
+    public static void setNotificationList(Context context, List<NotificationInformation> list){
+        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
+        assert sharedPreferences != null;
+
+        Gson gson = new Gson();
+
+        String newJson = gson.toJson(list);
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
     }
 }

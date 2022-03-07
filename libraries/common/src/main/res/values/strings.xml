@@ -576,4 +576,9 @@
     <string name="weblink_edit">Editar Link</string>
     <string name="delete_weblink">Borrar Link</string>
     <string name="confirm_delete_link">¿Quieres borrar \"%s\"?</string>
+    <string name="crear_admin">Crear administrador</string>
+    <string name="no_links">No hay ningún enlace</string>
+
+    <!-- -->
+    <string name="edit_child">Editar datos del menor</string>
 </resources>

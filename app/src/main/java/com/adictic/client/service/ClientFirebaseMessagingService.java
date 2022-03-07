@@ -16,7 +16,7 @@ import androidx.work.WorkManager;
 
 import com.adictic.common.R;
 import com.adictic.client.entity.BlockedApp;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.chat.ChatFragment;
 import com.adictic.client.util.AdicticApp;
@@ -464,6 +464,11 @@ public class ClientFirebaseMessagingService extends FirebaseMessagingService {
                             }
                         }
                     }
+                    break;
+                case "newPassword":
+                    String newPass = messageMap.get("newPass");
+                    if(newPass!=null && !newPass.trim().isEmpty())
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, newPass).apply();
                     break;
                 default:
                     Log.e(TAG,"Clau 'action' no reconeguda: "+action);

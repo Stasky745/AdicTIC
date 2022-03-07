@@ -9,6 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.adictic.admin.R;
 import com.adictic.admin.ui.Xats.XatActivity;
+import com.adictic.common.util.Constants;
 import com.adictic.jitsi.activities.IncomingInvitationActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -36,6 +37,8 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "Missatge nou amb data: " + remoteMessage.getData());
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
+        assert sharedPreferences != null;
 
         Map<String, String> messageMap = remoteMessage.getData();
 
@@ -121,6 +124,10 @@ public class AdminFirebaseMessagingService extends FirebaseMessagingService {
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                     }
                 }
+            } else if (action.equals("newPassword")) {
+                String newPass = messageMap.get("newPass");
+                if (newPass != null && !newPass.trim().isEmpty())
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, newPass).apply();
             }
         }
     }

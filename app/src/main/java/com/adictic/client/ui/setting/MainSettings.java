@@ -21,11 +21,11 @@ public class MainSettings extends PreferenceFragmentCompat {
         if (!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false)) {
             // Settings de fill
             setPreferencesFromResource(R.xml.settings_child, rootKey);
-            FuncionsSettings.settings_permission(this);
+            FuncionsAppSettings.settings_permission(this);
             if(BuildConfig.DEBUG) {
-                FuncionsSettings.settings_change_theme(this);
-                FuncionsSettings.settings_tancar_sessio(this);
-                FuncionsSettings.settings_pujar_informe(this);
+                FuncionsAppSettings.settings_change_theme(this);
+                FuncionsAppSettings.settings_tancar_sessio(this);
+                FuncionsAppSettings.settings_pujar_informe(this);
             } else {
                 PreferenceScreen preferenceScreen = findPreference("preferenceChild");
                 PreferenceCategory myPrefCat = findPreference("pcdebug");
@@ -35,22 +35,22 @@ public class MainSettings extends PreferenceFragmentCompat {
         } else {
             // Settings de pare
             setPreferencesFromResource(R.xml.settings_parent, rootKey);
-            FuncionsSettings.settings_tancar_sessio(this);
-            FuncionsSettings.settings_notification_history(this);
-            FuncionsSettings.settings_security(this);
-            FuncionsSettings.settings_android(this);
-            FuncionsSettings.settings_report_bug(this);
-            FuncionsSettings.settings_report_suggestion(this);
+            FuncionsAppSettings.settings_tancar_sessio(this);
+            FuncionsAppSettings.settings_notification_history(this);
+            FuncionsAppSettings.settings_security(this);
+            FuncionsAppSettings.settings_android(this);
+            FuncionsAppSettings.settings_report_bug(this);
+            FuncionsAppSettings.settings_report_suggestion(this);
             if(BuildConfig.DEBUG){
-                FuncionsSettings.settings_change_theme(this);
+                FuncionsAppSettings.settings_change_theme(this);
             } else {
                 PreferenceScreen preferenceScreen = findPreference("preferenceParent");
                 PreferenceCategory myPrefCat = findPreference("ppdebug");
                 if(preferenceScreen != null) preferenceScreen.removePreference(myPrefCat);
             }
         }
-        FuncionsSettings.settings_change_notifications(this);
-        FuncionsSettings.settings_change_language(this);
+        FuncionsAppSettings.settings_change_notifications(this);
+        FuncionsAppSettings.settings_change_language(this);
     }
 
 }

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.adictic.common.R;
 import com.adictic.common.entity.CanvisEvents;
 import com.adictic.common.entity.EventBlock;
+import com.adictic.common.util.Constants;
 
 import org.joda.time.DateTime;
 
@@ -107,13 +108,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventsView
     private String crearStringDies(EventBlock event){
         StringBuilder eventDaysString = new StringBuilder();
 
-        if(event.monday) eventDaysString.append(mContext.getString(R.string.monday)).append(" ");
-        if(event.tuesday) eventDaysString.append(mContext.getString(R.string.tuesday)).append(" ");
-        if(event.wednesday) eventDaysString.append(mContext.getString(R.string.wednesday)).append(" ");
-        if(event.thursday) eventDaysString.append(mContext.getString(R.string.thursday)).append(" ");
-        if(event.friday) eventDaysString.append(mContext.getString(R.string.friday)).append(" ");
-        if(event.saturday) eventDaysString.append(mContext.getString(R.string.saturday)).append(" ");
-        if(event.sunday) eventDaysString.append(mContext.getString(R.string.sunday)).append(" ");
+        for(Integer day : event.days)
+            eventDaysString.append(Constants.DAYS_NAME.get(day)).append(" ");
 
         return eventDaysString.toString();
     }

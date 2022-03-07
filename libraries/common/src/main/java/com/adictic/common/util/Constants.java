@@ -8,6 +8,8 @@ import android.graphics.Color;
 import com.adictic.common.R;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 
 public class Constants {
     public static final long HOUR_IN_MILLIS = 3600000;
@@ -15,6 +17,29 @@ public class Constants {
 
     public static final String MASTER_KEY_ALIAS = DEFAULT_MASTER_KEY_ALIAS;
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
+
+    public static final HashMap<Integer, String> DAYS_NAME = initializeDaysName();
+
+    private static HashMap<Integer, String> initializeDaysName() {
+        HashMap<Integer, String> map = new HashMap<>();
+        for(int i = 1; i <= 7; i++) {
+            if(i == Calendar.MONDAY)
+                map.put(i, App.getRes().getString(R.string.monday));
+            else if (i == Calendar.TUESDAY)
+                map.put(i, App.getRes().getString(R.string.tuesday));
+            else if (i == Calendar.WEDNESDAY)
+                map.put(i, App.getRes().getString(R.string.wednesday));
+            else if (i == Calendar.THURSDAY)
+                map.put(i, App.getRes().getString(R.string.thursday));
+            else if (i == Calendar.FRIDAY)
+                map.put(i, App.getRes().getString(R.string.friday));
+            else if (i == Calendar.SATURDAY)
+                map.put(i, App.getRes().getString(R.string.saturday));
+            else
+                map.put(i, App.getRes().getString(R.string.sunday));
+        }
+        return map;
+    }
 
     /** NOTIFICACIONS **/
 
@@ -43,6 +68,7 @@ public class Constants {
     public static final String FILE_CURRENT_BLOCKED_APPS = "current_blocked_apps";
 
     public static final String SHARED_PREFS_ID_ADMIN = "adminId";
+    public static final String SHARED_PREFS_IS_SUPERADMIN = "isSuperAdmin";
     public static final String SHARED_PREFS_USERNAME = "username";
     public static final String SHARED_PREFS_PASSWORD = "password";
     public static final String SHARED_PREFS_TOKEN = "firebaseToken";

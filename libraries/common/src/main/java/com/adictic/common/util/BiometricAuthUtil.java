@@ -1,4 +1,4 @@
-package com.adictic.client.util;
+package com.adictic.common.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
-import com.adictic.client.R;
+import com.adictic.common.R;
 
 import java.util.concurrent.Executor;
 

@@ -10,16 +10,16 @@ import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.adictic.admin.MainActivity;
+import com.adictic.admin.R;
+import com.adictic.admin.entity.LoginUser;
 import com.adictic.admin.rest.AdminApi;
 import com.adictic.admin.util.AdminApp;
 import com.adictic.admin.util.Funcions;
-import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserLogin;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
-import com.adictic.admin.MainActivity;
-import com.adictic.admin.R;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
@@ -58,28 +58,31 @@ public class Login extends AppCompatActivity {
                     userLogin.password = Crypt.getSHA256(ET_password.getText().toString());
                     userLogin.token = Crypt.getAES(token);
 
-                    Call<User> call = adminApi.login(userLogin);
-                    call.enqueue(new Callback<User>() {
+                    Call<LoginUser> call = adminApi.loginAdmin(userLogin);
+                    call.enqueue(new Callback<LoginUser>() {
                         @Override
-                        public void onResponse(@NotNull Call<User> call, @NotNull Response<User> response) {
+                        public void onResponse(@NotNull Call<LoginUser> call, @NotNull Response<LoginUser> response) {
                             if(response.isSuccessful() && response.body() != null){
-                                User adminLogin = response.body();
+                                LoginUser adminLogin = response.body();
                                 SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(getApplicationContext());
                                 assert sharedPreferences != null;
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER,adminLogin.id).apply();
-                                sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN,adminLogin.adminId).apply();
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putLong(Constants.SHARED_PREFS_IDUSER,adminLogin.id);
+                                editor.putLong(Constants.SHARED_PREFS_ID_ADMIN,adminLogin.adminId);
+                                editor.putBoolean(Constants.SHARED_PREFS_IS_SUPERADMIN,adminLogin.superAdmin);
 
-                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME, userLogin.username).apply();
-                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, userLogin.password).apply();
-                                sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, userLogin.token).apply();
+                                editor.putString(Constants.SHARED_PREFS_USERNAME, userLogin.username);
+                                editor.putString(Constants.SHARED_PREFS_PASSWORD, userLogin.password);
+                                editor.putString(Constants.SHARED_PREFS_TOKEN, userLogin.token);
+                                editor.apply();
 
                                 Login.this.startActivity(new Intent(Login.this, MainActivity.class));
                             }
                         }
 
                         @Override
-                        public void onFailure(@NotNull Call<User> call, @NotNull Throwable t) {
-
+                        public void onFailure(@NotNull Call<LoginUser> call, @NotNull Throwable t) {
+                            super.onFailure(call, t);
                         }
                     });
                 });

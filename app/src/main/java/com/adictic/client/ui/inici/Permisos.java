@@ -28,7 +28,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.adictic.client.R;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.util.Constants;
 import com.judemanutd.autostarter.AutoStartPermissionHelper;
@@ -40,6 +40,7 @@ import java.util.Objects;
 public class Permisos extends AppCompatActivity {
     private boolean accessibilityPerm, usagePerm, adminPerm, overlayPerm, locationPerm, batteryPerm, autostartPerm;
     private final String TAG = "Permisos";
+    private boolean veDeSettings = false;
 
     ActivityResultLauncher<Intent> activityResult = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
@@ -57,6 +58,8 @@ public class Permisos extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.permissions_layout);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.permisos));
+
+        veDeSettings = getIntent().getBooleanExtra("settings", false);
 
         TextView TV_permisosDesc = findViewById(R.id.TV_permisos_desc);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
@@ -89,7 +92,9 @@ public class Permisos extends AppCompatActivity {
             Funcions.startAppUsageWorker24h(Permisos.this);
         }
 
-        if(Funcions.isMIUI())
+        if(veDeSettings)
+            Permisos.this.finish();
+        else if(Funcions.isMIUI())
             Permisos.this.startActivity(new Intent(Permisos.this, PermisosMIUI.class));
         else
             Permisos.this.startActivity(new Intent(Permisos.this, AppLock.class));

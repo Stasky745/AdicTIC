@@ -2,7 +2,6 @@ package com.adictic.client.ui.inici;
 
 import static com.adictic.client.ui.inici.Register.isValidEmail;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -24,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.adictic.client.R;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.ui.main.NavActivity;
-import com.adictic.client.ui.setting.ChangePasswordActivity;
+import com.adictic.client.ui.setting.TemporalPasswordChangeActivity;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.RecoverPassword;
@@ -141,7 +140,7 @@ public class Login extends AppCompatActivity {
     private void setRecoverPasswordButton() {
         findViewById(R.id.TV_login_forgot_pass).setOnClickListener(v -> {
             final AlertDialog.Builder passwordRecoverDialog = new AlertDialog.Builder(this);
-            LayoutInflater inflater = Login.this.getLayoutInflater();
+            LayoutInflater inflater = LayoutInflater.from(Login.this);
 
             passwordRecoverDialog.setTitle(getString(R.string.recover_password));
             passwordRecoverDialog.setMessage(getString(R.string.enter_email_account));
@@ -157,12 +156,12 @@ public class Login extends AppCompatActivity {
             accept.setOnClickListener(view -> {
                 String mail = recover_email.getText().toString().trim();
                 if (isValidEmail(mail)){
+                    accept.setClickable(false);
                     RecoverPassword recoverPassword = new RecoverPassword();
                     recoverPassword.email = mail;
                     mTodoService.sendPetitionToRecoverPassword(recoverPassword).enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            super.onResponse(call, response);
                             if(response.isSuccessful()){
                                 alertDialog.dismiss();
                                 new AlertDialog.Builder(Login.this)
@@ -187,11 +186,15 @@ public class Login extends AppCompatActivity {
                                 Toast.makeText(Login.this, "Unknown error", Toast.LENGTH_SHORT).show();
                                 alertDialog.dismiss();
                             }
+
+                            accept.setClickable(true);
                         }
 
                         @Override
                         public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
                             super.onFailure(call, t);
+
+                            accept.setClickable(true);
                         }
                     });
                 } else {
@@ -228,7 +231,8 @@ public class Login extends AppCompatActivity {
                     assert usuari != null;
 
                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_USERNAME,ul.username).apply();
-                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD,ul.password).apply();
+                    if(!usuari.temporalPass) //Only save password if is not temporal. Avoid overwriting old good password.
+                        sharedPreferences.edit().putString(Constants.SHARED_PREFS_PASSWORD, ul.password).apply();
                     sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN,ul.token).apply();
 
                     if (usuari.tutor == 1) {
@@ -255,7 +259,7 @@ public class Login extends AppCompatActivity {
                         i = new Intent(Login.this, NavActivity.class);
                     }
                     if(usuari.temporalPass){
-                        i = new Intent(Login.this, ChangePasswordActivity.class);
+                        i = new Intent(Login.this, TemporalPasswordChangeActivity.class);
                         extras.putString("temporalAccess", password);
                         i.putExtras(extras);
                     }

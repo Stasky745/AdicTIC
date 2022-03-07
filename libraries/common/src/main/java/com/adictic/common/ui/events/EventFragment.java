@@ -24,6 +24,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import org.joda.time.DateTime;
 
+import java.util.Calendar;
 import java.util.Objects;
 
 public class EventFragment extends DialogFragment {
@@ -105,36 +106,64 @@ public class EventFragment extends DialogFragment {
     }
 
     private void setDaysChecked() {
-        if (event.monday) CH_Monday.setChecked(true);
-        if (event.tuesday) CH_Tuesday.setChecked(true);
-        if (event.wednesday) CH_Wednesday.setChecked(true);
-        if (event.thursday) CH_Thursday.setChecked(true);
-        if (event.friday) CH_Friday.setChecked(true);
-        if (event.saturday) CH_Saturday.setChecked(true);
-        if (event.sunday) CH_Sunday.setChecked(true);
+        if (event.days.contains(Calendar.MONDAY)) CH_Monday.setChecked(true);
+        if (event.days.contains(Calendar.TUESDAY)) CH_Tuesday.setChecked(true);
+        if (event.days.contains(Calendar.WEDNESDAY)) CH_Wednesday.setChecked(true);
+        if (event.days.contains(Calendar.THURSDAY)) CH_Thursday.setChecked(true);
+        if (event.days.contains(Calendar.FRIDAY)) CH_Friday.setChecked(true);
+        if (event.days.contains(Calendar.SATURDAY)) CH_Saturday.setChecked(true);
+        if (event.days.contains(Calendar.SUNDAY)) CH_Sunday.setChecked(true);
     }
 
     public void setButtons() {
-        CH_Monday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.monday = isChecked);
+        CH_Monday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.MONDAY);
+            else
+                event.days.remove(Calendar.MONDAY);
+        });
 
-        CH_Tuesday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.tuesday = isChecked);
+        CH_Tuesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.TUESDAY);
+            else
+                event.days.remove(Calendar.TUESDAY);
+        });
 
-        CH_Wednesday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.wednesday = isChecked);
+        CH_Wednesday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.WEDNESDAY);
+            else
+                event.days.remove(Calendar.WEDNESDAY);
+        });
 
-        CH_Thursday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.thursday = isChecked);
+        CH_Thursday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.THURSDAY);
+            else
+                event.days.remove(Calendar.THURSDAY);
+        });
 
-        CH_Friday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.friday = isChecked);
+        CH_Friday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.FRIDAY);
+            else
+                event.days.remove(Calendar.FRIDAY);
+        });
 
-        CH_Saturday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.saturday = isChecked);
+        CH_Saturday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.SATURDAY);
+            else
+                event.days.remove(Calendar.SATURDAY);
+        });
 
-        CH_Sunday.setOnCheckedChangeListener((buttonView, isChecked) ->
-                event.sunday = isChecked);
+        CH_Sunday.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked)
+                event.days.add(Calendar.SUNDAY);
+            else
+                event.days.remove(Calendar.SUNDAY);
+        });
 
         ET_eventStart.setOnClickListener(v -> {
             Pair<Integer, Integer> start = Funcions.stringToTime(ET_eventStart.getText().toString());
@@ -197,13 +226,8 @@ public class EventFragment extends DialogFragment {
             event.startEvent = oldEvent.startEvent;
             event.endEvent = oldEvent.endEvent;
             event.name = oldEvent.name;
+            event.days = oldEvent.days;
 
-            event.monday = oldEvent.monday;
-            event.tuesday = oldEvent.tuesday;
-            event.wednesday = oldEvent.wednesday;
-            event.thursday = oldEvent.thursday;
-            event.friday = oldEvent.friday;
-            event.saturday = oldEvent.saturday;
             dismiss();
         });
 
