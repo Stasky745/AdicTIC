@@ -49,11 +49,10 @@ import androidx.work.WorkRequest;
 
 import com.adictic.client.R;
 import com.adictic.client.entity.BlockedApp;
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.service.AccessibilityScreenService;
 import com.adictic.client.ui.BlockAppActivity;
-import com.adictic.client.ui.BlockDeviceActivity;
 import com.adictic.client.workers.AppUsageWorker;
 import com.adictic.client.workers.EventWorker;
 import com.adictic.client.workers.GeoLocWorker;
@@ -61,6 +60,7 @@ import com.adictic.client.workers.HorarisEventsWorkerManager;
 import com.adictic.client.workers.HorarisWorker;
 import com.adictic.client.workers.NotifWorker;
 import com.adictic.client.workers.ServiceWorker;
+import com.adictic.common.callbacks.BooleanCallback;
 import com.adictic.common.entity.AppUsage;
 import com.adictic.common.entity.BlockedLimitedLists;
 import com.adictic.common.entity.EventBlock;
@@ -69,6 +69,7 @@ import com.adictic.common.entity.GeneralUsage;
 import com.adictic.common.entity.HorarisAPI;
 import com.adictic.common.entity.HorarisNit;
 import com.adictic.common.entity.LimitedApps;
+import com.adictic.common.entity.UserLogin;
 import com.adictic.common.rest.Api;
 import com.adictic.common.util.Callback;
 import com.adictic.common.util.Constants;
@@ -105,6 +106,37 @@ import retrofit2.Response;
 
 public class Funcions extends com.adictic.common.util.Funcions {
     private final static String TAG = "Funcions";
+
+    // Contrasenya ha d'estar encriptada amb SHA256
+    public static void isPasswordCorrect(Context ctx, String pwd, BooleanCallback callback){
+        AdicticApi api = ((AdicticApp) (ctx.getApplicationContext())).getAPI();
+
+        SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(ctx);
+        assert sharedPreferences != null;
+
+        UserLogin userLogin = new UserLogin();
+        userLogin.password = pwd;
+        userLogin.username = sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME, "");
+        userLogin.token = "";
+        userLogin.tutor = -1;
+
+        Call<String> call = api.checkPassword(userLogin);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+                super.onResponse(call, response);
+                if(response.isSuccessful() && response.body() != null && response.body().equals("ok"))
+                    callback.onDataGot(true);
+                else
+                    callback.onDataGot(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                callback.onDataGot(false);
+            }
+        });
+    }
 
     public static void addOverlayView(Context ctx, boolean blockApp) {
 
@@ -262,31 +294,9 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         int diaSetmana = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
 
-        List<EventBlock> eventsTodayList = new ArrayList<>();
-
-        switch (diaSetmana) {
-            case 1:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.sunday).collect(Collectors.toList());
-                break;
-            case 2:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.monday).collect(Collectors.toList());
-                break;
-            case 3:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.tuesday).collect(Collectors.toList());
-                break;
-            case 4:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.wednesday).collect(Collectors.toList());
-                break;
-            case 5:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.thursday).collect(Collectors.toList());
-                break;
-            case 6:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.friday).collect(Collectors.toList());
-                break;
-            case 7:
-                eventsTodayList = events.stream().filter(eventBlock -> eventBlock.saturday).collect(Collectors.toList());
-                break;
-        }
+        List<EventBlock> eventsTodayList = events.stream()
+                .filter(eventBlock -> eventBlock.days.contains(diaSetmana))
+                .collect(Collectors.toList());
 
         setEventWorkerByDay(ctx, eventsTodayList);
     }
@@ -988,7 +998,7 @@ public class Funcions extends com.adictic.common.util.Funcions {
         });
     }
 
-    private static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
+    public static void startNotificationWorker(Context mCtx, NotificationInformation notif, Long idChild){
         Data data = new Data.Builder()
                 .putString("title", notif.title)
                 .putString("body", notif.message)
@@ -1024,60 +1034,5 @@ public class Funcions extends com.adictic.common.util.Funcions {
 
         return listUsages.stream()
                 .collect(Collectors.toMap(appUsage -> appUsage.app.pkgName,appUsage -> appUsage.totalTime));
-    }
-
-    public static void addNotificationToList(Context context, NotificationInformation notificationInformation) {
-        final int MAX_NOTIF_SIZE = 25;
-
-        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
-        assert sharedPreferences != null;
-
-        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
-        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
-
-        Gson gson = new Gson();
-        ArrayList<NotificationInformation> notifList = gson.fromJson(json, type) != null ? gson.fromJson(json, type) : new ArrayList<>();
-
-        // Si la llista té 15 elements
-        if(notifList.size() == MAX_NOTIF_SIZE){
-            NotificationInformation oldNotif = notifList.stream()
-                    .min(Comparator.comparing(v -> v.dateMillis)).get();
-
-            notifList.remove(oldNotif);
-        }
-        else if(notifList.size() > MAX_NOTIF_SIZE){
-            for(int i = 0; i < notifList.size() - (MAX_NOTIF_SIZE-1); i++){
-                NotificationInformation oldNotif = notifList.stream()
-                        .min(Comparator.comparing(v -> v.dateMillis)).get();
-
-                notifList.remove(oldNotif);
-            }
-        }
-
-        notifList.add(notificationInformation);
-
-        String newJson = gson.toJson(notifList);
-        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
-    }
-
-    public static ArrayList<NotificationInformation> getNotificationList(Context context){
-        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
-        assert sharedPreferences != null;
-
-        String json = sharedPreferences.getString(Constants.SHARED_PREFS_NOTIFS, "");
-        Type type = new TypeToken<ArrayList<NotificationInformation>>() {}.getType();
-
-        Gson gson = new Gson();
-        return gson.fromJson(json, type);
-    }
-
-    public static void setNotificationList(Context context, List<NotificationInformation> list){
-        SharedPreferences sharedPreferences = com.adictic.common.util.Funcions.getEncryptedSharedPreferences(context);
-        assert sharedPreferences != null;
-
-        Gson gson = new Gson();
-
-        String newJson = gson.toJson(list);
-        sharedPreferences.edit().putString(Constants.SHARED_PREFS_NOTIFS, newJson).apply();
     }
 }

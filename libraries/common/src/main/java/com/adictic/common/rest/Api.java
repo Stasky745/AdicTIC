@@ -27,6 +27,7 @@ import com.adictic.common.entity.TimeBlock;
 import com.adictic.common.entity.TimeFreeUse;
 import com.adictic.common.entity.User;
 import com.adictic.common.entity.UserMessage;
+import com.adictic.common.entity.VellFillLogin;
 import com.adictic.common.entity.YearEntity;
 
 import java.util.Collection;
@@ -49,6 +50,9 @@ public interface Api {
 
     @POST("/users/check")
     Call<User> checkWithToken(@Body String token);
+
+    @POST("/users/{idChild}/child/edit")
+    Call<String> editChild(@Path("idChild") Long idChild, @Body FillNom fill);
 
     @GET("/usage/{id}/{xDays}")
     Call<Collection<GeneralUsage>> getAppUsage(@Path("id") Long childId, @Path("xDays") Integer xDays);
@@ -115,6 +119,9 @@ public interface Api {
 
     @GET("/offices")
     Call<List<Oficina>> getOficines();
+
+    @GET("/offices/active")
+    Call<List<Oficina>> getActiveOficines();
 
     @GET("/users/geoloc")
     Call<List<GeoFill>> getGeoLoc();

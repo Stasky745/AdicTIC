@@ -92,7 +92,7 @@ def getCustomVersionCode() {
 
 dependencies {
     //Modules
-    implementation project(path: ':libraries:jitsiVideocall')
-    implementation project(path: ':libraries:persistentcookie')
     implementation project(path: ':libraries:common')
+    implementation project(path: ':libraries:persistentcookie')
+    implementation project(path: ':libraries:jitsiVideocall')
 }

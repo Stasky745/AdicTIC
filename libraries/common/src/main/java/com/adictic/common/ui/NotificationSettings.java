@@ -8,6 +8,7 @@ import android.graphics.text.LineBreaker;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,6 +30,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class NotificationSettings extends AppCompatActivity {
     private HashMap<String, String> initializeStringMapTutor() {
@@ -69,6 +71,8 @@ public class NotificationSettings extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notification_settings);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.setting_notifications));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences sharedPreferences = Funcions.getEncryptedSharedPreferences(this);
         assert sharedPreferences != null;
@@ -205,5 +209,15 @@ public class NotificationSettings extends AppCompatActivity {
                 IV_notif_info = itemView.findViewById(R.id.IV_notif_info);
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

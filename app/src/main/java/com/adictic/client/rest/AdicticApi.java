@@ -1,6 +1,6 @@
 package com.adictic.client.rest;
 
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.common.entity.AppInfo;
 import com.adictic.common.entity.AppTimesAccessed;
 import com.adictic.common.entity.BlockAppEntity;
@@ -45,9 +45,6 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
     // Si és tutor -> idChild = -1
     @POST("/users/token/{idChild}")
     Call<String> updateToken(@Path("idChild") Long idChild, @Body String token);
-
-    @POST("/users/logout")
-    Call<String> logout(@Body String token);
 
     @POST("/users/check")
     Call<User> checkWithToken(@Body String token);
@@ -124,9 +121,6 @@ public interface AdicticApi extends com.adictic.common.rest.Api {
 
     @GET("/usage/{idChild}/timesTried")
     Call<List<AppTimesAccessed>> getAccessBlocked(@Path("idChild") Long childId);
-
-    @GET("/offices")
-    Call<List<Oficina>> getOficines();
 
     @GET("/users/geoloc")
     Call<List<GeoFill>> getGeoLoc();

@@ -1,31 +1,32 @@
 package com.adictic.client.workers;
 
 import android.content.Context;
-import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.work.Data;
-import androidx.work.Worker;
+import androidx.work.ListenableWorker;
 import androidx.work.WorkerParameters;
 
-import com.adictic.client.entity.NotificationInformation;
+import com.adictic.common.entity.NotificationInformation;
 import com.adictic.client.rest.AdicticApi;
 import com.adictic.client.util.AdicticApp;
 import com.adictic.common.util.Callback;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class NotifWorker extends Worker {
-    private int valid;
-
+public class NotifWorker extends ListenableWorker {
     public NotifWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
 
     @NonNull
     @Override
-    public Result doWork() {
+    public ListenableFuture<Result> startWork() {
+        SettableFuture<Result> future = SettableFuture.create();
+
         Data data = getInputData();
 
         NotificationInformation notif = new NotificationInformation();
@@ -41,34 +42,19 @@ public class NotifWorker extends Worker {
 
         AdicticApi api = ((AdicticApp) getApplicationContext()).getAPI();
 
-        valid = 0;
-
         Call<String> call = api.sendNotification(idChild, notif);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                if(response.isSuccessful() && response.body() != null)
-                    valid = 1;
-                else
-                    valid = -1;
+                future.set(Result.success());
             }
 
             @Override
             public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                valid = -1;
+                future.set(Result.retry());
             }
         });
-        long start = System.currentTimeMillis();
-        long delay = System.currentTimeMillis() - start;
 
-        while(valid == 0 && delay < 5000) {
-            SystemClock.sleep(500);
-            delay = System.currentTimeMillis() - start;
-        }
-
-        if(valid == 1)
-            return Result.success();
-        else
-            return Result.retry();
+        return future;
     }
 }

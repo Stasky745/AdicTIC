@@ -21,4 +21,9 @@
         android:name="com.adictic.admin.ui.profile.ProfileMainFragment"
         android:label="@string/profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.adictic.admin.ui.settings.MainAdminSettings"
+        android:label="@string/settings" />
 </navigation>

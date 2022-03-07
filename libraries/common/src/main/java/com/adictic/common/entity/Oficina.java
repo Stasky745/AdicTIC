@@ -15,6 +15,8 @@ public class Oficina implements Parcelable {
     public String description;
     public String telf;
     public String website;
+    public Long officeAdminId;
+    public String officeAdminName;
 
     protected Oficina(Parcel in) {
         if (in.readByte() == 0) {
@@ -38,6 +40,16 @@ public class Oficina implements Parcelable {
         description = in.readString();
         telf = in.readString();
         website = in.readString();
+        if (in.readByte() == 0) {
+            officeAdminId = null;
+        } else {
+            officeAdminId = in.readLong();
+        }
+        if (in.readByte() == 0) {
+            officeAdminName = null;
+        } else {
+            officeAdminName = in.readString();
+        }
     }
 
     public static final Creator<Oficina> CREATOR = new Creator<Oficina>() {
@@ -52,10 +64,21 @@ public class Oficina implements Parcelable {
         }
     };
 
-    @NonNull
     @Override
     public String toString() {
-        return name + " (" + ciutat.toUpperCase() + ")";
+        return "Oficina{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", address='" + address + '\'' +
+                ", ciutat='" + ciutat + '\'' +
+                ", description='" + description + '\'' +
+                ", telf='" + telf + '\'' +
+                ", website='" + website + '\'' +
+                ", officeAdminId=" + officeAdminId +
+                ", officeAdminName='" + officeAdminName + '\'' +
+                '}';
     }
 
     @Override
@@ -89,6 +112,18 @@ public class Oficina implements Parcelable {
         parcel.writeString(description);
         parcel.writeString(telf);
         parcel.writeString(website);
+        if (officeAdminId == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeLong(officeAdminId);
+        }
+        if (officeAdminName == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeString(officeAdminName);
+        }
     }
 
     public Oficina(Long id, Oficina oficinaNova){
@@ -102,6 +137,8 @@ public class Oficina implements Parcelable {
         this.longitude = oficinaNova.longitude;
         this.telf = oficinaNova.telf;
         this.website = oficinaNova.website;
+        this.officeAdminId = oficinaNova.officeAdminId;
+        this.officeAdminName = oficinaNova.officeAdminName;
     }
 
     public Oficina() {
@@ -114,27 +151,29 @@ public class Oficina implements Parcelable {
         description = "";
         telf = "";
         website = "";
+        officeAdminId = -1L;
+        officeAdminName = "";
     }
 
     public Boolean hiHaCanvis(Object o){
         if(o instanceof Oficina){
             Oficina oficina = (Oficina) o;
 
-            if (!name.equals(oficina.name))
+            if (name != null && !name.equals(oficina.name))
                 return true;
-            if (!latitude.equals(oficina.latitude))
+            if (latitude != null && !latitude.equals(oficina.latitude))
                 return true;
-            if (!longitude.equals(oficina.longitude))
+            if (longitude != null && !longitude.equals(oficina.longitude))
                 return true;
-            if (!address.equals(oficina.address))
+            if (address != null && !address.equals(oficina.address))
                 return true;
-            if (!ciutat.equals(oficina.ciutat))
+            if (ciutat != null && !ciutat.equals(oficina.ciutat))
                 return true;
-            if (!description.equals(oficina.description))
+            if (description != null && !description.equals(oficina.description))
                 return true;
-            if (!telf.equals(oficina.telf))
+            if (telf != null && !telf.equals(oficina.telf))
                 return true;
-            return !website.equals(oficina.website);
+            return website != null && !website.equals(oficina.website);
         }
         else return null;
     }

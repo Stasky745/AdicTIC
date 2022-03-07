@@ -1,10 +1,10 @@
-package com.adictic.client.ui.setting;
+package com.adictic.common.ui.settings;
 
 import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.adictic.client.R;
+import com.adictic.common.R;
 
 public class SecuritySettings extends PreferenceFragmentCompat {
 
