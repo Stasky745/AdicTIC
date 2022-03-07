@@ -66,7 +66,7 @@ public class FuncionsAdminSettings extends FuncionsSettings {
                         } else {
                             // Get new Instance ID token
                             String token = task.getResult();
-                            call = mTodoService.logout(Crypt.getAES(token));
+                            call = mTodoService.logout(Crypt.getAES(token, Constants.CRYPT_KEY));
                         }
                         call.enqueue(new Callback<String>() {
                             @Override

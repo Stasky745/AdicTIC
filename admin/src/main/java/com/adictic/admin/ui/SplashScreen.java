@@ -71,9 +71,9 @@ public class SplashScreen extends AppCompatActivity {
                     token = task.getResult();
 
                     Log.d(TAG,"Firebase Token: " + token);
-                    Log.d(TAG,"Firebase Token (Encrypted): " + Crypt.getAES(token));
+                    Log.d(TAG,"Firebase Token (Encrypted): " + Crypt.getAES(token, Constants.CRYPT_KEY));
 
-                    Call<User> call = adminApi.checkWithToken(Crypt.getAES(token));
+                    Call<User> call = adminApi.checkWithToken(Crypt.getAES(token, Constants.CRYPT_KEY));
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
@@ -201,7 +201,7 @@ public class SplashScreen extends AppCompatActivity {
                 public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                     super.onAuthenticationError(errorCode, errString);
                     Toast.makeText(SplashScreen.this, errString, Toast.LENGTH_LONG).show();
-                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+                    sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token, Constants.CRYPT_KEY)).apply();
                     Intent intent = new Intent(SplashScreen.this, Login.class);
                     intent.putExtra("fromBiometric", true);
                     SplashScreen.this.startActivity(intent);
@@ -230,7 +230,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void goToMainActivity(User adminCheckWithToken){
-        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token)).apply();
+        sharedPreferences.edit().putString(Constants.SHARED_PREFS_TOKEN, Crypt.getAES(token, Constants.CRYPT_KEY)).apply();
         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_IDUSER, adminCheckWithToken.id).apply();
         sharedPreferences.edit().putLong(Constants.SHARED_PREFS_ID_ADMIN, adminCheckWithToken.adminId).apply();
         SplashScreen.this.startActivity(new Intent(SplashScreen.this, MainActivity.class));

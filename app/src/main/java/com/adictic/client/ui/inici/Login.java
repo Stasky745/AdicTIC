@@ -72,7 +72,7 @@ public class Login extends AppCompatActivity {
         final TextView t_reg = findViewById(R.id.TV_login_register);
 
         if(getIntent().getBooleanExtra("fromBiometric", false)){
-            u.setText(Crypt.decryptAES(sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME,"")));
+            u.setText(Crypt.decryptAES(sharedPreferences.getString(Constants.SHARED_PREFS_USERNAME,""), Constants.CRYPT_KEY));
             tutor.setChecked(sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, false));
             tutelat.setChecked(!sharedPreferences.getBoolean(Constants.SHARED_PREFS_ISTUTOR, true));
             tutor.setEnabled(false);
@@ -217,10 +217,10 @@ public class Login extends AppCompatActivity {
     // This method is called when the "Login" button is pressed in the Login fragment
     public void checkCredentials(String username, String password, final Integer tutor, final String token) {
         UserLogin ul = new UserLogin();
-        ul.username = Crypt.getAES(username);
+        ul.username = Crypt.getAES(username, Constants.CRYPT_KEY);
         ul.password = Crypt.getSHA256(password);
         ul.tutor = tutor;
-        ul.token = Crypt.getAES(token);
+        ul.token = Crypt.getAES(token, Constants.CRYPT_KEY);
         Call<User> call = mTodoService.login(ul);
 
         call.enqueue(new Callback<User>() {

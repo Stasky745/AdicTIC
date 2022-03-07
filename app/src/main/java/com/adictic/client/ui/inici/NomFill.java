@@ -247,7 +247,7 @@ public class NomFill extends AppCompatActivity {
                 final VellFillLogin fillVell = new VellFillLogin();
                 fillVell.deviceName = tv_nom.getText().toString();
                 fillVell.idChild = id;
-                fillVell.token = Crypt.getAES(token);
+                fillVell.token = Crypt.getAES(token, Constants.CRYPT_KEY);
 
                 Call<String> call = mTodoService.sendOldName(idParent, fillVell);
 
@@ -279,7 +279,7 @@ public class NomFill extends AppCompatActivity {
                 } else {
                     NouFillLogin fillNou = new NouFillLogin();
                     fillNou.deviceName = tv_nom.getText().toString();
-                    fillNou.token = Crypt.getAES(token);
+                    fillNou.token = Crypt.getAES(token, Constants.CRYPT_KEY);
                     fillNou.birthday = birthday;
 
                     Call<Long> call = mTodoService.sendNewName(idParent, fillNou);

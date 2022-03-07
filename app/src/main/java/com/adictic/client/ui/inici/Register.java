@@ -20,6 +20,7 @@ import com.adictic.client.util.AdicticApp;
 import com.adictic.client.util.Funcions;
 import com.adictic.common.entity.UserRegister;
 import com.adictic.common.util.Callback;
+import com.adictic.common.util.Constants;
 import com.adictic.common.util.Crypt;
 
 import org.json.JSONObject;
@@ -91,9 +92,9 @@ public class Register extends AppCompatActivity {
     // This method is called when the "Register" button is pressed in the Register fragment
     public void checkCredentials(String username, String password, String email) {
         UserRegister ul = new UserRegister();
-        ul.username = Crypt.getAES(username);
+        ul.username = Crypt.getAES(username, Constants.CRYPT_KEY);
         ul.password = Crypt.getSHA256(password);
-        ul.email = Crypt.getAES(email);
+        ul.email = Crypt.getAES(email, Constants.CRYPT_KEY);
         Call<String> call = mTodoService.register(ul);
         call.enqueue(new Callback<String>() {
             @Override

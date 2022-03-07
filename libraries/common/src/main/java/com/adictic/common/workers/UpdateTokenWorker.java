@@ -40,7 +40,7 @@ public class UpdateTokenWorker extends ListenableWorker {
                     }
 
                     // Get new Instance ID token
-                    token = Crypt.getAES(task.getResult());
+                    token = Crypt.getAES(task.getResult(), Constants.CRYPT_KEY);
                 });
 
         if(future.isDone())

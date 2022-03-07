@@ -12,12 +12,12 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Crypt {
-    public static String getAES(String message) {
+    public static String getAES(String message, String key_original) {
         MessageDigest sha = null;
         byte[] key;
         SecretKeySpec secretKey = null;
         try {
-            key = "***REMOVED***".getBytes(StandardCharsets.UTF_8);
+            key = key_original.getBytes(StandardCharsets.UTF_8);
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
@@ -36,13 +36,13 @@ public class Crypt {
         return null;
     }
 
-    public static String decryptAES(String message) {
+    public static String decryptAES(String message, String key_original) {
         if(message==null || message.trim().equals("")) return "";
         MessageDigest sha = null;
         byte[] key;
         SecretKeySpec secretKey = null;
         try {
-            key = "***REMOVED***".getBytes(StandardCharsets.UTF_8);
+            key = key_original.getBytes(StandardCharsets.UTF_8);
             sha = MessageDigest.getInstance("SHA-1");
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);

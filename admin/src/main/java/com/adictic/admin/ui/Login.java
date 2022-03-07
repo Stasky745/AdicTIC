@@ -56,7 +56,7 @@ public class Login extends AppCompatActivity {
                     UserLogin userLogin = new UserLogin();
                     userLogin.username = ET_username.getText().toString().trim().toLowerCase();
                     userLogin.password = Crypt.getSHA256(ET_password.getText().toString());
-                    userLogin.token = Crypt.getAES(token);
+                    userLogin.token = Crypt.getAES(token, Constants.CRYPT_KEY);
 
                     Call<LoginUser> call = adminApi.loginAdmin(userLogin);
                     call.enqueue(new Callback<LoginUser>() {

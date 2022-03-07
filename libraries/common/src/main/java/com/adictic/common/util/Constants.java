@@ -4,6 +4,7 @@ import static androidx.security.crypto.MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE
 import static androidx.security.crypto.MasterKey.DEFAULT_MASTER_KEY_ALIAS;
 
 import android.graphics.Color;
+import android.widget.TextView;
 
 import com.adictic.common.R;
 
@@ -19,6 +20,7 @@ public class Constants {
     public static final int KEY_SIZE = DEFAULT_AES_GCM_MASTER_KEY_SIZE;
 
     public static final HashMap<Integer, String> DAYS_NAME = initializeDaysName();
+    public static final String CRYPT_KEY = "";
 
     private static HashMap<Integer, String> initializeDaysName() {
         HashMap<Integer, String> map = new HashMap<>();
