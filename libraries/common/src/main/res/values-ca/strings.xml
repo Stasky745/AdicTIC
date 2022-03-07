@@ -523,6 +523,23 @@
     <string name="recover_password">Recuperar contrasenya</string>
     <string name="enter_email_account">Entra el correu electrònic que es va fer servir al registrar-se:</string>
     <string name="recover_password_success">Se li ha enviat una nova contrasenya temporal al seu correu electrònic. Aquesta contrasenya funcionarà durant els pròxims 10 minuts. Quan la utilitzi se li demanarà que entri una nova contrasenya que substituïrà l\'anterior.</string>
+
+    <string name="admin">Admin</string>
+    <string name="name">Nom i Cognoms</string>
+    <string name="add_links">Afegir Enllaç</string>
+    <string name="profile">Perfil</string>
+    <string name="oficina">Oficina</string>
+    <string name="honorific">Honorífic</string>
+    <string name="professio">Professió</string>
+    <string name="url">URL</string>
+    <string name="previsualitzar_titol">Previsualització</string>
+    <string name="previsualitzar_desc">Vols veure una previsualització?</string>
+    <string name="new_weblink">Afegeix un enllaç nou</string>
+    <string name="error_connect">No s\'ha pogut connectar amb el servidor.</string>
+    <string name="weblink_edit">Editar Link</string>
+    <string name="delete_weblink">Esborrar Link</string>
+    <string name="confirm_delete_link">Vols esborrar \"%s\"?</string>
+
     <string name="crear_admin">Crear administrador</string>
     <string name="no_links">No hi ha cap enllaç</string>
     <string name="edit_child">Editar dades del menor</string>

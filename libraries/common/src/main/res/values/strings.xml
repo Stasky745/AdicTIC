@@ -558,6 +558,24 @@
     <string name="recover_password">Recuperar contraseña</string>
     <string name="recover_password_success">Se le ha mandado una nueva contraseña temporal en su email. Esta contraseña funcionará durante 10 minutos, y en cuanto la use se le pedirá que la cambie.</string>
     <string name="enter_email_account">Entra el correo electrónico que se usó al registrarse:</string>
+
+    <!-- ADMIN -->
+    <string name="adictic_admin" translatable="false">AdicTIC_Admin</string>
+    <string name="admin">Admin</string>
+    <string name="profile">Perfil</string>
+    <string name="oficina">Oficina</string>
+    <string name="honorific">Honorífico</string>
+    <string name="name">Nombre y Apellidos</string>
+    <string name="add_links">Añadir Enlace</string>
+    <string name="professio">Profesión</string>
+    <string name="url">URL</string>
+    <string name="previsualitzar_titol">Previsualización</string>
+    <string name="previsualitzar_desc">¿Quieres ver una previsualización?</string>
+    <string name="new_weblink">Añade un nuevo enlace</string>
+    <string name="error_connect">No se ha podido conectar con el servidor.</string>
+    <string name="weblink_edit">Editar Link</string>
+    <string name="delete_weblink">Borrar Link</string>
+    <string name="confirm_delete_link">¿Quieres borrar \"%s\"?</string>
     <string name="crear_admin">Crear administrador</string>
     <string name="no_links">No hay ningún enlace</string>
 
