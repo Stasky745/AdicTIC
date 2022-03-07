@@ -22,12 +22,13 @@ public class Global {
     // For debugging with real device using port forwarding
     // https://developer.chrome.com/devtools/docs/remote-debugging?hl=de#port-forwarding
 
-    public static final String BASE_URL_RELEASE = "***REMOVED***/";
-//    public static final String BASE_URL_RELEASE = "***REMOVED***/";
-//    public static final String BASE_URL_DEBUG = "***REMOVED***/";
-    public static final String BASE_URL_DEBUG = "***REMOVED***/";
+    public static final String BASE_URL_RELEASE = "";
+//    public static final String BASE_URL_RELEASE = "";
+//    public static final String BASE_URL_DEBUG = "";
+    public static final String BASE_URL_DEBUG = "";
+    //public static final String BASE_URL_DEBUG = "";
 
-    //public static final String BASE_URL_PORTFORWARDING = "***REMOVED***/";
-//    public static final String BASE_URL_GENYMOTION = "***REMOVED***";
+    //public static final String BASE_URL_PORTFORWARDING = "";
+//    public static final String BASE_URL_GENYMOTION = "";
 
 }
